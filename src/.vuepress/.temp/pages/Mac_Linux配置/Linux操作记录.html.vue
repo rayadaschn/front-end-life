@@ -1,0 +1,260 @@
+<template><div><h1 id="linux-服务器配置记录" tabindex="-1"><a class="header-anchor" href="#linux-服务器配置记录" aria-hidden="true">#</a> Linux 服务器配置记录</h1>
+<h2 id="目录" tabindex="-1"><a class="header-anchor" href="#目录" aria-hidden="true">#</a> 目录</h2>
+<p>[toc]</p>
+<h2 id="操作指令记录" tabindex="-1"><a class="header-anchor" href="#操作指令记录" aria-hidden="true">#</a> 操作指令记录</h2>
+<blockquote>
+<p>linux 操作指令语法 <strong>[<code v-pre>命令 可选参数 操作的对象</code>]</strong></p>
+</blockquote>
+<ol>
+<li>
+<p>基本操作指令(增删改查)</p>
+<ul>
+<li>增</li>
+</ul>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">mkdir</span> 文件夹1 文件夹2
+<span class="token function">touch</span> fileName.txt
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><ul>
+<li>删除 remove</li>
+</ul>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">rm</span> <span class="token punctuation">[</span>可选参数<span class="token punctuation">]</span> <span class="token punctuation">[</span>文件名<span class="token punctuation">]</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>​	可选参数如:</p>
+<ol>
+<li>
+<p><strong>-f</strong> :  强制删除, 无提示。 <code v-pre>rm -f /removeDir</code></p>
+</li>
+<li>
+<p><strong>-r</strong> : 递归删除文件夹，有提示，需输入 y 同意 。 <code v-pre>rm -r /removeDir</code></p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">rm</span>  <span class="token parameter variable">-rf</span>  /tmp/*  <span class="token comment"># 删除tmp下所有内容 </span>
+<span class="token function">rm</span>  <span class="token parameter variable">-rf</span>  /tmp/   <span class="token comment"># 不加*是会直接删除这个文件夹</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></li>
+</ol>
+<ul>
+<li>改</li>
+</ul>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token builtin class-name">cd</span> /     <span class="token comment"># 切换到根目录</span>
+<span class="token builtin class-name">cd</span> ./tmp <span class="token comment"># 切换到当前的子目录</span>
+<span class="token builtin class-name">cd</span> <span class="token punctuation">..</span>    <span class="token comment"># 切换到上一级目录</span>
+<span class="token builtin class-name">cd</span> ~     <span class="token comment"># 切换到自身用户的 home 目录</span>
+<span class="token builtin class-name">cd</span> -     <span class="token comment"># 切换到上一次工作目录</span>
+
+<span class="token builtin class-name">exit</span>     <span class="token comment"># 退出Linux</span>
+<span class="token function">clear</span>    <span class="token comment"># 清空屏幕</span>
+<span class="token function">history</span>  <span class="token comment"># 查看历史指令</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul>
+<li>移动复制文件操作
+<ol>
+<li>复制 <code v-pre>cp [options] source dest</code></li>
+</ol>
+</li>
+</ul>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># -f 为覆盖已存在的文件而不提示; -r 为递归复制目标文件夹</span>
+$: <span class="token function">cp</span> test.txt test.txt.bak  <span class="token comment"># 拷贝单个文件</span>
+
+$: <span class="token function">cp</span> –r test/ newtest  
+<span class="token comment"># 将当前目录 test/ 下的所有文件复制到新目录 newtest 下</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>​	2. 移动和重命名 mv</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">mv</span> ./test.txt  <span class="token punctuation">..</span>/   <span class="token comment"># 把当前目录下的test.txt移动到上一级目录去</span>
+
+$: <span class="token function">mv</span> name.txt  newName.txt    <span class="token comment"># 将“name.txt”重命名为 newName.txt”</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul>
+<li>重定向符号 &gt; 和 &gt;&gt;</li>
+</ul>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token operator">></span>  <span class="token comment"># 重定向输出覆盖符，覆盖写</span>
+<span class="token operator">>></span> <span class="token comment"># 重定向追加输出符，追加写入</span>
+
+$: <span class="token builtin class-name">echo</span> <span class="token string">"覆盖写入txt文件的内容"</span> <span class="token operator">></span> test.txt
+$: <span class="token builtin class-name">echo</span> <span class="token string">"追加写入txt文件的内容"</span> <span class="token operator">></span> test.txt
+<span class="token comment"># echo 是通用 shell 指令,用于字符串的输出, 写在其它指令为显示命令执行结果</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul>
+<li>
+<p>查</p>
+<ol>
+<li>首先看用户信息的一些操作:</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token punctuation">[</span>root@localhost ~<span class="token punctuation">]</span><span class="token comment"># [指令]</span>
+$: <span class="token function">whoami</span>    <span class="token comment"># 查看用户名,当前为 root</span>
+$: <span class="token function">hostname</span>  <span class="token comment"># 查看主机名,当前为 localhost</span>
+$: <span class="token builtin class-name">pwd</span>       <span class="token comment"># 查看当前所在文件目录(绝对路径),当前为 ~</span>
+<span class="token comment"># 指令前的 "#" 为用户权限提示符: "#" 为root用户; "$" 为普通用户</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="2">
+<li>查看文件夹内容 ls (list)</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">ls</span> <span class="token parameter variable">-l</span>     <span class="token comment"># 查看文件详细信息, 可用 ll 代替</span>
+$: ll
+
+<span class="token comment"># -a 可查看隐藏文件, 即以 "."开头的文件</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="3">
+<li>查看文件内容</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">cat</span> <span class="token punctuation">[</span>文件名<span class="token punctuation">]</span>
+$: <span class="token function">cat</span> <span class="token parameter variable">-n</span> <span class="token punctuation">[</span>文件名<span class="token punctuation">]</span>    <span class="token comment"># 显示行号</span>
+
+$: <span class="token function">head</span> <span class="token parameter variable">-5</span> file.txt  <span class="token comment"># 显示文件的头5行</span>
+$: <span class="token function">tail</span> <span class="token parameter variable">-5</span> file.txt  <span class="token comment"># 显示文件的后5行</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="4">
+<li>查找 find</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">find</span> <span class="token punctuation">[</span>查找位置<span class="token punctuation">]</span> <span class="token parameter variable">-name</span> <span class="token punctuation">[</span>查找文件名称<span class="token punctuation">]</span>
+$: <span class="token function">find</span> / <span class="token parameter variable">-name</span> <span class="token string">"*.txt"</span>  <span class="token comment"># 在根目录开始查找 ".txt"结尾的文件, "*"为通配符</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></li>
+</ul>
+</li>
+<li>
+<p>添加用户权限(读写权限)</p>
+</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token parameter variable">-R</span> <span class="token number">777</span> /usr/share/nginx/html
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>​	说明: <code v-pre>chomd</code> 是改变权限的命令，<code v-pre>-R</code> 是递归遍历子目录的意思，<code v-pre>777</code> : 第一个 <strong>7</strong> 表示文件所属者的权限，第二个 <strong>7</strong> 表示所属者所在组的权限，第三个 <strong>7</strong> 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户ID、2：执行时设置用户组ID、1：设置粘着位），最后为添加权限目录。</p>
+<h2 id="linux-目录划分" tabindex="-1"><a class="header-anchor" href="#linux-目录划分" aria-hidden="true">#</a> Linux 目录划分</h2>
+<blockquote>
+<p>Linux 目录分割符是正斜杠 /</p>
+<p>Windows 目录分割符是反斜杠 \</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>目录</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code v-pre>/</code></td>
+<td>Linux 系统的根目录，一般只存放目录</td>
+</tr>
+<tr>
+<td><code v-pre>/bin</code> 和 <code v-pre>/usr/bin</code></td>
+<td>命令（二进制）文件目录，包含可供 root 用户和普通用户所使用的 Linux 命令和二进制文件，包含 shell 解析器等</td>
+</tr>
+<tr>
+<td><code v-pre>/boot</code></td>
+<td>系统引导和内核目录，存放引导装载文件</td>
+</tr>
+<tr>
+<td><code v-pre>/dev</code></td>
+<td>设备目录，存放各个硬件设备的信息，例如光驱、硬盘等</td>
+</tr>
+<tr>
+<td><code v-pre>/etc</code></td>
+<td>系统级别的配置文件存放的目录，一般由配置管理员来使用</td>
+</tr>
+<tr>
+<td><code v-pre>/home</code></td>
+<td>所有普通用户的家目录</td>
+</tr>
+<tr>
+<td><code v-pre>/lib</code>、<code v-pre>/usr/lib</code> <code v-pre>/usr/local/lib</code></td>
+<td>系统使用的函数库的目录</td>
+</tr>
+<tr>
+<td><code v-pre>/lost+fount</code></td>
+<td>在 ext2 和 ext3 文件系统中，系统崩溃时记录信息的目录</td>
+</tr>
+<tr>
+<td><code v-pre>/opt</code></td>
+<td>给主机额外安装软件所摆放的目录</td>
+</tr>
+<tr>
+<td><code v-pre>/proc</code></td>
+<td>重要的需要放置在内存中的数据</td>
+</tr>
+<tr>
+<td><code v-pre>/root</code></td>
+<td>root 用户的的根目录</td>
+</tr>
+<tr>
+<td><code v-pre>/sbin</code>、<code v-pre>/usr/sbin</code> <code v-pre>/usr/local/sbin</code></td>
+<td>放置的是系统管理员（root）才能使用的命令，普通用户只能进行查看，而 <code v-pre>/bin</code> 目录中的命令普通用户也可以使用</td>
+</tr>
+<tr>
+<td><code v-pre>/tmp</code></td>
+<td>存放应用程序产生的临时数据不能在此目录下存放重要数据</td>
+</tr>
+<tr>
+<td><code v-pre>/var</code></td>
+<td>系统一般运行时需要改变的数据</td>
+</tr>
+<tr>
+<td><code v-pre>/usr</code></td>
+<td>是 Unix Software Resource 的缩写，应用程序相关目录命令、函数库、共享包、内核源码</td>
+</tr>
+</tbody>
+</table>
+<h2 id="搭建-nginx-服务器" tabindex="-1"><a class="header-anchor" href="#搭建-nginx-服务器" aria-hidden="true">#</a> 搭建 <code v-pre>Nginx</code> 服务器</h2>
+<ol>
+<li>
+<p>安装 <code v-pre>Nginx</code> (不同服务器的相关指令)</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$ <span class="token function">sudo</span> yum <span class="token function">install</span> epel-release <span class="token operator">&amp;&amp;</span> yum <span class="token function">install</span> nginx <span class="token punctuation">[</span>On CentOS<span class="token punctuation">]</span> 
+$ <span class="token function">sudo</span> dnf <span class="token function">install</span> nginx <span class="token punctuation">[</span>On Ubuntu<span class="token punctuation">]</span> 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>安装成功后，检测指令： <strong><code v-pre>nginx -v</code></strong>  显示 nginx 版本。</p>
+</li>
+<li>
+<p><code v-pre>Nginx</code> 相关指令</p>
+</li>
+</ol>
+<p><strong>路径作用:</strong></p>
+<ul>
+<li>/etc/nginx：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；</li>
+<li>/etc/nginx/nginx.conf：nginx 主配置文件，所有 nginx 的基础和全局配置都应该在这个文件中配置；</li>
+<li>/etc/nginx/conf.d：nginx 默认站点配置文件所在目录；</li>
+<li>/var/log/nginx：nginx 日志文件目录，访问日志 access.log 和 错误日志 error.log 都在这个目录中；</li>
+</ul>
+<p>xxxx</p>
+<ol start="3">
+<li>
+<p>设置 <code v-pre>nginx</code> 为系统服务, 并启动服务</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># 设置为系统服务</span>
+<span class="token function">sudo</span> systemctl <span class="token builtin class-name">enable</span> nginx
+<span class="token comment"># 启动nginx服务使用start，此外还有stop、restart、reload、命令</span>
+<span class="token function">sudo</span> <span class="token function">service</span> nginx start
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>设置/启动完毕后，检测 <code v-pre>nginx</code> 服务的运行状态:</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">sudo</span> <span class="token function">service</span> nginx status
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></li>
+<li>
+<p>开启防火墙配置</p>
+<p>为了让服务器的 **80 端口 **能够被外网访问, 我们还需要进行进一步设置:</p>
+<ul>
+<li>
+<p><code v-pre>http</code> 协议</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment">#开启80端口</span>
+<span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--zone</span><span class="token operator">=</span>public --add-port<span class="token operator">=</span><span class="token number">80</span>/tcp <span class="token parameter variable">--permanent</span>
+
+<span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--zone</span><span class="token operator">=</span>public --add-service<span class="token operator">=</span>http <span class="token parameter variable">--permanent</span>
+<span class="token comment">#重新加载防火墙配置</span>
+<span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--reload</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li>
+<li>
+<p><code v-pre>https</code> 协议(端口不同)</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment">#开启443端口</span>
+<span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--zone</span><span class="token operator">=</span>public --add-port<span class="token operator">=</span><span class="token number">443</span>/tcp <span class="token parameter variable">--permanent</span>
+
+<span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--zone</span><span class="token operator">=</span>public --add-service<span class="token operator">=</span>https <span class="token parameter variable">--permanent</span>
+<span class="token comment">#重新加载防火墙配置</span>
+<span class="token function">sudo</span> firewall-cmd <span class="token parameter variable">--reload</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul>
+<li>
+<p><strong>centos</strong>出现<code v-pre>“FirewallD is not running”</code> :</p>
+<p>问题原因: 服务器未开启防火墙;</p>
+<p>解决办法:</p>
+<p>i. 检查防火墙状态:</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: systemctl status firewalld
+<span class="token comment"># 若 Active: inactive (dead), 则未防火墙未开启</span>
+<span class="token comment"># 若 Active: active (running) ..., 则表示防火墙已开启</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>ii. 开启防火墙:</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># 若无权限,则前附加 sudo; 开启后无提示,需重新检测防火墙状态</span>
+$: systemctl start firewalld
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>iii. 防火墙关闭指令(不用设置,仅做记录):</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: systemctl stop firewalld
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="参考文件" tabindex="-1"><a class="header-anchor" href="#参考文件" aria-hidden="true">#</a> 参考文件</h2>
+<ol>
+<li><a href="https://juejin.cn/post/7081343211603492871" target="_blank" rel="noopener noreferrer">详解如何部署前端代码到云服务器上 - 掘金 (juejin.cn)<ExternalLinkIcon/></a></li>
+</ol>
+</div></template>
+
+

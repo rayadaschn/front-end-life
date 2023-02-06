@@ -1,0 +1,229 @@
+<template><div><h1 id="弹性布局-flex" tabindex="-1"><a class="header-anchor" href="#弹性布局-flex" aria-hidden="true">#</a> 弹性布局 flex</h1>
+<blockquote>
+<p>读《CSS 新世界》flex 布局篇笔记</p>
+</blockquote>
+<h2 id="子项特性" tabindex="-1"><a class="header-anchor" href="#子项特性" aria-hidden="true">#</a> 子项特性</h2>
+<ol>
+<li>flex 子项块转化</li>
+<li>flex 子项浮动失效</li>
+<li>flex 子项支持 z-index 属性</li>
+<li><strong>flex 子项的 margin 值不会合并</strong></li>
+<li>flex 子项是格式化的尺寸</li>
+<li>flex 子项若被绝对定位，则会脱离弹性布局</li>
+</ol>
+<h2 id="布局设置" tabindex="-1"><a class="header-anchor" href="#布局设置" aria-hidden="true">#</a> 布局设置</h2>
+<ol>
+<li>
+<p><strong>flex-direction</strong> 属性与整体布局方向</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">flex-direction</span><span class="token punctuation">:</span> row | row-reverse | column | column-reverse<span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></li>
+<li>
+<p><strong>flex-wrap</strong> 属性与整体布局的换行表现</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">flex-wrap</span><span class="token punctuation">:</span> nowrap | wrap | wrap-reverse<span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></li>
+<li>
+<p><strong>flex-flow</strong> 属性是 <strong>flex-direction</strong> 和 flex-wrap 的缩写</p>
+</li>
+</ol>
+<h2 id="css-对齐特性综述" tabindex="-1"><a class="header-anchor" href="#css-对齐特性综述" aria-hidden="true">#</a> css 对齐特性综述</h2>
+<p>通用描述性:</p>
+<ul>
+<li><strong>justify</strong> 表示水平方向的样式设置;</li>
+<li>**align **表示垂直方向的样式设置;</li>
+<li>**items **(有 s) 表示全体元素的样式设置;</li>
+<li><strong>content</strong> 表示整体布局的样式设置;</li>
+<li><strong>self</strong> 表示元素自身的样式设置，其一定是应用在子元素上的。</li>
+</ul>
+<p><strong>justify-content 属性就表示整体布局的水平对齐设 置，align-items 就表示全体元素的垂直对齐样式设置。</strong></p>
+<ol>
+<li>
+<p><strong>justify-content</strong> 属性与整体布局的水平对齐</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">justify-content</span><span class="token punctuation">:</span> normal | flex-start | flex-end | center | space-between |
+  space-around | space-evenly<span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></li>
+<li>
+<p>垂直对齐属性 <strong>align-items</strong> 与 <strong>align-self</strong></p>
+<p><strong>区别:</strong> <strong>align-self</strong>属性是设置在具体的<strong>某一个 flex 子项</strong>上的，而<strong>align-items</strong>属性是设置<strong>在 flex 容器元素上</strong>的，控制所有 flex 子项的垂直对齐方式。</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">align-items</span><span class="token punctuation">:</span> stretch | flex-start | flex-end | center | baseline<span class="token punctuation">;</span>
+
+<span class="token property">align-self</span><span class="token punctuation">:</span> auto | stretch | flex-start | flex-end | center | baseline<span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul>
+<li><strong>auto</strong>是<strong>align-self 属性的默认值</strong>，表示 flex 子项的垂直对齐 方式是由 flex 容器的 align-items 属性值决定的。</li>
+<li><strong>stretch</strong>可以看成弹性布局中<strong>align-items 属性的默认值</strong>，表示 flex 子项在垂直方向上拉伸。</li>
+</ul>
+</li>
+<li>
+<p><strong>align-content</strong> 属性与整体布局的垂直对齐</p>
+<p><strong>区别:</strong> <strong>align-content</strong>属性和<strong>align-items</strong>属性的区别在于<strong>align-items</strong>属性设置的是每一个<strong>flex</strong>子项的垂直对齐方式，而<strong>align-content</strong>属性将<strong>所有 flex 子项作为一个整体进行垂直对齐设置</strong>。</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">align-content</span><span class="token punctuation">:</span> stretch | flex-start | flex-end | center | space-between |
+  space-around | space-evenly<span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></li>
+<li>
+<p><strong>order</strong> 属性与单个子项的顺序控制</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">order</span><span class="token punctuation">:</span> &lt;integer><span class="token punctuation">;</span> <span class="token comment">/* 整数值，默认值是 0 */</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></li>
+</ol>
+<h2 id="深入理解-flex-属性" tabindex="-1"><a class="header-anchor" href="#深入理解-flex-属性" aria-hidden="true">#</a> 深入理解 flex 属性</h2>
+<p><strong>flex 属性是 flex-grow、flex-shrink 和 flex-basis 这 3 个属性的缩写。</strong></p>
+<p><code v-pre>flex:auto</code> 等同于 <code v-pre>flex: 1 1 auto</code> , 作用为 <strong>flex</strong> 子项自动填满剩余空间或自动收缩;</p>
+<p><code v-pre>flex:none</code> 等同于 <code v-pre>flex:0 0 auto</code> , 作用为 <strong>flex</strong> 子项没有弹性, 涉河固定尺寸元素(无需设置<strong>width</strong>属性)。</p>
+<p><strong>语法：</strong></p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">flex</span><span class="token punctuation">:</span> auto<span class="token punctuation">;</span>
+<span class="token property">flex</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
+<span class="token property">flex</span><span class="token punctuation">:</span> &lt;<span class="token string">'flex-grow'</span>> &lt;<span class="token string">'flex-shrink'</span>>? || &lt;<span class="token string">'flex-basis'</span>>
+
+<span class="token property">flex-grow</span><span class="token punctuation">:</span> &lt;number><span class="token punctuation">;</span> <span class="token comment">/* 数值，可以是小数，默认值是 0 */</span>
+<span class="token property">flex-shrink</span><span class="token punctuation">:</span> &lt;number><span class="token punctuation">;</span> <span class="token comment">/* 数值，默认值是 1 */</span>
+<span class="token property">flex-basis</span><span class="token punctuation">:</span> &lt;length> | auto<span class="token punctuation">;</span> <span class="token comment">/* 默认值是 auto */</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><strong>【注】只有 flex-basis 的属性值支持长度值</strong></p>
+<table>
+<thead>
+<tr>
+<th>单值语法<img width=200/></th>
+<th>等同于<img width=200/></th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>flex: initiate</strong></td>
+<td><strong>flex: 0 1 auto</strong></td>
+<td>初始值, 通常用来还原已经设置的 CSS 属性,常用于希望元素尺寸收缩，同时元素内容较多又能自动换行的场景中可以不做任何 flex 属性设置。</td>
+</tr>
+<tr>
+<td>flex: 0</td>
+<td>flex: 0 1 0%</td>
+<td>使用场景少,**元素尺寸表现为最小内容宽度。**适用于: 元素内容的主体是替换元素，这种情 况下文字内容就会被包围在替换元素的宽度下。</td>
+</tr>
+<tr>
+<td><strong>flex: none</strong></td>
+<td><strong>flex: 0 0 auto</strong></td>
+<td>推荐,**元素最终尺寸通常表现为最大内容宽度。**适合设置在内容不能换行显示的小控件元素上，如按钮。</td>
+</tr>
+<tr>
+<td><strong>flex: 1</strong></td>
+<td><strong>flex: 1 1 0%</strong></td>
+<td>推荐,<strong>在容器尺寸不足时会优先最小化内容尺寸</strong>,常用于等分列表或等比例列表。</td>
+</tr>
+<tr>
+<td>flex: auto</td>
+<td>flex: 1 1 auto</td>
+<td>适用场景少, 但很有用。<strong>在容器尺寸不 足时会优先最大化内容尺寸。<strong>多用于内容固定和内容可控的布局场景，例如</strong>导航数量不固定且每个导航文字数量也不固定</strong>的导航效果。<strong>适合基于内容动态适配的布局。</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="flex-basis-属性与尺寸计算规则" tabindex="-1"><a class="header-anchor" href="#flex-basis-属性与尺寸计算规则" aria-hidden="true">#</a> flex-basis 属性与尺寸计算规则：</h3>
+<p><strong>最大最小尺寸限制 &gt; 弹性增长或收缩 &gt; 基础尺寸</strong></p>
+<h2 id="弹性布局最后一行不对齐的处理" tabindex="-1"><a class="header-anchor" href="#弹性布局最后一行不对齐的处理" aria-hidden="true">#</a> * 弹性布局最后一行不对齐的处理</h2>
+<p><strong>通用思路: 使用足够的空白标签进行填充占位，具体的占位数量是由最多列数的个数决定的。</strong></p>
+<ol>
+<li>
+<p><strong>若每一行列数固定</strong></p>
+<p>A. 模拟**<code v-pre>space-between</code>**属性值和间隙大小，也就是说，我们不使用<code v-pre>justify-content:space-between</code>声明模拟两 端对齐效果，而使用 margin 对最后一行内容中出现的间隙进行控制。</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token selector">.container</span> <span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">flex-wrap</span><span class="token punctuation">:</span> wrap<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.list</span> <span class="token punctuation">{</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> 24%<span class="token punctuation">;</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> skyblue<span class="token punctuation">;</span>
+  <span class="token property">margin-top</span><span class="token punctuation">:</span> 15px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.list:not(:nth-child(4n))</span> <span class="token punctuation">{</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span>4% / 3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>B. 根据元素的个数给最后一个元素设置动态 margin 值。</p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token selector">.container</span> <span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token comment">/* 两端对齐 */</span>
+  <span class="token property">justify-content</span><span class="token punctuation">:</span> space-between<span class="token punctuation">;</span>
+  <span class="token property">flex-wrap</span><span class="token punctuation">:</span> wrap<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.list</span> <span class="token punctuation">{</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> 24%<span class="token punctuation">;</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> skyblue<span class="token punctuation">;</span>
+  <span class="token property">margin-top</span><span class="token punctuation">:</span> 15px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">/* 如果最后一行是3个元素 */</span>
+<span class="token selector">.list:last-child:nth-child(4n - 1)</span> <span class="token punctuation">{</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span>24% + 4% / 3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">/* 如果最后一行是2个元素 */</span>
+<span class="token selector">.list:last-child:nth-child(4n - 2)</span> <span class="token punctuation">{</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> <span class="token function">calc</span><span class="token punctuation">(</span>48% + 8% / 3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li>
+<li>
+<p><strong>若 flex 子项宽度不固定 (常用)</strong></p>
+<p>A. 给最后一项设置 <code v-pre>margin-right:auto</code></p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token selector">.container</span> <span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">justify-content</span><span class="token punctuation">:</span> space-between<span class="token punctuation">;</span>
+  <span class="token property">flex-wrap</span><span class="token punctuation">:</span> wrap<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.list</span> <span class="token punctuation">{</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> skyblue<span class="token punctuation">;</span>
+  <span class="token property">margin</span><span class="token punctuation">:</span> 10px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">/* 最后一项margin-right:auto */</span>
+<span class="token selector">.list:last-child</span> <span class="token punctuation">{</span>
+  <span class="token property">margin-right</span><span class="token punctuation">:</span> auto<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>B. 使用伪元素在列表的末尾创建一个 flex 子项，并设置 <code v-pre>flex:auto</code> 或设置 <code v-pre>flex:1</code></p>
+<div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token selector">.container</span> <span class="token punctuation">{</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">justify-content</span><span class="token punctuation">:</span> space-between<span class="token punctuation">;</span>
+  <span class="token property">flex-wrap</span><span class="token punctuation">:</span> wrap<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.list</span> <span class="token punctuation">{</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> skyblue<span class="token punctuation">;</span>
+  <span class="token property">margin</span><span class="token punctuation">:</span> 10px<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment">/* 使用伪元素辅助左对齐 */</span>
+<span class="token selector">.container::after</span> <span class="token punctuation">{</span>
+  <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">;</span>
+  <span class="token property">flex</span><span class="token punctuation">:</span> auto<span class="token punctuation">;</span> <span class="token comment">/* 或者flex: 1 */</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li>
+<li>
+<p><strong>若每一行列数不固定</strong></p>
+<p>通用思路, 利用空白标签进行占位填充:</p>
+<div class="language-html line-numbers-mode" data-ext="html"><pre v-pre class="language-html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>i</span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>i</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">></span></span><span class="token style"><span class="token language-css">
+  <span class="token selector">.container</span> <span class="token punctuation">{</span>
+    <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+    <span class="token property">justify-content</span><span class="token punctuation">:</span> space-between<span class="token punctuation">;</span>
+    <span class="token property">flex-wrap</span><span class="token punctuation">:</span> wrap<span class="token punctuation">;</span>
+    <span class="token property">margin-right</span><span class="token punctuation">:</span> -10px<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token selector">.list</span> <span class="token punctuation">{</span>
+    <span class="token property">width</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+    <span class="token property">height</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> skyblue<span class="token punctuation">;</span>
+    <span class="token property">margin</span><span class="token punctuation">:</span> 15px 10px 0 0<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment">/* 与列表元素一样的元素宽度和margin值 */</span>
+  <span class="token selector">.container > i</span> <span class="token punctuation">{</span>
+    <span class="token property">width</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+    <span class="token property">margin-right</span><span class="token punctuation">:</span> 10px<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">></span></span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li>
+<li>
+<p>若列数不固定且 HTML 又无法调整: 改用 Grid 布局</p>
+</li>
+</ol>
+</div></template>
+
+
