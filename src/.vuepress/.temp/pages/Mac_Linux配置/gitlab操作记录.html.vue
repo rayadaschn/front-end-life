@@ -41,7 +41,7 @@ $: <span class="token function">git</span> checkout myBranchname
 $: <span class="token function">git</span> rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 
-// Other: 
+// Other:
 // 远端数据库操作
 // <span class="token number">1</span>. 拉取 <span class="token function">git</span> pull 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> merge
 $: <span class="token function">git</span> pull
@@ -52,7 +52,7 @@ $: <span class="token function">git</span> pull
 	$: <span class="token function">git</span> rebase <span class="token parameter variable">--continue</span>
 	<span class="token number">2.2</span> 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态。
 	$: <span class="token function">git</span> rebase <span class="token parameter variable">--abort</span>
-  
+
 
 // <span class="token number">2</span>. 推送
 // <span class="token number">2.1</span> 添加文件到暂存区: 单一文件用 <span class="token function">git</span> commit xxx
@@ -76,15 +76,15 @@ $: <span class="token function">git</span> reset <span class="token parameter va
 </blockquote>
 <ul>
 <li><code v-pre>git revert</code>
-<strong>git revert</strong> 撤销某次操作，此次<strong>操作之前和之后的 commit 和 history 都会保留</strong>，并且把这次撤销作为一次最新的提交。git revert是提交一个新的版本，将需要revert的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。</li>
+<strong>git revert</strong> 撤销某次操作，此次<strong>操作之前和之后的 commit 和 history 都会保留</strong>，并且把这次撤销作为一次最新的提交。git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。</li>
 </ul>
 <ol>
-<li>当代码已经commit但没有push时，可使用如下命令操作：
+<li>当代码已经 commit 但没有 push 时，可使用如下命令操作：
 <code v-pre>git revert HEAD //撤销倒数第一次提交</code>
 <code v-pre>git revert HEAD^ //撤销倒数第二次提交</code>
 <code v-pre>git-revert HEAD~2 //撤销倒数第三次提交</code>
 <code v-pre>git revert commit //（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进</code></li>
-<li>当代码已经commit并push时，可使用如下命令：
+<li>当代码已经 commit 并 push 时，可使用如下命令：
 <code v-pre>git revert HEAD~1 //代码回退到前一个版本</code></li>
 </ol>
 <p>当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。这相当于增加了一次新的提交并且版本库中有记录。</p>
@@ -93,8 +93,8 @@ $: <span class="token function">git</span> reset <span class="token parameter va
 <p><code v-pre>git reset</code> 推荐!!!!
 <strong>git reset</strong> 是撤销某次提交，但是<strong>此次之后的修改都会被退回到暂存区</strong>。除了默认的 mixed 模式，还有 soft 和 hard 模式。</p>
 <blockquote>
-<p><strong>--soft :</strong> 不删除工作空间改动代码，<strong>撤销commit</strong>，<strong>不撤销 <code v-pre>git add . </code></strong>
---hard :  删除工作空间改动代码，<strong>撤销commit</strong>，<strong>撤销<code v-pre>git add .</code></strong></p>
+<p><strong>--soft :</strong> 不删除工作空间改动代码，<strong>撤销 commit</strong>，<strong>不撤销 <code v-pre>git add . </code></strong>
+--hard : 删除工作空间改动代码，<strong>撤销 commit</strong>，<strong>撤销<code v-pre>git add .</code></strong></p>
 <pre><code>* 注意完成这个操作后，就恢复到了上一次的commit状态。
 </code></pre>
 <p>--mixed : 【默认参数】不删除工作空间改动代码，<strong>撤销 commit</strong>，并且 **撤销 <code v-pre>git add .</code> **</p>
@@ -142,12 +142,12 @@ $: <span class="token function">git</span> stash drop
 $: <span class="token function">git</span> stash drop stash@<span class="token punctuation">{</span>number<span class="token punctuation">}</span>
 	<span class="token number">5.1</span> 清理所有贮藏
 	$: <span class="token function">git</span> stash <span class="token function">clear</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="修改commit" tabindex="-1"><a class="header-anchor" href="#修改commit" aria-hidden="true">#</a> 修改Commit</h4>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="修改-commit" tabindex="-1"><a class="header-anchor" href="#修改-commit" aria-hidden="true">#</a> 修改 Commit</h4>
 <ol>
 <li>列出 commit 列表:
 <code v-pre> $: git rebase -i</code> 或者</li>
 </ol>
-<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token number">1</span>. 列出 commit 列表: 
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token number">1</span>. 列出 commit 列表:
 $: <span class="token function">git</span> rebase <span class="token parameter variable">-i</span>
 	<span class="token number">1.1</span> 修改 commit 信息
 	<span class="token number">1.2</span> 修改完后,重复执行如下命令直到完成
@@ -170,15 +170,15 @@ $: <span class="token function">git</span> log <span class="token parameter vari
 $: <span class="token function">git</span> push <span class="token parameter variable">--force</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="开发流程" tabindex="-1"><a class="header-anchor" href="#开发流程" aria-hidden="true">#</a> 开发流程</h2>
 <ol>
-<li>从 <strong>develop</strong> 分支检出分支 <code v-pre>feat/xxx</code> :  <code v-pre>git checkout feat/xxx</code></li>
-<li>从 <strong>develop</strong> 分支检出预发环境测试分支 <code v-pre>release/xxxx</code> :  <code v-pre>git checkout release/xxxx</code></li>
-<li>开发完成后将各个开发分支合并至 <strong>release</strong> 分支: 切换分支 <code v-pre>git checkout release/xxx</code> 、 合并分支  <code v-pre>git merge feat/xxx</code></li>
-<li>测试通过后，发起 <code v-pre>merge request</code>，待 <code v-pre>code review</code> 通过后，负责人 <strong>merge</strong> 代码，即:  <code v-pre>git checkout develop</code> 、 合并分支  <code v-pre>git merge release/xxx</code></li>
+<li>从 <strong>develop</strong> 分支检出分支 <code v-pre>feat/xxx</code> : <code v-pre>git checkout feat/xxx</code></li>
+<li>从 <strong>develop</strong> 分支检出预发环境测试分支 <code v-pre>release/xxxx</code> : <code v-pre>git checkout release/xxxx</code></li>
+<li>开发完成后将各个开发分支合并至 <strong>release</strong> 分支: 切换分支 <code v-pre>git checkout release/xxx</code> 、 合并分支 <code v-pre>git merge feat/xxx</code></li>
+<li>测试通过后，发起 <code v-pre>merge request</code>，待 <code v-pre>code review</code> 通过后，负责人 <strong>merge</strong> 代码，即: <code v-pre>git checkout develop</code> 、 合并分支 <code v-pre>git merge release/xxx</code></li>
 </ol>
 <h3 id="上线流程" tabindex="-1"><a class="header-anchor" href="#上线流程" aria-hidden="true">#</a> 上线流程</h3>
 <ul>
 <li>当所有的研发分支都已经 <strong>merge</strong> 到 <strong>release</strong> 后，使用 <strong>release</strong> 分支的代码进行测试，若测试通过， 则将 <strong>release</strong> 分支代码合并到 <strong>develop</strong> 分支上去；</li>
-<li>并在  <strong>develop</strong> 分支上构建打包，推送合并到 <strong>master</strong> 分支上，而后上线；</li>
+<li>并在 <strong>develop</strong> 分支上构建打包，推送合并到 <strong>master</strong> 分支上，而后上线；</li>
 <li>当发布完成后，为了更方便地参考提交，可以在 <strong>develop</strong> 和 <strong>master</strong> 分支上加上标签(打上的标签是固定的，不能像分支那样可以移动位置) :
 <ol>
 <li>轻标签: <code v-pre>git tag &lt;tagName&gt;</code></li>
@@ -193,16 +193,16 @@ $: <span class="token function">git</span> push <span class="token parameter var
 <li>而当开发新功能在 <strong>feat</strong> 分支中产生的 <strong>Bug</strong> ，应当直接在 <code v-pre>feat/xxx</code> 分支上修复，无需开辟新的分支。</li>
 </ul>
 <h3 id="持续集成-gitlab-ci-cd" tabindex="-1"><a class="header-anchor" href="#持续集成-gitlab-ci-cd" aria-hidden="true">#</a> 持续集成: GitLab CI/CD</h3>
-<p>​	若有代码迭代问题，可以考虑是否 加入 <strong>GitLab CI/CD</strong> 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](<a href="https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&amp;utm_source=google&amp;utm_campaign=singleappci_amer_pr_rsa_nb_exact_&amp;utm_content=scaled-ci-cd_digital_x-pr_english_&amp;&amp;utm_term=ci" target="_blank" rel="noopener noreferrer">https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&amp;utm_source=google&amp;utm_campaign=singleappci_amer_pr_rsa_nb_exact_&amp;utm_content=scaled-ci-cd_digital_x-pr_english_&amp;&amp;utm_term=ci<ExternalLinkIcon/></a> cd&amp;_bt=626050032714&amp;_bk=ci cd&amp;_bm=b&amp;_bn=g) 。</p>
-<p>​	<strong>GitLab CI/CD</strong>  是一个内置在GitLab中的工具，用于通过持续方法进行软件开发 :</p>
+<p>​ 若有代码迭代问题，可以考虑是否 加入 <strong>GitLab CI/CD</strong> 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](<a href="https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&amp;utm_source=google&amp;utm_campaign=singleappci_amer_pr_rsa_nb_exact_&amp;utm_content=scaled-ci-cd_digital_x-pr_english_&amp;&amp;utm_term=ci" target="_blank" rel="noopener noreferrer">https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&amp;utm_source=google&amp;utm_campaign=singleappci_amer_pr_rsa_nb_exact_&amp;utm_content=scaled-ci-cd_digital_x-pr_english_&amp;&amp;utm_term=ci<ExternalLinkIcon/></a> cd&amp;_bt=626050032714&amp;_bk=ci cd&amp;_bm=b&amp;_bn=g) 。</p>
+<p>​ <strong>GitLab CI/CD</strong> 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :</p>
 <ul>
 <li><strong>Continuous Integration (CI) 持续集成</strong>: 在开发分支上，当最终要合并到 <strong>master</strong> 主支之前，会通过编译和自动化测试对代码进行验证，确保代码的质量。可以理解为自动化测试，因此需要事先对功能创建自动化测试用例。</li>
 <li><strong>Continuous Delivery (CD) 持续交付：</strong> 交付即将代码发布出去的过程。而持续交付就是可以依据业务需求定时定点的将应用部署上线。</li>
 <li><strong>Continuous Deployment (CD) 持续部署</strong>：意为持续集成和持续部署的合并。当开发人员在 <strong>master</strong> 分支上合并一个提交时，该分支将被构建、测试，通过自动化测试后，则直接部署上线到生成环境中去。</li>
 </ul>
 <h2 id="git-提交规范" tabindex="-1"><a class="header-anchor" href="#git-提交规范" aria-hidden="true">#</a> Git 提交规范</h2>
-<p>​	参考<strong>angular</strong>团队的<strong>git</strong>提交规范。</p>
-<p>​	提交格式： <code v-pre>type(scope): subject</code>  ， 例如： <code v-pre>fix(Button): 修复按钮问题</code></p>
+<p>​ 参考<strong>angular</strong>团队的<strong>git</strong>提交规范。</p>
+<p>​ 提交格式： <code v-pre>type(scope): subject</code> ， 例如： <code v-pre>fix(Button): 修复按钮问题</code></p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>- <span class="token builtin class-name">type</span>
   - 用于说明 <span class="token variable"><span class="token variable">`</span>commit<span class="token variable">`</span></span> 的类别，只允许使用下面10个标识。
     - feat：新功能（feature）

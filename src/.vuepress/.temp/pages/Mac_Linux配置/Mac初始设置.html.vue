@@ -1,7 +1,7 @@
-<template><div><h1 id="mac配置记录" tabindex="-1"><a class="header-anchor" href="#mac配置记录" aria-hidden="true">#</a> Mac配置记录</h1>
-<p>该博文记录新Mac收到后的相关配置说明，仅做记录。</p>
+<template><div><h1 id="mac-配置记录" tabindex="-1"><a class="header-anchor" href="#mac-配置记录" aria-hidden="true">#</a> Mac 配置记录</h1>
+<p>该博文记录新 Mac 收到后的相关配置说明，仅做记录。</p>
 <p>[toc]</p>
-<h2 id="mac基本设置" tabindex="-1"><a class="header-anchor" href="#mac基本设置" aria-hidden="true">#</a> Mac基本设置</h2>
+<h2 id="mac-基本设置" tabindex="-1"><a class="header-anchor" href="#mac-基本设置" aria-hidden="true">#</a> Mac 基本设置</h2>
 <p>初始用户名较为重要，慎重选择。</p>
 <p>快捷键记录:</p>
 <ul>
@@ -45,7 +45,7 @@
 </li>
 <li>
 <p>安全与隐私</p>
-<p>在“允许从以下位置下载的应用中”点选“*<strong>任何来源*</strong>”，这样才能下载Apple store以外的免费应用。</p>
+<p>在“允许从以下位置下载的应用中”点选“<strong>*任何来源*</strong>”，这样才能下载 Apple store 以外的免费应用。</p>
 </li>
 </ol>
 <h2 id="软件安装" tabindex="-1"><a class="header-anchor" href="#软件安装" aria-hidden="true">#</a> 软件安装</h2>
@@ -60,7 +60,7 @@
 <li>搜狗输入法</li>
 <li>iRightMouse: 右键管理器</li>
 <li>NTFS for Mac 移动硬盘读写</li>
-<li>Typora: MarkDown编辑器</li>
+<li>Typora: MarkDown 编辑器</li>
 <li>PDF Expert : pdf 编辑器</li>
 <li>Moment 日历记录</li>
 <li><a href="https://github.com/yichengchen/clashX/tags" target="_blank" rel="noopener noreferrer">clashX <ExternalLinkIcon/></a> 科学上网利器</li>
@@ -131,7 +131,7 @@ $: <span class="token function">git</span> config <span class="token parameter v
 <li>
 <p>nvm + node + pnpm</p>
 <p>利用 Homebrew 安装</p>
-<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># 1. 安装 nvm, 会弹出英文提示, 依据英文提示进行下一步 </span>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># 1. 安装 nvm, 会弹出英文提示, 依据英文提示进行下一步</span>
 $: brew <span class="token function">install</span> nvm
 
 <span class="token comment"># 2. 创建 .nvm 目录</span>
@@ -142,7 +142,7 @@ $: <span class="token function">vim</span> ~/.zshrc
 <span class="token comment"># 在配置文件下添加如下内容</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable">NVM_DIR</span><span class="token operator">=</span><span class="token string">"<span class="token environment constant">$HOME</span>/.nvm"</span>
  <span class="token punctuation">[</span> <span class="token parameter variable">-s</span> <span class="token string">"/opt/homebrew/opt/nvm/nvm.sh"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">.</span> <span class="token string">"/opt/homebrew/opt/nvm/nvm.sh"</span> <span class="token comment"># This loads nvm</span>
- 
+
  <span class="token punctuation">[</span> <span class="token parameter variable">-s</span> <span class="token string">"/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"</span> <span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">.</span> <span class="token string">"/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"</span> <span class="token comment"># This loads nvm bash_completion</span>
 <span class="token comment"># 按Esc退出到一般模式后, 输入 :wq 指令,保存退出</span>
 
@@ -175,7 +175,7 @@ $: <span class="token function">pnpm</span> <span class="token parameter variabl
 <p>Xcode</p>
 </li>
 <li>
-<p>配置 ~/.bash_profile文件</p>
+<p>配置 ~/.bash_profile 文件</p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># HomeBrew</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token string">"/usr/local/bin:<span class="token environment constant">$PATH</span>"</span>
 <span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token string">"/usr/local/sbin:<span class="token environment constant">$PATH</span>"</span>

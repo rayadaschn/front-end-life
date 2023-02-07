@@ -3,13 +3,13 @@ import { navbar } from "vuepress-theme-hope";
 export const enNavbar = navbar([
   "/",
   {
-    icon: "markdown",
+    icon: "javascript",
     text: "JavaScript",
     prefix: "JavaScript/",
     link: "/JavaScript/",
   },
   {
-    icon: "discover",
+    icon: "style",
     text: "CSS",
     prefix: "CSS/",
     link: "/CSS/", // 此处link 要相对目录

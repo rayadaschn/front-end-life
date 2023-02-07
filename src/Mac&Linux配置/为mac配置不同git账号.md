@@ -1,3 +1,17 @@
+---
+title: 为 Mac 配置不同的 Git 账号
+index: 2
+icon: linux
+date: 2023-02-1
+category:
+  - linux
+tag:
+  - linux
+star: true
+# sticky: true
+sticky: false
+---
+
 # 为 Mac 配置不同的 Git 账号
 
 ## 准备

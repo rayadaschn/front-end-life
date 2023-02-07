@@ -1,12 +1,24 @@
-# Mac配置记录
+---
+title: Mac配置记录
+index: 5
+icon: linux
+date: 2023-02-1
+category:
+  - linux
+tag:
+  - linux
+# star: true
+# sticky: true
+sticky: false
+---
 
+# Mac 配置记录
 
-
-该博文记录新Mac收到后的相关配置说明，仅做记录。
+该博文记录新 Mac 收到后的相关配置说明，仅做记录。
 
 [toc]
 
-## Mac基本设置
+## Mac 基本设置
 
 初始用户名较为重要，慎重选择。
 
@@ -42,7 +54,7 @@
 
 2. 安全与隐私
 
-   在“允许从以下位置下载的应用中”点选“***任何来源\***”，这样才能下载Apple store以外的免费应用。
+   在“允许从以下位置下载的应用中”点选“**\*任何来源\***”，这样才能下载 Apple store 以外的免费应用。
 
 ## 软件安装
 
@@ -55,7 +67,7 @@
   5. 搜狗输入法
   6. iRightMouse: 右键管理器
   7. NTFS for Mac 移动硬盘读写
-  8. Typora: MarkDown编辑器
+  8. Typora: MarkDown 编辑器
   9. PDF Expert : pdf 编辑器
   10. Moment 日历记录
   11. [clashX ](https://github.com/yichengchen/clashX/tags) 科学上网利器
@@ -95,8 +107,6 @@
 
   4. IINA 视频播放器
 
-     
-
 ## 开发者
 
 1. [Homebrew](https://zhuanlan.zhihu.com/p/111014448)
@@ -117,35 +127,35 @@
    利用 Homebrew 安装
 
    ```shell
-   # 1. 安装 nvm, 会弹出英文提示, 依据英文提示进行下一步 
+   # 1. 安装 nvm, 会弹出英文提示, 依据英文提示进行下一步
    $: brew install nvm
-   
+
    # 2. 创建 .nvm 目录
    $: mkdir ~/.nvm
-   
+
    # 3. 依据提示继续编辑 ~/.zshrc 配置文件
    $: vim ~/.zshrc
    # 在配置文件下添加如下内容
    export NVM_DIR="$HOME/.nvm"
     [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh" # This loads nvm
-    
+
     [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" # This loads nvm bash_completion
    # 按Esc退出到一般模式后, 输入 :wq 指令,保存退出
-   
+
    # 4. 使用 source 命令使配置生效
    $: source ~/.zshrc
-   
+
    # 5. 查看配置是否生效
    $: echo $NVM_DIR
-   
+
    # 6. 查看帮助
    $: nvm -help
    # 删除卸载nvm只需要移除$NVM_DIR文件夹即可
-   
+
    # 7. 安装不同版本的node
    $： nvm install 12
    $： nvm install 16
-   
+
    # 8. 设置node 默认版本
    $: nvm alias default 16
    ```
@@ -153,33 +163,31 @@
    ```shell
    # 利用curl 直接全局安装 pnpm
    $: curl -f https://get.pnpm.io/v6.js | node - add --global pnpm
-   
+
    # 验证
    $: pnpm -v
    ```
-
-   
 
 5. Alfred: 搜索
 
 6. Xcode
 
-7. 配置 ~/.bash_profile文件
+7. 配置 ~/.bash_profile 文件
 
    ```shell
    # HomeBrew
    export PATH="/usr/local/bin:$PATH"
    export PATH="/usr/local/sbin:$PATH"
    # HomeBrew END
-   
+
    # NVM
    export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
    export NVM_DIR="$HOME/.nvm"
    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-   
+
    # NVM END
-   
+
    # 代理
    function proxy_on(){
        export http_proxy=http://127.0.0.1:7890
@@ -193,5 +201,3 @@
    }
    # 代理结束
    ```
-
-   

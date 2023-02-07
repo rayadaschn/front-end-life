@@ -1,7 +1,7 @@
 ---
 title: Mac&Linux配置
 index: false
-icon: MarkDown
+icon: linux
 category:
   - Guide
 ---

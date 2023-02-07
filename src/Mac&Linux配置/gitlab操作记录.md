@@ -1,3 +1,17 @@
+---
+title: GitLab 操作手册记录
+index: 4
+icon: linux
+date: 2023-02-1
+category:
+  - linux
+tag:
+  - linux
+star: true
+# sticky: true
+sticky: false
+---
+
 # GitLab 操作手册记录
 
 ## 分支管理规范
@@ -39,7 +53,7 @@ $: git checkout myBranchname
 $: git rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 
-// Other: 
+// Other:
 // 远端数据库操作
 // 1. 拉取 git pull 等于 git fetch + git merge
 $: git pull
@@ -50,7 +64,7 @@ $: git pull
 	$: git rebase --continue
 	2.2 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态。
 	$: git rebase --abort
-  
+
 
 // 2. 推送
 // 2.1 添加文件到暂存区: 单一文件用 git commit xxx
@@ -75,27 +89,27 @@ $: git reset --hard HEAD
 > 版本回退需注意 `git revert` 和 `git reset` 的区别
 
 - `git revert`
-   **git revert** 撤销某次操作，此次**操作之前和之后的 commit 和 history 都会保留**，并且把这次撤销作为一次最新的提交。git revert是提交一个新的版本，将需要revert的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
+  **git revert** 撤销某次操作，此次**操作之前和之后的 commit 和 history 都会保留**，并且把这次撤销作为一次最新的提交。git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
 
-1. 当代码已经commit但没有push时，可使用如下命令操作：
-    `git revert HEAD //撤销倒数第一次提交`
-    `git revert HEAD^ //撤销倒数第二次提交`
-    `git-revert HEAD~2 //撤销倒数第三次提交`
-    `git revert commit //（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进`
-2. 当代码已经commit并push时，可使用如下命令：
-    `git revert HEAD~1 //代码回退到前一个版本`
+1. 当代码已经 commit 但没有 push 时，可使用如下命令操作：
+   `git revert HEAD //撤销倒数第一次提交`
+   `git revert HEAD^ //撤销倒数第二次提交`
+   `git-revert HEAD~2 //撤销倒数第三次提交`
+   `git revert commit //（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进`
+2. 当代码已经 commit 并 push 时，可使用如下命令：
+   `git revert HEAD~1 //代码回退到前一个版本`
 
 当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。这相当于增加了一次新的提交并且版本库中有记录。
 
 - `git reset` 推荐!!!!
-   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
+  **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
 
-  > **--soft :** 不删除工作空间改动代码，**撤销commit**，**不撤销 `git add . `**
-  > --hard :  删除工作空间改动代码，**撤销commit**，**撤销` git add . `**
+  > **--soft :** 不删除工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
+  > --hard : 删除工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
-  > 	* 注意完成这个操作后，就恢复到了上一次的commit状态。
+  >     * 注意完成这个操作后，就恢复到了上一次的commit状态。
   >
-  > --mixed : 【默认参数】不删除工作空间改动代码，**撤销 commit**，并且 **撤销 `git add .` ** 
+  > --mixed : 【默认参数】不删除工作空间改动代码，**撤销 commit**，并且 **撤销 `git add .` **
 
 1. 如果我们的有两次 commit 但是没有 push 代码
 
@@ -151,13 +165,13 @@ $: git stash drop stash@{number}
 	$: git stash clear
 ```
 
-#### 修改Commit
+#### 修改 Commit
 
-1. 列出 commit 列表: 
-   ` $: git rebase -i` 或者 
+1. 列出 commit 列表:
+   ` $: git rebase -i` 或者
 
 ```bash
-1. 列出 commit 列表: 
+1. 列出 commit 列表:
 $: git rebase -i
 	1.1 修改 commit 信息
 	1.2 修改完后,重复执行如下命令直到完成
@@ -180,21 +194,19 @@ $: git log --oneline -5
 $: git push --force
 ```
 
-
-
 ## 开发流程
 
-1. 从 **develop** 分支检出分支 `feat/xxx` :  `git checkout feat/xxx`  
-2. 从 **develop** 分支检出预发环境测试分支 `release/xxxx` :  `git checkout release/xxxx`  
-3. 开发完成后将各个开发分支合并至 **release** 分支: 切换分支 `git checkout release/xxx` 、 合并分支  `git merge feat/xxx`
-4. 测试通过后，发起 `merge request`，待 `code review` 通过后，负责人 **merge** 代码，即:  `git checkout develop` 、 合并分支  `git merge release/xxx`
+1. 从 **develop** 分支检出分支 `feat/xxx` : `git checkout feat/xxx`
+2. 从 **develop** 分支检出预发环境测试分支 `release/xxxx` : `git checkout release/xxxx`
+3. 开发完成后将各个开发分支合并至 **release** 分支: 切换分支 `git checkout release/xxx` 、 合并分支 `git merge feat/xxx`
+4. 测试通过后，发起 `merge request`，待 `code review` 通过后，负责人 **merge** 代码，即: `git checkout develop` 、 合并分支 `git merge release/xxx`
 
 ### 上线流程
 
 - 当所有的研发分支都已经 **merge** 到 **release** 后，使用 **release** 分支的代码进行测试，若测试通过， 则将 **release** 分支代码合并到 **develop** 分支上去；
-- 并在  **develop** 分支上构建打包，推送合并到 **master** 分支上，而后上线；
+- 并在 **develop** 分支上构建打包，推送合并到 **master** 分支上，而后上线；
 - 当发布完成后，为了更方便地参考提交，可以在 **develop** 和 **master** 分支上加上标签(打上的标签是固定的，不能像分支那样可以移动位置) :
-  1. 轻标签: `git tag <tagName>` 
+  1. 轻标签: `git tag <tagName>`
   2. 注解标签: `git -am "注解文字说明" <tagName>`
   3. 删除标签: `git tag -d <tagName>`
 
@@ -205,21 +217,19 @@ $: git push --force
 
 ### 持续集成: GitLab CI/CD
 
-​	若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&_bt=626050032714&_bk=ci cd&_bm=b&_bn=g) 。
+​ 若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&\_bt=626050032714&\_bk=ci cd&\_bm=b&\_bn=g) 。
 
-​	**GitLab CI/CD**  是一个内置在GitLab中的工具，用于通过持续方法进行软件开发 :
+​ **GitLab CI/CD** 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :
 
 - **Continuous Integration (CI) 持续集成**: 在开发分支上，当最终要合并到 **master** 主支之前，会通过编译和自动化测试对代码进行验证，确保代码的质量。可以理解为自动化测试，因此需要事先对功能创建自动化测试用例。
 - **Continuous Delivery (CD) 持续交付：** 交付即将代码发布出去的过程。而持续交付就是可以依据业务需求定时定点的将应用部署上线。
 - **Continuous Deployment (CD) 持续部署**：意为持续集成和持续部署的合并。当开发人员在 **master** 分支上合并一个提交时，该分支将被构建、测试，通过自动化测试后，则直接部署上线到生成环境中去。
 
-
-
 ## Git 提交规范
 
-​	参考**angular**团队的**git**提交规范。
+​ 参考**angular**团队的**git**提交规范。
 
-​	提交格式： `type(scope): subject`  ， 例如： `fix(Button): 修复按钮问题`
+​ 提交格式： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题`
 
 ```shell
 - type
@@ -243,8 +253,6 @@ $: git push --force
     - 结尾不加句号（.）
 ```
 
-
-
 ## 利用 [git-gz](https://cz-git.qbb.sh/zh/guide) 规范代码提交
 
 - 全局安装 `commitizen`,如此一来可以快速使用 `cz` 或 `git cz` 命令进行启动。
@@ -253,7 +261,7 @@ $: git push --force
 $: npm install -g commitizen
 ```
 
-- 下载依赖 **cz-git** 
+- 下载依赖 **cz-git**
 
 ```shell
 $: npm install -g cz-git
@@ -264,8 +272,6 @@ $: npm install -g cz-git
 ```shell
 $: echo '{ "path": "cz-git" }' > ~/.czrc
 ```
-
-
 
 ## 参考文档
 

@@ -1,11 +1,11 @@
 ---
 title: 弹性布局 flex
-icon: markdown
+icon: style
 order: 2
 category:
-  - Guide
+  - CSS
 tag:
-  - Markdown
+  - CSS
 ---
 
 # 弹性布局 flex

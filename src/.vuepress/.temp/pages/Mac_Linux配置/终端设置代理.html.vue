@@ -39,7 +39,7 @@ function proxy_off(){
     echo -e "终端代理已关闭。"
 }
 EOF</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>创建完脚本指令后，我们还需为每次打开 zsh 或者 终端 去 <code v-pre>source ~/.bash_profile</code> 该脚本。因此，我们应该在  <code v-pre>~/.zshrc</code> 中末尾追加该指令</p>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>创建完脚本指令后，我们还需为每次打开 zsh 或者 终端 去 <code v-pre>source ~/.bash_profile</code> 该脚本。因此，我们应该在 <code v-pre>~/.zshrc</code> 中末尾追加该指令</p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># ~/.zshrc 文件</span>
 <span class="token comment"># .... 其它配置</span>
 

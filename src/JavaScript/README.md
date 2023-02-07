@@ -1,7 +1,7 @@
 ---
 title: JavaScript
 index: false
-icon: MarkDown
+icon: javascript
 category:
   - Guide
 ---

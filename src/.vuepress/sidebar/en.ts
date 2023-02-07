@@ -4,14 +4,14 @@ export const enSidebar = sidebar({
   "/": [
     "",
     {
-      icon: "markdown",
+      icon: "javascript",
       text: "JavaScript",
       prefix: "JavaScript/",
       link: "JavaScript/",
       children: "structure",
     },
     {
-      icon: "discover",
+      icon: "style",
       text: "CSS",
       prefix: "CSS/",
       link: "CSS/",
@@ -25,11 +25,16 @@ export const enSidebar = sidebar({
     },
     {
       text: "Mac/Linux配置",
-      icon: "note",
+      icon: "linux",
       prefix: "Mac&Linux配置/",
       link: "/Mac&Linux配置/",
       children: "structure",
     },
-    "优质博文",
+    {
+      text: "优质博文",
+      icon: "note",
+      link: "/优质博文",
+      // children: "structure",
+    },
   ],
 });
