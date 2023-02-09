@@ -10,9 +10,18 @@ tag:
 star: true
 # sticky: true
 sticky: false
+toc:
+  # 开始的目录层级
+  depth_from:1
+  # 最明细的目录层级
+  depth_to:1
+  # 是否用有序列表
+  ordered: True
 ---
 
-# GitLab 操作手册记录
+# GitLab 操作手册指南
+
+[toc]
 
 ## 分支管理规范
 
@@ -29,6 +38,8 @@ sticky: false
 - **hotfix** 修复分支，从 **develop** 切出，命名规则同**feature**， 以 `hotfix/` 命名。
 
 ## [常用的 GIT 操作指令](https://www.runoob.com/git/git-basic-operations.html)
+
+### 日常指令
 
 ```shell
 // 1 列出分支(无参数时, 会列出本地分支)
@@ -84,7 +95,7 @@ $: git reset HEAD
 $: git reset --hard HEAD
 ```
 
-#### 版本回退
+### 版本回退
 
 > 版本回退需注意 `git revert` 和 `git reset` 的区别
 
@@ -99,9 +110,9 @@ $: git reset --hard HEAD
 2. 当代码已经 commit 并 push 时，可使用如下命令：
    `git revert HEAD~1 //代码回退到前一个版本`
 
-当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。这相当于增加了一次新的提交并且版本库中有记录。
+当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。**这相当于增加了一次新的提交并且版本库中有记录。**
 
-- `git reset` 推荐!!!!
+- **`git reset` 推荐!!!!**
   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
 
   > **--soft :** 不删除工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
@@ -117,10 +128,11 @@ $: git reset --hard HEAD
 $: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
 ```
 
-1. 假如我们有几次代码修改，并且都已经 push 到了版本库中。
+1. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
 
 ```bash
 $: git reset --hard HEAD~2   //本地的Wroking Copy回退到2个版本之前。
+$: git push origin <banchName> --force  // --force 为强制覆盖远程分支
 ```
 
 1. 只回退某个指定文件到指定版本
@@ -135,7 +147,7 @@ $: git reset a4e215234aa4927c85693dca7b68e9976948a35e  xxx
 $: git reset --hard commitId（通过git log可查看提交的commitId）
 ```
 
-#### 贮藏与清理
+### 贮藏与清理
 
 > 贮藏（stash）会处理工作目录的脏的状态——即跟踪文件的修改与暂存的改动——然后将未完成的修改保存到一个栈上， 而你可以在任何时候重新应用这些改动（甚至在不同的分支上）。
 
@@ -165,7 +177,7 @@ $: git stash drop stash@{number}
 	$: git stash clear
 ```
 
-#### 修改 Commit
+### 修改 Commit
 
 1. 列出 commit 列表:
    ` $: git rebase -i` 或者
@@ -217,9 +229,9 @@ $: git push --force
 
 ### 持续集成: GitLab CI/CD
 
-​ 若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&\_bt=626050032714&\_bk=ci cd&\_bm=b&\_bn=g) 。
+ 若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&\_bt=626050032714&\_bk=ci cd&\_bm=b&\_bn=g) 。
 
-​ **GitLab CI/CD** 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :
+ **GitLab CI/CD** 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :
 
 - **Continuous Integration (CI) 持续集成**: 在开发分支上，当最终要合并到 **master** 主支之前，会通过编译和自动化测试对代码进行验证，确保代码的质量。可以理解为自动化测试，因此需要事先对功能创建自动化测试用例。
 - **Continuous Delivery (CD) 持续交付：** 交付即将代码发布出去的过程。而持续交付就是可以依据业务需求定时定点的将应用部署上线。
@@ -227,15 +239,19 @@ $: git push --force
 
 ## Git 提交规范
 
-​ 参考**angular**团队的**git**提交规范。
+ 参考**angular**团队的**git**提交规范。
 
-​ 提交格式： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题`
+Commit message 都包括三个部分：**Header** (必须)，Body 和 Footer。
+
+### Header
+
+ ** 提交格式**： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题` 
 
 ```shell
 - type
   - 用于说明 `commit` 的类别，只允许使用下面10个标识。
-    - feat：新功能（feature）
-    - fix：修补bug
+    - feat：新功能（feature）【会出现在 CHANGELOG 中】
+    - fix：修补bug          【会出现在 CHANGELOG 中】
     - docs：文档（documentation）
     - style：格式（不影响代码运行的变动）
     - refactor：重构（即不是新增功能，也不是修改bug的代码变动）
@@ -253,6 +269,42 @@ $: git push --force
     - 结尾不加句号（.）
 ```
 
+### Body
+
+**Body** 为此次提交的详细描述，可多行显示。
+
+- 使用第一人称现在时，比如使用`change`而不是`changed`或`changes`。
+- 应该说明代码变动的动机，以及与以前行为的对比。
+
+### Footer
+
+**Footer** 仅在 **不兼容变动** 和 **关闭issue** 时 使用：
+
+- 不兼容变动
+
+  ```shell
+  BREAKING CHANGE: isolate scope bindings definition has changed.
+  	xxxxx
+  	Before： xxxx
+  	After： xxxx
+  ```
+
+- 关闭 Issue
+
+  ```shell
+  Closes #996, #007
+  ```
+
+### 特殊情况 Revert
+
+在版本回退中的格式为：
+
+**Header**： `revert: feat(pencil): add 'graphiteWidth' option`
+
+**Body**： `This reverts commit (SHA 标识符).`
+
+
+
 ## 利用 [git-gz](https://cz-git.qbb.sh/zh/guide) 规范代码提交
 
 - 全局安装 `commitizen`,如此一来可以快速使用 `cz` 或 `git cz` 命令进行启动。
@@ -262,6 +314,8 @@ $: npm install -g commitizen
 ```
 
 - 下载依赖 **cz-git**
+
+  用 `git cz` 代替 `git commit` ，生成 Commit message。
 
 ```shell
 $: npm install -g cz-git
@@ -273,7 +327,27 @@ $: npm install -g cz-git
 $: echo '{ "path": "cz-git" }' > ~/.czrc
 ```
 
+- 自动生成 **[CHANGELOG–conventional-changelog-cli](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli)**
+
+```shell
+$: npm install -g conventional-changelog-cli
+```
+
+```shell
+# 自动生成 CHANGELOG.md 文件
+$: conventional-changelog -i CHANGELOG.md -s
+
+# 覆盖重写
+$: conventional-changelog -i CHANGELOG.md -s -r 0
+
+# 依据 angular 规范
+$: conventional-changelog -p angular -i CHANGELOG.md -s
+```
+
+
+
 ## 参考文档
 
 - [ JDC 前端代码规范 (jdf2e.github.io)](https://jdf2e.github.io/jdc_fe_guide/docs/git/branch)
 - [Git 基本操作 ](https://www.runoob.com/git/git-basic-operations.html)
+- [前端 CHANGELOG 生成指南](https://godbasin.github.io/2019/11/10/change-log/)
