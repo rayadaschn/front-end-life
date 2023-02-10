@@ -1,0 +1,159 @@
+---
+title: 原型-原型链-new的二三事
+icon: javascript
+order: 5
+category:
+  - javascript
+tag:
+  - javascript
+---
+
+# 原型-原型链-new 的二三事
+
+[toc]
+
+## 1. 到底是什么?
+
+笔者在 [彻底理解 this 指向](./彻底理解this指向.md) 一文中，简单描述了 new 一个对象的过程。在此，再进行进一步的梳理。
+
+new 关键字到底做了什么事情？
+
+- 首先创建一个空对象，这个空对象将会作为执行构造函数（constructor）之后的返回的对象实例。
+- 对创建的空对象的原型（** proto **）指向构造函数的原型属性（Function.prototype）。
+- 将这个空对象赋值给构造函数内部的 this，并执行构造函数逻辑。
+- 依据构造函数执行逻辑，返回第一步所创建的对象或构造函数的显示返回值（必须是对象）。
+
+文字是苍白的，我们看看用代码如果来简单模拟一遍。
+
+```javascript
+function new(parentFn, args) {
+    // 1.新建一个空对象
+    const obj = {};
+    // 2.将新对象的__proto__属性赋值为构造函数的prototype指向的值
+    // 也可以用 obj.__proto__ = Object.create(parentFn.prototype) 实现
+    obj.__proto__ = parentFn.prototype;
+    // 3.在新对象的作用域下执行构造函数
+    const result = parentFn.apply(obj, args);
+    // 4.返回这个新对象,或构造函数显示返回值
+    return (typeof result === 'object' && result !== null) ? result : obj
+}
+```
+
+从上面可以很清楚的看到，`new`把`构造函数`、`__proto__`和`prototype`三者联系起来了。
+
+再来看一下 JavaScript Object Layout 的原图:
+
+![JavaScript Object Layout](http://www.mollypages.org/tutorials/jsobj.jpg)
+
+[原博文](http://www.mollypages.org/tutorials/js.mp) 也推荐看一下噢,大体就能知道整个过程了。
+
+简单梳理一下图中的定义关系和和需要记忆的关键点:
+
+- 构造函数是创建 f1/f2 对象的 Foo( )；
+- 构造函数 Foo( )有一个原型对象叫 Foo.prototype，构造函数 Foo( )的 **[[prototy]]** 属性就指向它；
+- 被构造函数 Foo( ) 所创建的 f1/f2 对象有一个 \***\* proto \*\*** 属性，它指向构造函数 Foo( )的原型对象 Foo.prototype；
+- 原型对象 Foo.prototype 自身有一个特有属性 constructor 指回构造函数 Foo( )。
+
+我们对照图，来详细说说。构造函数 Foo( ) 每次创建一个新的实例/对象的时候，实例/对象 中都有一个 **[[prototy]]** 的内部属性，它指向了构造函数 Foo( ) 的原型对象( Foo.prototype )。**关键点！** **关键点!！** **关键点!!！** 这个 创建出来的 实例/对象的 **[[prototy]]** 内部属性该怎么访问它呢？现代浏览器中的 JS 引擎都用 \***\* proto \*\*** 这个属性暴露出来。
+
+然后再来看啊，构造函数 Foo( ) 的**原型对象( Foo.prototype )**。 它叫原型对象是吧，它也是一个对象，是由 **Object( )构造函数**创建出来的! 所以它的 \***\* proto \*\*** 指向 Object( )构造函数的原型对象(Object.prototype)。Object.prototype 这个原型对象已经到头了，没有其它构造函数创建它了，所以指向 null。
+
+再看啊，构造函数 Foo( ) 的**原型对象( Foo.prototype )** 的另一个关键点！这个原型对象除了因为 \***\* proto \*\*** 这个原型链能够继承到 `Object`属性和方法外，还有一个重要的属性 **[[constructor]]** 。这个属性它指回 构造函数 Foo( )本身。
+
+对关于 Object 构造函数其实也是这样，不再做说明。
+
+最后，我们来看看 Foo 和 Function 的关系。
+
+上面，我们看到 所有的 原型对象 都是由 Object( )构造函数创建的，而 Foo( ) 这样的构造函数呢？除去一个一个父级的构造函数套娃创建外（function Foo created via new Function），我们能最终看到它是最终被 Function 构造函数所创建。像 Object 这样的构造函数，也是被 最终的 Function 构造函数所创建。在图中我们可以看到，就连 Function 构造函数自己也是被自己所创建的（Function via new Function（so points to it’s own proto））。所以 它的 \***\* proto \*\*** 指向自身的原型对象（实际上就是一个东西啦， \***\* proto \*\*** 是被浏览器所造出来的东西）。
+
+到这里，这张图，其实就解释的差不多了，然后，我们可以得到如下验证：
+
+```javascript
+// 定义一个构造函数 Foo()
+function Foo() {}
+
+// 使用Foo创建一个实例
+const fooInstance = new Foo();
+
+// 三者之间的相互关系
+console.log(Foo.prototype); // {constructor: ƒ}
+console.log(Foo.prototype.constructor === Foo); // true
+console.log(fooInstance.__proto__ === Foo.prototype); // true
+```
+
+最后说点题外话，很多博主都是这样描述 \***\* proto \*\*** 和 **prototype** 的：对象有 \***\* proto \*\*** ，而函数还有一个 **prototype** 属性。这句话对，也不是很准确。明白其本质，才是理解的关键。笔者也是弯弯绕绕学了很多次，但是明白其本质原理，才是关键。想想 new 一个构造函数的过程，其实就知道这三者的关系啦。
+
+## 2. 原型链
+
+从上面的原型一个接一个的 \***\* proto \*\*** 的套用，所形成的链条，就是原型链。
+
+我们来再来看看一些其它的知识（串串香呀(～￣ ▽ ￣)～）。
+
+JS 的七大内置类型是： <u>Null、Undefined、Boolean、String、Number</u>、Object 和 Symbol。下划线的前五个是基本数据类型。
+
+其中的 Object 又包含了 Function、Array 和 Date 等。（BigInt 作为一种新的数据类型，不做讨论）
+
+检验数据类型的方法是 **typeof** ：
+
+```javascript
+typeof undefined === "undefined";
+typeof null === "object"; // 这个除外, 是一个 bug
+typeof [] === "object";
+```
+
+可以看到，像 Function、Array 这些会输出 object，这并不是我们想要的。
+
+解决办法：使用 instanceof 判断数据类型。利用原型链来搞定，`a instanceof B` 判断的是 `a` 的原型链是否存在 `B` 的构造函数。我们来手写一个 instanceof ：
+
+```javascript
+function instanceofMock(son, parent) {
+  if (typeof son !== "object") {
+    // 判断是否需要 instanceof 出手,不是 object 就是基本数据类型呀,用 typeof 判断
+    return false;
+  }
+  while (true) {
+    if (son === null) {
+      // 走到头了, 遍历到顶端也没有找到符合要求的原型链
+      return false;
+    }
+    if (son.__proto__ === parent.prototype) {
+      return true;
+    }
+    son = son.__proto__; // 递归向上查找
+  }
+}
+```
+
+> 【Tips】像 `996 instanceof Number !== true` 这种基本数据类型，它不是由 Number 构造函数直接创建的，结果返回是 flase，需要将数字包装一下： `new Number(955) instanceof Number === true`
+
+好了，说回正题，我们来看看利用原型链来判断数据类型的终极方法：`Object.prototype.toString`
+
+但是，我们还是先来看个简单的调用:
+
+```javascript
+const arr = [955, 955];
+console.log(arr.toString()); // 955,955
+```
+
+通过上面的原型链我们可以知道，数组为什么可以使用 Object 对象的 toString 方法，但是这里有几个小细节。通过 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/toString) 我们可以知道: “ [`Array`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array) 对象覆盖了 [`Object`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object) 的 `toString` 方法。对于数组对象，`toString` 方法在内部调用 [`join()`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/join) 方法拼接数组中的元素并返回一个字符串，其中包含用逗号分隔的每个数组元素。如果 `join` 方法不可用，或者它不是一个函数，将使用 [`Object.prototype.toString`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/toString) 代替，返回 `[object Array]`。”
+
+```javascript
+const arr = [];
+arr.join = 1; // re-assign `join` with a non-function
+console.log(arr.toString()); // Logs [object Array]
+
+console.log(Array.prototype.toString.call({ join: () => 1 })); // Logs 1
+```
+
+再看看 `Object.prototype.toString( )` 的定义: **`toString()`** 方法返回一个表示该对象的字符串。该方法旨在重写（自定义）派生类对象的[类型转换](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Data_structures#强制类型转换)的逻辑。也就是说每个对象都有一个`toString`方法，当对象被表示为一个文本值或一个字符串方式引用时，自动被调用。默认情况下，`toString( )`方法是被每个 Object 对象所继承，如果该方法未被自定义覆盖，`Object.prototype.toString()` 就返回 `"[object Type]"`，这里的 `Type` 是对象的类型。
+
+所以有了 `Object.prototype.toString.call( arr ) === '[object Array]'` 这样的方法来判断数据类型啦。
+
+另外像 arr.valueOf( ) 实际上是 通过原型链进行查找: arr.** proto ** 找到了数组 Array ( )构造函数，但是没有这个方法，所以继续向上查找。arr.** proto ** .** proto ** 找到了 Object.prototype 上的 valueOf( ) 方法，但是如果获取 Object.prototype .valueOf( obj ) 所需要运行的 obj 内容呢。实际上 是做了 call 绑定，即 arr.valueOf( ) ) 等价于 Object.prototype.valueOf.call( arr )。也就是将 arr 传递给了 valueOf 方法了。我们可以进行简单验证:
+
+```javascript
+const arr = [955, 955];
+arr.valueOf.call(arr); // [955, 955]
+arr.valueOf() === arr.valueOf.call(arr); // true
+arr.valueOf.call(arr) === window.Object.prototype.valueOf.call(arr); // true
+```

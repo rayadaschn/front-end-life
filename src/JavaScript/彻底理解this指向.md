@@ -1,15 +1,14 @@
 ---
-title: 理解this指向
+title: 彻底理解 this 指向
 icon: javascript
-order: 2
+order: 4
 category:
   - javascript
 tag:
   - javascript
-
 ---
 
-# 彻底理解this指向
+# 彻底理解 this 指向
 
 [toc]
 
@@ -23,13 +22,13 @@ tag:
 
 **总结规律**：
 
-- 在函数体中，非显性或隐式的简单调用函数时，在严格模式下，函数内的 this 会被绑定到 undefined 上，在非严格模式下则会被绑定到全局对象 window（浏览器）/global（node环境） 上。
+- 在函数体中，非显性或隐式的简单调用函数时，在严格模式下，函数内的 this 会被绑定到 undefined 上，在非严格模式下则会被绑定到全局对象 window（浏览器）/global（node 环境） 上。
 - 一般使用 new 方法调用构造函数时，构造函数内的 this 会被绑定到新创建的对象上。
 - 一般通过 call/apply/bind 方法显示地调用函数时,函数体内的 this 会被绑定到指定参数的对象上。
 - 一般通过上下文对象调用函数时，函数体内的 this 会被绑定到该对象上。
-- 在箭头函数中，this的指向是由外层（函数或全局）作用域来决定的。
+- 在箭头函数中，this 的指向是由外层（函数或全局）作用域来决定的。
 
-*【注】本文接下来的运行环境均以 浏览器、 非严格模式进行说明。*
+_【注】本文接下来的运行环境均以 浏览器、 非严格模式进行说明。_
 
 ## 2. 绑定规则详谈
 
@@ -55,7 +54,7 @@ function test1() {
 }
 function test2() {
   console.log(this); // window
-  test3()
+  test3();
 }
 function test3() {
   console.log(this); // window
@@ -72,10 +71,10 @@ function foo(func) {
 
 var obj = {
   name: "Job",
-  bar: function() {
+  bar: function () {
     console.log(this); // window
-  }
-}
+  },
+};
 foo(obj.bar);
 ```
 
@@ -100,7 +99,7 @@ const foo2 = {
 console.log(foo2.fn()); // 2. undefined
 ```
 
-*【注】上面的 `foo1`* 内部的this注释是 解释整个运行时的状态。
+_【注】上面的 `foo1`_ 内部的 this 注释是 解释整个运行时的状态。
 
 ### 2.2 隐式绑定
 
@@ -119,22 +118,22 @@ function foo() {
 
 var obj1 = {
   name: "obj1",
-  foo: foo
-}
+  foo: foo,
+};
 
 obj1.foo(); // obj1， 由obj1调用，this指向 obj1
 
 var obj2 = {
   name: "obj2",
-  obj1: obj1
-}
+  obj1: obj1,
+};
 
 obj2.obj1.foo(); // onj1， foo 的调用位置 依旧是 obj1，因此this还是指向 obj1
 ```
 
 不要被上面的连续链式调用迷惑了！记住**谁调用，指向谁！**
 
-我们利用隐式绑定再对上文2.1中的函数调用进行改造一下，使得 `foo2.fn` 的结果指向 foo 本身(不使用bind等绑定)。
+我们利用隐式绑定再对上文 2.1 中的函数调用进行改造一下，使得 `foo2.fn` 的结果指向 foo 本身(不使用 bind 等绑定)。
 
 ```javascript
 const foo1 = {
@@ -146,7 +145,7 @@ const foo1 = {
 
 const foo2 = {
   text: "foo2",
-  fn: foo1.fn
+  fn: foo1.fn,
 };
 console.log(foo2.fn()); // foo2
 ```
@@ -162,42 +161,42 @@ function foo() {
 
 var obj1 = {
   name: "obj1",
-  foo: foo
-}
+  foo: foo,
+};
 
 var bar = obj1.foo; // 将obj1的foo 赋值给bar
 bar(); // 输出 window：此时的bar 等价于该 foo独立函数
-obj1.foo();  // 输出obj1： 区别于 bar 函数，此处是由 obj1进行位置调用foo函数，此处做了隐式绑定
+obj1.foo(); // 输出obj1： 区别于 bar 函数，此处是由 obj1进行位置调用foo函数，此处做了隐式绑定
 ```
 
 **在上面的函数中， `foo` 最终被调用的位置是 `bar`，而 `bar` 在进行调用时没有绑定任何的对象，也就没有形成隐式绑定，相当于是一种默认绑定。**
 
 ### 2.3 显示绑定 bind、call、apply
 
-在上文中的隐式绑定中，我们需要在调用对象内部包含被调用函数的引用，如果没有该引用，也需要改变this指向，我们此时就要用到显示绑定了，即 **bind** 、 **call** 和 **apply**：
+在上文中的隐式绑定中，我们需要在调用对象内部包含被调用函数的引用，如果没有该引用，也需要改变 this 指向，我们此时就要用到显示绑定了，即 **bind** 、 **call** 和 **apply**：
 
-三者的第一个参数都是显性的 **this所指向的对象** <u>（若没有第一个参数，则传 **undefined** 或 **null**，此时默认指向全局 window）</u>，区别在于**后续需要传入的参数**，因此是称为显示绑定。
+三者的第一个参数都是显性的 **this 所指向的对象** <u>（若没有第一个参数，则传 **undefined** 或 **null**，此时默认指向全局 window）</u>，区别在于**后续需要传入的参数**，因此是称为显示绑定。
 
-1. **bind**：第一个参数是 this 指向，后续为 参数列表，但是该参数列表可以分多次传入，且它改变 this指向后不会立即执行，而是返回一个**永久改变this指向的函数**。
+1. **bind**：第一个参数是 this 指向，后续为 参数列表，但是该参数列表可以分多次传入，且它改变 this 指向后不会立即执行，而是返回一个**永久改变 this 指向的函数**。
 
    ```javascript
    var arr = [9, 8, 5, 10, 2];
    var minArr = Math.min.bind(null, arr[0], arr[1], arr[2], arr[3]); // 不会立即执行
-   console.log( minArr(arr[4]) ); // 输出结果为 2 ，分两次传参
+   console.log(minArr(arr[4])); // 输出结果为 2 ，分两次传参
    ```
 
 2. **call**：第一个参数也是 this 指向，后续同 **bind** 一样传入一个参数列表，但是区别在于 **call 方法是 临时性改变一次原函数的 this 指向，并且会立即执行！**：
 
    ```javascript
    var arr = [9, 8, 5, 10, 2];
-   console.log( Math.min.call(null, arr[0], arr[1], arr[2], arr[3], arr[4]) ); // 2
+   console.log(Math.min.call(null, arr[0], arr[1], arr[2], arr[3], arr[4])); // 2
    ```
 
-3. **apply**：第一个参数也是 this 指向，**第二个参数为函数接收的参数，以数组形式传入**。**apply 方法和 call 方法类似，只是临时性改变一次原函数的this指向，且立即执行**。
+3. **apply**：第一个参数也是 this 指向，**第二个参数为函数接收的参数，以数组形式传入**。**apply 方法和 call 方法类似，只是临时性改变一次原函数的 this 指向，且立即执行**。
 
    ```javascript
    var arr = [9, 8, 5, 10, 2];
-   console.log( Math.min.call( null, arr ) ); // 2
+   console.log(Math.min.call(null, arr)); // 2
    ```
 
 三者都在 **`Function.prototype`** 有原型函数，因此都可以直接进行调用。我们也可以利用 apply 手写一个简易的 bind 辅助函数：
@@ -206,12 +205,12 @@ obj1.foo();  // 输出obj1： 区别于 bar 函数，此处是由 obj1进行位�
 function foo() {
   console.log(this);
 }
-const obj = { name: "Job" }
+const obj = { name: "Job" };
 
 function bind(func, obj) {
-  return function() {
+  return function () {
     return func.apply(obj, arguments);
-  }
+  };
 }
 
 const bar = bind(foo, obj); // 永久性改变this指向 obj 对象
@@ -225,12 +224,12 @@ bar(); // obj对象
 
 在一些 JavaScript 的内置函数或者第三方库中的内置函数中，函数会要求我们传入另一个调用函数，且并不需要我们后续手动指执行，内置函数会自动帮助我们执行，这些函数里，其实也是显性绑定。以下举例一些常见案例。
 
-1. **setTimeout** 
+1. **setTimeout**
 
    以 setTimeout 为例，这个函数中的 this 通常指向 window。其内部是利用 apply 将 this 绑定为全局对象。
 
    ```javascript
-   setTimeout(function() {
+   setTimeout(function () {
      console.log(this); // window
    }, 1000);
    ```
@@ -241,29 +240,29 @@ bar(); // obj对象
 
    ```javascript
    var names = ["abc", "cba", "nba"];
-   names.forEach(function(item) {
+   names.forEach(function (item) {
      console.log(this); // 未传参：默认绑定，三次均为 window
    });
-   
-   var obj = {name: "obj"};
-   names.forEach(function(item) {
+
+   var obj = { name: "obj" };
+   names.forEach(function (item) {
      console.log(this); // 传obj参数：显性绑定，三次均为 obj对象
    }, obj);
    ```
 
 3. **div 元素的点击事件**
 
-   在点击事件的回调中，this 的指向调用函数本身。如下所示，div元素 在发生点击时，执行传入的回调函数在被调用时，会将 box 对象绑定到该函数中：
+   在点击事件的回调中，this 的指向调用函数本身。如下所示，div 元素 在发生点击时，执行传入的回调函数在被调用时，会将 box 对象绑定到该函数中：
 
    ```vue
    <template>
      <div class="box"></div>
    </template>
    <script>
-     var box = document.querySelector(".box");
-     box.onclick = function() {
-       console.log(this); // box对象
-     }
+   var box = document.querySelector(".box");
+   box.onclick = function () {
+     console.log(this); // box对象
+   };
    </script>
    ```
 
@@ -281,9 +280,9 @@ JavaScript 中的函数可以当做一个类的构造函数来使用，也就是
 也可以用如下代码表示：
 
 ```javascript
-var obj = {}
-obj.__proto__ = Foo.prototype
-Foo.call(obj)
+var obj = {};
+obj.__proto__ = Foo.prototype;
+Foo.call(obj);
 ```
 
 ### 2.5 this 优先级
@@ -298,21 +297,21 @@ Foo.call(obj)
    function foo() {
      console.log(this);
    }
-   
+
    var obj1 = {
      name: "obj1",
-     foo: foo
-   }
-   
+     foo: foo,
+   };
+
    var obj2 = {
      name: "obj2",
-     foo: foo
-   }
-   
+     foo: foo,
+   };
+
    // 隐式绑定
    obj1.foo(); // obj1
    obj2.foo(); // obj2
-   
+
    // 隐式绑定和显示绑定同时存在
    obj1.foo.call(obj2); // obj2, 说明显式绑定优先级更高
    ```
@@ -325,17 +324,15 @@ Foo.call(obj)
    function foo() {
      console.log(this);
    }
-   
+
    var obj = {
-     name: "obj"
-   }
-   
+     name: "obj",
+   };
+
    // var foo = new foo.call(obj);
    var bar = foo.bind(obj);
    var foo = new bar(); // 打印foo, 说明使用的是new绑定
    ```
-
-   
 
 ## 3. 特殊规则
 
@@ -348,33 +345,33 @@ function foo() {
 
 var obj1 = {
   name: "obj1",
-  foo: foo
+  foo: foo,
 };
 
-var obj2 = { name: "obj2" }
+var obj2 = { name: "obj2" };
 
 obj1.foo(); // obj1对象
-(obj2.foo = obj1.foo)();  // window
+(obj2.foo = obj1.foo)(); // window
 ```
 
 在上述实例中，赋值 `(obj2.foo = obj1.foo)` 的结果是 foo 函数，而后相当于 **foo 函数被直接调用**，因此是默认绑定，且未被其它对象所调用，因此结果是 window。
 
 ### 3.2 箭头函数
 
-在ES6出来之前，在古早的项目里，当我们调用一些第三方内置函数时，我们经常能看到一些 var _this = this 的代码。实际上，就是为了保存外层 this 指向，等到后续内部改变了 this 指向后，依旧能照常拿到外层的对象。我们看下面案例。
+在 ES6 出来之前，在古早的项目里，当我们调用一些第三方内置函数时，我们经常能看到一些 var \_this = this 的代码。实际上，就是为了保存外层 this 指向，等到后续内部改变了 this 指向后，依旧能照常拿到外层的对象。我们看下面案例。
 
 ```javascript
 var obj = {
   data: [],
-  getData: function() {
+  getData: function () {
     var _this = this; // 1. 保存外部 obj 的指向
-    setTimeout(function() {
+    setTimeout(function () {
       // 模拟获取到的数据
       var res = ["abc", "cba", "nba"];
       _this.data.push(...res); // 2. 此时this为window, 但依旧要访问外部 obj 对象
     }, 1000);
-  }
-}
+  },
+};
 
 obj.getData();
 ```
@@ -384,34 +381,32 @@ obj.getData();
 ```javascript
 var obj = {
   data: [],
-  getData: function() {
-    setTimeout( () => {
+  getData: function () {
+    setTimeout(() => {
       // 模拟获取到的数据
       var res = ["abc", "cba", "nba"];
       this.data.push(...res); // 未绑定this，因此this 的引用向上查找，得到上层作用域 obj 的指向
     }, 1000);
-  }
-}
+  },
+};
 
 obj.getData();
 ```
 
-当然，我们可以继续俄罗斯套娃，将上述中的  **getData 也改成一个箭头函数**，那么 setTimeout 中的回调函数中的 this 指向则继续向上查找，此处找到了全局作用域为 window 了。
+当然，我们可以继续俄罗斯套娃，将上述中的 **getData 也改成一个箭头函数**，那么 setTimeout 中的回调函数中的 this 指向则继续向上查找，此处找到了全局作用域为 window 了。
 
 ```javascript
 var obj = {
   data: [],
   getData: () => {
-    setTimeout( () => {
+    setTimeout(() => {
       console.log(this); // window
     }, 1000);
-  }
-}
+  },
+};
 
 obj.getData();
 ```
-
-
 
 ## 4. 测试练习
 
@@ -425,13 +420,13 @@ var person = {
   name: "person",
   sayName: function () {
     console.log(this.name);
-  }
+  },
 };
 function sayName() {
   var sss = person.sayName;
   sss();
   person.sayName();
-  (person.sayName)();
+  person.sayName();
   (b = person.sayName)();
 }
 sayName();
@@ -443,7 +438,7 @@ function sayName() {
   var sss = person.sayName; // window 隐式绑定
   sss(); // window 隐式绑定,但是是独立函数调用
   person.sayName(); // person, 隐式绑定
-  (person.sayName)(); // person, 隐式绑定，和上述等同，带小括号不带小括号没区别
+  person.sayName(); // person, 隐式绑定，和上述等同，带小括号不带小括号没区别
   (b = person.sayName)(); // window, 间接引用，独立函数调用
 }
 ```
@@ -451,31 +446,31 @@ function sayName() {
 #### 4.2 **定义对象，不产生作用域**
 
 ```javascript
-var name = 'window'
+var name = "window";
 var person1 = {
-  name: 'person1',
+  name: "person1",
   foo1: function () {
-    console.log(this.name)
+    console.log(this.name);
   },
   foo2: () => console.log(this.name),
   foo3: function () {
     return function () {
-      console.log(this.name)
-    }
+      console.log(this.name);
+    };
   },
   foo4: function () {
     return () => {
-      console.log(this.name)
-    }
-  }
-}
+      console.log(this.name);
+    };
+  },
+};
 
-var person2 = { name: 'person2' }
+var person2 = { name: "person2" };
 
 person1.foo1();
 person1.foo1.call(person2);
 
-person1.foo2(); 
+person1.foo2();
 person1.foo2.call(person2);
 
 person1.foo3()();
@@ -510,109 +505,98 @@ person1.foo4().call(person2); // 独立函数返回的箭头函数,不对this进
 #### 4.3 **构造函数中定义函数，该函数的上级作用域是构造函数**
 
 ```javascript
-var name = 'window'
-function Person (name) {
-  this.name = name
-  this.foo1 = function () {
-    console.log(this.name)
-  },
-  this.foo2 = () => console.log(this.name),
-  this.foo3 = function () {
-    return function () {
-      console.log(this.name)
-    }
-  },
-  this.foo4 = function () {
-    return () => {
-      console.log(this.name)
-    }
-  }
+var name = "window";
+function Person(name) {
+  this.name = name;
+  (this.foo1 = function () {
+    console.log(this.name);
+  }),
+    (this.foo2 = () => console.log(this.name)),
+    (this.foo3 = function () {
+      return function () {
+        console.log(this.name);
+      };
+    }),
+    (this.foo4 = function () {
+      return () => {
+        console.log(this.name);
+      };
+    });
 }
-var person1 = new Person('person1')
-var person2 = new Person('person2')
+var person1 = new Person("person1");
+var person2 = new Person("person2");
 
-person1.foo1()
-person1.foo1.call(person2)
+person1.foo1();
+person1.foo1.call(person2);
 
-person1.foo2()
-person1.foo2.call(person2)
+person1.foo2();
+person1.foo2.call(person2);
 
-person1.foo3()()
-person1.foo3.call(person2)()
-person1.foo3().call(person2)
+person1.foo3()();
+person1.foo3.call(person2)();
+person1.foo3().call(person2);
 
-person1.foo4()()
-person1.foo4.call(person2)()
-person1.foo4().call(person2)
+person1.foo4()();
+person1.foo4.call(person2)();
+person1.foo4().call(person2);
 ```
 
 ```javascript
 // -- 答案 --
-person1.foo1() // 隐式绑定, person1
-person1.foo1.call(person2) // 显示绑定 person2
+person1.foo1(); // 隐式绑定, person1
+person1.foo1.call(person2); // 显示绑定 person2
 
-person1.foo2() // 箭头函数, 向上查找 person1
-person1.foo2.call(person2) // 箭头函数,不改变this指向,向上查找 为 person1
+person1.foo2(); // 箭头函数, 向上查找 person1
+person1.foo2.call(person2); // 箭头函数,不改变this指向,向上查找 为 person1
 
-person1.foo3()() // 独立函数调用, 返回结果为 window
-person1.foo3.call(person2)() // 独立函数调用,显示绑定 foo3内this为person2, 但返回独立函数结果为 window
-person1.foo3().call(person2) // 独立函数调用,放回结果显示绑定 person2, 结果为 person2
+person1.foo3()(); // 独立函数调用, 返回结果为 window
+person1.foo3.call(person2)(); // 独立函数调用,显示绑定 foo3内this为person2, 但返回独立函数结果为 window
+person1.foo3().call(person2); // 独立函数调用,放回结果显示绑定 person2, 结果为 person2
 
-person1.foo4()() // 独立函数 返回箭头函数, 向上查找为person1
-person1.foo4.call(person2)() // 独立函数, 显示绑定foo4为person2, 返回箭头函数向上查找到 person2
-person1.foo4().call(person2) // 独立函数,返回箭头函数, 箭头函数不改变 this 指向,结果为person1
+person1.foo4()(); // 独立函数 返回箭头函数, 向上查找为person1
+person1.foo4.call(person2)(); // 独立函数, 显示绑定foo4为person2, 返回箭头函数向上查找到 person2
+person1.foo4().call(person2); // 独立函数,返回箭头函数, 箭头函数不改变 this 指向,结果为person1
 ```
 
 #### 4.4 **区分作用域**
 
 ```javascript
-var name = 'window'
-function Person (name) {
-  this.name = name
+var name = "window";
+function Person(name) {
+  this.name = name;
   this.obj = {
-    name: 'obj',
+    name: "obj",
     foo1: function () {
       return function () {
-        console.log(this.name)
-      }
+        console.log(this.name);
+      };
     },
     foo2: function () {
       return () => {
-        console.log(this.name)
-      }
-    }
-  }
+        console.log(this.name);
+      };
+    },
+  };
 }
-var person1 = new Person('person1')
-var person2 = new Person('person2')
+var person1 = new Person("person1");
+var person2 = new Person("person2");
 
-person1.obj.foo1()()
-person1.obj.foo1.call(person2)()
-person1.obj.foo1().call(person2)
+person1.obj.foo1()();
+person1.obj.foo1.call(person2)();
+person1.obj.foo1().call(person2);
 
-person1.obj.foo2()()
-person1.obj.foo2.call(person2)()
-person1.obj.foo2().call(person2)
+person1.obj.foo2()();
+person1.obj.foo2.call(person2)();
+person1.obj.foo2().call(person2);
 ```
 
 ```javascript
 // -- 答案 --
-person1.obj.foo1()() // 默认绑定下的独立函数调用 window
-person1.obj.foo1.call(person2)() // 默认绑定的foo1 显性绑定为person2,但返回的是独立函数调用结果依旧为 window
-person1.obj.foo1().call(person2) // 默认绑定下返回的独立函数调用,被显性绑定为person2,所以结果为 person2
+person1.obj.foo1()(); // 默认绑定下的独立函数调用 window
+person1.obj.foo1.call(person2)(); // 默认绑定的foo1 显性绑定为person2,但返回的是独立函数调用结果依旧为 window
+person1.obj.foo1().call(person2); // 默认绑定下返回的独立函数调用,被显性绑定为person2,所以结果为 person2
 
-person1.obj.foo2()() // 默认绑定下的 箭头函数,向上查找结果为 obj
-person1.obj.foo2.call(person2)() // 默认绑定的 foo1 显示绑定为 person2, 因此箭头函数向上查找到 person2
-person1.obj.foo2().call(person2) // 默认绑定返回的箭头函数,但是箭头函数不改变this,因此结果为 obj
+person1.obj.foo2()(); // 默认绑定下的 箭头函数,向上查找结果为 obj
+person1.obj.foo2.call(person2)(); // 默认绑定的 foo1 显示绑定为 person2, 因此箭头函数向上查找到 person2
+person1.obj.foo2().call(person2); // 默认绑定返回的箭头函数,但是箭头函数不改变this,因此结果为 obj
 ```
-
-
-
-
-
-
-
-
-
-
-

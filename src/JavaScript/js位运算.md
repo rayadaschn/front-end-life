@@ -1,7 +1,7 @@
 ---
 title: JavaScript中的位运算
 icon: javascript
-order: 4
+order: 3
 category:
   - javascript
 tag:
