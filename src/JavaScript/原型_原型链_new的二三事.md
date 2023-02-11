@@ -18,10 +18,10 @@ sticky: true
 
 笔者在 [彻底理解 this 指向](./彻底理解this指向.md) 一文中，简单描述了 new 一个对象的过程。在此，再进行进一步的梳理。
 
-new 关键字到底做了什么事情？
+**`new`** 关键字到底做了什么事情？
 
 - 首先创建一个空对象，这个空对象将会作为执行构造函数（constructor）之后的返回的对象实例。
-- 对创建的空对象的原型（** proto **）指向构造函数的原型属性（Function.prototype）。
+- 对创建的空对象的原型（ `newObj.__proto__` ）指向构造函数的原型属性（ `Function.prototype` ）。
 - 将这个空对象赋值给构造函数内部的 this，并执行构造函数逻辑。
 - 依据构造函数执行逻辑，返回第一步所创建的对象或构造函数的显示返回值（必须是对象）。
 
@@ -51,22 +51,22 @@ function new(parentFn, args) {
 
 简单梳理一下图中的定义关系和和需要记忆的关键点:
 
-- 构造函数是创建 f1/f2 对象的 Foo( )；
-- 构造函数 Foo( )有一个原型对象叫 Foo.prototype，构造函数 Foo( )的 **[[prototy]]** 属性就指向它；
-- 被构造函数 Foo( ) 所创建的 f1/f2 对象有一个 \***\* proto \*\*** 属性，它指向构造函数 Foo( )的原型对象 Foo.prototype；
-- 原型对象 Foo.prototype 自身有一个特有属性 constructor 指回构造函数 Foo( )。
+- 构造函数是创建 `f1/f2` 对象的 `Foo( )`；
+- 构造函数 `Foo( )`有一个原型对象叫 `Foo.prototype`，构造函数 `Foo( )`的 **`[[prototy]]`** 属性就指向它；
+- 被构造函数 `Foo( )` 所创建的 `f1/f2` 对象有一个 `__proto__` 属性，它指向构造函数 Foo( )的原型对象 Foo.prototype；
+- 原型对象 `Foo.prototype` 自身有一个特有属性 `constructor` 指回构造函数 `Foo( )`。
 
-我们对照图，来详细说说。构造函数 Foo( ) 每次创建一个新的实例/对象的时候，实例/对象 中都有一个 **[[prototy]]** 的内部属性，它指向了构造函数 Foo( ) 的原型对象( Foo.prototype )。**关键点！** **关键点!！** **关键点!!！** 这个 创建出来的 实例/对象的 **[[prototy]]** 内部属性该怎么访问它呢？现代浏览器中的 JS 引擎都用 \***\* proto \*\*** 这个属性暴露出来。
+我们对照图，来详细说说。构造函数 `Foo( )` 每次创建一个新的实例/对象的时候，实例/对象 中都有一个 **[[prototy]]** 的内部属性，它指向了构造函数 `Foo( )` 的原型对象( `Foo.prototype` )。**关键点！** **关键点!！** **关键点!!！** 这个 创建出来的 实例/对象的 **`[[prototy]]`** 内部属性该怎么访问它呢？现代浏览器中的 JS 引擎都用 `__proto__` 这个属性暴露出来。
 
-然后再来看啊，构造函数 Foo( ) 的**原型对象( Foo.prototype )**。 它叫原型对象是吧，它也是一个对象，是由 **Object( )构造函数**创建出来的! 所以它的 \***\* proto \*\*** 指向 Object( )构造函数的原型对象(Object.prototype)。Object.prototype 这个原型对象已经到头了，没有其它构造函数创建它了，所以指向 null。
+然后再来看啊，构造函数 `Foo( )` 的**原型对象( Foo.prototype )**。 它叫原型对象是吧，它也是一个对象，是由 **Object( )构造函数**创建出来的! 所以它的`__proto__`  指向 `Object( )`构造函数的原型对象(`Object.prototype`)。`Object.prototype` 这个原型对象已经到头了，没有其它构造函数创建它了，所以指向 `null`。
 
-再看啊，构造函数 Foo( ) 的**原型对象( Foo.prototype )** 的另一个关键点！这个原型对象除了因为 \***\* proto \*\*** 这个原型链能够继承到 `Object`属性和方法外，还有一个重要的属性 **[[constructor]]** 。这个属性它指回 构造函数 Foo( )本身。
+再看啊，构造函数 Foo( ) 的**原型对象( Foo.prototype )** 的另一个关键点！这个原型对象除了因为 `__proto__` 这个原型链能够继承到 `Object`属性和方法外，还有一个重要的属性 **[[constructor]]** 。这个属性它指回 构造函数 Foo( )本身。
 
 对关于 Object 构造函数其实也是这样，不再做说明。
 
 最后，我们来看看 Foo 和 Function 的关系。
 
-上面，我们看到 所有的 原型对象 都是由 Object( )构造函数创建的，而 Foo( ) 这样的构造函数呢？除去一个一个父级的构造函数套娃创建外（function Foo created via new Function），我们能最终看到它是最终被 Function 构造函数所创建。像 Object 这样的构造函数，也是被 最终的 Function 构造函数所创建。在图中我们可以看到，就连 Function 构造函数自己也是被自己所创建的（Function via new Function（so points to it’s own proto））。所以 它的 \***\* proto \*\*** 指向自身的原型对象（实际上就是一个东西啦， \***\* proto \*\*** 是被浏览器所造出来的东西）。
+上面，我们看到 所有的 原型对象 都是由 `Object( )`构造函数创建的，而 Foo( ) 这样的构造函数呢？除去一个一个父级的构造函数套娃创建外（function Foo created via new Function），我们能最终看到它是最终被 Function 构造函数所创建。像 Object 这样的构造函数，也是被 最终的 Function 构造函数所创建。在图中我们可以看到，就连 Function 构造函数自己也是被自己所创建的（Function via new Function（so points to it’s own proto））。所以 它的 `__proto__` 指向自身的原型对象（实际上就是一个东西啦， `__proto__` 是被浏览器所造出来的东西）。
 
 到这里，这张图，其实就解释的差不多了，然后，我们可以得到如下验证：
 
@@ -83,11 +83,11 @@ console.log(Foo.prototype.constructor === Foo); // true
 console.log(fooInstance.__proto__ === Foo.prototype); // true
 ```
 
-最后说点题外话，很多博主都是这样描述 \***\* proto \*\*** 和 **prototype** 的：对象有 \***\* proto \*\*** ，而函数还有一个 **prototype** 属性。这句话对，也不是很准确。明白其本质，才是理解的关键。笔者也是弯弯绕绕学了很多次，但是明白其本质原理，才是关键。想想 new 一个构造函数的过程，其实就知道这三者的关系啦。
+最后说点题外话，很多博主都是这样描述 `__proto__` 和 **`prototype`** 的：对象有  `__proto__` ，而函数还有一个 **`prototype`** 属性。这句话对，也不是很准确。明白其本质，才是理解的关键。笔者也是弯弯绕绕学了很多次，但是明白其本质原理，才是关键。想想 `new` 一个构造函数的过程，其实就知道这三者的关系啦。
 
 ## 2. 原型链
 
-从上面的原型一个接一个的 \***\* proto \*\*** 的套用，所形成的链条，就是原型链。
+从上面的原型一个接一个的 `__proto__` 的套用，所形成的链条，就是原型链。
 
 我们来再来看看一些其它的知识（串串香呀(～￣ ▽ ￣)～）。
 
@@ -151,7 +151,7 @@ console.log(Array.prototype.toString.call({ join: () => 1 })); // Logs 1
 
 所以有了 `Object.prototype.toString.call( arr ) === '[object Array]'` 这样的方法来判断数据类型啦。
 
-另外像 arr.valueOf( ) 实际上是 通过原型链进行查找: arr.** proto ** 找到了数组 Array ( )构造函数，但是没有这个方法，所以继续向上查找。arr.** proto ** .** proto ** 找到了 Object.prototype 上的 valueOf( ) 方法，但是如果获取 Object.prototype .valueOf( obj ) 所需要运行的 obj 内容呢。实际上 是做了 call 绑定，即 arr.valueOf( ) ) 等价于 Object.prototype.valueOf.call( arr )。也就是将 arr 传递给了 valueOf 方法了。我们可以进行简单验证:
+另外像 arr.valueOf( ) 实际上是 通过原型链进行查找: `arr.__proto__` 找到了数组 `Array ( )`构造函数，但是没有这个方法，所以继续向上查找。`arr.__proto__.__ proto__` 找到了 `Object.prototype` 上的 `valueOf( )` 方法，但是如果获取 `Object.prototype .valueOf( obj )` 所需要运行的 `obj` 内容呢。实际上 是做了 call 绑定，即 `arr.valueOf( ) ` 等价于 `Object.prototype.valueOf.call( arr )`。也就是将 arr 传递给了 `valueOf` 方法了。我们可以进行简单验证:
 
 ```javascript
 const arr = [955, 955];

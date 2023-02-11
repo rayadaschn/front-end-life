@@ -109,7 +109,7 @@ sticky: false
      ```shell
      $: ls -l     # 查看文件详细信息, 可用 ll 代替
      $: ll
-    
+      
      # -a 可查看隐藏文件, 即以 "."开头的文件
      ```
 
@@ -118,7 +118,7 @@ sticky: false
      ```shell
      cat [文件名]
      $: cat -n [文件名]    # 显示行号
-    
+      
      $: head -5 file.txt  # 显示文件的头5行
      $: tail -5 file.txt  # 显示文件的后5行
      ```
@@ -178,8 +178,11 @@ sudo chmod -R 777 /usr/share/nginx/html
    ```shell
    # 查找 nginx 服务器地址
    $: ps aux|grep nginx
+   
+   # 检查配置文件是否正确
+   $: nginx -t
    ```
-
+   
    **路径作用:**
 
 - `/etc/nginx`：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；
