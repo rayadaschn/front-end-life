@@ -10,13 +10,6 @@ tag:
 star: true
 # sticky: true
 sticky: false
-toc:
-  # 开始的目录层级
-  depth_from:1
-  # 最明细的目录层级
-  depth_to:1
-  # 是否用有序列表
-  ordered: True
 ---
 
 # GitLab 操作手册指南
@@ -229,9 +222,9 @@ $: git push --force
 
 ### 持续集成: GitLab CI/CD
 
- 若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&\_bt=626050032714&\_bk=ci cd&\_bm=b&\_bn=g) 。
+若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&\_bt=626050032714&\_bk=ci cd&\_bm=b&\_bn=g) 。
 
- **GitLab CI/CD** 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :
+**GitLab CI/CD** 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :
 
 - **Continuous Integration (CI) 持续集成**: 在开发分支上，当最终要合并到 **master** 主支之前，会通过编译和自动化测试对代码进行验证，确保代码的质量。可以理解为自动化测试，因此需要事先对功能创建自动化测试用例。
 - **Continuous Delivery (CD) 持续交付：** 交付即将代码发布出去的过程。而持续交付就是可以依据业务需求定时定点的将应用部署上线。
@@ -239,13 +232,13 @@ $: git push --force
 
 ## Git 提交规范
 
- 参考**angular**团队的**git**提交规范。
+参考**angular**团队的**git**提交规范。
 
 Commit message 都包括三个部分：**Header** (必须)，Body 和 Footer。
 
 ### Header
 
- ** 提交格式**： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题` 
+** 提交格式**： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题`
 
 ```shell
 - type
@@ -278,7 +271,7 @@ Commit message 都包括三个部分：**Header** (必须)，Body 和 Footer。
 
 ### Footer
 
-**Footer** 仅在 **不兼容变动** 和 **关闭issue** 时 使用：
+**Footer** 仅在 **不兼容变动** 和 **关闭 issue** 时 使用：
 
 - 不兼容变动
 
@@ -302,8 +295,6 @@ Commit message 都包括三个部分：**Header** (必须)，Body 和 Footer。
 **Header**： `revert: feat(pencil): add 'graphiteWidth' option`
 
 **Body**： `This reverts commit (SHA 标识符).`
-
-
 
 ## 利用 [git-gz](https://cz-git.qbb.sh/zh/guide) 规范代码提交
 
@@ -343,8 +334,6 @@ $: conventional-changelog -i CHANGELOG.md -s -r 0
 # 依据 angular 规范
 $: conventional-changelog -p angular -i CHANGELOG.md -s
 ```
-
-
 
 ## 参考文档
 

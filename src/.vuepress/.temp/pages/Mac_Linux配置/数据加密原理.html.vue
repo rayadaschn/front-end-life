@@ -20,20 +20,29 @@
 <p><a href="https://juejin.cn/post/7013271260595486757" target="_blank" rel="noopener noreferrer">MD5 和 SHA 等的区别<ExternalLinkIcon/></a>: SHA 安全性更高。</p>
 <p>BASE64 是转码方法，二进制字节序列转化为 ASCII 字符序列。</p>
 <p>2、非对称 RSA 加密原理:</p>
-<p>\1. 后端先给前端发放一个公钥（public-key）</p>
-<p>\2. 前端使用公钥对密码（password）等敏感字段进行加密</p>
-<p>\3. 前端使用 post 方式将使用公钥加密后的密码发送到后端</p>
-<p>\4. 后端使用私钥（private-key）进行解密，获得原密码</p>
+<ol>
+<li>
+<p>后端先给前端发放一个公钥（public-key）</p>
+</li>
+<li>
+<p>前端使用公钥对密码（password）等敏感字段进行加密</p>
+</li>
+<li>
+<p>前端使用 post 方式将使用公钥加密后的密码发送到后端</p>
+</li>
+<li>
+<p>后端使用私钥（private-key）进行解密，获得原密码</p>
+</li>
+</ol>
 <p>原理过程:</p>
 <p>1.客户端需要生成一个对称加密的密钥 1，传输内容与该密钥 1 进行对称加密传给服务端;</p>
 <p>2.并且把密钥 1 和公钥进行非对称加密，然后也传给服务端;</p>
 <p>3.服务端通过私钥把对称加密的密钥 1 解密出来，然后通过该密钥 1 解密出内容。</p>
 <p>以上是客户端到服务端的过程。</p>
 <p>如果是服务端要发数据到客户端，就需要把响应数据跟对称加密的密钥 1 进行加密，然后客户端接收到密文，通过客户端的密钥 1 进行解密，从而完成加密传输。</p>
-<p>![image-20220704092124530](/Users/huangyi/Library/Application Support/typora-user-images/image-20220704092124530.png)</p>
 <div class="language-JavaScript line-numbers-mode" data-ext="JavaScript"><pre v-pre class="language-JavaScript"><code>/*
  * @Discription: 封装网络请求方法
- * @Company: wasu
+ * @Company: 
  * @Date: 2022-01-24 10:00:00
  */
 
