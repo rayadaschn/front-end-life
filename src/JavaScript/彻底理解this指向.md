@@ -6,6 +6,8 @@ category:
   - javascript
 tag:
   - javascript
+- star: true
+sticky: true
 ---
 
 # 彻底理解 this 指向

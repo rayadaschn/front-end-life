@@ -6,6 +6,8 @@ category:
   - javascript
 tag:
   - javascript
+- star: true
+sticky: true
 ---
 
 # 原型-原型链-new 的二三事
