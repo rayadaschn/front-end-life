@@ -3,7 +3,8 @@ import theme from "./theme.js";
 import { searchProPlugin } from "vuepress-plugin-search-pro";
 
 export default defineUserConfig({
-  base: "/front-end-life/",
+  base: "/front-end-life/", // github
+  // base: "/", // 自定义 nginx
 
   locales: {
     "/": {

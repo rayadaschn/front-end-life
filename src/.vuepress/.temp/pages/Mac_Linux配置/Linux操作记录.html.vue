@@ -17,7 +17,7 @@
 <li>删除 remove</li>
 </ul>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">rm</span> <span class="token punctuation">[</span>可选参数<span class="token punctuation">]</span> <span class="token punctuation">[</span>文件名<span class="token punctuation">]</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>​ 可选参数如:</p>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>可选参数如:</p>
 <ol>
 <li>
 <p><strong>-f</strong> : 强制删除, 无提示。 <code v-pre>rm -f /removeDir</code></p>
@@ -52,7 +52,9 @@ $: <span class="token function">cp</span> test.txt test.txt.bak  <span class="to
 
 $: <span class="token function">cp</span> –r test/ newtest
 <span class="token comment"># 将当前目录 test/ 下的所有文件复制到新目录 newtest 下</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>​ 2. 移动和重命名 mv</p>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="2">
+<li>移动和重命名 mv</li>
+</ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">mv</span> ./test.txt  <span class="token punctuation">..</span>/   <span class="token comment"># 把当前目录下的test.txt移动到上一级目录去</span>
 
 $: <span class="token function">mv</span> name.txt  newName.txt    <span class="token comment"># 将“name.txt”重命名为 newName.txt”</span>
@@ -104,7 +106,7 @@ $: <span class="token function">find</span> / <span class="token parameter varia
 </li>
 </ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">sudo</span> <span class="token function">chmod</span> <span class="token parameter variable">-R</span> <span class="token number">777</span> /usr/share/nginx/html
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>​ 说明: <code v-pre>chomd</code> 是改变权限的命令，<code v-pre>-R</code> 是递归遍历子目录的意思，<code v-pre>777</code> : 第一个 <strong>7</strong> 表示文件所属者的权限，第二个 <strong>7</strong> 表示所属者所在组的权限，第三个 <strong>7</strong> 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。</p>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>说明: <code v-pre>chomd</code> 是改变权限的命令，<code v-pre>-R</code> 是递归遍历子目录的意思，<code v-pre>777</code> : 第一个 <strong>7</strong> 表示文件所属者的权限，第二个 <strong>7</strong> 表示所属者所在组的权限，第三个 <strong>7</strong> 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。</p>
 <h2 id="linux-目录划分" tabindex="-1"><a class="header-anchor" href="#linux-目录划分" aria-hidden="true">#</a> Linux 目录划分</h2>
 <blockquote>
 <p>Linux 目录分割符是正斜杠 /</p>
@@ -190,16 +192,17 @@ $ <span class="token function">sudo</span> dnf <span class="token function">inst
 </li>
 <li>
 <p><code v-pre>Nginx</code> 相关指令</p>
-<p><strong>路径作用:</strong></p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token comment"># 查找 nginx 服务器地址</span>
+$: <span class="token function">ps</span> aux<span class="token operator">|</span><span class="token function">grep</span> nginx
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p><strong>路径作用:</strong></p>
 </li>
 </ol>
 <ul>
-<li>/etc/nginx：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；</li>
-<li>/etc/nginx/nginx.conf：nginx 主配置文件，所有 nginx 的基础和全局配置都应该在这个文件中配置；</li>
-<li>/etc/nginx/conf.d：nginx 默认站点配置文件所在目录；</li>
-<li>/var/log/nginx：nginx 日志文件目录，访问日志 access.log 和 错误日志 error.log 都在这个目录中；</li>
+<li><code v-pre>/etc/nginx</code>：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；</li>
+<li><code v-pre>/etc/nginx/nginx.conf</code>：nginx 主配置文件，<strong>所有 nginx 的基础和全局配置</strong>都应该在这个文件中配置；</li>
+<li><code v-pre>/etc/nginx/conf.d</code>：nginx 默认站点配置文件所在目录；</li>
+<li><code v-pre>/var/log/nginx</code>：nginx 日志文件目录，访问日志 <code v-pre>access.log</code> 和 错误日志 <code v-pre>error.log</code> 都在这个目录中；</li>
 </ul>
-<p>xxxx</p>
 <ol start="3">
 <li>
 <p>设置 <code v-pre>nginx</code> 为系统服务, 并启动服务</p>

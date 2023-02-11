@@ -37,7 +37,7 @@ sticky: false
    rm [可选参数] [文件名]
    ```
 
-   ​ 可选参数如:
+    可选参数如:
 
    1. **-f** : 强制删除, 无提示。 `rm -f /removeDir`
 
@@ -73,7 +73,7 @@ sticky: false
    # 将当前目录 test/ 下的所有文件复制到新目录 newtest 下
    ```
 
-   ​ 2. 移动和重命名 mv
+    2. 移动和重命名 mv
 
    ```shell
    $: mv ./test.txt  ../   # 把当前目录下的test.txt移动到上一级目录去
@@ -109,7 +109,7 @@ sticky: false
      ```shell
      $: ls -l     # 查看文件详细信息, 可用 ll 代替
      $: ll
-
+    
      # -a 可查看隐藏文件, 即以 "."开头的文件
      ```
 
@@ -118,7 +118,7 @@ sticky: false
      ```shell
      cat [文件名]
      $: cat -n [文件名]    # 显示行号
-
+    
      $: head -5 file.txt  # 显示文件的头5行
      $: tail -5 file.txt  # 显示文件的后5行
      ```
@@ -136,7 +136,7 @@ sticky: false
 sudo chmod -R 777 /usr/share/nginx/html
 ```
 
-​ 说明: `chomd` 是改变权限的命令，`-R` 是递归遍历子目录的意思，`777` : 第一个 **7** 表示文件所属者的权限，第二个 **7** 表示所属者所在组的权限，第三个 **7** 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。
+ 说明: `chomd` 是改变权限的命令，`-R` 是递归遍历子目录的意思，`777` : 第一个 **7** 表示文件所属者的权限，第二个 **7** 表示所属者所在组的权限，第三个 **7** 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。
 
 ## Linux 目录划分
 
@@ -175,14 +175,17 @@ sudo chmod -R 777 /usr/share/nginx/html
 
 2. `Nginx` 相关指令
 
+   ```shell
+   # 查找 nginx 服务器地址
+   $: ps aux|grep nginx
+   ```
+
    **路径作用:**
 
-- /etc/nginx：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；
-- /etc/nginx/nginx.conf：nginx 主配置文件，所有 nginx 的基础和全局配置都应该在这个文件中配置；
-- /etc/nginx/conf.d：nginx 默认站点配置文件所在目录；
-- /var/log/nginx：nginx 日志文件目录，访问日志 access.log 和 错误日志 error.log 都在这个目录中；
-
-xxxx
+- `/etc/nginx`：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；
+- `/etc/nginx/nginx.conf`：nginx 主配置文件，**所有 nginx 的基础和全局配置**都应该在这个文件中配置；
+- `/etc/nginx/conf.d`：nginx 默认站点配置文件所在目录；
+- `/var/log/nginx`：nginx 日志文件目录，访问日志 `access.log` 和 错误日志 `error.log` 都在这个目录中；
 
 3. 设置 `nginx` 为系统服务, 并启动服务
 
@@ -219,7 +222,7 @@ xxxx
      ```shell
      #开启443端口
      sudo firewall-cmd --zone=public --add-port=443/tcp --permanent
-
+     
      sudo firewall-cmd --zone=public --add-service=https --permanent
      #重新加载防火墙配置
      sudo firewall-cmd --reload
