@@ -6,7 +6,7 @@ category:
   - javascript
 tag:
   - javascript
-- star: true
+star: true
 sticky: true
 ---
 

@@ -6,8 +6,22 @@ category:
   - javascript
 tag:
   - javascript
-- star: true
+
+star: true
 sticky: true
+# navbar: false
+# sidebar: false
+# breadcrumb: false
+# pageInfo: false
+# contributors: false
+# editLink: false
+# lastUpdated: false
+# prev: false
+# next: false
+# comment: false
+# footer: false
+
+# backtotop: false
 ---
 
 # 彻底理解 this 指向
