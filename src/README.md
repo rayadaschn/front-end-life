@@ -4,6 +4,7 @@ layout: BlogHome
 icon: home
 title: Huy
 heroImage: /Huy.png
+bgImage: https://file.mo7.cc/api/public/bz # 链接地址 自动获取 必应 每日地址
 heroText: 悟已往之不谏，知来者之可追。
 tagline: Just Do It
 heroFullScreen: true

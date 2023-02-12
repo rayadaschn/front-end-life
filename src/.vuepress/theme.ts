@@ -72,8 +72,8 @@ export default hopeTheme({
       displayFooter: true,
 
       blog: {
-        description: "A FrontEnd programmer~",
-        intro: "/intro.html",
+        description: "自先沉稳 而后爱人",
+        // intro: "/intro.html",
       },
 
       metaLocales: {
