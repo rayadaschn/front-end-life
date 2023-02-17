@@ -8,14 +8,13 @@ tag:
   - javascript
 star: true
 sticky: true
-
 ---
 
 # 在 JS 中优雅地实现继承
 
 [toc]
 
-在 [原型_原型链_new的二三事](原型_原型链_new的二三事.md) 中，我们讨论了原型和原型链的实现关系。在本文，我们再来看看如何去实现继承。
+在 [原型\_原型链\_new 的二三事](原型_原型链_new的二三事.md) 中，我们讨论了原型和原型链的实现关系。在本文，我们再来看看如何去实现继承。
 
 ## 1. 是什么?
 
@@ -33,20 +32,20 @@ sticky: true
 
 - 把子类实例`child`的原型对象(`Child.prototype`) 的原型(`__proto__`)指向了父类`parent`的原型对象(`Parent.prototype`)：
 
-  `Child.prototype.__proto__ = Parent.prototype ` 
+  `Child.prototype.__proto__ = Parent.prototype `
 
 ![继承的实际关系](https://chinese.freecodecamp.org/news/content/images/2021/09/3.png)
 
 对照这张图，我们看的很清楚，这俩步骤：
 
 - `Child.__proto__ = Parent`
-- `Child.prototype.__proto__ = Parent.prototype ` 
+- `Child.prototype.__proto__ = Parent.prototype `
 
 那么我们如何来实现这俩个操作呢？关键点在于修改 `__proto__` 属性。能够修改这个的其实一共就 3 个:
 
-1. **`new`**  操作符，内部会创建修改 `__proto__` 属性；
+1. **`new`** 操作符，内部会创建修改 `__proto__` 属性；
 
-2. **`Object.create(proto, [propertiesObject])`**方法创建一个新对象，使用现有的对象来提供新创建的对象的__proto__。 它接收两个参数，不过第二个可选参数是属性描述符（不常用，默认是`undefined`）。(ES5新增)
+2. `Object.create(proto, [propertiesObject])` 方法创建一个新对象，使用现有的对象来提供新创建的对象的 `__proto__` 。 它接收两个参数，不过第二个可选参数是属性描述符（不常用，默认是`undefined`）。(ES5 新增)
 
    ```JavaScript
    // 内部简易实现, 实际上原理就是 原型式继承
@@ -58,7 +57,9 @@ sticky: true
        }
    }
 
-3. `Object.setPrototypeOf(obj, prototype)` 方法设置一个指定的对象的原型 ( 即, 内部`[[Prototype]]`属性）到另一个对象或  `null`。(ES6 提供) 
+   ```
+
+3. `Object.setPrototypeOf(obj, prototype)` 方法设置一个指定的对象的原型 ( 即, 内部`[[Prototype]]`属性）到另一个对象或 `null`。(ES6 提供)
 
 以上方案，咱先按下不表。未能理解，可以继续往下看，而后再回来理解。
 
@@ -68,7 +69,7 @@ sticky: true
 
 ### 2.1 原型链实现继承
 
-关键点： 子类型的原型为父类型的一个实例对象。即 `Child.prototype = new Parent()` 
+关键点： 子类型的原型为父类型的一个实例对象。即 `Child.prototype = new Parent()`
 
 缺点：
 
@@ -103,13 +104,13 @@ console.log(instance2.colors); //[ 'red', 'blue', 'green', 'black' ]
 ```js
 function Child(args) {
   // .....
-  Parent.call(this, args)
+  Parent.call(this, args);
 }
 ```
 
 优点: 解决了原型链中，每个 `Son` 实例共用同一 `Parent` 实例属性的问题，以及 子构造函数在实例化的时候，不能给父构造函数传参数的问题。
 
-缺点：只是实现了实例属性继承，**`Parent` 原型的方法在 `Child` 实例中并不可用。** 
+缺点：只是实现了实例属性继承，**`Parent` 原型的方法在 `Child` 实例中并不可用。**
 
 ```js
 function Patent(name) {
@@ -143,7 +144,7 @@ instance3.sing();
 
 **组合继承**结合了**原型链继承**和**盗用构造函数**，将两者的优点结合到了一起。基本思路是使用原型链继承原型上的属性和方法，通过**盗用构造函数**继承实例属性。
 
-实现关键点: 
+实现关键点:
 
 ```js
 function Child(args1, args2) {
@@ -199,7 +200,7 @@ console.log(instance2.colors); // [ 'red', 'blue', 'green' ] => 未改变
 Child.prototype = new Parent(); // Child.__proto__ 继承 Parent 的实例属性
 ```
 
-在关键步骤中，我们将子构造函数 `Child` 的原型 指向了 `new Parent()`，我们再回顾一下 `new` 创建 对象/实例 的过程，在 [原型_原型链_new的二三事](原型_原型链_new的二三事.md) 中我们说过，这个过程一共分为四步：
+在关键步骤中，我们将子构造函数 `Child` 的原型 指向了 `new Parent()`，我们再回顾一下 `new` 创建 对象/实例 的过程，在 [原型\_原型链\_new 的二三事](原型_原型链_new的二三事.md) 中我们说过，这个过程一共分为四步：
 
 - 首先创建一个空对象，这个空对象将会作为执行构造函数(`constructor`)之后的返回的对象实例。
 - 对创建的空对象的原型(`newObj.__proto__`)指向构造函数的原型属性(`Function.prototype`)。
@@ -217,8 +218,8 @@ f1.__proto__ === Foo.prototype; // 此时有该对应关系
 ```
 
 ```js
-Child.prototype = new Parent(); 
-Child.prototype.__proto__ === Parent.prototype
+Child.prototype = new Parent();
+Child.prototype.__proto__ === Parent.prototype;
 ```
 
 以上可以自行验证。
@@ -229,7 +230,7 @@ Child.prototype.__proto__ === Parent.prototype
 
 ```js
 Object.create(Parent);
-// 核心原理如下: 
+// 核心原理如下:
 let obj = {};
 Object.setPrototypeOf(obj, Parent);
 // 此方法等效于 obj.__proto__ = Parent
@@ -315,13 +316,13 @@ console.log(instance.sayWord("hello world")); //  实例 更 无法获取到静�
 
 那如何继承构造函数 `Parent` 中的静态方法呢? 其实很简单嘛，直接 `Child.__proto__ = Parent` 就行了。需要注意的是 `__proto__` 是最先在浏览器上支持，现在已在 ES6 中被引入。
 
-或者使用 ES6 的另一语法，即第一节中提到的 `Object.setPrototypeOf(obj, prototype)` 方法设置一个指定的对象的原型 ( 即, 内部`[[Prototype]]`属性）到另一个对象或  `null`。即： `Object.setPrototypeOf(Child, Parent)` ，就完成了静态属性/方法 继承。
+或者使用 ES6 的另一语法，即第一节中提到的 `Object.setPrototypeOf(obj, prototype)` 方法设置一个指定的对象的原型 ( 即, 内部`[[Prototype]]`属性）到另一个对象或 `null`。即： `Object.setPrototypeOf(Child, Parent)` ，就完成了静态属性/方法 继承。
 
-没看明白对不对? 一句话 `Object.setPrototypeOf(Child, Parent)`  等效于  `Child.__proto__ = Parent` 。
+没看明白对不对? 一句话 `Object.setPrototypeOf(Child, Parent)` 等效于 `Child.__proto__ = Parent` 。
 
-另外，希望你还能清楚的捋清楚 原型(`__proto__`) 和 构造函数原型对象(`Foo.Prototype`)的关系区别。没能明白，就再看看 [原型_原型链_new的二三事](原型_原型链_new的二三事.md) 。没关系的，多看几次就会了。
+另外，希望你还能清楚的捋清楚 原型(`__proto__`) 和 构造函数原型对象(`Foo.Prototype`)的关系区别。没能明白，就再看看 [原型\_原型链\_new 的二三事](原型_原型链_new的二三事.md) 。没关系的，多看几次就会了。
 
-你看，我给绕回来了吧ψ(｀∇´)ψ ，看最后的封装代码：
+你看，我给绕回来了吧 ψ(｀ ∇´)ψ ，看最后的封装代码：
 
 ```js
 function Parent(name) {
@@ -371,11 +372,6 @@ console.log(Son.sayWord("hello world"));
 
 希望，你看完能够有所收获。谢谢你的时间。
 
-
-
 ## 引用资料
 
 [一文看懂 JS 的继承](https://www.freecodecamp.org/chinese/news/inheritance-in-js/)
-
-
-

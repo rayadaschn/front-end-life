@@ -34,6 +34,10 @@ sticky: false
 
 ### 日常指令
 
+#### 1 正常开发流程
+
+后续还会具体介绍，开发流程规范。此处介绍正常开发使用的指令：
+
 ```shell
 // 1 列出分支(无参数时, 会列出本地分支)
 $: git branch
@@ -52,18 +56,61 @@ $: git branch -D branchname
 $: git checkout master
 $: git merge newBranch
 
-// 6 个人开发,在个人分支上用分基 rebase 合并主分支到个人分支上
-$: git checkout myBranchname
+// 6 个人开发,在个人分支上用分基 rebase 合并 master主分支 到个人分支上
+$: git checkout myBranchName
+    // 开发 xxxx, 开发完成后。先 rebase master 主分支
 $: git rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
+$: git checkout master
+$: git merge myBranchName
+```
 
+#### 2. 本地与远程端的交互
+
+正常流程是，查看状态、拉取、修改代码后，推送
+
+```bash
+// 远端数据库操作
+// 0. 查看上次提交后是否有对文件进行再次修改, 若加 -s 则为获取简短输出结果
+$: git status
+
+// 1. 拉取 git pull 等于 git fetch + git merge
+$: git pull
+
+// 本地开发 xxxx, 开发完成后 推送
+
+// 2. 推送
+// 2.1 添加文件到暂存区: 单一文件用 git commit xxx
+$: git add .
+// 2.2.1 将暂存区内容添加到仓库中去
+$: git commit -m [message]
+// 2.2.2 或者可以不需要执行 git add 命令直接提交代码。 不推荐
+$: git commit -a
+// 2.3 正常推送
+$: git push
+```
+
+中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 `rebase` 变基。
+
+```bash
+// 他人已经 push 相关代码到远程端了
+// 【方案 1】正常流程,在 push 时,先用 rebase 
+```
+
+
+
+
+
+
+
+```bash
 // Other:
 // 远端数据库操作
 // 1. 拉取 git pull 等于 git fetch + git merge
 $: git pull
 // 2. 变基拉取 git pull --rebase 等于 git fetch + git rebase
 // 2.1 有冲突: 这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行
-			 git rebase --continue,这样git会继续apply余下的补丁。
+			 git rebase --continue, 这样git会继续apply余下的补丁。
 	$: git add .
 	$: git rebase --continue
 	2.2 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态。
@@ -87,6 +134,8 @@ $: git reset HEAD
 // --hard 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交
 $: git reset --hard HEAD
 ```
+
+
 
 ### 版本回退
 

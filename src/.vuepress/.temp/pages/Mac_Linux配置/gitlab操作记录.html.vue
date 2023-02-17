@@ -21,6 +21,8 @@
 </ul>
 <h2 id="常用的-git-操作指令" tabindex="-1"><a class="header-anchor" href="#常用的-git-操作指令" aria-hidden="true">#</a> <a href="https://www.runoob.com/git/git-basic-operations.html" target="_blank" rel="noopener noreferrer">常用的 GIT 操作指令<ExternalLinkIcon/></a></h2>
 <h3 id="日常指令" tabindex="-1"><a class="header-anchor" href="#日常指令" aria-hidden="true">#</a> 日常指令</h3>
+<h4 id="_1-正常开发流程" tabindex="-1"><a class="header-anchor" href="#_1-正常开发流程" aria-hidden="true">#</a> 1 正常开发流程</h4>
+<p>后续还会具体介绍，开发流程规范。此处介绍正常开发使用的指令：</p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// <span class="token number">1</span> 列出分支<span class="token punctuation">(</span>无参数时, 会列出本地分支<span class="token punctuation">)</span>
 $: <span class="token function">git</span> branch
 
@@ -38,18 +40,43 @@ $: <span class="token function">git</span> branch <span class="token parameter v
 $: <span class="token function">git</span> checkout master
 $: <span class="token function">git</span> merge newBranch
 
-// <span class="token number">6</span> 个人开发,在个人分支上用分基 rebase 合并主分支到个人分支上
-$: <span class="token function">git</span> checkout myBranchname
+// <span class="token number">6</span> 个人开发,在个人分支上用分基 rebase 合并 master主分支 到个人分支上
+$: <span class="token function">git</span> checkout myBranchName
+    // 开发 xxxx, 开发完成后。先 rebase master 主分支
 $: <span class="token function">git</span> rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
+$: <span class="token function">git</span> checkout master
+$: <span class="token function">git</span> merge myBranchName
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="_2-本地与远程端的交互" tabindex="-1"><a class="header-anchor" href="#_2-本地与远程端的交互" aria-hidden="true">#</a> 2. 本地与远程端的交互</h4>
+<p>正常流程是，查看状态、拉取、修改代码后，推送</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// 远端数据库操作
+// <span class="token number">0</span>. 查看上次提交后是否有对文件进行再次修改, 若加 <span class="token parameter variable">-s</span> 则为获取简短输出结果
+$: <span class="token function">git</span> status
 
-// Other:
+// <span class="token number">1</span>. 拉取 <span class="token function">git</span> pull 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> merge
+$: <span class="token function">git</span> pull
+
+// 本地开发 xxxx, 开发完成后 推送
+
+// <span class="token number">2</span>. 推送
+// <span class="token number">2.1</span> 添加文件到暂存区: 单一文件用 <span class="token function">git</span> commit xxx
+$: <span class="token function">git</span> <span class="token function">add</span> <span class="token builtin class-name">.</span>
+// <span class="token number">2.2</span>.1 将暂存区内容添加到仓库中去
+$: <span class="token function">git</span> commit <span class="token parameter variable">-m</span> <span class="token punctuation">[</span>message<span class="token punctuation">]</span>
+// <span class="token number">2.2</span>.2 或者可以不需要执行 <span class="token function">git</span> <span class="token function">add</span> 命令直接提交代码。 不推荐
+$: <span class="token function">git</span> commit <span class="token parameter variable">-a</span>
+// <span class="token number">2.3</span> 正常推送
+$: <span class="token function">git</span> push
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 <code v-pre>rebase</code> 变基。</p>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// 他人已经 push 相关代码到远程端了
+// 【方案 <span class="token number">1</span>】正常流程,在 push 时,先用 rebase 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// Other:
 // 远端数据库操作
 // <span class="token number">1</span>. 拉取 <span class="token function">git</span> pull 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> merge
 $: <span class="token function">git</span> pull
 // <span class="token number">2</span>. 变基拉取 <span class="token function">git</span> pull <span class="token parameter variable">--rebase</span> 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> rebase
 // <span class="token number">2.1</span> 有冲突: 这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行
-			 <span class="token function">git</span> rebase --continue,这样git会继续apply余下的补丁。
+			 <span class="token function">git</span> rebase --continue, 这样git会继续apply余下的补丁。
 	$: <span class="token function">git</span> <span class="token function">add</span> <span class="token builtin class-name">.</span>
 	$: <span class="token function">git</span> rebase <span class="token parameter variable">--continue</span>
 	<span class="token number">2.2</span> 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态。
@@ -72,7 +99,7 @@ $: <span class="token function">git</span> status
 $: <span class="token function">git</span> reset HEAD
 // <span class="token parameter variable">--hard</span> 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交
 $: <span class="token function">git</span> reset <span class="token parameter variable">--hard</span> HEAD
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="版本回退" tabindex="-1"><a class="header-anchor" href="#版本回退" aria-hidden="true">#</a> 版本回退</h3>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="版本回退" tabindex="-1"><a class="header-anchor" href="#版本回退" aria-hidden="true">#</a> 版本回退</h3>
 <blockquote>
 <p>版本回退需注意 <code v-pre>git revert</code> 和 <code v-pre>git reset</code> 的区别</p>
 </blockquote>

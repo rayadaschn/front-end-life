@@ -1,7 +1,7 @@
 ---
 title: 弹性布局 flex
 icon: style
-order: 2
+order: 1
 category:
   - CSS
 tag:

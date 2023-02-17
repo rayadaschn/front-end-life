@@ -9,6 +9,8 @@ export const pagesComponents = {
   "v-74368525": defineAsyncComponent(() => import(/* webpackChunkName: "v-74368525" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/CSS/index.html.vue")),
   // path: /CSS/flex%E5%B8%83%E5%B1%80%E6%8A%80%E5%B7%A7.html
   "v-5f08e4a6": defineAsyncComponent(() => import(/* webpackChunkName: "v-5f08e4a6" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/CSS/flex布局技巧.html.vue")),
+  // path: /CSS/%E5%A4%9A%E7%A7%8D%E6%96%B9%E5%BC%8F%E5%AE%9E%E7%8E%B0%E5%B1%85%E4%B8%AD.html
+  "v-6fa26d34": defineAsyncComponent(() => import(/* webpackChunkName: "v-6fa26d34" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/CSS/多种方式实现居中.html.vue")),
   // path: /JavaScript/Google%E6%B5%8F%E8%A7%88%E5%99%A8console.log%E3%80%8C%E5%BC%82%E6%AD%A5%E6%89%93%E5%8D%B0%E7%8E%B0%E8%B1%A1%E3%80%8D.html
   "v-d27007b4": defineAsyncComponent(() => import(/* webpackChunkName: "v-d27007b4" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/Google浏览器console.log「异步打印现象」.html.vue")),
   // path: /JavaScript/JavaScript%E4%B8%AD%E7%9A%84%E4%BD%8D%E8%BF%90%E7%AE%97.html
@@ -17,18 +19,22 @@ export const pagesComponents = {
   "v-568d3b89": defineAsyncComponent(() => import(/* webpackChunkName: "v-568d3b89" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/index.html.vue")),
   // path: /JavaScript/%E4%BB%A3%E7%A0%81%E8%A7%84%E8%8C%83%E5%92%8C%E8%87%AA%E5%8A%A8%E6%A0%BC%E5%BC%8F%E5%8C%96.html
   "v-2f5b5962": defineAsyncComponent(() => import(/* webpackChunkName: "v-2f5b5962" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/代码规范和自动格式化.html.vue")),
+  // path: /JavaScript/%E4%BB%A4%E4%BA%BA%E5%9B%B0%E6%83%91%E7%9A%84%E9%97%AD%E5%8C%85.html
+  "v-5dc87674": defineAsyncComponent(() => import(/* webpackChunkName: "v-5dc87674" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/令人困惑的闭包.html.vue")),
   // path: /JavaScript/%E5%89%8D%E7%AB%AF%E4%BB%A3%E7%A0%81%E5%9F%8B%E7%82%B9%E5%AE%9E%E7%8E%B0.html
   "v-9d590286": defineAsyncComponent(() => import(/* webpackChunkName: "v-9d590286" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/前端代码埋点实现.html.vue")),
   // path: /JavaScript/%E5%8E%9F%E5%9E%8B_%E5%8E%9F%E5%9E%8B%E9%93%BE_new%E7%9A%84%E4%BA%8C%E4%B8%89%E4%BA%8B.html
   "v-53a92e37": defineAsyncComponent(() => import(/* webpackChunkName: "v-53a92e37" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/原型_原型链_new的二三事.html.vue")),
+  // path: /JavaScript/%E5%9C%A8JS%E4%B8%AD%E4%BC%98%E9%9B%85%E5%9C%B0%E5%AE%9E%E7%8E%B0%E7%BB%A7%E6%89%BF.html
+  "v-1a99e9da": defineAsyncComponent(() => import(/* webpackChunkName: "v-1a99e9da" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/在JS中优雅地实现继承.html.vue")),
   // path: /JavaScript/%E5%BC%82%E6%AD%A5%E5%B0%8F%E6%A1%88%E4%BE%8B.html
   "v-741bc49e": defineAsyncComponent(() => import(/* webpackChunkName: "v-741bc49e" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/异步小案例.html.vue")),
   // path: /JavaScript/%E5%BD%BB%E5%BA%95%E7%90%86%E8%A7%A3this%E6%8C%87%E5%90%91.html
   "v-6c18eb91": defineAsyncComponent(() => import(/* webpackChunkName: "v-6c18eb91" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/彻底理解this指向.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/Linux%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95.html
   "v-02088592": defineAsyncComponent(() => import(/* webpackChunkName: "v-02088592" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/Linux操作记录.html.vue")),
-  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/Mac%E5%88%9D%E5%A7%8B%E8%AE%BE%E7%BD%AE.html
-  "v-4c52b85c": defineAsyncComponent(() => import(/* webpackChunkName: "v-4c52b85c" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/Mac初始设置.html.vue")),
+  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/Mac%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95.html
+  "v-afcb70c2": defineAsyncComponent(() => import(/* webpackChunkName: "v-afcb70c2" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/Mac配置记录.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/
   "v-6623ad5a": defineAsyncComponent(() => import(/* webpackChunkName: "v-6623ad5a" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/index.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/gitlab%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95.html

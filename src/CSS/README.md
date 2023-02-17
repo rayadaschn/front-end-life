@@ -9,3 +9,4 @@ category:
 ## Catalog
 
 - [flex 布局技巧](flex布局技巧.md)
+- [多种方式实现居中](多种方式实现居中.md)

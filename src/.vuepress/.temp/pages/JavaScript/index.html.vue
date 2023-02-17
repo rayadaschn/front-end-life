@@ -7,6 +7,8 @@
 <li><RouterLink to="/JavaScript/%E5%8E%9F%E5%9E%8B_%E5%8E%9F%E5%9E%8B%E9%93%BE_new%E7%9A%84%E4%BA%8C%E4%B8%89%E4%BA%8B.html">原型-原型链-new 的二三事</RouterLink></li>
 <li><RouterLink to="/JavaScript/%E5%BC%82%E6%AD%A5%E5%B0%8F%E6%A1%88%E4%BE%8B.html">异步小案例</RouterLink></li>
 <li><RouterLink to="/JavaScript/%E5%89%8D%E7%AB%AF%E4%BB%A3%E7%A0%81%E5%9F%8B%E7%82%B9%E5%AE%9E%E7%8E%B0.html">前端代码埋点实现</RouterLink></li>
+<li><RouterLink to="/JavaScript/%E5%9C%A8JS%E4%B8%AD%E4%BC%98%E9%9B%85%E5%9C%B0%E5%AE%9E%E7%8E%B0%E7%BB%A7%E6%89%BF.html">在 JS 中优雅地实现继承</RouterLink></li>
+<li><RouterLink to="/JavaScript/%E4%BB%A4%E4%BA%BA%E5%9B%B0%E6%83%91%E7%9A%84%E9%97%AD%E5%8C%85.html">令人困惑的闭包</RouterLink></li>
 </ul>
 </div></template>
 
