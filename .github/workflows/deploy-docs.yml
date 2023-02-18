@@ -43,7 +43,7 @@ jobs:
       - name: 部署文档
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # 这是文档部署到的分支名称
+          #  文档部署到的分支名称
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           BRANCH: master # The branch the action should deploy to.
           FOLDER: docs/.vuepress/dist/
