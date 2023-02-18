@@ -9,7 +9,7 @@ $: <span class="token function">git</span> checkout branchname
 $: <span class="token function">git</span> checkout <span class="token parameter variable">-d</span> newBranchname
 
 // <span class="token number">4</span> 删除分支
-// 删除本地分支
+// <span class="token number">4.1</span> 删除本地分支
 $: <span class="token function">git</span> branch <span class="token parameter variable">-D</span> branchname
 // <span class="token number">4.2</span> 删除远程分支
 $: <span class="token function">git</span> push origin <span class="token parameter variable">--delete</span> remoteBranchName
