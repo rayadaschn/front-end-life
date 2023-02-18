@@ -3,8 +3,14 @@ name: 部署文档
 on:
   push:
     branches:
-      # 确保这是你正在使用的分支名称
-      - main
+      - sourcecode # 只在master上push触发部署
+    paths-ignore: # 下列文件的变更不触发部署，可以自行添加
+      - README.md
+      - LICENSE
+    pull_request:
+      branches:
+        - sourcecode # 只在master上push触发部署
+      types: [closed]
 
 jobs:
   deploy-gh-pages:
@@ -14,6 +20,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          repo-token: ${{ secrets.DEPLOY_TOKEN }}
           # 如果你文档需要 Git 子模块，取消注释下一行
           # submodules: true
 
@@ -38,5 +45,6 @@ jobs:
         with:
           # 这是文档部署到的分支名称
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
+          BRANCH: master # The branch the action should deploy to.
           folder: src/.vuepress/dist
+          CLEAN: true
