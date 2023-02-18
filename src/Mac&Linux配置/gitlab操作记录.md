@@ -50,7 +50,10 @@ $: git checkout branchname
 $: git checkout -d newBranchname
 
 // 4 删除分支
+// 删除本地分支
 $: git branch -D branchname
+// 4.2 删除远程分支
+$: git push origin --delete remoteBranchName
 
 // 5 合并分支到【当前主分支中去】, 因此需要先切换到"待合并分支"
 $: git checkout master
