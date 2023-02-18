@@ -45,6 +45,6 @@ jobs:
         with:
           #  文档部署到的分支名称
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-          BRANCH: master # The branch the action should deploy to.
+          BRANCH: main # The branch the action should deploy to.
           FOLDER: src/.vuepress/dist/
           CLEAN: true
