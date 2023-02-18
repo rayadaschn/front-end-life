@@ -11,6 +11,9 @@ on:
       branches:
         - sourcecode # 只在master上push触发部署
       types: [closed]
+    schedule:
+      # Runs everyday at 3:00 AM
+      - cron: "0 3 * * *"
 
 jobs:
   deploy-gh-pages:
