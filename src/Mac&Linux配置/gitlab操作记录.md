@@ -50,7 +50,7 @@ $: git checkout branchname
 $: git checkout -d newBranchname
 
 // 4 删除分支
-// 删除本地分支
+// 4.1 删除本地分支
 $: git branch -D branchname
 // 4.2 删除远程分支
 $: git push origin --delete remoteBranchName
