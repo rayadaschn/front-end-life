@@ -90,52 +90,45 @@ $: git commit -a
 $: git push
 ```
 
-中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 `rebase` 变基。
+中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 `rebase` 变基。有几种方案:
+
+假设此时，他人已经 push 相关代码到远程端了。
+
+1. 【方案 1】正常流程,在 `push` 时,先用 `git pull --rebase` 拉取变基代码。而后，再解决冲突，推送。 
 
 ```bash
-// 他人已经 push 相关代码到远程端了
-// 【方案 1】正常流程,在 push 时,先用 rebase 
-```
-
-
-
-
-
-
-
-```bash
-// Other:
-// 远端数据库操作
-// 1. 拉取 git pull 等于 git fetch + git merge
-$: git pull
-// 2. 变基拉取 git pull --rebase 等于 git fetch + git rebase
-// 2.1 有冲突: 这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行
-			 git rebase --continue, 这样git会继续apply余下的补丁。
+$: git add .
+$: git commit -m [message]
+// 变基拉取 git pull --rebase 等于 git fetch + git rebase
+$: git pull --rebase
+	// 【有冲突】这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行 git rebase --continue, 这样git会继续apply余下的补丁。
 	$: git add .
 	$: git rebase --continue
-	2.2 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态。
+	// 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态
 	$: git rebase --abort
-
-
-// 2. 推送
-// 2.1 添加文件到暂存区: 单一文件用 git commit xxx
-$: git add .
-// 2.2.1 将暂存区内容添加到仓库中去
-$: git commit -m [message]
-// 2.2.2 或者可以不需要执行 git add 命令直接提交代码
-$: git commit -a
-
-// 3. 查看上次提交后是否有对文件进行再次修改, 若加 -s 则为获取简短输出结果
-$: git status
-
-// 4. 回退版本 详细参数可查看官方文档
-// 取消之前 git add 添加的缓存
-$: git reset HEAD
-// --hard 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交
-$: git reset --hard HEAD
+$: git push
 ```
 
+2. 【方案 2】先 `git stash` 临时贮藏代码，正常拉取。而后 `git stash pop` 推出，解决冲突，推送。
 
+```bash
+$: git stash
+// 不同分支, 则用 git rebase <otherBranch>
+$: git pull
+// 推出贮藏
+$: git stash pop
+	// 若有冲突 解决冲突; 注意, 若冲突,并不会将贮藏记录消除,还需使用 git stash drop 删除记录
+	$: git stash drop
+	// 若冲突过多, 可撤销贮藏改变
+	$: git reset --hard
+$: git add .
+$: git commit -m [message]
+$: git push
+```
+
+​	若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用 
+
+个人使用，已经写完代码了，用方案 1 推送；还未写完，则用方案 2 临时贮藏。
 
 ### 版本回退
 

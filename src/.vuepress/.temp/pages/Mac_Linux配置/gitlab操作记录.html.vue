@@ -67,39 +67,39 @@ $: <span class="token function">git</span> commit <span class="token parameter v
 $: <span class="token function">git</span> commit <span class="token parameter variable">-a</span>
 // <span class="token number">2.3</span> 正常推送
 $: <span class="token function">git</span> push
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 <code v-pre>rebase</code> 变基。</p>
-<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// 他人已经 push 相关代码到远程端了
-// 【方案 <span class="token number">1</span>】正常流程,在 push 时,先用 rebase 
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// Other:
-// 远端数据库操作
-// <span class="token number">1</span>. 拉取 <span class="token function">git</span> pull 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> merge
-$: <span class="token function">git</span> pull
-// <span class="token number">2</span>. 变基拉取 <span class="token function">git</span> pull <span class="token parameter variable">--rebase</span> 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> rebase
-// <span class="token number">2.1</span> 有冲突: 这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行
-			 <span class="token function">git</span> rebase --continue, 这样git会继续apply余下的补丁。
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 <code v-pre>rebase</code> 变基。有几种方案:</p>
+<p>假设此时，他人已经 push 相关代码到远程端了。</p>
+<ol>
+<li>【方案 1】正常流程,在 <code v-pre>push</code> 时,先用 <code v-pre>git pull --rebase</code> 拉取变基代码。而后，再解决冲突，推送。</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">git</span> <span class="token function">add</span> <span class="token builtin class-name">.</span>
+$: <span class="token function">git</span> commit <span class="token parameter variable">-m</span> <span class="token punctuation">[</span>message<span class="token punctuation">]</span>
+// 变基拉取 <span class="token function">git</span> pull <span class="token parameter variable">--rebase</span> 等于 <span class="token function">git</span> fetch + <span class="token function">git</span> rebase
+$: <span class="token function">git</span> pull <span class="token parameter variable">--rebase</span>
+	// 【有冲突】这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行 <span class="token function">git</span> rebase --continue, 这样git会继续apply余下的补丁。
 	$: <span class="token function">git</span> <span class="token function">add</span> <span class="token builtin class-name">.</span>
 	$: <span class="token function">git</span> rebase <span class="token parameter variable">--continue</span>
-	<span class="token number">2.2</span> 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态。
+	// 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态
 	$: <span class="token function">git</span> rebase <span class="token parameter variable">--abort</span>
-
-
-// <span class="token number">2</span>. 推送
-// <span class="token number">2.1</span> 添加文件到暂存区: 单一文件用 <span class="token function">git</span> commit xxx
+$: <span class="token function">git</span> push
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="2">
+<li>【方案 2】先 <code v-pre>git stash</code> 临时贮藏代码，正常拉取。而后 <code v-pre>git stash pop</code> 推出，解决冲突，推送。</li>
+</ol>
+<div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">git</span> stash
+// 不同分支, 则用 <span class="token function">git</span> rebase <span class="token operator">&lt;</span>otherBranch<span class="token operator">></span>
+$: <span class="token function">git</span> pull
+// 推出贮藏
+$: <span class="token function">git</span> stash pop
+	// 若有冲突 解决冲突<span class="token punctuation">;</span> 注意, 若冲突,并不会将贮藏记录消除,还需使用 <span class="token function">git</span> stash drop 删除记录
+	$: <span class="token function">git</span> stash drop
+	// 若冲突过多, 可撤销贮藏改变
+	$: <span class="token function">git</span> reset <span class="token parameter variable">--hard</span>
 $: <span class="token function">git</span> <span class="token function">add</span> <span class="token builtin class-name">.</span>
-// <span class="token number">2.2</span>.1 将暂存区内容添加到仓库中去
 $: <span class="token function">git</span> commit <span class="token parameter variable">-m</span> <span class="token punctuation">[</span>message<span class="token punctuation">]</span>
-// <span class="token number">2.2</span>.2 或者可以不需要执行 <span class="token function">git</span> <span class="token function">add</span> 命令直接提交代码
-$: <span class="token function">git</span> commit <span class="token parameter variable">-a</span>
-
-// <span class="token number">3</span>. 查看上次提交后是否有对文件进行再次修改, 若加 <span class="token parameter variable">-s</span> 则为获取简短输出结果
-$: <span class="token function">git</span> status
-
-// <span class="token number">4</span>. 回退版本 详细参数可查看官方文档
-// 取消之前 <span class="token function">git</span> <span class="token function">add</span> 添加的缓存
-$: <span class="token function">git</span> reset HEAD
-// <span class="token parameter variable">--hard</span> 参数撤销工作区中所有未提交的修改内容，将暂存区与工作区都回到上一次版本，并删除之前的所有信息提交
-$: <span class="token function">git</span> reset <span class="token parameter variable">--hard</span> HEAD
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="版本回退" tabindex="-1"><a class="header-anchor" href="#版本回退" aria-hidden="true">#</a> 版本回退</h3>
+$: <span class="token function">git</span> push
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>​	若你和同事的分支不同，此时并不是用 <code v-pre>git pull</code> 同步代码， 而是用</p>
+<p>个人使用，已经写完代码了，用方案 1 推送；还未写完，则用方案 2 临时贮藏。</p>
+<h3 id="版本回退" tabindex="-1"><a class="header-anchor" href="#版本回退" aria-hidden="true">#</a> 版本回退</h3>
 <blockquote>
 <p>版本回退需注意 <code v-pre>git revert</code> 和 <code v-pre>git reset</code> 的区别</p>
 </blockquote>
