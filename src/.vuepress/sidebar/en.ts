@@ -18,6 +18,12 @@ export const enSidebar = sidebar({
       children: "structure",
     },
     {
+      icon: "vue",
+      text: "框架类",
+      prefix: "框架类/",
+      children: "structure", // 此处link 要相对目录
+    },
+    {
       text: "小程序",
       icon: "note",
       prefix: "小程序/",

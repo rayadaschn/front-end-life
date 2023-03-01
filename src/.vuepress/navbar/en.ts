@@ -15,6 +15,12 @@ export const enNavbar = navbar([
     link: "/CSS/", // 此处link 要相对目录
   },
   {
+    icon: "vue",
+    text: "框架类",
+    prefix: "框架类/",
+    link: "/框架类/", // 此处link 要相对目录
+  },
+  {
     text: "Mac/Linux配置",
     icon: "note",
     prefix: "Mac&Linux配置/",

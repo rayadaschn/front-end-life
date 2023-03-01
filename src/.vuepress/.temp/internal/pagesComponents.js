@@ -49,6 +49,10 @@ export const pagesComponents = {
   "v-4938910e": defineAsyncComponent(() => import(/* webpackChunkName: "v-4938910e" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/小程序/index.html.vue")),
   // path: /%E5%B0%8F%E7%A8%8B%E5%BA%8F/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%BC%96%E7%A8%8B%E6%8A%80%E5%B7%A7.html
   "v-abbfda4a": defineAsyncComponent(() => import(/* webpackChunkName: "v-abbfda4a" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/小程序/小程序编程技巧.html.vue")),
+  // path: /%E6%A1%86%E6%9E%B6%E7%B1%BB/
+  "v-2b26d77a": defineAsyncComponent(() => import(/* webpackChunkName: "v-2b26d77a" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/框架类/index.html.vue")),
+  // path: /%E6%A1%86%E6%9E%B6%E7%B1%BB/Vue3%E4%B8%AD%E7%9A%84script-setup.html
+  "v-22f701e6": defineAsyncComponent(() => import(/* webpackChunkName: "v-22f701e6" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/框架类/Vue3中的script-setup.html.vue")),
   // path: /404.html
   "v-3706649a": defineAsyncComponent(() => import(/* webpackChunkName: "v-3706649a" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/404.html.vue")),
   // path: /category/
@@ -79,4 +83,8 @@ export const pagesComponents = {
   "v-40d69b56": defineAsyncComponent(() => import(/* webpackChunkName: "v-40d69b56" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/tag/mini-app/index.html.vue")),
   // path: /category/mini-app/
   "v-098d6e68": defineAsyncComponent(() => import(/* webpackChunkName: "v-098d6e68" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/category/mini-app/index.html.vue")),
+  // path: /tag/vue/
+  "v-b302da92": defineAsyncComponent(() => import(/* webpackChunkName: "v-b302da92" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/tag/vue/index.html.vue")),
+  // path: /category/vue/
+  "v-65f6d381": defineAsyncComponent(() => import(/* webpackChunkName: "v-65f6d381" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/category/vue/index.html.vue")),
 }

@@ -29,12 +29,16 @@
 <p>通用描述性:</p>
 <ul>
 <li><strong>justify</strong> 表示水平方向的样式设置;</li>
-<li>**align **表示垂直方向的样式设置;</li>
-<li>**items **(有 s) 表示全体元素的样式设置;</li>
-<li><strong>content</strong> 表示整体布局的样式设置;</li>
+<li><strong>align</strong> 表示垂直方向的样式设置;</li>
+<li><strong>items</strong> <em>(有 s)</em> 表示<strong>全体元素</strong>的样式设置;</li>
+<li><strong>content</strong> 表示<strong>整体布局</strong>的样式设置;</li>
 <li><strong>self</strong> 表示元素自身的样式设置，其一定是应用在子元素上的。</li>
 </ul>
-<p><strong>justify-content 属性就表示整体布局的水平对齐设 置，align-items 就表示全体元素的垂直对齐样式设置。</strong></p>
+<blockquote>
+<p><em><strong>重要提示：</strong></em></p>
+<p><strong>justify-content 属性 表示整体布局的水平对齐设置；</strong></p>
+<p><strong>align-items 属性 表示全体元素的垂直对齐样式设置。</strong></p>
+</blockquote>
 <ol>
 <li>
 <p><strong>justify-content</strong> 属性与整体布局的水平对齐</p>
@@ -54,7 +58,7 @@
 </li>
 <li>
 <p><strong>align-content</strong> 属性与整体布局的垂直对齐</p>
-<p><strong>区别:</strong> <strong>align-content</strong>属性和<strong>align-items</strong>属性的区别在于<strong>align-items</strong>属性设置的是每一个<strong>flex</strong>子项的垂直对齐方式，而<strong>align-content</strong>属性将<strong>所有 flex 子项作为一个整体进行垂直对齐设置</strong>。</p>
+<p><strong>区别:</strong> <strong>align-content</strong> 属性和 <strong>align-items</strong> 属性的区别在于 <strong>align-items</strong> 属性设置的是每一个 <strong>flex</strong> 子项的垂直对齐方式，而 <strong>align-content</strong> 属性将 <strong>所有 flex 子项作为一个整体进行垂直对齐设置</strong>。</p>
 <div class="language-css line-numbers-mode" data-ext="css"><pre v-pre class="language-css"><code><span class="token property">align-content</span><span class="token punctuation">:</span> stretch | flex-start | flex-end | center | space-between |
   space-around | space-evenly<span class="token punctuation">;</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></li>
@@ -88,7 +92,7 @@
 <tr>
 <td><strong>flex: initiate</strong></td>
 <td><strong>flex: 0 1 auto</strong></td>
-<td>初始值, 通常用来还原已经设置的 CSS 属性,常用于希望元素尺寸收缩，同时元素内容较多又能自动换行的场景中可以不做任何 flex 属性设置。</td>
+<td>初始值, 通常用来还原已经设置的 CSS 属性,常用于<strong>希望元素尺寸收缩</strong>，同时<strong>元素内容较多又能自动换行</strong>的场景中可以不做任何 flex 属性设置。</td>
 </tr>
 <tr>
 <td>flex: 0</td>

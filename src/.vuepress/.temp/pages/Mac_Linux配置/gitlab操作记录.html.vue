@@ -34,7 +34,10 @@ $: <span class="token function">git</span> checkout branchname
 $: <span class="token function">git</span> checkout <span class="token parameter variable">-d</span> newBranchname
 
 // <span class="token number">4</span> 删除分支
+// <span class="token number">4.1</span> 删除本地分支
 $: <span class="token function">git</span> branch <span class="token parameter variable">-D</span> branchname
+// <span class="token number">4.2</span> 删除远程分支
+$: <span class="token function">git</span> push origin <span class="token parameter variable">--delete</span> remoteBranchName
 
 // <span class="token number">5</span> 合并分支到【当前主分支中去】, 因此需要先切换到<span class="token string">"待合并分支"</span>
 $: <span class="token function">git</span> checkout master
@@ -47,7 +50,7 @@ $: <span class="token function">git</span> rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 $: <span class="token function">git</span> checkout master
 $: <span class="token function">git</span> merge myBranchName
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="_2-本地与远程端的交互" tabindex="-1"><a class="header-anchor" href="#_2-本地与远程端的交互" aria-hidden="true">#</a> 2. 本地与远程端的交互</h4>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="_2-本地与远程端的交互" tabindex="-1"><a class="header-anchor" href="#_2-本地与远程端的交互" aria-hidden="true">#</a> 2. 本地与远程端的交互</h4>
 <p>正常流程是，查看状态、拉取、修改代码后，推送</p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// 远端数据库操作
 // <span class="token number">0</span>. 查看上次提交后是否有对文件进行再次修改, 若加 <span class="token parameter variable">-s</span> 则为获取简短输出结果
