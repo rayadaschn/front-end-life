@@ -516,9 +516,254 @@ const post = await fetch(`/api/post/1`).then((r) => r.json())
 </script>
 ```
 
+### 3.8 OneMorething: 自定义指令
+
+Vue3 还是提供了很好用的自定义指令的，可以自定义一些特定功能。内容还是有点多的嘞 (ÒܫÓױ) ，如果你的暂时用不到，可以待日后再来查阅~
+
+按照惯例，我们先来看看，不用 `setup` 语法糖的 “朴素” 写法。
+
+较好的学习方式：学习一个语法用法咱们可以从它的 TS 类型入手。
+
+```typescript
+// 1. 对象式写法的 TS 类型
+// ...
+export declare interface ObjectDirective<T = any, V = any> {
+  created?: DirectiveHook<T, null, V>
+  beforeMount?: DirectiveHook<T, null, V>
+  mounted?: DirectiveHook<T, null, V>
+  beforeUpdate?: DirectiveHook<T, VNode<any, T>, V>
+  updated?: DirectiveHook<T, VNode<any, T>, V>
+  beforeUnmount?: DirectiveHook<T, null, V>
+  unmounted?: DirectiveHook<T, null, V>
+  getSSRProps?: SSRDirectiveHook
+  deep?: boolean
+}
+// ...
+```
+
+这种是对象式写法，定义的钩子函数非常全面。还有一种是小清新的函数式写法（现在都流行这么写啦~）,不足之处在于这种写法只在 `mounted` 和 `updated` 这两个钩子生效，并且触发一样的行为。
+
+```typescript
+// 2. 函数式写法的 TS 类型
+// ...
+export declare type FunctionDirective<T = any, V = any> = DirectiveHook<
+  T,
+  any,
+  V
+>
+// ...
+```
+
+咱的来说，钩子函数的定义同组件的生命周期较为类似。目的也是同组件一同绑定。
+
+每个钩子函数都需要 4 个入参：
+
+```typescript
+// 钩子函数的 TS 类型
+// ...
+export declare type DirectiveHook<
+  T = any,
+  Prev = VNode<any, T> | null,
+  V = any
+> = (
+  el: T,
+  binding: DirectiveBinding<V>,
+  vnode: VNode<any, T>,
+  prevVNode: Prev
+) => void
+// ...
+```
+
+因此，钩子函数的具体用法如下：
+
+```typescript
+const myDirective = {
+  created(el, binding, vnode, prevVnode) {
+    // 四个参数...
+  },
+  mounted(el, binding, vnode, prevVnode) {
+    // ...
+  },
+  // 其他钩子...
+}
+```
+
+这四个参数的定义如下：
+
+| 参数        | 作用                                                         |
+| ----------- | ------------------------------------------------------------ |
+| `el`        | 指令绑定的 DOM 元素，可以直接操作它。也就是我们通过 `document.querySelector` 拿到的那个 DOM 元素。 |
+| `binding`   | 一个对象数据，见下方的单独说明                               |
+| `vnode`     | el 对应在 Vue 里的虚拟节点信息                               |
+| `prevVNode` | Update 时的上一个虚拟节点信息，仅在 `beforeUpdate` 和 `updated` 可用 |
+
+其中，用的最多的是头俩个参数 `el` 和 `binding`，`el` 是我们指令要绑定的 DOM 元素。所以我们再看看钩子函数的第二个参数 `DirectiveBinding` 定义:
+
+```typescript
+// ...
+export declare interface DirectiveBinding<V = any> {
+  instance: ComponentPublicInstance | null
+  value: V
+  oldValue: V | null
+  arg?: string
+  modifiers: DirectiveModifiers
+  dir: ObjectDirective<any, V>
+}
+// ...
+```
+
+嗯，属性也还是相当多，它们的定义如下：
+
+| 属性        | 作用                                                         |
+| ----------- | ------------------------------------------------------------ |
+| `instance`  | 使用指令的组件实例                                           |
+| `value`     | 传递给指令的值，例如 `v-foo="bar"` 里的 `bar` ，支持任意有效的 JS 表达式 |
+| `oldValue`  | 指令的上一个值，仅对 `beforeUpdate` 和 `updated` 可用        |
+| `arg`       | 传给指令的参数，例如 `v-foo:bar` 里的 `bar`                  |
+| `modifiers` | 传给指令的修饰符，例如 `v-foo.bar` 里的 `bar`                |
+| `dir`       | 指令定义的对象（就是上面的 `const myDirective = { /* ... */ }` 这个对象） |
+
+呼，终于看完主体了，我们来看看具体怎么使用吧。
+
+1. 局部注册使用
+
+   同其它的组件实例一样，区分局部和全局。在局部单个组件内，我们需要用到同 `setup`同级别的 `directive` 选项对自定义的指令进行定义：
+
+   ```vue
+   <template>
+     <!-- 默认值 unset -->
+     <div v-highlight>{{ msg }}</div>
+     <!-- 默认值 unset -->
+   
+     <!-- 传参使用 -->
+     <div v-highlight="`yellow`">{{ msg }}</div>
+     <!-- 传参使用 -->
+   </template>
+   
+   <script lang="ts">
+   import { defineComponent, ref } from 'vue'
+   
+   export default defineComponent({
+     // 自定义指令全在这里编写，和 setup 同级别
+     directives: {
+       // directives 下的每个字段名就是指令名称
+       highlight: {
+         // 钩子函数, 仅展示 mounted 
+         mounted(el, binding) {
+           el.style.backgroundColor =
+             typeof binding.value === 'string' ? binding.value : 'unset'
+         },
+       },
+     },
+     setup() {
+       const msg = ref<string>('Hello World!')
+   
+       return {
+         msg,
+       }
+     },
+   })
+   </script>
+   ```
+
+   **对象式**写法较为全面，我们也可以使用**函数式**的写法：
+
+   ```js
+   export default defineComponent({
+     directives: {
+       highlight(el, binding) {
+         el.style.backgroundColor =
+           typeof binding.value === 'string' ? binding.value : 'unset'
+       },
+     },
+   })
+   ```
+
+2. 全局注册使用
+
+   全局注册，就无需在每个组件里定义了，定制使用的也是最多的。这个也是在 Vue 项目的入口文件 `main.ts` 里启用它。内容较多，请看《[Vue3中的全局注册](Vue3中的全局注册.md)》。
+
+在对象式写法中，我们还看到有一个可选的 `deep?: boolean` ，它的作用是：如果自定义指令用于一个有嵌套属性的对象，并且需要在嵌套属性更新的时候触发 `beforeUpdate` 和 `updated` 钩子，那么需要将这个选项设置为 `true` 才能够生效。
+
+又抄了一个案例：
+
+```vue
+<template>
+  <div v-foo="foo"></div>
+</template>
+
+<script lang="ts">
+import { defineComponent, reactive } from 'vue'
+
+export default defineComponent({
+  directives: {
+    foo: {
+      beforeUpdate(el, binding) {
+        console.log('beforeUpdate', binding)
+      },
+      updated(el, binding) {
+        console.log('updated', binding)
+      },
+      mounted(el, binding) {
+        console.log('mounted', binding)
+      },
+      // 需要设置为 true ，如果是 false 则不会触发
+      deep: true,
+    },
+  },
+  setup() {
+    // 定义一个有嵌套属性的对象
+    const foo = reactive({
+      bar: {
+        baz: 1,
+      },
+    })
+
+    // 2s 后修改其中一个值，会触发 beforeUpdate 和 updated
+    setTimeout(() => {
+      foo.bar.baz = 2
+      console.log(foo)
+    }, 2000)
+
+    return {
+      foo,
+    }
+  },
+})
+</script>
+```
+
+好了，我们回到主题，现在用了 `setup` 语法糖后，怎么去自定义指令呢？
+
+方法很简单： 1. 当然是在全局自定义呀！ 哈哈哈哈；2. 局部自定义的话，则直接省力：**不需要显式注册，但需要遵循 `vNameOfDirective` 这样的命名规范**，也就是以 小写 `v` 开头命名自定义指令：
+
+```vue
+<script setup>
+const vMyDirective = {
+  beforeMount: (el) => {
+    // 在元素上做些操作
+  }
+}
+</script>
+<template>
+  <h1 v-my-directive>This is a Heading</h1>
+</template>
+```
+
+若是从独立文件导入的，可以通过重命名使其符合命名规范：
+
+```vue
+<script setup>
+import { myDirective as vMyDirective } from './MyDirective.ts'
+</script>
+```
+
+好了，内容大概就是这么多了。感谢你的时间，希望你也能有所收获。
+
 
 
 ## 参考文献
 
+- [\<script setup>](https://cn.vuejs.org/api/sfc-script-setup.html#reactivity)
 - [Vue3 入门指南与实战案例](https://vue3.chengpeiquan.com/)
 - [TypeScript with Composition API](https://vuejs.org/guide/typescript/composition-api.html)
