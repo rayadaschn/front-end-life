@@ -115,7 +115,7 @@ interface App {
 
 第一个参数应是插件本身，可选的第二个参数是要传递给插件的选项。
 
-**插件可以是一个带 `install()` 方法的对象，亦或直接是一个将被用作 `install()` 方法的函数。**插件选项 (`app.use()` 的第二个参数) 将会传递给插件的 `install()` 方法。
+**插件可以是一个带 `install()` 方法的对象，亦或直接是一个将被用作 `install()` 方法的函数。** 插件选项 (`app.use()` 的第二个参数) 将会传递给插件的 `install()` 方法。
 
 若 `app.use()` 对同一个插件多次调用，该插件只会被安装一次。
 
@@ -197,7 +197,7 @@ app.mount('#app')
 
 也许你这里会有困惑，为什么在挂载时直接 `app.use(registerIcons)` 就可以了，我们并没有给它传递参数 `app` 呀。
 
-我们看看 `use`的 TS类型定义：
+我们看看 `use` 的 TS类型定义：
 
 ```ts
 export declare interface App<HostElement = any> {
