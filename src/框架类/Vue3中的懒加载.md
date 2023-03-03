@@ -8,14 +8,9 @@ tag:
   - Vue
 star: true
 sticky: false
-
-
-
 ---
 
-# Vue3中的懒加载
-
-[toc] 
+# Vue3 中的懒加载
 
 ## 1. 动物园里有什么?
 
@@ -28,10 +23,9 @@ sticky: false
 **异步组件**，由于是按需加载，所以导入时需要用到动态函数 `import()`。这种方式下的关键字 `import` 可以像调用函数一样来动态导入模块。并且，这种方式，将返回一个 `Promise`。
 
 ```js
-import('/modules/my-module.js')
-  .then((module) => {
-    // Do something with the module.
-  });
+import("/modules/my-module.js").then((module) => {
+  // Do something with the module.
+});
 ```
 
 ## 2. 把大象装进冰箱
@@ -44,14 +38,14 @@ import('/modules/my-module.js')
 
 ```ts
 // 同步组件
-import home from '@views/home.vue'
+import home from "@views/home.vue";
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
+    path: "/",
+    name: "home",
     component: home,
   },
-]
+];
 ```
 
 在 `Webpack` 中，我们是这样使用的：
@@ -60,14 +54,14 @@ const routes: Array<RouteRecordRaw> = [
 // 异步组件
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
-    component: () => import(/* webpackChunkName: "home" */ '@views/home.vue'),
+    path: "/",
+    name: "home",
+    component: () => import(/* webpackChunkName: "home" */ "@views/home.vue"),
   },
-]
+];
 ```
 
-其中，懒加载的配置便是在 `component` 中设置的，通过设置一个箭头函数，来动态加载。而 `import` 内部注释 /* webpackChunkName: "home" */ 起到的作用是项目打包后为切割后的代码文件命名（结果更加语义化）。
+其中，懒加载的配置便是在 `component` 中设置的，通过设置一个箭头函数，来动态加载。而 `import` 内部注释 /_ webpackChunkName: "home" _/ 起到的作用是项目打包后为切割后的代码文件命名（结果更加语义化）。
 
 ```txt
 File                                        Size                    Gzipped
@@ -81,20 +75,20 @@ dist\static\css\app.no996life.css            0.04 KiB                0.06 KiB
 
 ```js
 // 异步组件: Vue3通用方法
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent } from "vue";
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
-    component: () => defineAsyncComponent(() => import(`@views/home.vue`))
+    path: "/",
+    name: "home",
+    component: () => defineAsyncComponent(() => import(`@views/home.vue`)),
   },
-]
+];
 ```
 
 也非常简洁，当然为了更好的提议，`Vite`还提供了特殊导入方法 `import.meta.glob` ，从文件系统导入多个模块。
 
 ```js
-const modules = import.meta.glob('./dir/*.js')
+const modules = import.meta.glob("./dir/*.js");
 ```
 
 以上将会被转译为下面的样子：
@@ -102,9 +96,9 @@ const modules = import.meta.glob('./dir/*.js')
 ```js
 // vite 生成的代码
 const modules = {
-  './dir/foo.js': () => import('./dir/foo.js'),
-  './dir/bar.js': () => import('./dir/bar.js'),
-}
+  "./dir/foo.js": () => import("./dir/foo.js"),
+  "./dir/bar.js": () => import("./dir/bar.js"),
+};
 ```
 
 你可以遍历 `modules` 对象的 `key` 值来访问相应的模块：
@@ -112,8 +106,8 @@ const modules = {
 ```js
 for (const path in modules) {
   modules[path]().then((mod) => {
-    console.log(path, mod)
-  })
+    console.log(path, mod);
+  });
 }
 ```
 
@@ -123,26 +117,23 @@ for (const path in modules) {
 
 ```typescript
 // 异步组件: vite 打包 import.meta.glob 方法
-import { defineAsyncComponent } from 'vue'
-const modules = import.meta.glob('@views/*.vue'); // 导入所有 vue 组件,返回对象, key 为路径名称
+import { defineAsyncComponent } from "vue";
+const modules = import.meta.glob("@views/*.vue"); // 导入所有 vue 组件,返回对象, key 为路径名称
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
-    component: modules[`@views/home.vue`]
+    path: "/",
+    name: "home",
+    component: modules[`@views/home.vue`],
   },
-]
+];
 ```
 
 以上，便是 3 种懒加载的方案了。
 
 感谢你的时间，也希望你能有所收获。
 
-
-
 ## 参考文献
 
 - [Import](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/import)
 - [Glob 导入](https://cn.vitejs.dev/guide/features.html#glob-import)
-
