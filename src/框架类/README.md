@@ -10,3 +10,4 @@ category:
 
 - [Vue3中的script-setup](Vue3中的script-setup.md)
 - [Vue3中的全局注册](Vue3中的全局注册.md)
+- [Vue3中的懒加载](Vue3中的懒加载.md)
