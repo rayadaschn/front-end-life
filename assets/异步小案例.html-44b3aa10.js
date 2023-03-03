@@ -1,4 +1,4 @@
-import{_ as n,V as s,W as a,a0 as e}from"./framework-acd93724.js";const t={},i=e(`<h1 id="异步小案例" tabindex="-1"><a class="header-anchor" href="#异步小案例" aria-hidden="true">#</a> 异步小案例</h1><p>[toc]</p><h2 id="红绿灯控制任务" tabindex="-1"><a class="header-anchor" href="#红绿灯控制任务" aria-hidden="true">#</a> 红绿灯控制任务</h2><p>红灯 3s 亮一次，绿灯 1s 亮一次，黄灯 2s 亮一次，如果让 3 个灯不断交替地重复亮呢？</p><div class="language-JavaScript line-numbers-mode" data-ext="JavaScript"><pre class="language-JavaScript"><code>function red() {
+import{_ as n,V as s,W as a,a0 as e}from"./framework-acd93724.js";const t={},i=e(`<h1 id="异步小案例" tabindex="-1"><a class="header-anchor" href="#异步小案例" aria-hidden="true">#</a> 异步小案例</h1><h2 id="红绿灯控制任务" tabindex="-1"><a class="header-anchor" href="#红绿灯控制任务" aria-hidden="true">#</a> 红绿灯控制任务</h2><p>红灯 3s 亮一次，绿灯 1s 亮一次，黄灯 2s 亮一次，如果让 3 个灯不断交替地重复亮呢？</p><div class="language-JavaScript line-numbers-mode" data-ext="JavaScript"><pre class="language-JavaScript"><code>function red() {
     console.log(&#39;red&#39;);
 }
 
@@ -65,4 +65,4 @@ const taskRunner = async () =&gt; {
 };
 
 taskRunner();
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,11),c=[i];function l(p,o){return s(),a("div",null,c)}const d=n(t,[["render",l],["__file","异步小案例.html.vue"]]);export{d as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,10),c=[i];function l(p,o){return s(),a("div",null,c)}const d=n(t,[["render",l],["__file","异步小案例.html.vue"]]);export{d as default};
