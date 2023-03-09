@@ -43,7 +43,7 @@ function new(parentFn, args) {
 
 再来看一下 JavaScript Object Layout 的原图:
 
-![JavaScript Object Layout](http://www.mollypages.org/tutorials/jsobj.jpg)
+![Developer settings](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@main/img/jsobj.jpg)
 
 [原博文](http://www.mollypages.org/tutorials/js.mp) 也推荐看一下噢,大体就能知道整个过程了。
 

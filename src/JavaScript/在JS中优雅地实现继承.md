@@ -20,7 +20,7 @@ sticky: true
 
 我们还是先来看原型的这张神图：
 
-![JavaScript Object Layout](http://www.mollypages.org/tutorials/jsobj.jpg)
+![Developer settings](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@main/img/jsobj.jpg)
 
 原理咱们不再过多讨论，我们现在想说的是通过原型链，我们的 `Foo()` 函数可以继承 `Object()` 的一些实例属性和方法。所以，其实继承就干了俩件事：
 

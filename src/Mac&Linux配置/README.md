@@ -14,3 +14,4 @@ category:
 - [为 MacOS 设置终端代理](终端设置代理.md)
 - [Linux 操作记录](Linux操作记录.md)
 - [gitlab 操作记录](gitlab操作记录.md)
+- [使用PicGo+GitHub 图床](使用PicGo+GitHub 图床.md)
