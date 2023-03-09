@@ -72,7 +72,7 @@ uid                      userName <xxxxxxx@github.com>
 sub   cv25519 2023-03-09 [E] [expires: 2025-03-08]
 ```
 
-需要注意的是，这里的公钥名称为： `C1F89F0xxxxxxxxxxxxxD` 。
+需要注意的是，这里的公钥名称为**[PRIMARYKEYID]**： `C1F89F0xxxxxxxxxxxxxD` 。
 
 设置 git 电子邮箱（此处，可全局也可局部设置，依据项目来）：
 
