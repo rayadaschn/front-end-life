@@ -151,8 +151,8 @@ function Child(args1, args2) {
   Parent.call(this, args1); // 在 Child 的构造函数中执行 Parent 的构造函数
 }
 // Child.__proto__ 也会存在同样的 Parent 的实例属性,且所有的 Child 实例的 __proto__ 都指向同一内存地址
-Child.prototype = new Parent();
-Child.prototype.constrcutor = Child; // // 指回自身, 修复constructor
+Child.prototype = new Parent(); // 重写原型,但导致默认 constructor 丢失
+Child.prototype.constrcutor = Child; // 指回自身, 修复constructor
 ```
 
 具体实现：
@@ -256,7 +256,7 @@ function Son(name, age) {
   this.age = age;
 }
 // Son.prototype = new Patent(); // 用 Object.create() 代替
-Son.prototype = Object.create(Parent.prototype); // 继承Parent原型上的属性
+Son.prototype = Object.create(Parent.prototype); // 继承Parent原型上的属性, 即重写原型,但导致默认 constructor 丢失
 Son.prototype.constructor = Son; // 指回自身, 修复constructor
 
 Son.prototype.sayAge = function () {
