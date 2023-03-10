@@ -33,17 +33,109 @@ $: brew install gpg
 
 ```bash
 $: gpg --help
+gpg (GnuPG) 2.2.27
+libgcrypt 1.8.8
+Copyright (C) 2021 Free Software Foundation, Inc.
+License GNU GPL-3.0-or-later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Home: /home/xxxx/.gnupg
+支持的算法：
+公钥： RSA, ELG, DSA, ECDH, ECDSA, EDDSA
+密文： IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
+    CAMELLIA128, CAMELLIA192, CAMELLIA256
+散列： SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224
+压缩：  不压缩, ZIP, ZLIB, BZIP2
+
+语法：gpg [options] [files]
+签名、检查、加密或解密
+默认的操作依输入数据而定
+
+命令：
+ 
+ -s, --sign                  生成一份签名
+     --clear-sign            生成一份明文签名
+ -b, --detach-sign           生成一份分离的签名
+ -e, --encrypt               加密数据
+ -c, --symmetric             仅使用对称密文加密
+ -d, --decrypt               解密数据（默认）
+     --verify                验证签名
+ -k, --list-keys             列出密钥
+     --list-signatures       列出密钥和签名
+     --check-signatures      列出并检查密钥签名
+     --fingerprint           列出密钥和指纹
+ -K, --list-secret-keys      列出私钥
+     --generate-key          生成一个新的密钥对
+     --quick-generate-key    快速生成一个新的密钥对
+     --quick-add-uid         快速添加一个新的用户标识
+     --quick-revoke-uid      快速吊销一个用户标识
+     --quick-set-expire      快速设置一个过期日期
+     --full-generate-key     完整功能的密钥对生成
+     --generate-revocation   生成一份吊销证书
+     --delete-keys           从公钥钥匙环里删除密钥
+     --delete-secret-keys    从私钥钥匙环里删除密钥
+     --quick-sign-key        快速签名一个密钥
+     --quick-lsign-key       快速本地签名一个密钥
+     --quick-revoke-sig      quickly revoke a key signature
+     --sign-key              签名一个密钥
+     --lsign-key             本地签名一个密钥
+     --edit-key              签名或编辑一个密钥
+     --change-passphrase     更改密码
+     --export                导出密钥
+     --send-keys             个密钥导出到一个公钥服务器上
+     --receive-keys          从公钥服务器上导入密钥
+     --search-keys           在公钥服务器上搜索密钥
+     --refresh-keys          从公钥服务器更新所有密钥
+     --import                导入/合并密钥
+     --card-status           打印卡片状态
+     --edit-card             更改卡片上的数据
+     --change-pin            更改卡片的 PIN
+     --update-trustdb        更新信任数据库
+     --print-md              打印消息摘要
+     --server                以服务器模式运行
+     --tofu-policy VALUE     设置一个密钥的 TOFU 政策
+
+选项：
+ 
+ -a, --armor                 创建 ASCII 字符封装的输出
+ -r, --recipient USER-ID     为 USER-ID 加密
+ -u, --local-user USER-ID    使用 USER-ID 来签名或者解密
+ -z N                        设置压缩等级为 N （0 为禁用）
+     --textmode              使用规范的文本模式
+ -o, --output FILE           写输出到 FILE
+ -v, --verbose               详细模式
+ -n, --dry-run               不做任何更改
+ -i, --interactive           覆盖前提示
+     --openpgp               使用严格的 OpenPGP 行为
+
+（请参考手册页以获得所有命令和选项的完整列表）
+
+例子：
+
+ -se -r Bob [file]          为用户 Bob 签名和加密
+ --clear-sign [file]        创建一个明文签名
+ --detach-sign [file]       创建一个分离签名
+ --list-keys [names]        列出密钥
+ --fingerprint [names]      显示指纹
 ```
-
-
 
 生产密钥对:
 
 ```bash
+## 生成新的密钥对
+## 以专家模式生成可以添加 --expert 选项
+$: gpg --gen-key
+$: gpg --generate-key 
+
+## 以全功能形式生成新的密钥对（期间会有一些密钥的配置）
+$: gpg --full-generate-key
 $: gpg --full-gen-key
 ```
 
-按照提示进行，需要说明的是，`name` 和 `email` 还是应当同 `git config` 中保持一致。
+生成的密钥对一般放在`~/.gnupg`目录下。
+
+本文用 `gpg --full-gen-key` 按照提示进行，需要说明的是，`name` 和 `email` 还是应当同 `git config` 中保持一致。
 
 生成流程如下:
 
@@ -92,6 +184,16 @@ sub   cv25519 2023-03-09 [E] [expires: 2025-03-08]
 
 - `sub`： 显示私钥特征。
 
+> 生成密钥之后 建议生成一张"撤销证书"，用于密钥作废时，可以请求外部的公钥服务器撤销公钥。
+>
+> 命令为: 
+>
+> ```bash
+> $: gpg --gen-revoke [用户ID]
+> ```
+>
+> 此处的 用户ID 可以是用户邮箱
+
 设置 git 电子邮箱（此处，可全局也可局部设置，依据项目来）：
 
 ```bash
@@ -101,10 +203,17 @@ $: git config --global user.email "xxxxxxx@github.com"
 # --local 仓库级配置
 ```
 
-**Step 1**：导出用于签名的 PGP 公钥
+**Step 1**：列出签名的公钥
 
 ```bash
-$: gpg -a --export [PRIMARYKEYID]
+$: gpg --list-keys
+$: gpg --list-key [用户ID]
+```
+
+列出私钥：
+
+```bash
+$: gpg --list-secret-keys 
 ```
 
 **Step 2**：在 GitHub 中添加 GPG 公钥。具体步骤参照 [这里](https://docs.github.com/cn/authentication/managing-commit-signature-verification/adding-a-new-gpg-key-to-your-github-account)
@@ -201,7 +310,9 @@ $: gpg --delete-keys your@email.addr
 $: gpg --delete-secret-and-public-key your@email.addr
 ```
 
+- 添加子公钥:
 
+  GPG 提供了交互式添加子密钥的方法，`gpg --expert --edit-key [用户ID]` 进入交互式密钥编辑，使用 `addkey` 添加子密钥。
 
 
 
@@ -209,6 +320,7 @@ $: gpg --delete-secret-and-public-key your@email.addr
 
 - [简明 GPG 概念](https://zhuanlan.zhihu.com/p/137801979)
 - [使用 GPG 为 GIthub 签名](https://www.yangqi.show/posts/gpg-github)
+- [GPG 教程](https://www.bitlogs.tech/2019/01/gpg%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/)
 
 
 
