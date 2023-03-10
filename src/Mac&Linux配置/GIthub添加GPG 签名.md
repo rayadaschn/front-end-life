@@ -13,7 +13,7 @@ sticky: false
 
 ---
 
-# GIthub添加GPG 签名
+# GIthub添加 GPG 签名
 
 出于参与开源项目或是保护自身开源项目的安全考虑，在 GIthub 分支保护中，有一项 GPG 签名的设置。
 
@@ -28,6 +28,14 @@ sticky: false
 ```bash
 $: brew install gpg  
 ```
+
+安装完毕，进行验证：
+
+```bash
+$: gpg --help
+```
+
+
 
 生产密钥对:
 
@@ -72,7 +80,17 @@ uid                      userName <xxxxxxx@github.com>
 sub   cv25519 2023-03-09 [E] [expires: 2025-03-08]
 ```
 
-需要注意的是，这里的公钥名称为**[PRIMARYKEYID]**： `C1F89F0xxxxxxxxxxxxxD` 。
+需要注意的是，这里的主公钥名称为**[PRIMARYKEYID]**： `C1F89F0xxxxxxxxxxxxxD` 。
+
+再对上述结果进行说明:
+
+- `pub` : 显示的是公钥特性。加密算法为 `ed25519`，然后是时间，主密钥：`C1F89F0xxxxxxxxxxxxxD` 。
+
+  如果你选择了其它加密算法，则依据具体情况而定，如 `RSA` ： `pub 4096R/EDDD6D76 2013-07-11`。这串的释义是RSA 加密的公钥特征（4096位，Hash字符串和生成时间）
+
+- `uid`: 为用户 ID；
+
+- `sub`： 显示私钥特征。
 
 设置 git 电子邮箱（此处，可全局也可局部设置，依据项目来）：
 
@@ -102,9 +120,7 @@ $: git config --global user.signingkey [PRIMARYKEYID]
 ```bash
 $: brew install pinentry-mac
 
-
 $: echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf
-
 
 $: killall gpg-agent
 ```
@@ -159,13 +175,40 @@ $: curl https://github.com/web-flow.gpg | gpg --import
 $: gpg --lsign-key GitHub
 ```
 
+- 列出秘钥:
+
+```bash
+$: gpg --list-keys
+```
+
+- 删除私钥:
+
+```bash
+$: gpg --delete-secret-keys your@email.addr
+```
+
+`your@email.addr` 为你加密的邮箱，在 `uid`中显示
+
+- 删除公钥：
+
+```bash
+$: gpg --delete-keys your@email.addr
+```
+
+- 删除私钥和公钥:
+
+```bash
+$: gpg --delete-secret-and-public-key your@email.addr
+```
+
 
 
 
 
 ## 参考文档
 
-[使用 GPG 为 GIthub 签名](https://www.yangqi.show/posts/gpg-github)
+- [简明 GPG 概念](https://zhuanlan.zhihu.com/p/137801979)
+- [使用 GPG 为 GIthub 签名](https://www.yangqi.show/posts/gpg-github)
 
 
 
