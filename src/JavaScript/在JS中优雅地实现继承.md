@@ -28,7 +28,7 @@ sticky: false
 
   `Child.__proto__ = Parent`
 
-- 把子类实例`child`的原型对象(`Child.prototype`) 的原型(`__proto__`)指向了父类`parent`的原型对象(`Parent.prototype`)：
+- 把子类实例 `child` 的原型对象(`Child.prototype`) 的原型(`__proto__`)指向了父类`parent`的原型对象(`Parent.prototype`)：
 
   `Child.prototype.__proto__ = Parent.prototype `
 
