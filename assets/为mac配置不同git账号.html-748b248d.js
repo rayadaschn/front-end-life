@@ -121,6 +121,14 @@ $: <span class="token function">git</span> clone git@yourName.github.com:vuejs/v
 // 设置该项目使用的git账号和邮箱
 $: <span class="token function">git</span> config user.name <span class="token string">&#39;AnotherName&#39;</span>
 $: <span class="token function">git</span> config user.email <span class="token string">&#39;AnotherEmail&#39;</span>
+
+// 若有 gpg 签名 和 设置自动签名
+$: <span class="token function">git</span> config user.signingkey <span class="token string">&#39;PRIMARYKEYID&#39;</span>
+$: <span class="token function">git</span> config commit.gpgsign <span class="token boolean">true</span>
+
 // 查看该项目git账号是否正确
 $: <span class="token function">git</span> config <span class="token parameter variable">--list</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>感谢你的耐心阅读，希望你看完是带着收获离开的！</p>`,58);function g(m,v){const e=c("ExternalLinkIcon");return o(),t("div",null,[d,n("p",null,[s("首先，先 "),n("a",p,[s("下载 Git"),l(e)]),s(" ，并按照提示，一路选择安转即可。")]),u])}const h=i(r,[["render",g],["__file","为mac配置不同git账号.html.vue"]]);export{h as default};
+
+<span class="token comment"># --global 全局配置</span>
+<span class="token comment"># --local 仓库级配置</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>感谢你的耐心阅读，希望你看完是带着收获离开的！</p>`,58);function g(m,v){const e=c("ExternalLinkIcon");return o(),t("div",null,[d,n("p",null,[s("首先，先 "),n("a",p,[s("下载 Git"),l(e)]),s(" ，并按照提示，一路选择安转即可。")]),u])}const h=i(r,[["render",g],["__file","为mac配置不同git账号.html.vue"]]);export{h as default};
