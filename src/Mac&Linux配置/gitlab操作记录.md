@@ -47,17 +47,19 @@ $: git branch branchname
 
 // 3 切换分支指令(加指令 -b 为创建新分支,并切换过去)
 $: git checkout branchname
-$: git checkout -d newBranchname
+$: git checkout -b newBranchname
 
 // 4 删除分支
 // 4.1 删除本地分支
-$: git branch -D branchname
+$: git branch -d branchname
 // 4.2 删除远程分支
 $: git push origin --delete remoteBranchName
 
 // 5 合并分支到【当前主分支中去】, 因此需要先切换到"待合并分支"
 $: git checkout master
-$: git merge newBranch
+$: git merge --no-ff newBranch
+// 5.1 删除开发分支
+$: git branch -d newBranch
 
 // 6 个人开发,在个人分支上用分基 rebase 合并 master主分支 到个人分支上
 $: git checkout myBranchName
@@ -65,8 +67,16 @@ $: git checkout myBranchName
 $: git rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 $: git checkout master
-$: git merge myBranchName
+$: git merge  --no-ff myBranchName
 ```
+
+`git merge` 和 `git merge --no--ff` 的区别：
+
+- `fast-forward`，默认使用，**保留分支的提交记录，但不会生成合并的提交记录。** 新特性分支删除后，会丢失分支信息。
+- `–no-ff`，关闭`fast-forward`模式，在提交时，**保留分支的`commit`历史，并生成一次合并的提交记录。**
+- `--squash`，将多次分支`commit`历史压缩为一次，合并的时候相当于提交一次额外的 `commit` 进行总结。
+
+![git merge几种模式](https://image-static.segmentfault.com/120/030/1200301748-54c88abc9ed57_fix732)
 
 #### 2. 本地与远程端的交互
 
@@ -154,11 +164,15 @@ $: git push
   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
 
   > **--soft :** 不删除工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
-  > --hard : 删除工作空间改动代码，**撤销 commit**，**撤销`git add .`**
+  > **--hard :** 删除工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
   >     * 注意完成这个操作后，就恢复到了上一次的commit状态。
   >
-  > --mixed : 【默认参数】不删除工作空间改动代码，**撤销 commit**，并且 **撤销 `git add .` **
+  > **--mixed :** 【默认参数】不删除工作空间改动代码，**撤销 commit**，并且 **撤销 `git add .` **
+  >
+  > 简单的讲，正常提交是： `git add .` -->  `git commit` 
+  >
+  > 对应的回退版本是: `git reset --soft`   --> `git reset --mixed` 
 
 1. 如果我们的有两次 commit 但是没有 push 代码
 
@@ -385,3 +399,5 @@ $: conventional-changelog -p angular -i CHANGELOG.md -s
 - [ JDC 前端代码规范 (jdf2e.github.io)](https://jdf2e.github.io/jdc_fe_guide/docs/git/branch)
 - [Git 基本操作 ](https://www.runoob.com/git/git-basic-operations.html)
 - [前端 CHANGELOG 生成指南](https://godbasin.github.io/2019/11/10/change-log/)
+- [Git 分支管理](https://www.ruanyifeng.com/blog/2012/07/git.html)
+- [Git --no--ff](https://segmentfault.com/q/1010000002477106)
