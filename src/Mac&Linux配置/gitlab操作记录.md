@@ -41,6 +41,10 @@ sticky: false
 ```shell
 // 1 列出分支(无参数时, 会列出本地分支)
 $: git branch
+// 查看本地及远程分支情况
+$: git branch -a
+// 查看本地分支的追踪情况
+$: git remote show origin
 
 // 2 创建分支指令
 $: git branch branchname
@@ -49,17 +53,22 @@ $: git branch branchname
 $: git checkout branchname
 $: git checkout -b newBranchname
 
-// 4 删除分支
+// 4 删除分支 
 // 4.1 删除本地分支
 $: git branch -d branchname
+// 4.1.2 强制删除用大写
+$: git branch -D branchname
+
 // 4.2 删除远程分支
-$: git push origin --delete remoteBranchName
+$: git push origin -d remoteBranchName
+$: git push origin :remoteBranchName
+// 4.3 远程已删除分支,本地同步
+$: git remote prune origin
+
 
 // 5 合并分支到【当前主分支中去】, 因此需要先切换到"待合并分支"
 $: git checkout master
 $: git merge --no-ff newBranch
-// 5.1 删除开发分支
-$: git branch -d newBranch
 
 // 6 个人开发,在个人分支上用分基 rebase 合并 master主分支 到个人分支上
 $: git checkout myBranchName
@@ -67,7 +76,11 @@ $: git checkout myBranchName
 $: git rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 $: git checkout master
-$: git merge  --no-ff myBranchName
+$: git merge --no-ff myBranchName
+
+// 合并完后, 删除本地及远程分支
+$: git branch -d newBranch
+$: git push origin --d newBranch
 ```
 
 `git merge` 和 `git merge --no--ff` 的区别：
@@ -101,6 +114,8 @@ $: git commit -m [message]
 $: git commit -a
 // 2.3 正常推送
 $: git push
+// 2.3.1 推送本地所有的分支到远程
+$: git push --all
 ```
 
 中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 `rebase` 变基。有几种方案:
@@ -154,7 +169,7 @@ $: git push
    `git revert HEAD //撤销倒数第一次提交`
    `git revert HEAD^ //撤销倒数第二次提交`
    `git-revert HEAD~2 //撤销倒数第三次提交`
-   `git revert commit //（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进`
+   `git revert commit //（比如：fa042ce57ebbxxxxxxxxxxx2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进`
 2. 当代码已经 commit 并 push 时，可使用如下命令：
    `git revert HEAD~1 //代码回退到前一个版本`
 
@@ -174,26 +189,29 @@ $: git push
   >
   > 对应的回退版本是: `git reset --soft`   --> `git reset --mixed` 
 
-1. 如果我们的有两次 commit 但是没有 push 代码
+3. 如果我们的有两次 commit 但是没有 push 代码
 
 ```bash
 $: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
 ```
 
-1. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
+4. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
 
 ```bash
 $: git reset --hard HEAD~2   //本地的Wroking Copy回退到2个版本之前。
 $: git push origin <banchName> --force  // --force 为强制覆盖远程分支
+// 但更建议使用 `--force-with-lease`,确保不会覆盖他人的代码
 ```
 
-1. 只回退某个指定文件到指定版本
+> 注意！当我们使用强制指令时，若在远程的该分支中有他人的贡献，`--force` 是会覆盖掉他人的代码的，所以为了保险起见，应当用 `--force-with-lease` 。
+
+5. 只回退某个指定文件到指定版本
 
 ```bash
 $: git reset a4e215234aa4927c85693dca7b68e9976948a35e  xxx
 ```
 
-4.回退到指定版本
+6. 回退到指定版本
 
 ```bash
 $: git reset --hard commitId（通过git log可查看提交的commitId）

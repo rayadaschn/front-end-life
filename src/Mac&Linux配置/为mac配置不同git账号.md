@@ -335,8 +335,16 @@ $: cd 项目名
 // 设置该项目使用的git账号和邮箱
 $: git config user.name 'AnotherName'
 $: git config user.email 'AnotherEmail'
+
+// 若有 gpg 签名 和 设置自动签名
+$: git config user.signingkey 'PRIMARYKEYID'
+$: git config commit.gpgsign true
+
 // 查看该项目git账号是否正确
 $: git config --list
+
+# --global 全局配置
+# --local 仓库级配置
 ```
 
 感谢你的耐心阅读，希望你看完是带着收获离开的！
