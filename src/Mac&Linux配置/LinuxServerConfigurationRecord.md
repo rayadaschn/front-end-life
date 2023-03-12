@@ -1,5 +1,5 @@
 ---
-title: Linux 服务器配置记录
+title: Linux服务器配置记录
 index: 5
 icon: linux
 date: 2023-02-1
@@ -37,7 +37,7 @@ sticky: false
    rm [可选参数] [文件名]
    ```
 
-    可选参数如:
+   可选参数如:
 
    1. **-f** : 强制删除, 无提示。 `rm -f /removeDir`
 
@@ -73,7 +73,7 @@ sticky: false
    # 将当前目录 test/ 下的所有文件复制到新目录 newtest 下
    ```
 
-    2. 移动和重命名 mv
+   2. 移动和重命名 mv
 
    ```shell
    $: mv ./test.txt  ../   # 把当前目录下的test.txt移动到上一级目录去
@@ -109,7 +109,7 @@ sticky: false
      ```shell
      $: ls -l     # 查看文件详细信息, 可用 ll 代替
      $: ll
-      
+
      # -a 可查看隐藏文件, 即以 "."开头的文件
      ```
 
@@ -118,7 +118,7 @@ sticky: false
      ```shell
      cat [文件名]
      $: cat -n [文件名]    # 显示行号
-      
+
      $: head -5 file.txt  # 显示文件的头5行
      $: tail -5 file.txt  # 显示文件的后5行
      ```
@@ -136,7 +136,7 @@ sticky: false
 sudo chmod -R 777 /usr/share/nginx/html
 ```
 
- 说明: `chomd` 是改变权限的命令，`-R` 是递归遍历子目录的意思，`777` : 第一个 **7** 表示文件所属者的权限，第二个 **7** 表示所属者所在组的权限，第三个 **7** 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。
+说明: `chomd` 是改变权限的命令，`-R` 是递归遍历子目录的意思，`777` : 第一个 **7** 表示文件所属者的权限，第二个 **7** 表示所属者所在组的权限，第三个 **7** 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。
 
 ## Linux 目录划分
 
@@ -178,11 +178,11 @@ sudo chmod -R 777 /usr/share/nginx/html
    ```shell
    # 查找 nginx 服务器地址
    $: ps aux|grep nginx
-   
+
    # 检查配置文件是否正确
    $: nginx -t
    ```
-   
+
    **路径作用:**
 
 - `/etc/nginx`：nginx 配置文件的根目录，nginx 的所有配置文件都在这个目录下面；
@@ -225,7 +225,7 @@ sudo chmod -R 777 /usr/share/nginx/html
      ```shell
      #开启443端口
      sudo firewall-cmd --zone=public --add-port=443/tcp --permanent
-     
+
      sudo firewall-cmd --zone=public --add-service=https --permanent
      #重新加载防火墙配置
      sudo firewall-cmd --reload

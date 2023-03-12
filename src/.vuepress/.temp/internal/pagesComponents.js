@@ -33,10 +33,10 @@ export const pagesComponents = {
   "v-741bc49e": defineAsyncComponent(() => import(/* webpackChunkName: "v-741bc49e" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/异步小案例.html.vue")),
   // path: /JavaScript/%E5%BD%BB%E5%BA%95%E7%90%86%E8%A7%A3this%E6%8C%87%E5%90%91.html
   "v-6c18eb91": defineAsyncComponent(() => import(/* webpackChunkName: "v-6c18eb91" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/JavaScript/彻底理解this指向.html.vue")),
-  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/GIthub%E6%B7%BB%E5%8A%A0GPG%20%E7%AD%BE%E5%90%8D.html
-  "v-3c494a9e": defineAsyncComponent(() => import(/* webpackChunkName: "v-3c494a9e" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/GIthub添加GPG 签名.html.vue")),
-  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/Linux%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95.html
-  "v-02088592": defineAsyncComponent(() => import(/* webpackChunkName: "v-02088592" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/Linux操作记录.html.vue")),
+  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/GIthub%E6%B7%BB%E5%8A%A0GPG%E7%AD%BE%E5%90%8D.html
+  "v-4faf1f98": defineAsyncComponent(() => import(/* webpackChunkName: "v-4faf1f98" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/GIthub添加GPG签名.html.vue")),
+  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/LinuxServerConfigurationRecord.html
+  "v-1be23676": defineAsyncComponent(() => import(/* webpackChunkName: "v-1be23676" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/LinuxServerConfigurationRecord.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/Mac%E9%85%8D%E7%BD%AE%E8%AE%B0%E5%BD%95.html
   "v-afcb70c2": defineAsyncComponent(() => import(/* webpackChunkName: "v-afcb70c2" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/Mac配置记录.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/
@@ -45,8 +45,8 @@ export const pagesComponents = {
   "v-37b4dfaa": defineAsyncComponent(() => import(/* webpackChunkName: "v-37b4dfaa" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/gitlab操作记录.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/%E4%B8%BAmac%E9%85%8D%E7%BD%AE%E4%B8%8D%E5%90%8Cgit%E8%B4%A6%E5%8F%B7.html
   "v-6efb869b": defineAsyncComponent(() => import(/* webpackChunkName: "v-6efb869b" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/为mac配置不同git账号.html.vue")),
-  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/%E4%BD%BF%E7%94%A8PicGo_GitHub%20%E5%9B%BE%E5%BA%8A.html
-  "v-5b3c1074": defineAsyncComponent(() => import(/* webpackChunkName: "v-5b3c1074" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/使用PicGo_GitHub 图床.html.vue")),
+  // path: /Mac_Linux%E9%85%8D%E7%BD%AE/%E4%BD%BF%E7%94%A8PicGo_GitHub%E5%9B%BE%E5%BA%8A.html
+  "v-7182cfc9": defineAsyncComponent(() => import(/* webpackChunkName: "v-7182cfc9" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/使用PicGo_GitHub图床.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.html
   "v-1db83978": defineAsyncComponent(() => import(/* webpackChunkName: "v-1db83978" */"/Users/huy/Coder/Blog/src/.vuepress/.temp/pages/Mac_Linux配置/数据加密原理.html.vue")),
   // path: /Mac_Linux%E9%85%8D%E7%BD%AE/%E7%BB%88%E7%AB%AF%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86.html

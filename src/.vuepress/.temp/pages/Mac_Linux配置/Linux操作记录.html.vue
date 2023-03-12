@@ -83,14 +83,14 @@ $: <span class="token builtin class-name">pwd</span>       <span class="token co
 </ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">ls</span> <span class="token parameter variable">-l</span>     <span class="token comment"># 查看文件详细信息, 可用 ll 代替</span>
 $: ll
- 
+
 <span class="token comment"># -a 可查看隐藏文件, 即以 "."开头的文件</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="3">
 <li>查看文件内容</li>
 </ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code><span class="token function">cat</span> <span class="token punctuation">[</span>文件名<span class="token punctuation">]</span>
 $: <span class="token function">cat</span> <span class="token parameter variable">-n</span> <span class="token punctuation">[</span>文件名<span class="token punctuation">]</span>    <span class="token comment"># 显示行号</span>
- 
+
 $: <span class="token function">head</span> <span class="token parameter variable">-5</span> file.txt  <span class="token comment"># 显示文件的头5行</span>
 $: <span class="token function">tail</span> <span class="token parameter variable">-5</span> file.txt  <span class="token comment"># 显示文件的后5行</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ol start="4">
