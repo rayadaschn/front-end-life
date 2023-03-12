@@ -25,23 +25,34 @@
 <p>后续还会具体介绍，开发流程规范。此处介绍正常开发使用的指令：</p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// <span class="token number">1</span> 列出分支<span class="token punctuation">(</span>无参数时, 会列出本地分支<span class="token punctuation">)</span>
 $: <span class="token function">git</span> branch
+// 查看本地及远程分支情况
+$: <span class="token function">git</span> branch <span class="token parameter variable">-a</span>
+// 查看本地分支的追踪情况
+$: <span class="token function">git</span> remote show origin
 
 // <span class="token number">2</span> 创建分支指令
 $: <span class="token function">git</span> branch branchname
 
 // <span class="token number">3</span> 切换分支指令<span class="token punctuation">(</span>加指令 <span class="token parameter variable">-b</span> 为创建新分支,并切换过去<span class="token punctuation">)</span>
 $: <span class="token function">git</span> checkout branchname
-$: <span class="token function">git</span> checkout <span class="token parameter variable">-d</span> newBranchname
+$: <span class="token function">git</span> checkout <span class="token parameter variable">-b</span> newBranchname
 
-// <span class="token number">4</span> 删除分支
+// <span class="token number">4</span> 删除分支 
 // <span class="token number">4.1</span> 删除本地分支
+$: <span class="token function">git</span> branch <span class="token parameter variable">-d</span> branchname
+// <span class="token number">4.1</span>.2 强制删除用大写
 $: <span class="token function">git</span> branch <span class="token parameter variable">-D</span> branchname
+
 // <span class="token number">4.2</span> 删除远程分支
-$: <span class="token function">git</span> push origin <span class="token parameter variable">--delete</span> remoteBranchName
+$: <span class="token function">git</span> push origin <span class="token parameter variable">-d</span> remoteBranchName
+$: <span class="token function">git</span> push origin :remoteBranchName
+// <span class="token number">4.3</span> 远程已删除分支,本地同步
+$: <span class="token function">git</span> remote prune origin
+
 
 // <span class="token number">5</span> 合并分支到【当前主分支中去】, 因此需要先切换到<span class="token string">"待合并分支"</span>
 $: <span class="token function">git</span> checkout master
-$: <span class="token function">git</span> merge newBranch
+$: <span class="token function">git</span> merge --no-ff newBranch
 
 // <span class="token number">6</span> 个人开发,在个人分支上用分基 rebase 合并 master主分支 到个人分支上
 $: <span class="token function">git</span> checkout myBranchName
@@ -49,8 +60,19 @@ $: <span class="token function">git</span> checkout myBranchName
 $: <span class="token function">git</span> rebase master
 		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 $: <span class="token function">git</span> checkout master
-$: <span class="token function">git</span> merge myBranchName
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h4 id="_2-本地与远程端的交互" tabindex="-1"><a class="header-anchor" href="#_2-本地与远程端的交互" aria-hidden="true">#</a> 2. 本地与远程端的交互</h4>
+$: <span class="token function">git</span> merge --no-ff myBranchName
+
+// 合并完后, 删除本地及远程分支
+$: <span class="token function">git</span> branch <span class="token parameter variable">-d</span> newBranch
+$: <span class="token function">git</span> push origin <span class="token parameter variable">--d</span> newBranch
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code v-pre>git merge</code> 和 <code v-pre>git merge --no--ff</code> 的区别：</p>
+<ul>
+<li><code v-pre>fast-forward</code>，默认使用，<strong>保留分支的提交记录，但不会生成合并的提交记录。</strong> 新特性分支删除后，会丢失分支信息。</li>
+<li><code v-pre>–no-ff</code>，关闭<code v-pre>fast-forward</code>模式，在提交时，<strong>保留分支的<code v-pre>commit</code>历史，并生成一次合并的提交记录。</strong></li>
+<li><code v-pre>--squash</code>，将多次分支<code v-pre>commit</code>历史压缩为一次，合并的时候相当于提交一次额外的 <code v-pre>commit</code> 进行总结。</li>
+</ul>
+<figure><img src="https://image-static.segmentfault.com/120/030/1200301748-54c88abc9ed57_fix732" alt="git merge几种模式" tabindex="0" loading="lazy"><figcaption>git merge几种模式</figcaption></figure>
+<h4 id="_2-本地与远程端的交互" tabindex="-1"><a class="header-anchor" href="#_2-本地与远程端的交互" aria-hidden="true">#</a> 2. 本地与远程端的交互</h4>
 <p>正常流程是，查看状态、拉取、修改代码后，推送</p>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>// 远端数据库操作
 // <span class="token number">0</span>. 查看上次提交后是否有对文件进行再次修改, 若加 <span class="token parameter variable">-s</span> 则为获取简短输出结果
@@ -70,7 +92,9 @@ $: <span class="token function">git</span> commit <span class="token parameter v
 $: <span class="token function">git</span> commit <span class="token parameter variable">-a</span>
 // <span class="token number">2.3</span> 正常推送
 $: <span class="token function">git</span> push
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 <code v-pre>rebase</code> 变基。有几种方案:</p>
+// <span class="token number">2.3</span>.1 推送本地所有的分支到远程
+$: <span class="token function">git</span> push <span class="token parameter variable">--all</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 <code v-pre>rebase</code> 变基。有几种方案:</p>
 <p>假设此时，他人已经 push 相关代码到远程端了。</p>
 <ol>
 <li>【方案 1】正常流程,在 <code v-pre>push</code> 时,先用 <code v-pre>git pull --rebase</code> 拉取变基代码。而后，再解决冲突，推送。</li>
@@ -115,7 +139,7 @@ $: <span class="token function">git</span> push
 <code v-pre>git revert HEAD //撤销倒数第一次提交</code>
 <code v-pre>git revert HEAD^ //撤销倒数第二次提交</code>
 <code v-pre>git-revert HEAD~2 //撤销倒数第三次提交</code>
-<code v-pre>git revert commit //（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进</code></li>
+<code v-pre>git revert commit //（比如：fa042ce57ebbxxxxxxxxxxx2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进</code></li>
 <li>当代码已经 commit 并 push 时，可使用如下命令：
 <code v-pre>git revert HEAD~1 //代码回退到前一个版本</code></li>
 </ol>
@@ -126,27 +150,35 @@ $: <span class="token function">git</span> push
 <strong>git reset</strong> 是撤销某次提交，但是<strong>此次之后的修改都会被退回到暂存区</strong>。除了默认的 mixed 模式，还有 soft 和 hard 模式。</p>
 <blockquote>
 <p><strong>--soft :</strong> 不删除工作空间改动代码，<strong>撤销 commit</strong>，<strong>不撤销 <code v-pre>git add . </code></strong>
---hard : 删除工作空间改动代码，<strong>撤销 commit</strong>，<strong>撤销<code v-pre>git add .</code></strong></p>
+<strong>--hard :</strong> 删除工作空间改动代码，<strong>撤销 commit</strong>，<strong>撤销<code v-pre>git add .</code></strong></p>
 <pre><code>* 注意完成这个操作后，就恢复到了上一次的commit状态。
 </code></pre>
-<p>--mixed : 【默认参数】不删除工作空间改动代码，<strong>撤销 commit</strong>，并且 **撤销 <code v-pre>git add .</code> **</p>
+<p><strong>--mixed :</strong> 【默认参数】不删除工作空间改动代码，<strong>撤销 commit</strong>，并且 **撤销 <code v-pre>git add .</code> **</p>
+<p>简单的讲，正常提交是： <code v-pre>git add .</code> --&gt;  <code v-pre>git commit</code></p>
+<p>对应的回退版本是: <code v-pre>git reset --soft</code>   --&gt; <code v-pre>git reset --mixed</code></p>
 </blockquote>
 </li>
 </ul>
-<ol>
+<ol start="3">
 <li>如果我们的有两次 commit 但是没有 push 代码</li>
 </ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">git</span> reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><ol>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><ol start="4">
 <li>假如我们有几次代码修改，并且都<strong>已经 push 到了版本库</strong>中。</li>
 </ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">git</span> reset <span class="token parameter variable">--hard</span> HEAD~2   //本地的Wroking Copy回退到2个版本之前。
 $: <span class="token function">git</span> push origin <span class="token operator">&lt;</span>banchName<span class="token operator">></span> <span class="token parameter variable">--force</span>  // <span class="token parameter variable">--force</span> 为强制覆盖远程分支
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><ol>
+// 但更建议使用 <span class="token variable"><span class="token variable">`</span>--force-with-lease<span class="token variable">`</span></span>,确保不会覆盖他人的代码
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><blockquote>
+<p>注意！当我们使用强制指令时，若在远程的该分支中有他人的贡献，<code v-pre>--force</code> 是会覆盖掉他人的代码的，所以为了保险起见，应当用 <code v-pre>--force-with-lease</code> 。</p>
+</blockquote>
+<ol start="5">
 <li>只回退某个指定文件到指定版本</li>
 </ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">git</span> reset a4e215234aa4927c85693dca7b68e9976948a35e  xxx
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>4.回退到指定版本</p>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><ol start="6">
+<li>回退到指定版本</li>
+</ol>
 <div class="language-bash line-numbers-mode" data-ext="sh"><pre v-pre class="language-bash"><code>$: <span class="token function">git</span> reset <span class="token parameter variable">--hard</span> commitId（通过git log可查看提交的commitId）
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><h3 id="贮藏与清理" tabindex="-1"><a class="header-anchor" href="#贮藏与清理" aria-hidden="true">#</a> 贮藏与清理</h3>
 <blockquote>
@@ -315,6 +347,8 @@ $: conventional-changelog <span class="token parameter variable">-p</span> angul
 <li><a href="https://jdf2e.github.io/jdc_fe_guide/docs/git/branch" target="_blank" rel="noopener noreferrer"> JDC 前端代码规范 (jdf2e.github.io)<ExternalLinkIcon/></a></li>
 <li><a href="https://www.runoob.com/git/git-basic-operations.html" target="_blank" rel="noopener noreferrer">Git 基本操作 <ExternalLinkIcon/></a></li>
 <li><a href="https://godbasin.github.io/2019/11/10/change-log/" target="_blank" rel="noopener noreferrer">前端 CHANGELOG 生成指南<ExternalLinkIcon/></a></li>
+<li><a href="https://www.ruanyifeng.com/blog/2012/07/git.html" target="_blank" rel="noopener noreferrer">Git 分支管理<ExternalLinkIcon/></a></li>
+<li><a href="https://segmentfault.com/q/1010000002477106" target="_blank" rel="noopener noreferrer">Git --no--ff<ExternalLinkIcon/></a></li>
 </ul>
 </div></template>
 

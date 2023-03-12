@@ -15,7 +15,7 @@ sticky: false
 
 - 对象的比较
 
-  由于对象不是常量，所以比较俩个对象的键值对是否相同不能用 `===` 全等或是 `==` 比较符进行比较。我们很快可以想到用 `JSON.stringigy()` 函数进行比较。
+  由于对象不是常量，所以比较俩个对象是否相同不能用 `===` 全等或是 `==` 比较符进行比较。我们很快可以想到用 `JSON.stringigy()` 函数进行比较。
   ```javascript
   let a = { name: 'Dionysia', age: 29};
   let b = { name: 'Dionysia', age: 29};

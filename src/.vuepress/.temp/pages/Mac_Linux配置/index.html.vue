@@ -6,6 +6,8 @@
 <li><RouterLink to="/Mac&amp;Linux%E9%85%8D%E7%BD%AE/%E7%BB%88%E7%AB%AF%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86.html">为 MacOS 设置终端代理</RouterLink></li>
 <li><RouterLink to="/Mac&amp;Linux%E9%85%8D%E7%BD%AE/Linux%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95.html">Linux 操作记录</RouterLink></li>
 <li><RouterLink to="/Mac&amp;Linux%E9%85%8D%E7%BD%AE/gitlab%E6%93%8D%E4%BD%9C%E8%AE%B0%E5%BD%95.html">gitlab 操作记录</RouterLink></li>
+<li>[使用PicGo+GitHub 图床](使用PicGo+GitHub <a href="http://xn--wcso9o.md" target="_blank" rel="noopener noreferrer">图床.md<ExternalLinkIcon/></a>)</li>
+<li>[GIthub添加GPG 签名](GIthub添加GPG <a href="http://xn--eqrt13g.md" target="_blank" rel="noopener noreferrer">签名.md<ExternalLinkIcon/></a>)</li>
 </ul>
 </div></template>
 

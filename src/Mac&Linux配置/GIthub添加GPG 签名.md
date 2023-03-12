@@ -9,11 +9,9 @@ tag:
 star: true
 # sticky: true
 sticky: false
-
-
 ---
 
-# GIthub添加 GPG 签名
+# GIthub 添加 GPG 签名
 
 出于参与开源项目或是保护自身开源项目的安全考虑，在 GIthub 分支保护中，有一项 GPG 签名的设置。
 
@@ -26,7 +24,7 @@ sticky: false
 在 MacOS 下，我们利用 brew 包进行下载：
 
 ```bash
-$: brew install gpg  
+$: brew install gpg
 ```
 
 安装完毕，进行验证：
@@ -53,7 +51,7 @@ Home: /home/xxxx/.gnupg
 默认的操作依输入数据而定
 
 命令：
- 
+
  -s, --sign                  生成一份签名
      --clear-sign            生成一份明文签名
  -b, --detach-sign           生成一份分离的签名
@@ -97,7 +95,7 @@ Home: /home/xxxx/.gnupg
      --tofu-policy VALUE     设置一个密钥的 TOFU 政策
 
 选项：
- 
+
  -a, --armor                 创建 ASCII 字符封装的输出
  -r, --recipient USER-ID     为 USER-ID 加密
  -u, --local-user USER-ID    使用 USER-ID 来签名或者解密
@@ -126,7 +124,7 @@ Home: /home/xxxx/.gnupg
 ## 生成新的密钥对
 ## 以专家模式生成可以添加 --expert 选项
 $: gpg --gen-key
-$: gpg --generate-key 
+$: gpg --generate-key
 
 ## 以全功能形式生成新的密钥对（期间会有一些密钥的配置）
 $: gpg --full-generate-key
@@ -178,7 +176,7 @@ sub   cv25519 2023-03-09 [E] [expires: 2025-03-08]
 
 - `pub` : 显示的是公钥特性。加密算法为 `ed25519`，然后是时间，主密钥：`C1F89F0xxxxxxxxxxxxxD` 。
 
-  如果你选择了其它加密算法，则依据具体情况而定，如 `RSA` ： `pub 4096R/EDDD6D76 2013-07-11`。这串的释义是RSA 加密的公钥特征（4096位，Hash字符串和生成时间）
+  如果你选择了其它加密算法，则依据具体情况而定，如 `RSA` ： `pub 4096R/EDDD6D76 2013-07-11`。这串的释义是 RSA 加密的公钥特征（4096 位，Hash 字符串和生成时间）
 
 - `uid`: 为用户 ID；
 
@@ -186,13 +184,13 @@ sub   cv25519 2023-03-09 [E] [expires: 2025-03-08]
 
 > 生成密钥之后 建议生成一张"撤销证书"，用于密钥作废时，可以请求外部的公钥服务器撤销公钥。
 >
-> 命令为: 
+> 命令为:
 >
 > ```bash
 > $: gpg --gen-revoke [用户ID]
 > ```
 >
-> 此处的 用户ID 可以是用户邮箱
+> 此处的 用户 ID 可以是用户邮箱
 
 设置 git 电子邮箱（此处，可全局也可局部设置，依据项目来）：
 
@@ -213,7 +211,7 @@ $: gpg --list-key [用户ID]
 列出私钥：
 
 ```bash
-$: gpg --list-secret-keys 
+$: gpg --list-secret-keys
 ```
 
 **Step 2**：在 GitHub 中添加 GPG 公钥。具体步骤参照 [这里](https://docs.github.com/cn/authentication/managing-commit-signature-verification/adding-a-new-gpg-key-to-your-github-account)
@@ -314,21 +312,8 @@ $: gpg --delete-secret-and-public-key your@email.addr
 
   GPG 提供了交互式添加子密钥的方法，`gpg --expert --edit-key [用户ID]` 进入交互式密钥编辑，使用 `addkey` 添加子密钥。
 
-
-
 ## 参考文档
 
 - [简明 GPG 概念](https://zhuanlan.zhihu.com/p/137801979)
 - [使用 GPG 为 GIthub 签名](https://www.yangqi.show/posts/gpg-github)
 - [GPG 教程](https://www.bitlogs.tech/2019/01/gpg%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B/)
-
-
-
-
-
-
-
-
-
-
-

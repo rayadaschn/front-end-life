@@ -254,9 +254,17 @@ $: <span class="token function">git</span> clone git@yourName.github.com:vuejs/v
 // 设置该项目使用的git账号和邮箱
 $: <span class="token function">git</span> config user.name <span class="token string">'AnotherName'</span>
 $: <span class="token function">git</span> config user.email <span class="token string">'AnotherEmail'</span>
+
+// 若有 gpg 签名 和 设置自动签名
+$: <span class="token function">git</span> config user.signingkey <span class="token string">'PRIMARYKEYID'</span>
+$: <span class="token function">git</span> config commit.gpgsign <span class="token boolean">true</span>
+
 // 查看该项目git账号是否正确
 $: <span class="token function">git</span> config <span class="token parameter variable">--list</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>感谢你的耐心阅读，希望你看完是带着收获离开的！</p>
+
+<span class="token comment"># --global 全局配置</span>
+<span class="token comment"># --local 仓库级配置</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>感谢你的耐心阅读，希望你看完是带着收获离开的！</p>
 </div></template>
 
 

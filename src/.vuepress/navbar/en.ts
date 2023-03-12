@@ -26,6 +26,12 @@ export const enNavbar = navbar([
     prefix: "Mac&Linux配置/",
     link: "/Mac&Linux配置/",
   },
+  {
+    text: "不止Coder",
+    icon: "anonymous",
+    prefix: "Mac&Linux配置/",
+    link: "/不止代码/",
+  },
 
   //  { text: "Demo", icon: "discover", link: "/demo/" },
   // {

@@ -37,10 +37,10 @@ export const enSidebar = sidebar({
       children: "structure",
     },
     {
-      text: "优质博文",
-      icon: "note",
-      link: "/优质博文",
-      // children: "structure",
+      text: "不止代码",
+      icon: "anonymous",
+      link: "/不止Coder/",
+      children: "structure",
     },
   ],
 });
