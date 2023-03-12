@@ -7,13 +7,13 @@ on:
     paths-ignore: # 下列文件的变更不触发部署，可以自行添加
       - README.md
       - LICENSE
-    pull_request:
-      branches:
-        - sourcecode # 只在master上push触发部署
-      types: [closed]
-    schedule:
-      # Runs everyday at 3:00 AM
-      - cron: "0 3 * * *"
+  pull_request:
+    branches:
+      - sourcecode # 只在master上push触发部署
+    types: [closed]
+  schedule:
+    # Runs everyday at 11:30
+    - cron: "30 11 * * *"
 
 jobs:
   deploy-gh-pages:
