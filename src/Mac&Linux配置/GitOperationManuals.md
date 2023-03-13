@@ -14,8 +14,6 @@ sticky: false
 
 # GitLab 操作手册指南
 
-[toc]
-
 ## 分支管理规范
 
 - **master** 主分支，受保护，不存放源代码，不直接提交代码，所有的 上线文件 需要推送到此分支。
@@ -299,7 +297,7 @@ $: git push --force
 
 ### 持续集成: GitLab CI/CD
 
-若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍， 详细可以参考 [官方文档](https://about.gitlab.com/resources/scaled-ci-cd/?utm_medium=cpc&utm_source=google&utm_campaign=singleappci_amer_pr_rsa_nb_exact_&utm_content=scaled-ci-cd_digital_x-pr_english_&&utm_term=ci cd&\_bt=626050032714&\_bk=ci cd&\_bm=b&\_bn=g) 。
+若有代码迭代问题，可以考虑是否 加入 **GitLab CI/CD** 做持续集成， 本文对此概念做简单介绍。
 
 **GitLab CI/CD** 是一个内置在 GitLab 中的工具，用于通过持续方法进行软件开发 :
 
@@ -309,13 +307,13 @@ $: git push --force
 
 ## Git 提交规范
 
-参考**angular**团队的**git**提交规范。
+参考 **angular** 团队的 **git** 提交规范。
 
 Commit message 都包括三个部分：**Header** (必须)，Body 和 Footer。
 
 ### Header
 
-** 提交格式**： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题`
+**提交格式** ： `type(scope): subject` ， 例如： `fix(Button): 修复按钮问题`
 
 ```shell
 - type
