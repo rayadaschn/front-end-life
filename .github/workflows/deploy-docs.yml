@@ -1,4 +1,4 @@
-name: 部署文档
+name: deploy-gh-pages
 
 on:
   push:
@@ -12,8 +12,7 @@ on:
       - sourcecode # 只在master上push触发部署
     types: [closed]
   schedule:
-    # Runs everyday at 11:30
-    - cron: "30 11 * * *"
+    - cron: "30 5,11 * * *" # Runs everyday at 11:30
 
 jobs:
   deploy-gh-pages:
