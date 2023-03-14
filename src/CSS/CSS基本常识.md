@@ -148,7 +148,35 @@ tag:
 - 拥有自己的尺寸，可能为 0；
 - 在很多 CSS 属性上拥有自己的一套表现规则：`vertical-align` 非替换元素为字符`x`的下边缘，而替换元素的基线为元素的下边缘。
 
+**替换元素和非替换元素之间只隔了一个 CSS `content`属性。**
 
+- 替换元素之所以可以替换，就是其拥有 `content`属性，这个属性替换的内容为 `content box`。
+
+  ```css
+  img:hover {
+   content: url(xxx.png); 
+  }
+  ```
+
+- `content`属性改变的仅仅是视觉呈现。所以保存图片时，保存的还是原来的 `src`所对应的图片。
+
+- `content` 生成的文本是无法选中、复制的，就如同设置了 `user-select：none` 声明一般。
+
+- 不能左右 `:empty` 伪类。
+
+- `content` 动态生成值无法获取。
+
+## 盒子模型
+
+### padding 较为温和
+
+- 在默认情况下，`css`的盒子里 `box-sizing:content-box`，所以 `padding` 会增加元素的尺寸。
+
+- 对于非替换元素的内联元素，`padding` 和 `margin` 不会加入行盒子的高度计算。
+
+- `padding` 垂直和水平的百分比是基于 `width` 宽度。
+
+  若是在块级特性上，`padding` 的百分比还有一个特性，就是会断行。
 
 
 
