@@ -78,7 +78,7 @@ $: git merge --no-ff myBranchName
 
 // 合并完后, 删除本地及远程分支
 $: git branch -d newBranch
-$: git push origin --d newBranch
+$: git push origin -d newBranch
 ```
 
 `git merge` 和 `git merge --no--ff` 的区别：
