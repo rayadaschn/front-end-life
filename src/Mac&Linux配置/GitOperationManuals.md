@@ -215,6 +215,44 @@ $: git reset a4e215234aa4927c85693dca7b68e9976948a35e  xxx
 $: git reset --hard commitId（通过git log可查看提交的commitId）
 ```
 
+汇总:
+
+```shell
+# 恢复暂存区的指定文件到工作区
+$ git checkout [file]
+
+# 恢复某个commit的指定文件到暂存区和工作区
+$ git checkout [commit] [file]
+
+# 恢复暂存区的所有文件到工作区
+$ git checkout .
+
+# 重置暂存区的指定文件，与上一次commit保持一致，但工作区不变
+$ git reset [file]
+
+# 重置暂存区与工作区，与上一次commit保持一致
+$ git reset --hard
+
+# 重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变
+$ git reset [commit]
+
+# 重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致
+$ git reset --hard [commit]
+
+# 重置当前HEAD为指定commit，但保持暂存区和工作区不变
+$ git reset --keep [commit]
+
+# 新建一个commit，用来撤销指定commit
+# 后者的所有变化都将被前者抵消，并且应用到当前分支
+$ git revert [commit]
+
+# 暂时将未提交的变化移除，稍后再移入
+$ git stash
+$ git stash pop
+```
+
+
+
 ### 贮藏与清理
 
 > 贮藏（stash）会处理工作目录的脏的状态——即跟踪文件的修改与暂存的改动——然后将未完成的修改保存到一个栈上， 而你可以在任何时候重新应用这些改动（甚至在不同的分支上）。
@@ -245,13 +283,49 @@ $: git stash drop stash@{number}
 	$: git stash clear
 ```
 
+### 打标签 Tag
+
+```shell
+# 列出所有tag
+$: git tag
+
+# 新建一个tag在当前commit
+$: git tag [tag]
+
+# 新建一个tag在指定commit
+$: git tag [tag] [commit]
+
+# 删除本地tag
+$: git tag -d [tag]
+
+# 删除远程tag
+$: git push origin :refs/tags/[tagName]
+
+# 查看tag信息
+$: git show [tag]
+
+# 提交指定tag
+$: git push [remote] [tag]
+$: git push origin [tagname]
+// 推送本地所有分支
+$: git push origin --tags
+
+# 提交所有tag
+$: git push [remote] --tags
+
+# 新建一个分支，指向某个tag
+$: git checkout -b [branch] [tag]
+
+# 检出标签
+$: git checkout [tagname]
+```
+
+
+
 ### 修改 Commit
 
-1. 列出 commit 列表:
-   ` $: git rebase -i` 或者
-
 ```bash
-1. 列出 commit 列表:
+// 1. 列出 commit 列表:
 $: git rebase -i
 	1.1 修改 commit 信息
 	1.2 修改完后,重复执行如下命令直到完成
@@ -273,6 +347,40 @@ $: git log --oneline -5
 4. 若是修改已经 push 的 commmit message, 则在推送push的时候需要加 --force，强制覆盖远程分支上的提交信息。
 $: git push --force
 ```
+
+### git config 定制
+
+`git` 也支持自定义指令:
+
+比方说，你想添加一个别名，用于添加一个空的提交。在这种情况下，你可以在配置文件(在 `~/.gitconfig` )中添加以下内容：
+
+```shell
+[alias]
+    empty = "git commit --allow-empty"
+```
+
+或者在终端:
+
+```shell
+$: git config --global alias.empty "git commit --allow-empty"
+```
+
+使用自定义指令:
+
+```shell
+$: git empty "Empty commit"
+```
+
+也可以在 Git 之外添加其他 shell 命令作为别名。例如，删除一个已经合并到远程的本地分支的别名：
+
+```txt
+[alias]
+    delete-local-merged = "!git fetch && git branch --merged | egrep -v 'master' | xargs git branch -d"
+```
+
+**感叹号 ！ 告诉 Git 把它作为一个 shell 命令运行，而不是 `git` 命令。**
+
+对于别名，我们做一个 git fetch。然后我们得到合并后的分支，把它作为 egrep 命令的输入，过滤掉 `master` 分支，然后删除这些分支。
 
 ## 开发流程
 

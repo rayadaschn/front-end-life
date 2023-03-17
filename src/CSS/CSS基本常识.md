@@ -231,7 +231,47 @@ tag:
   - 如果一侧定值，一侧 `auto`，则 `auto` 为剩余空间大小;
   - 如果俩侧都是 `auto`，则平分剩余空间。
 
+### border 边框
 
+- `border-width` 不支持百分比
+
+- `border-style`，默认为 `none`。因此，单独设置以下样式是无边框的：
+
+  ```css
+  div { border: 10px; }
+  div { border: red; }
+  ```
+
+  需要加 `border-style: solid` :
+
+  ```css
+  div { border: 1px solid; }
+  ```
+
+- `border-color` 在没有指定颜色时，会默认使用当前元素的 `color` 计算值作为边框颜色。类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
+
+- 透明边框可以增加点击区域：
+
+  ```css
+  .icon {
+    width: 10px;
+    height: 10px;
+    border: 10px solid transparent;
+  }
+  ```
+
+- 三角形绘制:
+
+  ```css
+  /* 倒三角形 */
+  div {
+    width: 0;
+    border: 10px solid;
+    border-color: #f30 transparent transparent;
+  }
+  ```
+
+  
 
 
 
