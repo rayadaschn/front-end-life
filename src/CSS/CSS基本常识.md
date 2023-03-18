@@ -351,7 +351,7 @@ tag:
 
 - 误区 1: “要想让单行文字垂直居中，只要设置 `line-height` 大小和 `height`高度一样就行了。” 其实，当然从效果上看确实如此。（原理：行高等于盒子高度，中间内容天然垂直居中显示）但是这句话也存在误导，只需要设置 `line-height` 就行了（盒子高度由行高决定）。
 
-  ![误区 1](/Users/huy/Library/Application%20Support/typora-user-images/image-20230318125746724.png)
+  ![误区 1](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/20230318125852.png)
 
 - 误区 2: “行高控制文字垂直居中，不使用于多行”。实际上，多行也可以。（准确是说近似居中，如微软雅黑文字会略微下沉）多行垂直居中的原理和单行的不同，需要借助 **`vertical-align`** 。原理如下：
 
