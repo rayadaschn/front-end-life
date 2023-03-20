@@ -267,7 +267,9 @@ tag:
   div { border: 1px solid; }
   ```
 
-- `border-color` 在没有指定颜色时，会默认使用当前元素的 `color` 计算值作为边框颜色。类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
+- **`border-color` 在没有指定颜色时，会默认使用当前元素的 `color` 计算值作为边框颜色。**类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
+
+  应用: 如利用行内元素（ `<a>` ）的边宽做下划线，则鼠标覆盖时，边框也会一同变色。
 
 - 透明边框可以增加点击区域：
 
