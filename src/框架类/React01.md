@@ -46,7 +46,7 @@ sticky: false
 
 创建一个 Hello World demo:
 
-```HTML
+```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
