@@ -3,7 +3,7 @@ title: Vue3中的script-setup
 icon: vue
 order: 1
 category:
-  - vue
+  - 框架
 tag:
   - Vue
 star: true

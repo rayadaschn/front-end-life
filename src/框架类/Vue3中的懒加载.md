@@ -3,7 +3,7 @@ title: Vue3中的懒加载
 icon: vue
 order: 3
 category:
-  - vue
+  - 框架
 tag:
   - Vue
 star: true

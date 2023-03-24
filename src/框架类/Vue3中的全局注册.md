@@ -3,7 +3,7 @@ title: Vue3中的全局注册
 icon: vue
 order: 2
 category:
-  - vue
+  - 框架
 tag:
   - Vue
 star: true

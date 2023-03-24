@@ -3,7 +3,7 @@ title: Vue3中的动态路由懒加载实例
 icon: vue
 order: 4
 category:
-  - vue
+  - 框架
 tag:
   - Vue
 star: true
