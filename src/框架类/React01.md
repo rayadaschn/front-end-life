@@ -164,4 +164,223 @@ sticky: false
 
   
 
+
+## JSX
+
+JSX是一种JavaScript的语法扩展(**extension**)，也在很多地方称之为**JavaScript XML**，因为看起就是一段XML语法。简单的说就是能在 JavaScript 中书写 XML 语法，而不会报错。
+
+### 书写规范
+
+- 和 Vue 的 Template 模版语法一样，JSX的顶层**只能有一个根元素**，所以我们很多时候会在外层包裹一个div元素或者Fragment（后续提及）；
+- 通常在jsx的外层包裹一个小括号`()`，这样可以方便阅读，并且jsx可以进行换行书写;
+- JSX中的标签可以是单标签，也可以是双标签;
+
+### 注释方式
+
+在 JSX 中，注释方式不同于 js 或者 xml，而是二者的结合。将XML 的注释放在大括号中，使得最终编译出来的结果能够在 XML 中显示未 XML 注释形式：
+
+```jsx
+{/* --- 注释 --- */}
+```
+
+### 大括号包裹变量
+
+jsx 用大括号包裹变量。
+
+- 当变量是Number、String、Array类型时，可以直接显示；
+- 当变量是null、undefined、Boolean类型时，内容为空。若想显示可以用 `String(undefined)`进行转换，以字符串的形式显示。当然也可以用 toString、同空字符串拼接等形式；
+- 注意，jsx 可以自动解析数组，但是**Object对象类型不能作为子元素**(not valid as a React child)。
+- 在大括号中可以嵌入表达式：
+  - 运算符表达式，如 `+`、-、`*`、`/`等；
+  - 也可以书写一个三元运算符，或者用 `&&` 且 || 或运算，形式如同 JavaScript；
+  - 也可以执行一个函数，推荐使用箭头函数。这样无需额外的绑定 `this`。
+
+### JSX 绑定属性
+
+- XML 的基本属性绑定，如 `title`和`src`等；
+
+- 需要注意的是元素的 `class` 属性，由于 `class` 是 JavaScript 中的类关键词，为了避免歧义最好使用 `className` 进行绑定，为此需要额外引入第三方库 **classname**；
+
+- 此外，在利用 `for` 等循环渲染节点的时候，为了提高 `diff` 算法的效率，React 要求为每个节点绑定一个 `key` 属性，这点和 `Vue` 相同。
+
+  ```jsx
+  render() {
+    const { title, imgURL, href, isActive, objStyle } = this.state
   
+    // 需求: isActive: true -> active
+    // 1.class绑定的写法一: 字符串的拼接
+    const className = `abc cba ${isActive ? 'active': ''}`
+    // 2.class绑定的写法二: 将所有的class放到数组中
+    const classList = ["abc", "cba"]
+    if (isActive) classList.push("active")
+    // 3.class绑定的写法三: 第三方库classnames -> npm install classnames
+  
+    return (
+      <div>
+        { /* 1.基本属性绑定 */ }
+        <h2 title={title}>我是h2元素</h2>
+        {/*<img src={imgURL} alt=""/>*/}
+        <a href={href}>百度一下</a>
+  
+        
+        { /* 2.绑定class属性: 最好使用className */ }
+        <h2 className={className}>哈哈哈哈</h2>
+        <h2 className={classList.join(" ")}>哈哈哈哈</h2>
+  
+        
+        { /* 3.绑定style属性: 绑定对象类型 */ }
+        <h2 style={{color: "red", fontSize: "30px"}}>呵呵呵呵</h2>
+        <h2 style={objStyle}>呵呵呵呵</h2>
+      </div>
+    )
+  }
+  ```
+
+### JSX 绑定事件
+
+事件绑定的方法有三种:
+
+- `bind` 绑定，需要注意的是在传参时， `bind`绑定的第一个参数是 `this`；
+- 直接传一个执行函数，需要注意的是该函数最好为箭头函数，否则也需要额外绑定；
+
+```jsx
+class App extends React.Component {
+  // class fields
+  name = "App"
+
+  constructor() {
+    super()
+    this.state = {
+      message: "Hello World",
+      counter: 100
+    }
+
+    this.btn1Click = this.btn1Click.bind(this)
+  }
+
+  btn1Click() {
+    console.log("btn1Click", this);
+    this.setState({ counter: this.state.counter + 1 })
+  }
+
+  btn2Click = () => {
+    console.log("btn2Click", this)
+    this.setState({ counter: 1000 })
+  }
+
+  btn3Click() {
+    console.log("btn3Click", this);
+    this.setState({ counter: 9999 })
+  }
+
+  render() {
+    const { message } = this.state
+
+    return (
+      <div>
+        {/* 1.this绑定方式一: bind绑定 */}
+        <button onClick={this.btn1Click}>按钮1</button>
+
+
+        {/* 2.this绑定方式二: ES6 class fields */}
+        <button onClick={this.btn2Click}>按钮2</button>
+
+
+        {/* 3.this绑定方式三: 直接传入一个箭头函数(重要) */}
+        <button onClick={() => console.log("btn3Click")}>按钮3</button>
+
+        <button onClick={() => this.btn3Click()}>按钮3</button>
+
+
+        <h2>当前计数: {this.state.counter}</h2>
+      </div>
+    )
+  }
+}
+```
+
+### 条件渲染
+
+和 Vue 不同的是，在 React 中没有额外的模版语法，都是利用 js 的逻辑进行判断：
+
+```jsx
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      message: "Hello World",
+
+      isReady: false,
+
+      friend: undefined
+    }
+  }
+
+  render() {
+    const { isReady, friend } = this.state
+
+    // 1.条件判断方式一: 使用if进行条件判断
+    let showElement = null
+    if (isReady) {
+      showElement = <h2>准备开始比赛吧</h2>
+    } else {
+      showElement = <h1>请提前做好准备!</h1>
+    }
+
+    return (
+      <div>
+        {/* 1.方式一: 根据条件给变量赋值不同的内容 */}
+        <div>{showElement}</div>
+
+        {/* 2.方式二: 三元运算符 */}
+        <div>{ isReady ? <button>开始战斗!</button>: <h3>赶紧准备</h3> }</div>
+
+        {/* 3.方式三: &&逻辑与运算 */}
+        {/* 场景: 当某一个值, 有可能为undefined时, 使用&&进行条件判断 */}
+        <div>{ friend && <div>{friend.name + " " + friend.desc}</div> }</div>
+      </div>
+    )
+  }
+}
+```
+
+若想要实现 Vue 中 `v-show`的数据缓存，则可以利用 `style` 本身进行 `display` 语法判断：
+
+```jsx
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      message: "Hello World",
+      isShow: true
+    }
+  }
+
+  changeShow() {
+    this.setState({ isShow: !this.state.isShow })
+  }
+
+  render() {
+    const { message, isShow } = this.state
+
+    return (
+      <div>
+        <button onClick={() => this.changeShow()}>切换</button>
+        { isShow && <h2>{message}</h2> }
+
+        {/* v-show的效果 */}
+        <h2 style={{display: isShow ? 'block': 'none'}}>哈哈哈哈</h2>
+      </div>
+    )
+  }
+}
+```
+
+### JSX 的本质
+
+将一段 JSX 代码利用 [babel](https://babeljs.io/repl) 进行转换，结果如下：
+
+![Babel 转换 JSX 代码](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202303252136114.png)
+
+可以看到，在babel的帮助下 JSX 中包含 XML 的部分最终转换成了 `React.createElement()` 的形式。因此，可以将 JSX 当做 `React.createElement()` 的语法糖。
+
