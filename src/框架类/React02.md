@@ -27,7 +27,7 @@ sticky: false
 使用**class**定义一个组件：
 
 - **constructor**是可选的，我们通常在**constructor**中初始化一些数据。若不写，若需要传参，则直接用形如 `this.props.xxx`形式 ；
-- **this.state**中维护的就是我们组件内部的数据；
+- **this.state**中维护的就是我们组件内部的数据，优化部分在下文做进一步讨论；
 - `render()` 方法是 class 组件中唯一必须实现的方法。需要注意的是，当 `render` 被调用时，它会检查 `this.props` （继承属性）和 `this.state` （组件自身属性）的变化并返回以下类型之一：
   - React 元素，也就是组件元素；
   - 数组或 `fragments`；
@@ -70,7 +70,7 @@ export default function App() {
 
 - `getDerivedStateFromProps：state` 的值在任何时候都依赖于 props时使用；该方法返回一个对象来更新state；
 - `getSnapshotBeforeUpdate`：在React更新DOM之前回调的一个函数，可以获取DOM更新前的一些信息（比如说滚动位置）；
-- `shouldComponentUpdate`：该生命周期函数实际较为很常用；
+- `shouldComponentUpdate`：该生命周期函数实际较为很常用，它用于控制组件是否需要重新渲染，即如果函数返回 `false` 则组件不进行重新渲染。一般情况下，是用于比对 `this.state` 和 `this.props` 是否发生改变（**浅比较**），若没有发生变化，则返回 `false` 。不过一个一个的比对的话，着实比较费力，所以 React 为我们提供了 `PureComponent` 来代替  `React.Component` ，如此这部分的优化就无需我们手动控制了；
 
 ```jsx
 import React from "react"
@@ -445,3 +445,257 @@ export class TabControl extends Component {
 ```
 
 在上述代码中，最终要显示的插槽内容为 `{itemType(item)}`，也就是说 这块的内容完全有父组件调度，以此达到插槽的目的。
+
+## React 的更新流程
+
+了解了 React 在工程化组件中的基本用法后，我们来看一下 React 的更新流程（这对 React 的项目优化很重要）。
+
+- React 的渲染流程是：
+
+  由 JSX 代码编译为 虚拟 DOM，再从虚拟 DOM 编译为真实 DOM。
+
+- React 的更新流程是：
+
+  监听到 `props 和 state` 的变化 --> `render` 函数重新执行 --> 产生新的虚拟 DOM 树  --> 新旧虚拟 DOM 树进行 Diff 算法比较  --> 计算出虚拟 DOM 树中不同的地方进行更新 --> 再更新到真实 DOM 树
+
+从上面的更新流程中可以看出，我们可以在 第一步 “监听到 `props 和 state` 的变化” 和 “新旧虚拟 DOM 树进行 Diff 算法比较 ” 俩个方面进行优化，其余步骤更多为框架自动完成。
+
+### 更新优化
+
+从上文的生命周期中，我们简单的介绍过不常用的生命周期 `shouldComponentUpdate`，这个生命周期可以控制组件是否需要重新渲染。但实际使用上，我们会采用 `PureComponent` 来帮助我们自动化优化这一部分。用法很简单，直接用将 `class` 继承自 `PureComponent`即可；而函数组件则利用高阶组件 `memo`进行包裹。
+
+```jsx
+// 类组件
+export class Bar extends PureComponent {
+  render() {
+    return (
+      <div>PureComponent优化渲染</div></div>
+    )
+  }
+}
+```
+
+```jsx
+// 函数组件
+import { memo } from "react"
+
+const Profile = memo(function(props) {
+  console.log("profile render")
+  return <h2>Profile: {props.message}</h2>
+})
+
+export default Profile
+```
+
+需要注意的是，这里的方法实际上都是调用 **shallowEqual** 进行浅比较，即 **`!shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)`** ，意为对比是否为浅拷贝，如果是浅拷贝指向的对象地址没有发生变化，则不会进行重写渲染。
+
+这里要强调一个知识点：**React 的数据不可变力量**。
+
+什么意思呢？就是不能够直接对 `this.state` 里的数据进行处理更新。我们必须先拷贝（将解构出来）一份数据出来，而后对拷贝出来的对象进行处理，最后再利用 `this.setstate` 将其赋值给原数据。
+
+为什么需要这样做呢? 如果我们直接对 `this.state` 里的数据进行处理，而该对象恰好为一个对象。我们改变其内部的数据是不会改动这个对象的指向地址的，也就是说调用 **shallowEqual** 进行浅比较时，是不会有变化的，使得组件不会发生更新渲染，这并不是我们想要的。
+
+为此，我们需要先将 `this.state` 中需要改变的对象，先解构出一份来。此时，虽然内部的属性可能也有对象，但是外部的堆内存地址已经改变了，可以被 **shallowEqual** 浅比较检测出来。
+
+```jsx
+// 数据不可变性
+changeCount(index) {
+  // this.state.data[index].count++
+  const data = [...this.state.data]
+  data[index].count++
+  this.setState({ data: data }) // 请注意,这里的俩者堆内存不一致可以进行更新
+}
+```
+
+## 操作 DOM 属性
+
+和在 Vue 一样，在 React 中也是通过 `ref` 操作 DOM 原生（通常情况下，不需要也不建议这样做）。
+
+应用场景:
+
+- 管理焦点，文本选择或媒体播放;
+- 触发强制动画;
+- 集成第三方 DOM 库;
+
+创建 `refs` 获取对应的 DOM 元素，有三种方式：
+
+- 传入字符串： 通过 `this.refs` 传入的字符串格式获取对应的元素;
+- 传入一个对象：对象是通过 React.createRef() 方式创建出来的。使用时获取到创建的对象其中有一个`current`属性就是对应的元素;
+- 传入一个函数：该函数会在DOM被挂载时进行回调，这个函数会传入一个 元素对象，我们可以自己保存。使用时，直接拿到之前保存的元素对象即可。
+
+需要注意的是，**ref** 的值根据节点的类型而有所不同：
+
+- **当 ref 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 ref 接收底层 DOM 元素作为其 current 属性。**这种方式和 Vue 较为相似，也推荐这种形式！
+
+```jsx
+// 获取 DOM 元素属性
+import React, { PureComponent, createRef } from 'react'
+
+export class App extends PureComponent {
+  constructor() {
+    super()
+    this.titleRef = createRef() // 需要用到 createRef()
+    this.titleEl = null
+  }
+
+  getNativeDOM() {
+    // 1.方式一: 在React元素上绑定一个ref字符串
+    console.log(this.refs.someString)
+
+    // 2.方式二: 提前创建好ref对象, createRef(), 将创建出来的对象绑定到元素
+   console.log(this.titleRef.current)
+
+    // 3.方式三: 传入一个回调函数, 在对应的元素被渲染之后, 回调函数被执行, 并且将元素传入
+    console.log(this.titleEl)
+  }
+
+  render() {
+    return (
+      <div>
+        <h2 ref="someString">字符串形式获取</h2>
+        <h2 ref={this.titleRef}> ref 对象形式获取,利用 current 进行调用</h2>
+        <h2 ref={el => this.titleEl = el}>函数形式获取</h2>
+        <button onClick={e => this.getNativeDOM()}>获取DOM</button>
+      </div>
+    )
+  }
+}
+```
+
+- 当 ref 属性用于自定义 class 组件时，**ref 对象接收组件的挂载实例作为其 current 属性**；
+
+```jsx
+// 获取 class 组件
+import React, { PureComponent, createRef } from 'react'
+
+class SonComponent extends PureComponent {
+  testFunc() {
+    console.log("test------")
+  }
+  render() {
+    return <h1>子组件</h1>
+  }
+}
+
+export class App extends PureComponent {
+  constructor() {
+    super()
+    this.someString = createRef() // 先定义ref
+  }
+
+  getComponent() {
+    console.log(this.someString.current) 
+    this.someString.current.testFunc() // 获取子组件上的属性方法
+  }
+
+  render() {
+    return (
+      <div>
+        <SonComponent ref={this.someString}/>
+        <button onClick={e => this.getComponent()}>获取组件实例</button>
+      </div>
+    )
+  }
+}
+export default App
+```
+
+- 不能**在函数组件上使用** **ref** **属性**，因为他们没有实例。所以要获取函数子组件的 DOM，这时我们需要通过 [`React.forwardRef`](https://legacy.reactjs.org/docs/forwarding-refs.html) 来获取，此时在`forwardRef` 函数中能够获取俩个参数：`props`和父组件传递过来的`ref`。因此，通过父组件传递过来的 `ref`，能够达到父组件操作函数子组件的方法。当然，还有 `hooks`的操作方法，后续介绍。
+
+```jsx
+// 在函数组件上获取 DOM
+import React, { PureComponent, createRef, forwardRef } from 'react'
+
+const FuncSonComponent = forwardRef(function(props, ref) {
+  return (
+    <div>
+      <h1 ref={ref}>函数子组件</h1>
+    </div>
+  )
+})
+
+export class App extends PureComponent {
+  constructor() {
+    super()
+    this.someString = createRef() // 先定义ref
+  }
+
+  getComponent() {
+    console.log(this.someString.current) // 获取子组件上的 DOM 节点
+  }
+
+  render() {
+    return (
+      <div>
+        <FuncSonComponent ref={this.someString}/>
+        <button onClick={e => this.getComponent()}>获取函数子组件实例</button>
+      </div>
+    )
+  }
+}
+
+export default App
+```
+
+## 受控组件
+
+学习过 Vue 的都知道 Vue 中的 `V-model` 双向绑定，它用于在表单元素和 Vue 实例的数据之间双向绑定。通过将 v-model 绑定到表单元素的 `value` 或 `checked` 属性，Vue 实例的数据将与表单元素的状态同步。Vue 中用法如下所示：
+
+```vue
+<template>
+  <div>
+    <input v-model="message" placeholder="Enter message">
+    <p>Message is: {{ message }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      message: ""
+    };
+  }
+};
+</script>
+```
+
+而在 React 中，表单的处理方式和普通的 DOM 元素不一样：表单元素通常会保存在一些内部的 **state** 。
+
+受控组件的定义为表单输入元素的值受 React 组件 `state` 或 `prop` 控制的元素。它的值受 React 管理，通过组件的 `setState()` 方法或者 `prop` 来更新。
+
+可以**使用受控组件来进行可预测的响应表单输入的变化**。它可以让开发人员很容易地管理表单的状态，并在表单提交时存储数据。也就是说，在 React 中，需要额外的监听如 `input` 等组件的 `value` 等输入值的变化。
+
+```jsx
+export class App extends PureComponent {
+  constructor() {
+    super()
+
+    this.state = {
+      inputValue: "" // input 中的初始值
+    }
+  }
+
+  inputChange(event) { // 监听 input 中键入的事件变化
+    console.log("inputChange:", event.target.value)
+    this.setState({ inputValue: event.target.value })
+  }
+
+  render() {
+    const { inputValue } = this.state
+
+    return (
+      <div>
+        {/* 受控组件 */}
+        <input type="checkbox" value={inputValue} onChange={e => this.inputChange(e)}/>
+
+        {/* 非受控组件 */}
+        <input type="text" />
+        
+        <h2>inputValue输入值: {inputValue}</h2>
+      </div>
+    )
+  }
+}
+```
+
