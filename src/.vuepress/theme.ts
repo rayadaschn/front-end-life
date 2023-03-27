@@ -1,6 +1,5 @@
 import { hopeTheme } from "vuepress-theme-hope";
 import { enNavbar, zhNavbar } from "./navbar/index.js";
-// import { enSidebar, zhSidebar } from "./sidebar/index.js";
 
 export default hopeTheme({
   hostname: "https://mister-hope.github.io",
@@ -13,7 +12,7 @@ export default hopeTheme({
   iconAssets: "iconfont",
 
   logo: "/logo.png",
-  sidebar: "structure", // 自动生成侧边栏
+  // sidebar: "structure", // 自动生成侧边栏
 
   // 项目仓库地址
   // repo: "vuepress-theme-hope/vuepress-theme-hope",
@@ -65,8 +64,7 @@ export default hopeTheme({
       // navbar
       navbar: enNavbar,
 
-      // sidebar
-      // sidebar: enSidebar,
+      navbarAutoHide: "always",
 
       footer: "MIT Licensed | Copyright",
 
