@@ -27,7 +27,7 @@ sticky: false
 使用**class**定义一个组件：
 
 - **constructor**是可选的，我们通常在**constructor**中初始化一些数据。若不写，若需要传参，则直接用形如 `this.props.xxx`形式 ；
-- **this.state **中维护的就是我们组件内部的数据；
+- **this.state**中维护的就是我们组件内部的数据；
 - `render()` 方法是 class 组件中唯一必须实现的方法。需要注意的是，当 `render` 被调用时，它会检查 `this.props` （继承属性）和 `this.state` （组件自身属性）的变化并返回以下类型之一：
   - React 元素，也就是组件元素；
   - 数组或 `fragments`；
@@ -345,6 +345,7 @@ export class NavBarTwo extends Component {
 在 Vue 中[作用域插槽](https://cn.vuejs.org/guide/components/slots.html#dynamic-slot-names)的意思是在某些场景下插槽的内容可能想要**同时使用父组件域内和子组件域内的数据**。要做到这一点，我们需要一种方法来让子组件在渲染时将一部分数据提供给插槽。
 
 ```vue
+<!-- 在 Vue 中的作用域插槽 -->
 <current-user>
   <template v-slot:default="slotProps">
     {{ slotProps.user.firstName }}
