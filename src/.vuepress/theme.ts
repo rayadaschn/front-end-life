@@ -11,7 +11,7 @@ export default hopeTheme({
 
   iconAssets: "iconfont",
 
-  logo: "/logo.png",
+  logo: "logo.png",
   // sidebar: "structure", // 自动生成侧边栏
 
   // 项目仓库地址

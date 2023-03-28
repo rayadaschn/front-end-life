@@ -664,7 +664,7 @@ export default {
 
 受控组件的定义为表单输入元素的值受 React 组件 `state` 或 `prop` 控制的元素。它的值受 React 管理，通过组件的 `setState()` 方法或者 `prop` 来更新。
 
-可以**使用受控组件来进行可预测的响应表单输入的变化**。它可以让开发人员很容易地管理表单的状态，并在表单提交时存储数据。也就是说，在 React 中，需要额外的监听如 `input` 等组件的 `value` 等输入值的变化。
+可以**使用受控组件来进行可预测的响应表单输入的变化**。它可以让开发人员很容易地管理表单的状态，并在表单提交时存储数据。也就是说，在 React 中，需要额外的监听如 `input` 等组件的 `value` 等输入值的变化。以下是文本绑定是示例：
 
 ```jsx
 export class App extends PureComponent {
@@ -698,4 +698,258 @@ export class App extends PureComponent {
   }
 }
 ```
+
+受控组件用途最广的还是表单组件，接下来我们同 [Vue 的表单组件](https://cn.vuejs.org/guide/essentials/forms.html#text) 一起详细对比俩者的用法区别：
+
+### 多行文本
+
+```vue
+<!-- 在 Vue 中 -->
+<span>Multiline message is:</span>
+<p style="white-space: pre-line;">{{ message }}</p>
+<textarea v-model="message" placeholder="add multiple lines"></textarea>
+```
+
+```jsx
+// 在 React 中
+class App extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      MultilineMessage: "",
+    };
+  }
+
+  handleChange(event) {
+    // 监听 input 中键入的事件变化
+    const targetObj = event.target.name;
+    this.setState({ [targetObj]: event.target.value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault(); // 1.阻止默认的行为 防止刷新
+    console.log("点击提交处理", this.state.MultilineMessage);
+  }
+
+  render() {
+    return (
+      <form onSubmit={(e) => this.handleSubmit(e)}>
+        <label>
+          Essay:
+          <textarea
+            name="MultilineMessage"
+            value={this.state.MultilineMessage}
+            onChange={(e) => this.handleChange(e)}
+            />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+
+同时在上述代码中，我们还可以发现，如果是多个表单，我们无需定义多个监听函数。表单中预先定义 `name` 属性，此时当键入表单数据时，可以通过事件中 `event.target.name` 得到表单名，因此，自然可以用变量属性的方式直接同步修改：`this.setState([event.target.name]: event.target.value)`。
+
+### 复选框 checkbox
+
+复选框有单选和多选的区别，我们先看 vue 中如何处理：
+
+```vue
+<!-- 在 Vue 中单选 -->
+<input type="checkbox" id="checkbox" v-model="checked" />
+<label for="checkbox">{{ checked }}</label>
+
+<!-- 在 Vue 中多选 -->
+// const checkedNames = ref([])
+<div>Checked names: {{ checkedNames }}</div>
+
+<input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+<label for="jack">Jack</label>
+
+<input type="checkbox" id="john" value="John" v-model="checkedNames">
+<label for="john">John</label>
+
+<input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+<label for="mike">Mike</label>
+```
+
+可以看到，在 Vue 中单选直接用 v-model 进行值绑定，多选则需用到数组，勾选项以数组的形式传入。这在 React 中也是一样的。
+
+```jsx
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      isAgree: false,
+      hobbies: [
+        { value: "sing", text: "唱", isChecked: false },
+        { value: "dance", text: "跳", isChecked: false },
+        { value: "rap", text: "rap", isChecked: false },
+      ],
+    };
+  }
+  
+  handleAgreeChange(event) {
+    this.setState({ isAgree: event.target.checked })
+  }
+
+  handleHobbiesChange(event, index) {
+    const hobbies = [...this.state.hobbies];
+    hobbies[index].isChecked = event.target.checked;
+    this.setState({ hobbies: hobbies });
+  }
+
+  render() {
+    const { hobbies } = this.state;
+    return (
+      <div>
+        {/* 在 React 中 checkbox 单选 */}
+        <label htmlFor="agree">
+          <input 
+            id='agree' 
+            type="checkbox" 
+            checked={isAgree} 
+            onChange={e => this.handleAgreeChange(e)}
+            />
+          同意协议
+        </label>
+        
+        {/* 在 React 中 checkbox 多选 */}
+        <div>
+          您的爱好:
+          {hobbies.map((item, index) => {
+            return (
+              <label htmlFor={item.value} key={item.value}>
+                <input
+                  type="checkbox"
+                  id={item.value}
+                  checked={item.isChecked}
+                  onChange={(e) => this.handleHobbiesChange(e, index)}
+                  />
+                <span>{item.text}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+}
+```
+
+在 React 中，多选复选框需要注意的是选中值不再是 `event.target.value` 而是 `event.target.checked`；其次，由于 `for` 也是 js 中的预留词，所以需要改为 `htmlFor` 。
+
+### 选择器
+
+```vue
+<!-- 在 Vue 中选择器-->
+<div>Selected: {{ selected }}</div>
+
+<select v-model="selected">
+  <option disabled value="">Please select one</option>
+  <option>A</option>
+  <option>B</option>
+  <option>C</option>
+</select>
+```
+
+```jsx
+// 在 React 的选择器
+<select value={fruit} onChange={(e) => this.handleFruitChange(e)}>
+  <option value="apple">苹果</option>
+  <option value="orange">橘子</option>
+  <option value="banana">香蕉</option>
+</select>
+
+<div>
+  <button type='submit'>注册</button>
+</div>
+```
+
+```jsx
+// 在 React 的选择器 多选
+handleFruitChange(event) {
+  const options = Array.from(event.target.selectedOptions);
+  const values = options.map((item) => item.value);
+  this.setState({ fruit: values });
+
+  // 额外补充: Array.from(可迭代对象)
+  // Array.from(arguments) 可传第二个回调函数, 效果等同于上面
+  // const values2 = Array.from(
+  //   event.target.selectedOptions,
+  //   (item) => item.value
+  // );
+}
+
+// render 函数
+<select value={fruit} onChange={(e) => this.handleFruitChange(e)} multiple>
+  <option value="apple">苹果</option>
+  <option value="orange">橘子</option>
+  <option value="banana">香蕉</option>
+</select>
+
+<div>
+  <button type='submit'>注册</button>
+</div>
+```
+
+> 类数组（array-like）在 JavaScript 中，可以简单理解为具有数组特性（可以通过索引值访问、具有 length 属性等）但不是 Array 类型的对象。常见的类数组对象包括函数的 arguments 对象和 DOM 元素集合。
+>
+> 以下是一些关于类数组的代码示例：
+>
+> 1.类数组转换为数组
+>
+> 可以使用 Array.from() 或者 Array.prototype.slice.call() 方法将类数组转换为真正的数组。
+>
+> ```JavaScript
+> const arrLike = {0: 'foo', 1: 'bar', 2: 'baz', length: 3};
+> const arr = Array.from(arrLike);
+> console.log(arr); // ['foo', 'bar', 'baz']
+> 
+> const arr2 = Array.prototype.slice.call(arrLike);
+> console.log(arr2); // ['foo', 'bar', 'baz']
+> ```
+>
+> 2.遍历类数组
+>
+> 可以使用 for 循环或者 forEach() 方法遍历类数组。
+>
+> ```JavaScript
+> const arrLike = {0: 'foo', 1: 'bar', 2: 'baz', length: 3};
+> 
+> for (let i = 0; i < arrLike.length; i++) {
+>   console.log(arrLike[i]);
+> }
+> 
+> Array.prototype.forEach.call(arrLike, (item) => {
+>   console.log(item);
+> });
+> ```
+>
+> 3.使用类数组的方法
+>
+> 类数组对象并没有 Array 类型的方法，但是可以使用 call() 或 apply() 方法在类数组上调用 Array 类型的方法。
+>
+> ```JavaScript
+> const arrLike = {0: 1, 1: 2, 2: 3, length: 3};
+> 
+> const max = Math.max.apply(null, arrLike);
+> console.log(max); // 3
+> ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
