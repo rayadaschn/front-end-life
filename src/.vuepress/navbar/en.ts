@@ -15,69 +15,21 @@ export const enNavbar = navbar([
     link: "/CSS/", // 此处link 要相对目录
   },
   {
-    icon: "vue",
+    icon: "react",
     text: "框架类",
-    prefix: "框架类/",
-    link: "/框架类/", // 此处link 要相对目录
+    prefix: "Framework/",
+    link: "/Framework/", // 此处link 要相对目录
   },
   {
     text: "Mac/Linux配置",
     icon: "note",
-    prefix: "Mac&Linux配置/",
-    link: "/Mac&Linux配置/",
+    prefix: "SystemRequirements/",
+    link: "/SystemRequirements/",
   },
   {
     text: "不止Coder",
     icon: "anonymous",
-    prefix: "Mac&Linux配置/",
-    link: "/不止代码/",
+    prefix: "OneMoreThing/",
+    link: "/OneMoreThing/",
   },
-
-  //  { text: "Demo", icon: "discover", link: "/demo/" },
-  // {
-  //   text: "Posts",
-  //   icon: "edit",
-  //   prefix: "/posts/",
-  //   children: [
-  //     {
-  //       text: "Apple",
-  //       icon: "edit",
-  //       prefix: "apple/",
-  //       children: [
-  //         { text: "Apple1", icon: "edit", link: "1" },
-  //         { text: "Apple2", icon: "edit", link: "2" },
-  //         "3",
-  //         "4",
-  //       ],
-  //     },
-  //     {
-  //       text: "Banana",
-  //       icon: "edit",
-  //       prefix: "banana/",
-  //       children: [
-  //         {
-  //           text: "Banana 1",
-  //           icon: "edit",
-  //           link: "1",
-  //         },
-  //         {
-  //           text: "Banana 2",
-  //           icon: "edit",
-  //           link: "2",
-  //         },
-  //         "3",
-  //         "4",
-  //       ],
-  //     },
-  //     { text: "Cherry", icon: "edit", link: "cherry" },
-  //     { text: "Dragon Fruit", icon: "edit", link: "dragonfruit" },
-  //     "tomato",
-  //     "strawberry",
-  //   ],
-  // },
-  // {
-  //   text: "V2 Docs",
-  //   icon: "note",
-  //   link: "https://theme-hope.vuejs.vuepress/",
-  // },
 ]);

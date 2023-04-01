@@ -8,6 +8,6 @@ category:
 
 ## Catalog
 
-- [flex 布局技巧](flex布局技巧.md)
-- [多种方式实现居中](多种方式实现居中.md)
-- [CSS基本常识](CSS基本常识.md)
+- [flex 布局技巧](FlexboxLayoutTechniques.md)
+- [多种方式实现居中](DifferentMethodsToAchieveCentering.md)
+- [CSS 基本常识](CSSFundamentals.md)
