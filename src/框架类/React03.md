@@ -15,7 +15,7 @@ sticky: false
 
 ## 高阶组件
 
-**高阶组件（High-Order Component）**接受 React 组件作为输入，输出一个新的 React 组件。
+**高阶组件（`High-Order Component`）**接受 React 组件作为输入，输出一个新的 React 组件。
 
 - 高阶组件不是组件，是增强函数，可以输入一个元组件，输出一个新的增强组件
 - 高阶组件的主要作用是代码复用，操作状态和参数
