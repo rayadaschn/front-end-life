@@ -206,7 +206,7 @@ store.dispatch(addTodoAction);
 
 使用方法:
 
-- 安装: npm install`redux-thunk` ；
+- 安装: `npm install redux-thunk` ；
 
 - 在创建 store 时传入应用了 `middleware` 的 `enhance`函数；
 
@@ -348,7 +348,7 @@ export default rootReducer;
 Redux 为开发者提供了一个 Redux DevTools 的浏览器插件，它可以帮助开发者更方便地调试 Redux 应用程序。下面是使用 Redux DevTools 的一些步骤：
 
 1. 安装 Redux DevTools 浏览器插件。Redux DevTools 提供了 Chrome 和 Firefox 版本的插件。安装好插件后，在浏览器的扩展程序中可以看到 Redux DevTools 的图标。
-2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。
+2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。安装: `npm install redux-devtools-extension `（ 更多[Redux-devtool-extension的相关设置](https://github.com/zalmoxisus/redux-devtools-extension) ）
 
 ```js
 import { createStore, applyMiddleware } from 'redux';
