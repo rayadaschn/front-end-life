@@ -940,16 +940,3 @@ handleFruitChange(event) {
 > ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-

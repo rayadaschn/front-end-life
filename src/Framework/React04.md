@@ -57,6 +57,12 @@ function addToTotal(num) {
 
 Redux 是一种用于管理应用程序状态的 JavaScript 库。它可以在 React、Angular、Vue 或任何其他 JavaScript 应用程序中使用。Redux 通过强制将应用程序的状态存储在单个全局对象中来简化状态管理。这个全局状态对象是只读的，唯一可以更改它的方式是通过发出“操作”来修改它。操作是一个纯 JavaScript 对象，描述了发生了什么类型的更改以及需要更新状态的数据。
 
+### 哪些数据需要 Redux 进行维护呢?
+
+- UI相关的组件内部可以维护的状态，在组件内部自己来维护；
+- 只要是需要共享的状态，都交给redux来管理和维护；
+- 从服务器请求的数据（包括请求的操作），交给redux来维护；
+
 Redux 的工作方式可以概括为三个步骤：
 
 1. 将应用程序状态存储在一个全局对象中
@@ -116,7 +122,7 @@ Redux 的三大原则是：
    export function reducer(state = initialState, action) {
      switch (action.type) {
        case 'INCREMENT':
-         return { ...state, count: state.count + action.num };
+         return { ...state, count: state.count + action.num }; // 为了数据单一性,此处的 state 需要进行结构
        case 'DECREMENT':
          return { ...state, count: state.count - action.num };
        default:
@@ -160,6 +166,128 @@ Redux 的三大原则是：
    import { store } from './index';
    console.log(store.getState());
    ```
+
+### 在组件中使用 Redux
+
+从上述流程中，可以知道想要获取动态变化的 `store` 中的数据，需要借助 `store.subscribe` 订阅方法。通常这一步是在生命周期 `componentDidMount` 的中进行订阅绑定。而后正常使用：
+
+```jsx
+import store from "../store"
+import { addNumberAction } from '../store/actionCreators'
+
+export class App extends PureComponent {
+  constructor() {
+    super()
+    // 获取 store 中的数据
+    this.state = {
+      counter: store.getState().counter,
+    }
+  }
+
+  componentDidMount() {
+    // 订阅数据, 实时监听数据变化
+    store.subscribe(() => {
+      const state = store.getState()
+      this.setState({ counter: state.counter })
+    })
+  }
+
+  addNumber(num) { // 更新数据变化
+    store.dispatch(addNumberAction(num))
+  }
+
+  render() {
+    const { counter } = this.state // 解构获取 counter 数据
+
+    return (
+      <div>
+        <h2>展示 App 中的 Counter: {counter}</h2>
+        <button onClick={e => this.addNumber(1)}>+1</button>
+      </div>
+    )
+  }
+}
+```
+
+可以看出，这样的操作较为复杂，因此 React 提供了一个 `connect` api，它会返回一个高阶组件（Higher Order Component，HOC），用于连接 React 组件与 Redux store。它是 React-Redux 库提供的一个重要 API，通过它我们可以将 Redux store 中的数据和方法传递给组件，从而实现组件的数据状态管理。
+
+**`connect` 的作用可以简单地概括为：将 Redux store 中的数据和方法映射到组件的 props 中。**通过 `connect`，我们可以让组件访问 Redux store 中的数据，并将 store 中的更新操作转换为组件的 props 属性，从而实现组件的重新渲染。
+
+**`connect` 接受两个参数：`mapStateToProps` 和 `mapDispatchToProps`。**它们分别用于将 Redux store 中的 state 和 action 映射到组件的 props 中。
+
+- `mapStateToProps` 函数用于将 Redux store 中的 state 映射到组件的 props 中。这个函数接受一个参数 `state`，它表示当前的 Redux store 的 state。`mapStateToProps` 函数返回一个对象，对象的属性即为要传递给组件的 props，属性的值则是从 Redux store 中取出的数据。
+
+  ```js
+  const mapStateToProps = (state) => {
+    return {
+      count: state.count
+    };
+  }
+  ```
+
+  上述代码中，`mapStateToProps` 函数返回了一个对象，该对象的 `count` 属性表示 Redux store 中的 `count` 属性，它会被映射到组件的 props 中。
+
+- `mapDispatchToProps` 函数用于将 Redux store 中的 action 映射到组件的 props 中。这个函数接受一个参数 `dispatch`，它是 Redux store 的 dispatch 方法。`mapDispatchToProps` 函数返回一个对象，对象的属性即为要传递给组件的 props，属性的值则是一个函数，用于将 action 分发到 Redux store 中。
+
+  ```js
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      increment: () => dispatch({ type: 'INCREMENT' }),
+      decrement: () => dispatch({ type: 'DECREMENT' })
+    };
+  }
+  ```
+
+  上述代码中，`mapDispatchToProps` 函数返回了一个对象，该对象的 `increment` 和 `decrement` 属性分别表示了两个分发 action 的函数，它们会被映射到组件的 props 中。
+
+最后，我们可以使用 `connect` 函数将 `mapStateToProps` 和 `mapDispatchToProps` 函数与 React 组件进行连接，从而实现数据和方法的传递。例如：
+
+```jsx
+import { connect } from 'react-redux';
+
+export class App extends PureComponent {
+
+  calcNumber(num, isAdd) { // 处理更新 counter
+    if (isAdd) {
+      console.log("加", num)
+      this.props.increment(num)
+    } else {
+      console.log("减", num)
+      this.props.decrement(num)
+    }
+  }
+
+  render() {
+    const { counter } = this.props // 从 this.props 中取出 store 中的数据
+
+    return (
+      <div>
+        <h2>About Page: {counter}</h2>
+        <div>
+          <button onClick={e => this.calcNumber(6, true)}>+6</button>
+          <button onClick={e => this.calcNumber(8, false)}>-8</button>
+        </div>
+      </div>
+    )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    count: state.count
+  };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    increment: () => dispatch({ type: 'INCREMENT' }),
+    decrement: () => dispatch({ type: 'DECREMENT' })
+  };
+}
+
+// 通过 connect 将 mapStateToProps 和 mapDispatchToProps 俩个高阶函数映射到 App 组件的 props 中
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+```
 
 **redux代码优化**:
 
@@ -348,7 +476,7 @@ export default rootReducer;
 Redux 为开发者提供了一个 Redux DevTools 的浏览器插件，它可以帮助开发者更方便地调试 Redux 应用程序。下面是使用 Redux DevTools 的一些步骤：
 
 1. 安装 Redux DevTools 浏览器插件。Redux DevTools 提供了 Chrome 和 Firefox 版本的插件。安装好插件后，在浏览器的扩展程序中可以看到 Redux DevTools 的图标。
-2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。安装: `npm install redux-devtools-extension `（ 更多[Redux-devtool-extension的相关设置](https://github.com/zalmoxisus/redux-devtools-extension) ）
+2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。安装: `npm install redux-devtools-extension `（ 查看更多 [Redux-devtool-extension的相关设置](https://github.com/zalmoxisus/redux-devtools-extension) ）
 
 ```js
 import { createStore, applyMiddleware } from 'redux';
@@ -372,3 +500,346 @@ export default store;
 
 3. 打开浏览器，进入开发者工具。在浏览器中打开应用程序，然后按下 F12 键，进入开发者工具。
 4. 打开 Redux DevTools 面板。在开发者工具中选择 Redux DevTools 面板，即可看到 Redux DevTools 的界面。
+
+## Redux 的终极用法
+
+上文中介绍了传统的 Redux 的用法，但是相对来说依旧较为繁琐，为此 React 官方提供了一个Redux工具包——**`reduxjs/toolkit`** 。它简化了Redux的使用，提供了一些内置的API和工具，让开发者更快、更方便地编写Redux应用。
+
+其中包括以下特性：
+
+1. 简化了Redux中的模板代码，如创建 Reducer 和 action creator 的样板代码。
+2. 内置了常用的 Middleware，如 thunk 和 logger ，无需手动配置。
+3. 提供了`createSlice`方法，可以通过一个简单的配置对象快速创建包含了 Reducer 和 action creator 的 Redux 模块。
+4. 内置了 Immer 库，使得 Reducer 中的状态更新可以通过直接修改对象来完成，而无需手动编写不可变更新的代码。
+
+安装: `npm install @reduxjs/toolkit react-redux ` 
+
+ `reduxjs/toolkit` 中几个核心 API 的简单介绍：
+
+1. `createSlice()`：用于创建一个 Redux reducer，它可以根据指定的 state 初始值以及处理不同 action 的 reducer 函数，生成一个包含 reducer 函数以及相关 action 的对象。
+2. `createAsyncThunk()`：用于创建一个异步的 Redux action creator。这个 action creator 可以接收一个 payloadCreator 函数，它会返回一个 Promise 对象，用于进行异步操作。
+3. `configureStore()`：用于创建 Redux store，它可以帮助开发者自动配置常见的 Redux 中间件，如 Redux Thunk、Redux Logger 等，从而让开发者可以更方便地创建一个符合最佳实践的 Redux store。
+4. `createEntityAdapter()`：用于创建一个 Entity Adapter 对象，用于处理 Redux store 中的实体数据（Entity Data），可以方便地进行增删改查等操作。
+
+#### createSlice 的使用
+
+createSlice 的主要作用是将 reducer 和 action creator 组合在一起，生成一个对象，对象中包含了定义 reducer 所需要的所有内容。下面是一个使用 `createSlice` 创建 reducer 的示例：
+
+```jsx
+import { createSlice } from '@reduxjs/toolkit';
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: 0,
+  reducers: {
+    increment: (state) => state + 1,
+    decrement: (state) => state - 1,
+    incrementByAmount: (state, action) => state + action.payload,
+    incrementByAmount2: (state, { payload }) => state + payload // 直接对 payload 进行解构
+  },
+});
+
+// 直接导出 action
+export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不是 contentSlice
+```
+
+上面代码中，我们通过 `createSlice` 创建了一个名为 `counter` 的 reducer，并定义了它的初始状态为 `0`。同时，我们还定义了三个 action：`increment`、`decrement` 和 `incrementByAmount`。这三个 action 分别对应的 reducer 中的逻辑是，对状态进行加一、减一和加上指定值。
+
+**`createSlice` 方法的第一个参数是一个包含 `name`、`initialState` 和 `reducers` 的对象。**其中，`name` 用于定义 reducer 的名称（在之后的redux-devtool中会显示对应的名词）；`initialState` 用于定义 reducer 的初始状态（第一次初始化时的值）；`reducers` 是一个对象，用于定义所有的 action 和对应的 reducer 函数，这些函数类似于 redux 原来 reducer 中的一个 case判断语句，函数的参数有俩个： `state` 和 调用这个 `action` 时传递过来的 action 参数。
+
+同时，在上面的代码中，我们使用了一个简洁的写法，将 action 和 reducer 函数组合在一起定义。**通过 `createSlice` 生成的对象，我们可以直接将这些 action 导出，然后在组件中使用它们，无需再手动编写 action creator 和 reducer。**
+
+值得注意的是，`createSlice` 生成的 reducer 函数是自动创建的，我们不需要手动编写。另外，通过 `createSlice` 创建的 reducer 函数可以自动处理 immutable 的状态更新，我们可以直接对状态进行修改，而不需要手动编写 immutable 的逻辑。
+
+#### createAsyncThunk 的使用
+
+`createAsyncThunk` 是 Redux Toolkit 中用于处理异步逻辑的 API，可以简化异步流程的编写。它的作用是创建一个带有三个状态（pending、fulfilled、rejected）的异步 action creator，可以用于处理异步请求、网络请求等需要异步操作的场景。
+
+使用 `createAsyncThunk`，我们需要提供一个唯一标识的字符串类型的 action type，以及一个返回 Promise 对象的异步函数。异步函数接收两个参数：payload 和 thunkAPI。我们可以在这个函数中处理异步操作，并返回一个 promise 对象。`createAsyncThunk` 会根据 action type 自动为该异步函数生成三个 action 类型，分别对应请求发出时的 pending 状态，请求成功时的 fulfilled 状态和请求失败时的 rejected 状态。
+
+以下是 `createAsyncThunk` 的基本用法：
+
+```js
+// userSlice.js
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
+const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+  return response.json();
+});
+```
+
+在这个例子中，我们定义了一个名为 `fetchUsers` 的异步 action creator，它对应的 action type 是 `users/fetchUsers`。在异步函数中，我们使用 `fetch` 方法获取用户列表，并在请求成功时将结果以 JSON 格式返回。
+
+在使用时，我们可以像普通的 action creator 一样将它 dispatch 到 Redux Store 中：
+
+```jsx
+import { useDispatch } from 'react-redux';
+import { fetchUsers } from './userSlice';
+
+const UserList = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+  // ...
+};
+```
+
+在这个例子中，我们在组件中使用 `fetchUsers` 异步 action creator，将其 dispatch 到 Redux Store 中，从而触发异步请求的执行。
+
+当异步请求发出时，Redux Store 中会自动 dispatch 一个 `users/fetchUsers/pending` action，表示请求正在进行中；当请求成功时，会 dispatch 一个 `users/fetchUsers/fulfilled` action，并将请求结果传递给 reducer 处理；当请求失败时，会 dispatch 一个 `users/fetchUsers/rejected` action，并将请求失败的原因传递给 reducer 处理。
+
+在使用 `createAsyncThunk` 时，我们可以通过指定 `payloadCreator` 选项，自定义异步函数返回的数据结构。此外，`createAsyncThunk` 还支持其他一些配置选项，如 `condition`、`dispatchConditionMet`、`getPendingMeta` 等。以下是一个完整的示例:
+
+```js
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchUserById } from '../api/userAPI';
+
+export const getUserById = createAsyncThunk(
+  'user/fetchByIdStatus',
+  async (userId, thunkAPI) => { // 处理异步操作
+    // 1. 可以发送异步的网络请求等, 获取数据
+    const response = await fetchUserById(userId);
+    
+    // 2. 取出数据, 并且可以在此处直接 dispatch 操作(也可以不做)
+    dispatch(changeUserById(response.data.id));
+    
+    // 3. 返回结果, 那么action状态会变成fulfilled状态
+    return response.data; // 返回数据
+  }
+);
+
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    user: null,
+    status: 'idle',
+    error: null
+  },
+  reducers: {
+    changeUserById(state, { payload }) {
+      state.user = payload; // payload 为此前发送的 id
+    }
+  },
+  // 在 extraReducers 中，我们根据不同的状态来更新 Redux store 中的 state。
+  extraReducers: (builder) => {
+    builder
+      .addCase(getUserById.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getUserById.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.user = action.payload;
+      })
+      .addCase(getUserById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+  }
+});
+
+export const { changeUserById } = userSlice.actions; // 此处是从 action 中导出 reducers 操作
+export default userSlice.reducer;
+```
+
+在上述代码中，`extraReducers` 是 `createSlice` API 的一个选项，可以用来添加额外的 reducer。通常情况下，我们在 `createSlice` 中只定义与当前 slice 相关的 reducer，但在某些情况下，我们可能需要在当前 slice 中添加其他的 reducer，比如在处理另一个 slice 的 action 时，我们需要在当前 slice 中修改一些 state。
+
+`extraReducers` 中的函数接受一个参数，即 `builder`，它是一个对象，具有以下方法：
+
+- `addCase(type, reducer)`: 添加一个指定的 action type 和对应的 reducer 函数。当 action 的 type 匹配时，将会调用该 reducer 处理 state 的更新。
+- `addMatcher(matcher, reducer)`: 添加一个 matcher 函数和对应的 reducer 函数，用于处理匹配的 action。
+- `addDefaultCase(reducer)`: 添加一个默认的 reducer 函数，用于处理所有没有匹配到的 action。
+
+其中，`matcher` 函数接受一个 action，返回一个布尔值，用于判断该 action 是否匹配当前的 matcher。`reducer` 函数接受两个参数，即当前的 state 和 action，返回一个新的 state。
+
+`extraReducers` 中的函数应该返回一个对象，其中包含 reducer 函数，该 reducer 函数会被合并到该 Slice 的 reducer 函数中。这样，通过 `extraReducers`，可以将来自其他 Slice 的 reducer 函数合并到当前的 Slice 中，从而实现 reducer 的复用。
+
+#### configureStore 的使用
+
+configureStore 是 Redux Toolkit 提供的一个函数，用于简化 Redux 应用程序的 store 的创建过程。它封装了 createStore 和 applyMiddleware，并自动集成了常见的中间件和开发工具，例如 Redux DevTools。
+
+使用 configureStore，可以快速创建一个包含了 Redux DevTools 和一些常见中间件的 Redux store。下面是一个简单的示例：
+
+```js
+import { configureStore } from '@reduxjs/toolkit';
+import rootReducer from './reducers';
+
+const store = configureStore({
+  reducer: rootReducer,
+});
+
+export default store;
+```
+
+在上面的示例中，我们使用 configureStore 创建了一个 store，并将 rootReducer 作为 reducer 传递给 configureStore。这里的 rootReducer 是一个包含多个 reducer 的对象，可以通过 combineReducers 函数来合并。
+
+configureStore 还可以接受其他参数，例如 middleware、preloadedState 和 enhancers。例如，如果你想添加一个 redux-thunk 中间件，可以这样做：
+
+```js
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import rootReducer from './reducers';
+import thunkMiddleware from 'redux-thunk';
+
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: [ ...getDefaultMiddleware(), thunkMiddleware ],
+});
+
+export default store;
+```
+
+> `getDefaultMiddleware` 函数返回的是一个中间件数组，这个数组里面包含了一些 Redux 默认提供的中间件。这些中间件包括了 `thunk`、`immutableCheck`、`serializableCheck` 等等。
+>
+> 解构操作是为了在默认中间件数组的基础上，添加自定义的中间件。在这个过程中，我们可以方便地使用默认中间件的功能，同时也可以避免覆盖默认中间件的功能。
+
+在上面的示例中，我们将 `getDefaultMiddleware()` 函数返回的默认中间件与 redux-thunk 中间件一起传递给 `configureStore` 函数。
+
+> 注意：在使用 configureStore 函数时，不需要在根组件中使用 Provider 组件，因为 `configureStore` 已经自动将 store 注入了应用程序中。
+
+### 最终实践
+
+在 `store/index.js` 中利用 `configureStore` 创建 `store` :
+
+```js
+import { configureStore } from "@reduxjs/toolkit"
+
+import counterReducer from "./counter"
+import homeReducer from "./home"
+
+const store = configureStore({
+  reducer: { // 多个 reducer, 最终会在 redux 插件中显示
+    counter: counterReducer,
+    home: homeReducer
+  }
+})
+
+export default store
+```
+
+上述代码中，导入了俩个数据，现在来创建一下它们：
+
+```js
+// counter.js 同步处理数据
+import { createSlice } from "@reduxjs/toolkit"
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: {
+    counter: 955
+  },
+  reducers: {
+    addNumber(state, { payload }) {
+      state.counter = state.counter + payload
+    },
+    subNumber(state, { payload }) {
+      state.counter = state.counter - payload
+    }
+  }
+})
+
+export const { addNumber, subNumber } = counterSlice.actions
+export default counterSlice.reducer
+```
+
+上述代码中利用 `createSlice` 创建了一个 Redux reducer，并导出我们需要的 `addNumber` 和 `subNumber` 俩个 render。再来实现一个异步的 reducer :
+
+```js
+// ./home.js 异步处理数据
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+// 定义一个异步请求数据的 createAsyncThunk
+export const fetchHomeMultidataAction = createAsyncThunk(
+  "fetch/homemultidata",
+  async (extraInfo, { dispatch, getState }) => {
+    // extraInfo 为调用 fetchHomeMultidataAction(someData) 传递过来的 someData
+    console.log("extraInfo:", extraInfo, dispatch, getState);
+    // 1.发送网络请求, 获取数据
+    const res = await axios.get("xxxxxxxxxx");
+    // 2.返回结果, 那么action状态会变成fulfilled状态
+    return res.data;
+  }
+);
+
+// 定义上述 Thunk 的 reducer 
+const homeSlice = createSlice({
+  name: "home",
+  initialState: {
+    banners: [], // 定义初始值
+  },
+  reducers: { // 也可以定义其它同步 reducer
+    changeBanners(state, { payload }) {
+      state.banners = payload; // 同步 reducer 给其它指令调用
+    },
+  },
+  extraReducers: (builder) => { // createAsyncThunk 异步请求的三种状态
+    builder
+      .addCase(fetchHomeMultidataAction.pending, (state, action) => {
+        console.log("fetchHomeMultidataAction pending");
+      })
+      .addCase(fetchHomeMultidataAction.fulfilled, (state, { payload }) => {
+        state.banners = payload.data.banner;
+      })
+    	.addCase(fetchHomeMultidataAction.rejected, (state, action) => {
+        console.log("fetchHomeMultidataAction rejected");
+      })
+  },
+});
+
+export const { changeBanners, changeRecommends } = homeSlice.actions;
+export default homeSlice.reducer;
+```
+
+上面我们定义了一个异步的 reducer，通过`createAsyncThunk`创建了 `fetchHomeMultidataAction` 异步请求数据函数，实际上，可以直接在其内部接收到异步数据后就发出同步 `dispatch` 指令，这样子就和 `Vuex` 很像了。也可以直接返回数据，此时若成功请求到了数据，则调用下方由 `createSlice` 创建的 reducer，状态为 `fetchHomeMultidataAction.fulfilled` ；失败则为 `fetchHomeMultidataAction.rejected` 。
+
+在组件中使用:
+
+```jsx
+// Home.jsx
+import React, { PureComponent } from "react";
+import { connect } from "react-redux";
+import { addNumber } from "../store/features/counter";
+import { fetchHomeMultidataAction } from "../store/features/home";
+
+export class Home extends PureComponent {
+  componentDidMount() {
+    this.props.fetchHomeMultidata();
+  }
+
+  addNumber(num) {
+    this.props.addNumber(num);
+  }
+
+  render() {
+    const { counter } = this.props;
+
+    return (
+      <div>
+        <h2>Home Counter: {counter}</h2>
+        <button onClick={(e) => this.addNumber(5)}>+5</button>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  console.log("state", state);
+  return { counter: state.counter.counter };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  addNumber(num) {
+    dispatch(addNumber(num));
+  },
+  fetchHomeMultidata() { // 异步请求数据
+    const extraInfo = { someData: 'someData'};
+    dispatch(fetchHomeMultidataAction(extraInfo)); // extraInfo 可传可不传
+  },
+});
+
+// 将 state 中的数据通过 connect 传入到组件的 props 属性中
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
+```
+
