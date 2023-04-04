@@ -55,7 +55,7 @@ function addToTotal(num) {
 
 ## 什么是 Redux?
 
-Redux 是一种用于管理应用程序状态的 JavaScript 库。它可以在 React、Angular、Vue 或任何其他 JavaScript 应用程序中使用。Redux 通过强制将应用程序的状态存储在单个全局对象中来简化状态管理。这个全局状态对象是只读的，唯一可以更改它的方式是通过发出“操作”来修改它。操作是一个纯 JavaScript 对象，描述了发生了什么类型的更改以及需要更新状态的数据。
+[Redux](https://cn.redux.js.org/) 是一种用于管理应用程序状态的 JavaScript 库。它可以在 React、Angular、Vue 或任何其他 JavaScript 应用程序中使用。Redux 通过强制将应用程序的状态存储在单个全局对象中来简化状态管理。这个全局状态对象是只读的，唯一可以更改它的方式是通过发出“操作”来修改它。操作是一个纯 JavaScript 对象，描述了发生了什么类型的更改以及需要更新状态的数据。
 
 ### 哪些数据需要 Redux 进行维护呢?
 
@@ -288,6 +288,30 @@ const mapDispatchToProps = (dispatch) => {
 // 通过 connect 将 mapStateToProps 和 mapDispatchToProps 俩个高阶函数映射到 App 组件的 props 中
 export default connect(mapStateToProps, mapDispatchToProps)(App);
 ```
+
+此外，`connect`方法生成容器组件以后，需要让容器组件拿到`state`对象，才能生成 UI 组件的参数。React-Redux 提供`Provider`组件，可以让容器组件拿到`state`。
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from "react-redux"
+import { StoreContext } from "./hoc"
+import App from './App';
+import store from './store';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  // <React.StrictMode>
+    <Provider store={store}>
+      <StoreContext.Provider value={store}>
+        <App />
+      </StoreContext.Provider>
+    </Provider>
+  // </React.StrictMode>
+);
+```
+
+上面代码中，`Provider`在根组件外面包了一层，这样一来，`App`的所有子组件就默认都可以拿到`state`了。
 
 **redux代码优化**:
 
@@ -843,3 +867,23 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
 ```
 
+上述代码用了 `connect` 将 `mapStateToProps` 等传入组件的 `props` 中，为了让组件拿到 state 对象，需要在外层（本文直接在根组件 App 外层追加）利用 `Provider` 组件进行包裹。此时容器内的组件均可拿到 `state`。
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from "react-redux"
+import App from './App';
+import store from './store';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+    <Provider store={store}>
+      <App />
+    </Provider>
+);
+```
+
+
+
+ 
