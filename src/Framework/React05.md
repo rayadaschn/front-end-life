@@ -105,3 +105,145 @@ window.addEventListener("popstate", function(event) {
 
 因此，我们选择安装 `react-router-dom` : `npm install react-router-dom`。
 
+### 基本使用
+
+React-router 提供了一些基础组件：BrowserRouter 和 HashRouter 等。俩个组件分别对应路由中的的 History 模式和 Hash 模式：
+
+```jsx
+// History 模式
+import { BrowserRouter } from "react-router-dom";
+
+<React.StrictMode>
+  <BrowserRouter>
+  	<App />
+  </BrowserRouter>
+</React.StrictMode>
+```
+
+```jsx
+// Hash 模式
+import { HashRouter } from "react-router-dom";
+
+<React.StrictMode>
+  <HashRouter>
+  	<App />
+  </HashRouter>
+</React.StrictMode>
+```
+
+### 路由映射配置
+
+定义完路由模式后，可以设置路由的映射关系。React Router 6 中的路由映射配置并不像 React Router 5 中那样使用 `<Route>` 组件，而是通过 `<Routes>` 和 `<Route>` 组件配合使用来实现。以下是一个示例：
+
+```jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './Home';
+import About from './About';
+import Contact from './Contact';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </Router>
+  );
+}
+```
+
+在上述代码中，我们首先导入了需要使用的组件（包括 `BrowserRouter`、`Routes` 和 `Route`），然后在应用中定义了三个路由规则。其中，`element` 属性指定了对应的组件，`path` 属性指定了路由路径。
+
+需要注意的是，**在 React Router 6 中，`exact` 属性已经不再被支持了。相反，精准匹配现在是默认的行为。**也就是说，如果路径与路由定义完全匹配，则只有该路由将被匹配到。
+
+路由路径是匹配一个（或一部分）URL 的 [一个字符串模式](https://react-guide.github.io/react-router-cn/docs/guides/basics/docs/Glossary.md#routepattern)。大部分的路由路径都可以直接按照字面量理解，除了以下几个特殊的符号：
+
+- `:paramName` – 匹配一段位于 `/`、`?` 或 `#` 之后的 URL。 命中的部分将被作为一个[参数](https://react-guide.github.io/react-router-cn/docs/guides/basics/docs/Glossary.md#params)
+- `()` – 在它内部的内容被认为是可选的
+- `*` – 匹配任意字符（非贪婪的）直到命中下一个字符或者整个 URL 的末尾，并创建一个 `splat` [参数](https://react-guide.github.io/react-router-cn/docs/guides/basics/docs/Glossary.md#params)
+
+```js
+<Route path="/hello/:name">         // 匹配 /hello/michael 和 /hello/ryan
+<Route path="/hello(/:name)">       // 匹配 /hello, /hello/michael 和 /hello/ryan
+<Route path="/files/*.*">           // 匹配 /files/hello.jpg 和 /files/path/to/hello.jpg
+```
+
+如果一个路由使用了相对`路径`，那么完整的路径将由它的所有祖先节点的`路径`和自身指定的相对`路径`拼接而成。[使用绝对`路径`](https://react-guide.github.io/react-router-cn/docs/guides/basics/RouteConfiguration.html#decoupling-the-ui-from-the-url)可以使路由匹配行为忽略嵌套关系。
+
+### 路由配置和跳转
+
+在 React Router 6 中，可以使用 `Link` 和 `NavLink` 组件来生成链接并进行页面导航。其中，`Link` 组件是基础组件，而 `NavLink` 组件则是对 `Link` 组件进行了扩展，增加了激活状态的样式和高亮效果。
+
+以下是一个使用 `Link` 和 `NavLink` 组件的示例：
+
+```jsx
+import { Link, NavLink } from 'react-router-dom';
+
+function Header() {
+  return (
+    <nav>
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><NavLink to="/about" activeClassName="active">About</NavLink></li>
+        <li><NavLink to="/contact" activeClassName="active">Contact</NavLink></li>
+      </ul>
+    </nav>
+  );
+}
+```
+
+在上述代码中，我们使用 `Link` 和 `NavLink` 组件生成了三个链接，并使用 `to` 属性指定了对应的路由路径。`NavLink` 组件还使用了 `activeClassName` 属性来指定激活时的样式类名。
+
+此外，还有一个 `Navigate` 组件用于路由的重定向，当这个组件出现时，就会执行跳转到对应的 `to` 路径中。与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过编程方式进行页面导航的。
+
+以下是一个使用 `Navigate` 组件的示例：
+
+```jsx
+import { Navigate } from 'react-router-dom';
+
+function LoginPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  function handleLogin() {
+    setIsLoggedIn(true);
+  }
+
+  if (isLoggedIn) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  return (
+    <div>
+      <h1>Login Page</h1>
+      <button onClick={handleLogin}>Log In</button>
+    </div>
+  );
+}
+```
+
+在上述代码中，我们首先定义了一个状态 `isLoggedIn`，表示用户是否已经登录。然后，在点击登录按钮后，如果用户已经成功登录，则使用 `Navigate` 组件进行页面导航，并跳转到 `/dashboard` 路径对应的页面。
+
+需要注意的是，在使用 `Navigate` 组件时，需要确保该组件被渲染在 `Router` 组件的范围之内。否则，页面导航将无法正常工作。
+
+### Not Found 页面配置
+
+若是路由未能匹配到，则需要一个 Not Found 页面：
+
+```jsx
+<Route path='*' element={<NotFound/>} />
+```
+
+### 路由的嵌套
+
+在开发中，路由是存在嵌套关系的，也就是多级路由。
+
+
+
+
+
+
+
+
+
