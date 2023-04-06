@@ -196,7 +196,7 @@ function Header() {
 
 在上述代码中，我们使用 `Link` 和 `NavLink` 组件生成了三个链接，并使用 `to` 属性指定了对应的路由路径。`NavLink` 组件还使用了 `activeClassName` 属性来指定激活时的样式类名。
 
-此外，还有一个 `Navigate` 组件用于路由的重定向，当这个组件出现时，就会执行跳转到对应的 `to` 路径中。与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过编程方式进行页面导航的。
+此外，还有一个 `Navigate` 组件用于路由的重定向，**当这个组件出现时，就会执行跳转到对应的 `to` 路径中。** 与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过 *编程方式* 进行页面导航的。
 
 以下是一个使用 `Navigate` 组件的示例：
 
@@ -237,13 +237,249 @@ function LoginPage() {
 
 ### 路由的嵌套
 
-在开发中，路由是存在嵌套关系的，也就是多级路由。
+在开发中，路由是存在嵌套关系的，也就是多级路由。这里同 Vue 有点类似，需要用到 `<Outlet>` 占位组件，先看代码：
 
+```jsx
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import Home from './Home';
+import Products from './Products';
 
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
 
+        <Route path="/products/*" element={<Products />}>
+          <Route path="/" element={<ProductList />} />
+          <Route path="/:productId" element={<ProductDetail />} />
+        </Route>
+      </Routes>
+      
+    </Router>
+  );
+}
 
+function Products() {
+  return (
+    <div>
+      <h1>Products</h1>
+      <Outlet />
+    </div>
+  );
+}
+```
 
+在上述代码中，我们在 `/products` 路径对应的路由规则中定义了一个名为 `Products` 的组件，并将其作为该路由规则的子组件。在 `Products` 组件中，我们使用 `<Outlet>` 组件来渲染所有子级路由规则匹配到的组件。
 
+另外，在 `Products` 组件的示例中，我们还定义了两个子路由规则：`/` 和 `/:productId`。其中，`/` 对应的是产品列表页面，而 `/:productId` 对应的是单个产品详情页面。
 
+需要注意的是，在 React Router 6 中，**使用 `<Outlet>` 组件进行路由嵌套**是比较常见和推荐的做法，可以使得代码结构更加清晰和易于维护。
 
+### 手动路由的跳转
 
+目前我们实现的跳转主要是通过 Link 或者 NavLink 进行跳转的，实际上我们也可以通过 JavaScript 代码进行跳转。（需要注意的是 Navigate 组件可以进行路由的逻辑跳转，但依旧是组件的形式）如果希望通过 JavaScript 代码逻辑进行跳转（如点击了一个 button 按钮），那么就需要获取到 navigate 对象。
+
+Router 6 版本之后，代码类 API 都迁移到了 hooks 写法去了（可以先学 Hooks 之后再看下面内容）。在 React Router 6 中，`useNavigate` Hook 可以用来进行编程式的页面导航。通过 `useNavigate` Hook，我们可以访问到一个 `navigate` 函数，**该函数接受一个字符串类型的参数，表示需要导航的目标路径。**
+
+以下是一个使用 `useNavigate` Hook 的示例：
+
+```js
+import { useNavigate } from 'react-router-dom';
+
+function LoginPage() {
+  const navigate = useNavigate();
+
+  function handleLogin() {
+    // 登录成功后进行页面导航
+    navigate('/dashboard');
+  }
+
+  return (
+    <div>
+      <h1>Login Page</h1>
+      <button onClick={handleLogin}>Log In</button>
+    </div>
+  );
+}
+```
+
+在上述代码中，我们首先使用 `useNavigate` Hook 获取了 `navigate` 函数。然后，在登录按钮被点击后，如果用户已经成功登录，则使用 `navigate` 函数进行页面导航，并跳转到 `/dashboard` 路径对应的页面。
+
+需要注意的是，在使用 `useNavigate` Hook 时，需要确保该 Hook 被使用在 `Router` 组件的范围之内。否则，页面导航将无法正常工作。
+
+### 路由参数传递
+
+传递参数的方式有俩种:
+
+- 动态路由的方式；
+- search 传递参数。
+
+动态路由是指路由路径中包含变量的一种路由方式。在动态路由中，变量可以根据实际情况进行替换，从而实现更加灵活和通用的路由匹配。
+
+在 React Router 6 中，可以使用冒号 `:` 来定义动态路由。例如：
+
+```jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ProductDetail from './ProductDetail';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products/:productId" element={<ProductDetail />} />
+      </Routes>
+    </Router>
+  );
+}
+```
+
+在上述代码中，我们定义了一个 `/products/:productId` 的路由规则，并将其映射到 `ProductDetail` 组件上。其中，`productId` 是一个变量，可以根据实际情况进行替换。
+
+例如，在访问路径为 `/products/123` 的时候，React Router 6 会自动将 `123` 这个参数传递给 `ProductDetail` 组件，从而渲染对应的产品详情信息。
+
+**需要注意的是，在使用动态路由时，需要确保路由规则的顺序是正确的。如果多个路由规则都可以匹配同一个路径，那么 React Router 6 将按照规则定义的顺序进行匹配，并选择第一个匹配成功的路由规则进行渲染。**
+
+在 React Router 6 中，可以通过使用路由组件的 `useParams` Hook 来获取动态路由的参数。`useParams` Hook 接受一个空对象作为参数，返回一个对象，其中包含了当前路径中所有动态路由参数以及其对应的值。
+
+以下是一个示例：
+
+```jsx
+import { useParams } from 'react-router-dom';
+
+function ProductDetail() {
+  const { productId } = useParams();
+
+  // 根据 productId 获取对应的产品详情信息
+
+  return (
+    <div>
+      <h1>Product Detail - {productId}</h1>
+      {/* 渲染产品详情信息 */}
+    </div>
+  );
+}
+```
+
+在上述代码中，我们首先使用 `useParams` Hook 获取了当前路径中的动态路由参数 `productId` 的实际值，并将其保存到变量 `productId` 中。然后，在组件渲染时，我们可以使用 `productId` 变量来渲染对应的产品详情信息。
+
+需要注意的是，在使用 `useParams` Hook 时，需要确保该 Hook 被使用在路由组件内部。否则，无法获取到动态路由的参数。同时，如果路径中不存在指定名称的动态路由参数，则 `useParams` Hook 返回的对应值为 `undefined`。
+
+### 统一配置文件
+
+现在，基本将所有的路由功能介绍完毕。但是还是有些地方需要优化，如如果想将路由的配置像 Vue 一样都放到一个地方进行集中管理，该怎么办？
+
+为了方便管理路由配置，可以将所有的路由规则定义在一个单独的文件中，并在应用程序中进行引入和注册。这样做除了能够集中管理所有的路由规则，还能够使得代码更加清晰、易于维护和扩展。
+
+以下是一个示例：
+
+```jsx
+// routes.jsx
+import Home from './Home';
+import About from './About';
+import Contact from './Contact';
+import Products from './Products';
+import ProductList from './ProductList';
+import ProductDetail from './ProductDetail';
+
+export const routes = [
+  { path: '/', element: <Home /> },
+  { path: '/about', element: <About /> },
+  { path: '/contact', element: <Contact /> },
+  {
+    path: '/products/*',
+    element: <Products />,
+    children: [
+      { path: '/', element: <ProductList /> },
+      { path: ':productId', element: <ProductDetail /> },
+    ],
+  },
+];
+```
+
+在上述代码中，我们定义了所有的路由规则，并将它们保存在一个称为 `routes` 的数组中。其中，每个元素都代表一个路由规则，包括 `path`、`element` 和 `children` 三个属性。
+
+然后，在应用程序中，我们只需要引入 `routes` 数组，并使用 `<Routes>` 组件和一个简单的循环语句来注册所有的路由规则。例如：
+
+```jsx
+// App:
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { routes } from './routes';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} element={route.element}>
+            {route.children && route.children.map((child, i) => (
+              <Route key={i} path={child.path} element={child.element} />
+            ))}
+          </Route>
+        ))}
+      </Routes>
+    </Router>
+  );
+}
+```
+
+在上述代码中，我们首先引入了 `routes` 数组，并在 `<Routes>` 组件中使用一个简单的循环语句来注册所有的路由规则。对于每个路由规则，我们使用 `<Route>` 组件进行注册，并传递对应的 `path` 和 `element` 属性。如果该路由规则存在子路由规则，则同样使用一个简单的循环语句来注册子路由规则。
+
+这样做，就可以实现将路由配置放到一个地方进行集中管理的目的。同时，只需要修改 `routes.js` 文件即可改变整个应用程序的路由规则，具有很好的可维护性和扩展性。
+
+此外，React Router 6 中提供了一个名为 `useRoutes` 的 Hooks，它可以让我们更加灵活地定义路由规则，并将其作为一个组件函数进行导出和使用。我们对上面的 App 组件进行改造：
+
+```jsx
+// App:
+import { BrowserRouter as Router, Routes, Route, useRoutes } from 'react-router-dom';
+import { routes } from './routes';
+
+function App() {
+  return (
+    <div className="counter">
+    	{useRoutes(routes)}
+    </div>
+  );
+}
+```
+
+### 路由的懒加载
+
+React Router 6 支持路由的懒加载，可以大幅度减小应用程序的初始加载时间，提高应用程序的性能。
+
+```jsx
+import { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+const Home = lazy(() => import('./Home'));
+const About = lazy(() => import('./About'));
+
+function App() {
+  return (
+    <Router>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </Suspense>
+    </Router>
+  );
+}
+```
+
+在上述代码中，我们 **使用 `lazy` 函数来懒加载路由组件，并使用 `<Suspense>` 组件来渲染加载状态。然后，在 `<Routes>` 中使用 `<Route>` 组件来定义路由规则。** 此外，`<Suspense>` 组件包裹在异步加载组件的父组件中，用于在组件加载完成之前渲染出一个指定的 “fallback” 组件。
+
+`fallback` 属性就是用于设置这个指定的加载状态，它接受一个 React 组件作为其值，并会在异步组件加载完成前，渲染这个指定的组件。
+
+需要注意的是，在使用懒加载时，需要将路由组件包裹在一个默认导出的函数中，以便能够异步加载该组件。例如：
+
+```jsx
+// Home.jsx:
+export default function Home() {
+  return <h1>Home</h1>;
+}
+```
+
+在上述代码中，我们将 `Home` 组件设置为默认导出，并且将其包裹在一个函数中。
