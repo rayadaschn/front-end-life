@@ -1,5 +1,5 @@
 ---
-title: GitLab 操作手册记录
+title: Git 操作手册
 index: 4
 icon: linux
 date: 2023-02-1
@@ -12,7 +12,7 @@ star: true
 sticky: false
 ---
 
-# GitLab 操作手册指南
+# Git 操作手册指南
 
 ## 分支管理规范
 
@@ -173,15 +173,17 @@ $: git push
 
 当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。**这相当于增加了一次新的提交并且版本库中有记录。**
 
-- **`git reset` 推荐!!!!**
+- **`git reset` 推荐！！！**
+  
   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
-
+  
   > **--soft :** 不删除工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
+  >
   > **--hard :** 删除工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
-  >     * 注意完成这个操作后，就恢复到了上一次的commit状态。
+  >     å* 注意完成这个操作后，就恢复到了上一次的commit状态。
   >
-  > **--mixed :** 【默认参数】不删除工作空间改动代码，**撤销 commit**，并且 **撤销 `git add .` **
+  > **--mixed :** 【默认参数】不删除工作空间改动代码，**撤销 `commit`，并且撤销 `git add .` **
   >
   > 简单的讲，正常提交是： `git add .` -->  `git commit` 
   >

@@ -12,10 +12,10 @@ export default hopeTheme({
   iconAssets: "iconfont",
 
   logo: "logo.png",
-  // sidebar: "structure", // 自动生成侧边栏
+  sidebar: "structure", // 自动生成侧边栏
 
   // 项目仓库地址
-  // repo: "vuepress-theme-hope/vuepress-theme-hope",
+  repo: "https://github.com/rayadaschn",
 
   docsDir: "docs", // 文档所属文件夹，默认为仓库根目录
 
