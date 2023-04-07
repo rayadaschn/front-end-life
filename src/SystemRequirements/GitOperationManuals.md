@@ -51,7 +51,7 @@ $: git branch branchname
 $: git checkout branchname
 $: git checkout -b newBranchname
 
-// 4 删除分支 
+// 4 删除分支
 // 4.1 删除本地分支
 $: git branch -d branchname
 // 4.1.2 强制删除用大写
@@ -120,7 +120,7 @@ $: git push --all
 
 假设此时，他人已经 push 相关代码到远程端了。
 
-1. 【方案 1】正常流程,在 `push` 时,先用 `git pull --rebase` 拉取变基代码。而后，再解决冲突，推送。 
+1. 【方案 1】正常流程,在 `push` 时,先用 `git pull --rebase` 拉取变基代码。而后，再解决冲突，推送。
 
 ```bash
 $: git add .
@@ -152,7 +152,7 @@ $: git commit -m [message]
 $: git push
 ```
 
-​	若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用 
+ 若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用
 
 个人使用，已经写完代码了，用方案 1 推送；还未写完，则用方案 2 临时贮藏。
 
@@ -174,22 +174,26 @@ $: git push
 当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。**这相当于增加了一次新的提交并且版本库中有记录。**
 
 - **`git reset` 推荐！！！**
-  
-  **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
-  
-  > **--soft :** 不删除工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
-  >
-  > **--hard :** 删除工作空间改动代码，**撤销 commit**，**撤销`git add .`**
-  >
-  >    * 注意完成这个操作后，就恢复到了上一次的commit状态。
-  >
-  > **--mixed :** 【默认参数】不删除工作空间改动代码，**撤销 `commit`，并且撤销 `git add .` **
-  >
-  > 简单的讲，正常提交是： `git add .` -->  `git commit` 
-  >
-  > 对应的回退版本是: `git reset --soft`   --> `git reset --mixed` 
 
-3. 如果我们的有两次 commit 但是没有 push 代码
+  **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
+
+  > **--soft :** **不删除**工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
+  >
+  > **--hard :** **删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
+  >
+  > - 注意完成这个操作后，就恢复到了上一次的 commit 状态。
+  >
+  > **--mixed :** 【默认参数】**不删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
+  >
+  > 简单的讲，正常提交是： `git add .` --> `git commit`
+  >
+  > 对应的回退版本是: `git reset --soft` --> `git reset --mixed`
+  >
+  > - 撤销 `commit` ： `git reset --soft HEAD^`
+  > - 撤销 `commit` 且 撤销贮藏 `add .` ： `git reset HEAD^`
+  > - 撤销全部提交且删除改动代码（慎重）： `git reset --hard HEAD^`
+
+1. 如果我们的有两次 commit 但是没有 push 代码
 
 ```bash
 $: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
@@ -208,7 +212,7 @@ $: git push origin <banchName> --force  // --force 为强制覆盖远程分支
 5. 只回退某个指定文件到指定版本
 
 ```bash
-$: git reset a4e215234aa4927c85693dca7b68e9976948a35e  xxx
+$: git reset a4e21523xxxxxxxxx68e9976948a35e [options]
 ```
 
 6. 回退到指定版本
@@ -244,7 +248,7 @@ $ git reset --hard [commit]
 # 重置当前HEAD为指定commit，但保持暂存区和工作区不变
 $ git reset --keep [commit]
 
-# 新建一个commit，用来撤销指定commit
+# 新建一个commit，用来撤销指定commit。实际上是多了一次提交
 # 后者的所有变化都将被前者抵消，并且应用到当前分支
 $ git revert [commit]
 
@@ -252,8 +256,6 @@ $ git revert [commit]
 $ git stash
 $ git stash pop
 ```
-
-
 
 ### 贮藏与清理
 
@@ -321,8 +323,6 @@ $: git checkout -b [branch] [tag]
 # 检出标签
 $: git checkout [tagname]
 ```
-
-
 
 ### 修改 Commit
 
