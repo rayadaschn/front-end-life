@@ -18,6 +18,25 @@ sticky: false
 - 根据组件内部是否有状态需要维护，可以分成：无状态组件(`Stateless Component` )和有状态组件(`Stateful Component`)，也就是有无 state 数据；
 - 根据组件的不同职责，可以分成：展示型组件(`Presentational Component`)和容器型组件(`Container Component`)；
 
+## 创建 React 项目
+
+要创建一个React项目，首先需要安装Node.js和npm。然后，可以使用以下命令在终端窗口中创建一个新项目：
+
+```bash
+$: npx create-react-app my-app
+```
+
+其中，`my-app` 是项目的名称。这个命令会自动创建一个基本的React项目，包括开发服务器，Webpack构建系统和初始文件结构。
+
+要启动开发服务器，请使用以下命令：
+
+```bash
+$: cd my-app
+$: npm start
+```
+
+这将自动打开一个浏览器窗口并启动所创建的 React 应用程序。
+
 ## 类组件
 
 类组件即如基础语法中所示，用一个类来定义一个组件。内部封装了方法函数、数据以及 `render`函数。
@@ -525,7 +544,7 @@ changeCount(index) {
 
 需要注意的是，**ref** 的值根据节点的类型而有所不同：
 
-- **当 ref 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 ref 接收底层 DOM 元素作为其 current 属性。**这种方式和 Vue 较为相似，也推荐这种形式！
+- 当 `ref` 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 ref 接收底层 DOM 元素作为其 current 属性。这种方式和 Vue 较为相似，也推荐这种形式！
 
 ```jsx
 // 获取 DOM 元素属性
@@ -938,5 +957,4 @@ handleFruitChange(event) {
 > const max = Math.max.apply(null, arrLike);
 > console.log(max); // 3
 > ```
-
 

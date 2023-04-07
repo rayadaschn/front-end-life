@@ -17,7 +17,7 @@ export default hopeTheme({
   // 项目仓库地址
   repo: "https://github.com/rayadaschn",
 
-  docsDir: "docs", // 文档所属文件夹，默认为仓库根目录
+  docsDir: "src", // 文档所属文件夹，默认为仓库根目录
   darkmode: "auto",
 
   blog: {
@@ -59,6 +59,9 @@ export default hopeTheme({
       // ],
     },
   },
+
+  editLinkPattern:
+    "https://github.com/rayadaschn/front-end-life/tree/sourcecode/:path",
 
   locales: {
     "/": {
