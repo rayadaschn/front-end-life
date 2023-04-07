@@ -1,5 +1,5 @@
 import { hopeTheme } from "vuepress-theme-hope";
-import { enNavbar, zhNavbar } from "./navbar/index.js";
+import { Navbar } from "./navbar/index.js";
 
 export default hopeTheme({
   hostname: "https://mister-hope.github.io",
@@ -18,6 +18,7 @@ export default hopeTheme({
   repo: "https://github.com/rayadaschn",
 
   docsDir: "docs", // 文档所属文件夹，默认为仓库根目录
+  darkmode: "auto",
 
   blog: {
     medias: {
@@ -61,9 +62,7 @@ export default hopeTheme({
 
   locales: {
     "/": {
-      // navbar
-      navbar: enNavbar,
-
+      navbar: Navbar,
       navbarAutoHide: "always",
 
       footer: "MIT Licensed | Copyright",
