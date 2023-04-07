@@ -248,8 +248,8 @@ $ git reset --hard [commit]
 # 重置当前HEAD为指定commit，但保持暂存区和工作区不变
 $ git reset --keep [commit]
 
-# 新建一个commit，用来撤销指定commit。实际上是多了一次提交
-# 后者的所有变化都将被前者抵消，并且应用到当前分支
+# 新建一个commit，用来撤销指定commit。
+# 实际上是多了一次提交且撤销了这次commit提交的改动
 $ git revert [commit]
 
 # 暂时将未提交的变化移除，稍后再移入
