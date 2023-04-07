@@ -112,8 +112,8 @@ $ <span class="token function">git</span> reset <span class="token parameter var
 <span class="token comment"># 重置当前HEAD为指定commit，但保持暂存区和工作区不变</span>
 $ <span class="token function">git</span> reset <span class="token parameter variable">--keep</span> <span class="token punctuation">[</span>commit<span class="token punctuation">]</span>
 
-<span class="token comment"># 新建一个commit，用来撤销指定commit。实际上是多了一次提交</span>
-<span class="token comment"># 后者的所有变化都将被前者抵消，并且应用到当前分支</span>
+<span class="token comment"># 新建一个commit，用来撤销指定commit。</span>
+<span class="token comment"># 实际上是多了一次提交且撤销了这次commit提交的改动</span>
 $ <span class="token function">git</span> revert <span class="token punctuation">[</span>commit<span class="token punctuation">]</span>
 
 <span class="token comment"># 暂时将未提交的变化移除，稍后再移入</span>
