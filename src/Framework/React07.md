@@ -144,7 +144,11 @@ $: npx create-react-app my-app
   }
   ```
   
-  如此，项目可以正常引用 `less` 文件了。
+  如此，项目可以正常引用 `less` 文件了。当然，在项目中为了更好的使用 CSS-in-JS 进行开发，还需要安装`styled-components`，具体介绍用法可看[《React 高阶组件、动画及 CSS》](React03.md)。
+  
+  ```bash
+  $: npm install styled-components
+  ```
   
 - 配置 `jsconfig.json` ：
 
@@ -196,5 +200,230 @@ $: npx create-react-app my-app
 $: npm i react-router-dom
 ```
 
+第一步，确认是使用 Hash 还是 History 路由模式，这里本项目在开发阶段使用 Hash 模式，降低部署难度。具体介绍用法可看[《React 之路由管理》](React05.md)。
 
+在根节点外部用 `<HashRouter>`节点包裹：
+
+```jsx
+// index.js
+<HashRouter>
+  <App />
+</HashRouter>
+```
+
+新建一个管理路由的独立文档 `router/index.js` 
+
+```js
+// router/index.js
+import React from "react";
+import { Navigate } from "react-router-dom";
+
+// 懒加载
+const Home = React.lazy(() => import("@/views/home"));
+
+const router = [
+  {
+    path: "/",
+    element: <Navigate to="/home" />,
+  },
+  {
+    path: "/home",
+    element: <Home />,
+  },
+  // 其它路由.... 
+];
+
+export default router;
+```
+
+同 Vue 中一样为了性能优化，引入懒加载。由于加入了懒加载，组件渲染变成了异步加载，因此还需要对根目录中的根节点加入遮罩，使得在异步组件加载时的等待期间内显示一个自定义的占位符。在组件准备好后，再渲染组件。用法如下（仅做示例）：
+
+```jsx
+import React, { Suspense } from 'react';
+
+const LazyComponent = React.lazy(() => import('./LazyComponent'));
+
+function App() {
+  return (
+    <div>
+      <Suspense fallback={<div>Loading...</div>}>
+        <LazyComponent />
+      </Suspense>
+    </div>
+  );
+}
+```
+
+在上面的例子中，我们使用 React.lazy 函数来加载一个懒加载组件 `LazyComponent`。在组件的加载期间，我们使用 Suspense 组件来显示一个自定义的占位符 `<div>Loading...</div>`。当组件加载完毕后，Suspense 组件会自动渲染 `LazyComponent` 组件。
+
+> 除了懒加载组件外，Suspense 还可以用于处理其他异步操作，例如数据的异步加载等。例如：
+>
+> ```jsx
+> import React, { Suspense } from 'react';
+> 
+> const dataPromise = fetchData();
+> 
+> function App() {
+>   return (
+>     <div>
+>       <Suspense fallback={<div>Loading...</div>}>
+>         <DataComponent dataPromise={dataPromise} />
+>       </Suspense>
+>     </div>
+>   );
+> }
+> ```
+>
+> 在上面的例子中，我们通过一个名为 `fetchData()` 的异步函数获取数据，然后将数据传递给 `DataComponent` 组件，同时使用 Suspense 组件来显示一个自定义的占位符。在数据准备完毕后，Suspense 组件会自动渲染 `DataComponent` 组件，并将数据作为 props 传递给组件。
+
+## 使用 Redux
+
+本项目直接使用 `@reduxjs/toolkit`，具体介绍用法可看[《React 之数据管理 Redux》](React04.md)。
+
+安装：
+
+```bash
+$: npm install @reduxjs/toolkit react-redux
+```
+
+在 `sotre/index.js` 中创建 `store` 进行数据管理：
+
+```js
+import { configureStore } from "@reduxjs/toolkit";
+import homeSlice from "./modules/home";
+
+const store = configureStore({
+  reducer: {
+    home: homeSlice,
+  },
+});
+
+export default store;
+```
+
+并将不同页面的 `reducer` 独立封装在子文件夹 `modules`中，如 `home`：
+
+```js
+// ./moudles/home.js
+import { createSlice } from "@reduxjs/toolkit";
+
+const homeSlice = createSlice({
+  name: "home",
+  initialState: {
+    productList: [],
+  },
+  reducers: {},
+});
+
+export default homeSlice;
+```
+
+在组件中使用 Redux，利用 `react-redux` 提供的 `<Provider>` 组件，对根节点进行包装，使得所有组件均能访问到该 `store`。
+
+```jsx
+// 最终的 index.js
+import React, { Suspense } from "react";
+import ReactDOM from "react-dom/client";
+import { HashRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+
+import store from "@/store/index";
+
+import "normalize.css";
+import "./assets/css/index.less";
+
+import App from "./App";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <Suspense fallback="loading....">
+    <Provider store={store}>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </Provider>
+  </Suspense>
+);
+```
+
+## 封装 Axios 数据请求
+
+做完基础配置之后，还需要做数据请求的封装，这里使用的是 Axios：
+
+```js
+// ./config.js
+// 定义一些全局的数据请求 config
+export const BASE_URL = process.env.VUE_APP_BASE_URL || "http://localhost:3000";
+export const TIMEOUT = parseInt(process.env.VUE_APP_TIMEOUT) || 5000;
+```
+
+```js
+// request.js
+import axios from "axios";
+import { BASE_URL, TIMEOUT } from "./config"; 
+
+class Request {
+  constructor(baseURL, timeout) {
+    this.instance = axios.create({
+      baseURL,
+      timeout,
+    });
+
+    // 请求拦截器
+    this.instance.interceptors.request.use(
+      (config) => {
+        if (config.method === "post") {
+          const contentType = config.headers["Content-Type"];
+          if (
+            !contentType ||
+            contentType.indexOf("multipart/form-data") === -1
+          ) {
+            config.headers["Content-Type"] = "application/json";
+          }
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // 响应拦截器
+    this.instance.interceptors.response.use(
+      (response) => {
+        return response.data;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  request(config) {
+    return this.instance.request(config);
+  }
+
+  get(config) {
+    return this.request({ ...config, method: "get" });
+  }
+
+  post(config) {
+    return this.request({ ...config, method: "post" });
+  }
+
+  put(config) {
+    return this.request({ ...config, method: "put" });
+  }
+
+  delete(config) {
+    return this.request({ ...config, method: "delete" });
+  }
+}
+
+const service = new Request(BASE_URL, TIMEOUT);
+
+export default service;
+```
+
+以上就是项目开发的事前工作准备了，接下来开始项目主体开发。
 
