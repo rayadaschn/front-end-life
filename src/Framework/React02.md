@@ -526,6 +526,76 @@ changeCount(index) {
 }
 ```
 
+### setState 设置为异步的原因
+
+注意 React18 以前存在同步调用的情况，在 React18 后全为异步调用。
+
+如果每次调用 setState 都会执行一次 `render` 函数进行一次更新，则对性能消耗较大。因此，现在会将所有的 `setState` 都加入一个队列中，统一进行操作，一次更新。
+其次，若是同步更新了 `state`，则多次调用的 `setState` 之间由于还没有执行 `render` 函数，则 `state` 和 `props` 不能保持同步，在开发中容易产生不可预知的问题。
+
+- `setState` 同步调用的情况（React18 以前）：
+
+  三种情况：Promise 里的异步回调、`setTimeout` 中的异步回调和原生 DOM 操作中的监听回调都是同步操作。
+
+  由于 React 渲染的机制，在以前可以通过 `setTimeout` 将事件放置到**宏任务**中去，则事件就可是同步操作了。如下：
+
+  ```jsx
+  this.state = {
+  	message: 'Hello World!'
+  }
+  
+  changeText() {
+    setTimeout(() => {
+      this.setState({
+        message: 'Hello React!'
+      })
+      console.log('message 的结果为:', this.state.message)
+    }, 0)
+  }
+  ```
+
+  在React18 以前这个宏任务会不同操作，最终结果为：“`'Hello React!'`”；如今则不会，统一变成异步操作，结果会打印成操作 `setState` 之前的值：“`'Hello World!'`”。
+
+  其次，在React18 以前直接操作原生 DOM 事件中的监听回调，在内部调用 `setState` 也是同步操作的：
+
+  ```jsx
+  this.state = {
+  	message: 'Hello World!'
+  }
+  
+  componentDidMount() {
+    const btnEl = document.getElementById("btn")
+    btnEl.addEventListener('click', () => {
+      this.setState({
+        message: 'Hello React!'
+      })
+      console.log('message 的结果为:', this.state.message)
+    })
+  }
+  ```
+
+  结果同上面的 `setTimeout` 一样。 
+
+- 在 React 18 之后，所有的操作都默认放到批处理（异步处理）。若还是想要同步则需要引入一个全新的 API `flushSync`：
+
+  ```jsx
+  this.state = {
+  	message: 'Hello World!'
+  }
+  
+  changeText() {
+    flushSync(() => {
+      setTimeout(() => {
+        this.setState({ message: 'Hello React!' })
+        // 这里依旧是批处理, 异步操作 'Hello World!'
+        console.log('message 的结果为:', this.state.message) 
+      }, 0)
+    })
+    // 这里紧接着 flushSync , 会变为操作 'Hello React!'
+    console.log('message 的结果为:', this.state.message) 
+  }
+  ```
+
 ## 操作 DOM 属性
 
 和在 Vue 一样，在 React 中也是通过 `ref` 操作 DOM 原生（通常情况下，不需要也不建议这样做）。
