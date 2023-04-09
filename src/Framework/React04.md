@@ -381,7 +381,7 @@ store.dispatch(addTodoAction);
     return function (dispatch) {
       // dispatch the initial action to indicate that we're starting the request
       dispatch({ type: "FETCH_TODOS_REQUEST" });
-
+  
       // make the actual API request
       return api
         .fetchTodos()
@@ -885,3 +885,107 @@ root.render(
   </Provider>
 );
 ```
+
+## Redux 之 Hooks
+
+上面的最终实践，已经很完善了。不过 Redux 还是为开发者提供了几个便捷 Hooks。这里，介绍俩个主要常用的 Hooks。
+
+### useSelector
+
+`useSelector` 是一个用于从 Redux store 中选择数据的 React Hook。它允许组件订阅 Redux store 中特定的数据，以便在 store 中的状态发生变化时自动更新组件。
+
+这么说好像有点晕，回顾一下上面实践中的代码。若是要在组件中使用 `Redux store` 内的数据，需要开发者利用 `connect` 将 `mapStateToProps` 和 `mapDispatchToProps` 传入到组件的 `props` 中去，而后访问。这期间，还是需要开发者额外的定义 `mapStateToProps` 和 `mapDispatchToProps` 俩个函数。而利用 `useSelector` 便可以省去这个步骤了。
+
+定义： 
+
+```jsx
+const result: any = useSelector(selector: Function, equalityFn?: Function)
+```
+
+`useSelector` 接受一个回调函数 `selector` 作为参数，**该回调函数接受整个`Redux store`中的状态作为参数**，并返回组件需要的特定数据部分。当该回调函数所依赖的数据发生变化时，`useSelector` 会自动更新组件，并返回新的数据。此外，`useSelector` 还可以接受一个可选的第二个参数 `equalityFn`，用于控制在选择器函数返回值发生变化时，是否触发组件的重新渲染。`equalityFn` 是一个比较函数，接受两个参数：前一个和后一个选择器函数返回的值。如果这两个值相等，则 `equalityFn` 返回 `true`，否则返回 `false`。如果未提供 `equalityFn`，则默认使用 `Object.is` 函数进行比较。多用React-Redux 中的 `shallowEqual` 进行设置。
+
+例如，下面的代码演示了如何在 React 组件中使用 `useSelector` 选择 Redux store 中的计数器状态：
+
+```jsx
+import { useSelector } from 'react-redux';
+
+function Counter() {
+  // state 参数为整个 Redux store 中的状态
+  const count = useSelector(state => state.counter.count);
+
+  return (
+    <div>
+      <h1>Count: {count}</h1>
+    </div>
+  );
+}
+```
+
+在这个例子中，`useSelector` 接受一个回调函数，该回调函数返回 Redux store 中的 `counter` 属性，其中包含计数器的状态值 `count`。组件会订阅这个特定的状态属性，并在状态发生变化时自动更新。
+
+利用 `useSelector` 解决了 `connect` 中 `mapStateToProps` 为组件传入数据的场景，但是还有一个位组件传入 `mapDispatchToProps` 函数为组件提供 `dispatch` 分发的场景，还没解决。因此，就要用到接下来的 `useDispatch` Hook 了。
+
+### useDispatch
+
+`useDispatch` 返回一个对 Redux Store 中的 `dispatch` 函数引用，可以通过它来按需从组件中派发 Redux action。
+
+在使用 `useDispatch` 之前，需要在组件中导入 `useDispatch`：
+
+```jsx
+import { useDispatch } from 'react-redux';
+```
+
+然后，可以在组件中调用 `useDispatch` 获取一个 `dispatch` 函数，这个函数可以用于派发 Redux action。
+
+例如，下面是一个简单的示例，展示了如何在 React 组件中使用 `useDispatch`：
+
+```jsx
+import { useDispatch } from 'react-redux';
+import { incrementCounter } from './actions';
+
+function CounterButton() {
+  const dispatch = useDispatch();
+
+  const handleClick = () => {
+    dispatch(incrementCounter());
+  };
+
+  return <button onClick={handleClick}>Increment</button>;
+}
+```
+
+在这个例子中，我们定义了一个名为 `CounterButton` 的组件，当点击按钮时，它会调用 `dispatch` 函数，并传递一个 Redux action `incrementCounter()`，这个 action 会告诉 Redux 更新计数器的值。
+
+需要注意的是，使用 `useDispatch` 时，需要确保当前组件处于一个已经连接了 Redux store 的 React 组件中。如果你的组件没有被包裹在 `Provider` 中，或者没有调用 `connect` 方法连接 Redux store，那么在使用 `useDispatch` 时会抛出错误。
+
+优化，此外在 React 的 Hook 使用里面，介绍了一个 `useCallBack` Hook，`useCallback` 会返回一个 memoized（记忆化）的函数，只有当其依赖项发生变化时才会重新创建。俩者合并起来常用于性能优化，避免子组件由于回调引用变更而导致的不必要渲染：
+
+```jsx
+import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { incrementCounter } from './actions';
+
+function CounterButton() {
+  const dispatch = useDispatch();
+
+  const handleClick = useCallback(() => {
+    dispatch(incrementCounter());
+  }, [dispatch]);
+
+  return <button onClick={handleClick}>Increment</button>;
+}
+```
+
+在这个例子中，我们使用了 `useCallback` 缓存了 `handleClick` 函数，只有 `dispatch` 发生变化时才会重新创建。这样可以避免每次组件重新渲染时，都会创建一个新的函数。
+
+需要注意的是，使用 `useCallback` 时，需要确保其依赖项是正确的。在这个例子中，我们传递了 `[dispatch]` 作为依赖项，这是因为我们需要确保 `handleClick` 函数中使用的 `dispatch` 始终是最新的。
+
+当然也可以用 `useEffect` 这个 Hook 进行优化，如发送首次数据请求：
+
+```jsx
+const dispatch = useDispatch();
+useEffect(() => {
+  dispatch(fetchDataAction());
+}, [dispatch]);
+```
+
