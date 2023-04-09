@@ -7,7 +7,8 @@
   "scripts": {
     "docs:build": "vuepress build src",
     "clean-dev": "vuepress dev src --clean-cache",
-    "dev": "vuepress dev src"
+    "dev": "vuepress dev src",
+    "git-push": "git add . && git commit -m 'Updata' && git push"
   },
   "devDependencies": {
     "@vuepress/client": "2.0.0-beta.60",
