@@ -6,13 +6,7 @@ category:
   - Guide
 ---
 
-## Catalog
-
-- [代码规范和自动格式化](代码规范和自动格式化.md)
-
-- [Google 浏览器 console.log「异步打印现象」](Google浏览器console.log「异步打印现象」.md)
-
-- [JavaScript 中的位运算](JavaScript中的位运算.md)
+##  JavaScript 碎碎念
 
 - [彻底理解 this 指向](彻底理解this指向.md)
 
@@ -26,4 +20,17 @@ category:
 
 - [令人困惑的闭包](令人困惑的闭包.md)
 
-  
+## 从零开始 Node 学习之路
+
+- [Node基础](Node01.md)
+- [Node 服务器开发基础](Node02.md)
+
+
+
+## 其它
+
+- [代码规范和自动格式化](代码规范和自动格式化.md)
+
+- [Google 浏览器 console.log「异步打印现象」](Google浏览器console.log「异步打印现象」.md)
+
+- [JavaScript 中的位运算](JavaScript中的位运算.md)

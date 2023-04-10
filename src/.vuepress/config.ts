@@ -8,7 +8,7 @@ export default defineUserConfig({
 
   locales: {
     "/": {
-      lang: "en-US",
+      lang: "zh-CN",
       title: "Huy's Blog",
       description: "A blogfront-end blog",
     },
@@ -34,5 +34,5 @@ export default defineUserConfig({
     }),
   ],
 
-  shouldPrefetch: false,
+  shouldPrefetch: true,
 });
