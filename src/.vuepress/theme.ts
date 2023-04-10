@@ -66,7 +66,7 @@ export default hopeTheme({
   locales: {
     "/": {
       navbar: Navbar,
-      navbarAutoHide: "always",
+      navbarAutoHide: "mobile",
 
       footer: "MIT Licensed | Copyright",
 
