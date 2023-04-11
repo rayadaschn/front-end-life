@@ -1,11 +1,10 @@
 ---
 title: node 基础
-icon: node
+icon: nodeJS
 category:
   - javascript
 tag:
   - node
-
 ---
 
 # Node 基础
@@ -14,19 +13,19 @@ tag:
 
 ## Node 是什么?
 
-**Node.js** 是一个基于 V8 JavaScript 引擎的 JavaScrip t运行时环境。简单理解，就是 Node 是基于 V8 引擎的能够在本地运行 JavaScript 代码的环境。当然由于 Chrome 浏览器内部还需要解析、渲染 HTML和CSS等相关渲染引擎，另外还需要提供支持浏览器操作的API、浏览器自己的事件循环等，这部分做了取舍。但是同时由于要处理本地文件，所以 Node 自身也添加了一些额外的API如文件系统读/写、网络IO、加密、压缩解压文件等。
+**Node.js** 是一个基于 V8 JavaScript 引擎的 JavaScrip t 运行时环境。简单理解，就是 Node 是基于 V8 引擎的能够在本地运行 JavaScript 代码的环境。当然由于 Chrome 浏览器内部还需要解析、渲染 HTML 和 CSS 等相关渲染引擎，另外还需要提供支持浏览器操作的 API、浏览器自己的事件循环等，这部分做了取舍。但是同时由于要处理本地文件，所以 Node 自身也添加了一些额外的 API 如文件系统读/写、网络 IO、加密、压缩解压文件等。
 
 ### 体系架构
 
-Node.js主要分为四大部分，Node Standard Library，Node Bindings，V8，Libuv，架构图如下：
+Node.js 主要分为四大部分，Node Standard Library，Node Bindings，V8，Libuv，架构图如下：
 
 ![Node 体系架构](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304100919387.png)
 
 - Node Standard Library 是我们每天都在用的标准库，如 Http, Buffer 模块。
-- Node Bindings 是沟通JS 和 C++的桥梁，封装V8和Libuv的细节，向上层提供基础API服务。
+- Node Bindings 是沟通 JS 和 C++的桥梁，封装 V8 和 Libuv 的细节，向上层提供基础 API 服务。
 - 这一层是支撑 Node.js 运行的关键，由 C/C++ 实现。
-  - V8 是Google开发的JavaScript引擎，提供JavaScript运行环境，可以说它就是 Node.js 的发动机。
-  - Libuv 是专门为Node.js开发的一个封装库，提供跨平台的异步I/O能力.
+  - V8 是 Google 开发的 JavaScript 引擎，提供 JavaScript 运行环境，可以说它就是 Node.js 的发动机。
+  - Libuv 是专门为 Node.js 开发的一个封装库，提供跨平台的异步 I/O 能力.
   - C-ares：提供了异步处理 DNS 相关的能力。
   - http_parser、OpenSSL、zlib 等：提供包括 http 解析、SSL、数据压缩等其他的能力。
 
@@ -46,7 +45,7 @@ const add = (a, b) => a + b;
 module.exports = { add };
 
 // moduleB.js
-const { add } = require('./moduleA');
+const { add } = require("./moduleA");
 console.log(add(1, 2)); // 输出 3
 ```
 
@@ -71,24 +70,24 @@ import moduleA from './moduleA'
 ```js
 // CommonJS 动态导入方式
 function loadModule(filename) {
-  return require('./' + filename)
+  return require("./" + filename);
 }
 
 // ES6 模块静态导入方式
-const filename = 'moduleA.js'
-import(`./${filename}`).then(module => {
+const filename = "moduleA.js";
+import(`./${filename}`).then((module) => {
   // 执行操作
-})
+});
 ```
 
 3. 默认导出：在 CommonJS 规范中，使用 `module.exports` 或 `exports` 对象来导出模块的公共部分；而在 ES6 模块系统中，则默认导出一个模块，可以通过 `export default` 语句来指定默认导出。
 
 ```js
 // CommonJS 导出方式
-module.exports = { add } // 或者 exports.add = add
+module.exports = { add }; // 或者 exports.add = add
 
 // ES6 模块默认导出
-export default { add }
+export default { add };
 ```
 
 需要注意的是，虽然 `import` 和 `export` 是 ES6 模块化规范中定义的关键字，但它们在许多现代浏览器和 Node.js 环境中已经得到了支持。但在一些旧的浏览器或 Node.js 版本中，可能需要使用打包工具（如 webpack、Browserify 等）来转换成 CommonJS 规范的代码。
@@ -101,41 +100,48 @@ fs 上有几个文件读取的 API 常用的有俩个：`fs.readFileSync`（同�
 
    ```js
    // 同步读取,获取返回值进行同步操作
-   const fs = require('fs')
-   const res = fs.readFileSync('./text.txt', {
-     encoding: 'utf8'
-   })
-   console.log(res)
+   const fs = require("fs");
+   const res = fs.readFileSync("./text.txt", {
+     encoding: "utf8",
+   });
+   console.log(res);
    ```
 
 2. 异步读取: 回调函数
 
    ```js
    // fs.readFile 第二个参数是回调函数
-   const fs = require('fs')
-   fs.readFile('./text.txt', {
-     encoding: 'utf8'
-   }, (err, data) => {
-     if (err) {
-       console.log("读取文件错误:", err)
-       return
+   const fs = require("fs");
+   fs.readFile(
+     "./text.txt",
+     {
+       encoding: "utf8",
+     },
+     (err, data) => {
+       if (err) {
+         console.log("读取文件错误:", err);
+         return;
+       }
+       console.log("读取文件结果:", data);
      }
-     console.log("读取文件结果:", data)
-   })
+   );
    ```
 
 3. 异步读取：Promise
 
    ```js
    // 通过链式调用的 Promise 操作
-   const fs = require('fs')
-   fs.promises.readFile('./text.txt', {
-     encoding: 'utf-8'
-   }).then(res => {
-     console.log("获取到结果:", res)
-   }).catch(err => {
-     console.log("发生了错误:", err)
-   })
+   const fs = require("fs");
+   fs.promises
+     .readFile("./text.txt", {
+       encoding: "utf-8",
+     })
+     .then((res) => {
+       console.log("获取到结果:", res);
+     })
+     .catch((err) => {
+       console.log("发生了错误:", err);
+     });
    ```
 
 ### 文件描述符的使用
@@ -149,21 +155,21 @@ fs 上有几个文件读取的 API 常用的有俩个：`fs.readFileSync`（同�
 当您打开一个文件时，操作系统会为该文件分配一个唯一的文件描述符。您可以使用这个文件描述符来读取、写入或关闭文件。在 Node.js 中，您可以使用 `fs.open` 函数来打开一个文件，并获取该文件的文件描述符。例如：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
 // 打开文件，并获取文件描述符
-fs.open('file.txt', 'r', (err, fd) => {
-  if (err) throw err
+fs.open("file.txt", "r", (err, fd) => {
+  if (err) throw err;
 
-  console.log(fd) // 打印文件描述符
+  console.log(fd); // 打印文件描述符
   // 或使用文件描述符进行 I/O 操作
   // ...
 
   // 关闭文件
   fs.close(fd, (err) => {
-    if (err) throw err
-  })
-})
+    if (err) throw err;
+  });
+});
 ```
 
 在上面的例子中，我们使用 `fs.open` 函数打开了一个名为 `file.txt` 的文件，并获取了该文件的文件描述符 `fd`。接下来，我们可以使用 `fd` 来执行文件的 I/O 操作。最后，我们使用 `fs.close` 函数来关闭文件，释放文件描述符。
@@ -204,7 +210,7 @@ fs.writeFile(file, data[, options], callback)
 例如，以下代码在写入文件时使用了 `encoding` 和 `flag` 选项：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
 fs.writeFile(
   "file.txt",
@@ -228,12 +234,12 @@ fs.writeFile(
 可以使用 `fs.mkdir` 函数来创建一个新的文件夹。该函数接受两个参数：要创建的文件夹路径以及一个回调函数。当创建操作完成或出错时，回调函数将被调用。例如：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
-fs.mkdir('newDir', (err) => {
-  if (err) throw err
-  console.log('Folder created')
-})
+fs.mkdir("newDir", (err) => {
+  if (err) throw err;
+  console.log("Folder created");
+});
 ```
 
 在上面的例子中，我们使用 `fs.mkdir` 函数创建了一个名为 `newDir` 的文件夹。如果创建失败，则会抛出错误；否则，将输出 `'Folder created'`。
@@ -243,12 +249,12 @@ fs.mkdir('newDir', (err) => {
 可以使用 `fs.readdir` 函数来读取一个文件夹中的所有文件和子文件夹。该函数接受两个参数：要读取的文件夹路径以及一个回调函数。当读取操作完成或出错时，回调函数将被调用。例如：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
-fs.readdir('myDir', (err, files) => {
-  if (err) throw err
-  console.log(files)
-})
+fs.readdir("myDir", (err, files) => {
+  if (err) throw err;
+  console.log(files);
+});
 ```
 
 在上面的例子中，我们使用 `fs.readdir` 函数读取了名为 `myDir` 的文件夹中的所有文件和子文件夹，并将结果作为数组打印到控制台上。如果读取失败，则会抛出错误；否则，将输出文件和子文件夹的列表。
@@ -258,21 +264,21 @@ fs.readdir('myDir', (err, files) => {
 递归读取文件夹中所有的文件：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
 function readDirectory(path) {
   fs.readdir(path, { withFileTypes: true }, (err, files) => {
-    files.forEach(item => {
+    files.forEach((item) => {
       if (item.isDirectory()) {
-        readDirectory(`${path}/${item.name}`)
+        readDirectory(`${path}/${item.name}`);
       } else {
-        console.log("获取到文件:", item.name)
+        console.log("获取到文件:", item.name);
       }
-    })
-  })
+    });
+  });
 }
 
-readDirectory('./myDir')
+readDirectory("./myDir");
 ```
 
 3. 删除文件夹
@@ -280,12 +286,12 @@ readDirectory('./myDir')
 您可以使用 `fs.rmdir` 函数来删除一个文件夹。该函数接受两个参数：要删除的文件夹路径以及一个回调函数。当删除操作完成或出错时，回调函数将被调用。例如：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
-fs.rmdir('oldDir', (err) => {
-  if (err) throw err
-  console.log('Folder deleted')
-})
+fs.rmdir("oldDir", (err) => {
+  if (err) throw err;
+  console.log("Folder deleted");
+});
 ```
 
 在上面的例子中，我们使用 `fs.rmdir` 函数删除了名为 `oldDir` 的文件夹。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
@@ -297,12 +303,12 @@ fs.rmdir('oldDir', (err) => {
 例如，使用 `rimraf` 库来删除一个文件夹及其所有子文件夹和文件的示例代码如下：
 
 ```js
-const rimraf = require('rimraf')
+const rimraf = require("rimraf");
 
-rimraf('myDir', (err) => {
-  if (err) throw err
-  console.log('Folder deleted')
-})
+rimraf("myDir", (err) => {
+  if (err) throw err;
+  console.log("Folder deleted");
+});
 ```
 
 在上面的例子中，我们使用 `rimraf` 函数删除了名为 `myDir` 的文件夹及其所有子文件夹和文件。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
@@ -314,21 +320,21 @@ rimraf('myDir', (err) => {
 可以使用 `fs.rename` 函数来重命名一个文件夹。该函数接受三个参数：旧的文件夹路径、新的文件夹路径以及一个回调函数。当重命名操作完成或出错时，回调函数将被调用。例如：
 
 ```js
-const fs = require('fs')
+const fs = require("fs");
 
 // 对文件夹进行重命名
 // 需要加路径
-fs.rename('./oldDir', './newDir', (err) => {
-  if (err) throw err
-  console.log('Folder renamed')
-})
+fs.rename("./oldDir", "./newDir", (err) => {
+  if (err) throw err;
+  console.log("Folder renamed");
+});
 
 // 对文件进行重命名
 // 重命名文件需要加后缀名!
-fs.rename('./oldFile.txt', './newFile.txt', (err) => {
-  if (err) throw err
-  console.log('File renamed')
-})
+fs.rename("./oldFile.txt", "./newFile.txt", (err) => {
+  if (err) throw err;
+  console.log("File renamed");
+});
 ```
 
 在上面的例子中，我们使用 `fs.rename` 函数将名为 `oldDir` 的文件夹重命名为 `newDir`。如果重命名失败，则会抛出错误；否则，将输出 `'Folder renamed'`。
@@ -342,27 +348,27 @@ Node.js 中的 `events` 模块提供了一个简单的事件驱动框架，可�
 以下是一个简单的示例，演示如何使用 `events` 模块来创建并触发一个自定义事件：
 
 ```js
-const EventEmitter = require('events')
+const EventEmitter = require("events");
 
 class MyEmitter extends EventEmitter {}
 
 // 创建 EventEmitter 实例
-const myEmitter = new MyEmitter()
+const myEmitter = new MyEmitter();
 
 // 回调事件
 function handleFn() {
-  console.log('Hello, world!')
+  console.log("Hello, world!");
 }
 
 // 监听事件
-myEmitter.on('hello', handleFn)
+myEmitter.on("hello", handleFn);
 
 // 发射事件
-myEmitter.emit('hello') // 打印 'Hello, world!'
+myEmitter.emit("hello"); // 打印 'Hello, world!'
 
 // 取消事件监听
-myEmitter.off('hello', handleFn)
-myEmitter.emit('hello') // 不再打印
+myEmitter.off("hello", handleFn);
+myEmitter.emit("hello"); // 不再打印
 ```
 
 在上面的例子中，我们首先创建了一个名为 `MyEmitter` 的自定义事件类，该类继承自 `EventEmitter` 类。然后我们创建了一个 `myEmitter` 实例，并为其注册了一个名为 `'hello'` 的事件及其回调函数，当该事件被触发时，将输出 `'Hello, world!'`。而后取消事件监听，再发送事件时，不再输出。
@@ -370,11 +376,11 @@ myEmitter.emit('hello') // 不再打印
 此外，也可以传递参数给事件回调函数，例如：
 
 ```js
-myEmitter.on('count', (count) => {
-  console.log(`Count: ${count}`)
-})
+myEmitter.on("count", (count) => {
+  console.log(`Count: ${count}`);
+});
 
-myEmitter.emit('count', 42)
+myEmitter.emit("count", 42);
 ```
 
 在上面的例子中，我们定义了一个名为 `'count'` 的事件，并将回调函数作为第二个参数传递给 `on` 方法。当该事件被触发时，它会将参数 `42` 传递给回调函数，并输出 `'Count: 42'`。
@@ -388,7 +394,7 @@ myEmitter.emit('count', 42)
 
 ## Buffer 类
 
-**计算机中所有的内容:文字、数字、图片、音频、视频最终都会使用二进制来表示。** JavaScript可以直接去处理非常直观的数据：比如字符串，我们通常展示给用户的也是这些内容。但是服务器不同，服务器中药处理的更多的是服务器中的本地文件，像音视频等，这些都是由其它编码的二进制数据。
+**计算机中所有的内容:文字、数字、图片、音频、视频最终都会使用二进制来表示。** JavaScript 可以直接去处理非常直观的数据：比如字符串，我们通常展示给用户的也是这些内容。但是服务器不同，服务器中药处理的更多的是服务器中的本地文件，像音视频等，这些都是由其它编码的二进制数据。
 
 但是，二进制并不好直接操作，它较为抽象。Node 为开发者提供了一个全局类 Buffer。可以将 Buffer 看成一个存储二进制的数据，数组中的每一项，都可以保存 8 位二进制：`0000 0000`。
 
@@ -403,17 +409,17 @@ myEmitter.emit('count', 42)
 例如，以下代码演示了如何使用 `Buffer.from()` 方法创建并操作一个 Buffer：
 
 ```js
-const buf = Buffer.from('hello', 'utf8')
+const buf = Buffer.from("hello", "utf8");
 
-console.log(buf) // <Buffer 68 65 6c 6c 6f>
+console.log(buf); // <Buffer 68 65 6c 6c 6f>
 
-console.log(buf.toString('utf8')) // hello
+console.log(buf.toString("utf8")); // hello
 
-console.log(buf[0]) // 104
+console.log(buf[0]); // 104
 
-buf[1] = 111
+buf[1] = 111;
 
-console.log(buf.toString('utf8')) // hollo
+console.log(buf.toString("utf8")); // hollo
 ```
 
 在上面的例子中，我们使用 `Buffer.from` 函数创建了一个包含字符串 `'hello'` 的 Buffer。我们还使用 `console.log` 和 `toString` 方法打印了该 Buffer 的内容和转换为字符串后的内容。我们还通过访问 `buf` 数组索引来修改了 Buffer 中的一个字节，并输出了修改后的结果。
@@ -431,18 +437,18 @@ console.log(buf.toString('utf8')) // hollo
 例如，以下代码演示了如何使用 `Buffer.alloc()` 方法创建并操作一个 Buffer：
 
 ```js
-const buf = Buffer.alloc(5)
+const buf = Buffer.alloc(5);
 
-console.log(buf) // <Buffer 00 00 00 00 00>
+console.log(buf); // <Buffer 00 00 00 00 00>
 
-buf[1] = 0x61
+buf[1] = 0x61;
 
-console.log(buf) // <Buffer 00 61 00 00 00>
+console.log(buf); // <Buffer 00 61 00 00 00>
 ```
 
 在上面的例子中，我们使用 `Buffer.alloc()` 方法创建了一个包含五个字节的新的 Buffer，并将其所有字节初始化为零。我们还通过访问 `buf` 数组索引来修改了 Buffer 中的一个字节，并输出了修改后的结果。
 
-### Buffer的创建过程
+### Buffer 的创建过程
 
 在 Node.js 中，`Buffer` 是使用 C++ 底层库进行实现的。具体地说，`Buffer` 会在内存中分配一段连续的空间，用于存储二进制数据。
 
@@ -461,10 +467,6 @@ console.log(buf) // <Buffer 00 61 00 00 00>
 另外，在 Node.js 中，`Buffer` 对象本身是一个 JavaScript 对象，它包装了底层的 C++ Buffer 对象。因此，当您创建一个新的 `Buffer` 实例时，实际上是在 JavaScript 层面上创建了一个对象，而不是直接向操作系统申请内存空间。这个对象会引用底层的 C++ Buffer 对象，使得 JavaScript 层面可以方便地对二进制数据进行操作。由于这种间接的封装方式，也可以减少频繁向操作系统申请内存的开销。
 
 需要注意的是，在极端情况下，如果创建了许多大型的 `Buffer` 实例，并且持有它们的引用，可能会导致内存泄漏等问题。因此，在使用 `Buffer` 时，建议注意内存的使用情况，并及时释放不再需要的对象。
-
-
-
-
 
 ## 参考文章
 

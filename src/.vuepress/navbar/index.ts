@@ -3,8 +3,8 @@ import { navbar } from "vuepress-theme-hope";
 export const Navbar = navbar([
   "/",
   {
-    icon: "javascript",
-    text: "JavaScript",
+    icon: "nodeJS",
+    text: "JS/Node",
     prefix: "JavaScript/",
     link: "/JavaScript/",
   },
