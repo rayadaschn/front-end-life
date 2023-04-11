@@ -467,7 +467,7 @@ function Counter() {
 
 具体来说，`useCallback` 返回一个缓存过的回调函数，避免了在每次渲染时重新创建回调函数的开销，从而提高了组件的性能。`useEffect` 在每次组件渲染后执行一段副作用代码，例如数据获取或订阅事件等，还可以在组件卸载前清理副作用。
 
-需要注意的是**，由于 `useCallback` 的缓存依赖列表可能与 `useEffect` 的依赖列表不同，因此在使用两者时需要谨慎处理依赖关系，以避免出现意外行为和性能问题。**
+需要注意的是，**由于`useCallback`的缓存依赖列表可能与`useEffect`的依赖列表不同，因此在使用两者时需要谨慎处理依赖关系，以避免出现意外行为和性能问题。**
 
 总的来说，`useCallback` 和 `useEffect` 是针对不同的场景和目的而设计的 Hook，开发者需要根据实际情况灵活选择使用。
 
@@ -665,7 +665,7 @@ function MyComponent(props) {
 }
 ```
 
-因此，`useMemo` 和 `useCallback` 的区别在于它们缓存的对象类型不同：**`useMemo` 缓存的是计算结果，而 `useCallback` 缓存的是回调函数。**但是，它们都可以通过依赖项数组来控制何时需要重新计算或创建新的对象，以避免不必要的计算和组件重新渲染，提高应用程序的性能和稳定性。
+因此，`useMemo` 和 `useCallback` 的区别在于它们缓存的对象类型不同：**`useMemo`缓存的是计算结果，而 `useCallback`缓存的是回调函数。** 但是，它们都可以通过依赖项数组来控制何时需要重新计算或创建新的对象，以避免不必要的计算和组件重新渲染，提高应用程序的性能和稳定性。
 
 需要注意的是，在使用 `useMemo` 和 `useCallback` 时，我们需要合理地选择依赖项数组中的元素，以确保它们准确反映了所依赖的状态和属性的变化情况。同时，我们也要注意不要过度进行优化，以避免代码可读性和维护性的降低。
 
@@ -673,7 +673,13 @@ function MyComponent(props) {
 
 `useImperativeHandle` 它允许我们在父组件中通过 Ref 访问子组件的特定方法或属性。这个 Hook 常常与 `forwardRef` 方法一起使用。
 
-`useImperativeHandle` 接受三个参数：一个 Ref 对象，一个工厂函数和一个依赖项数组。工厂函数返回一个对象，该对象包含可以暴露给父组件的方法和属性。
+```jsx
+useImperativeHandle(ref, createHandle, [deps])
+```
+
+1. `ref`：需要被赋值的`ref`对象。
+2. `createHandle`：`createHandle`函数的返回值作为`ref.current`的值。该对象包含可以暴露给父组件的方法和属性。
+3. `[deps]`：依赖数组，依赖发生变化会重新执行`createHandle`函数。
 
 在 `useImperativeHandle` 内部，我们可以选择性地指定一个依赖项数组来控制何时需要更新暴露给父组件的方法和属性。如果没有指定依赖项数组，那么每次渲染时都会重新计算暴露给父组件的内容，并更新 Ref 对象。
 
@@ -730,7 +736,7 @@ function ParentComponent() {
 
 ## useLayoutEffect
 
-`useLayoutEffect` 非常类似于 `useEffect`，区别是，**`useLayoutEffect` 中注册的回调函数会在 React 完成更新 DOM 后、浏览器布局和绘制之前立即执行。**这意味着在 `useLayoutEffect` 中的代码可以改变 DOM，并且这些 DOM 变更将在用户看到任何更新之前生效。
+`useLayoutEffect` 非常类似于 `useEffect`，区别是，**`useLayoutEffect`中注册的回调函数会在React完成更新 DOM 后、浏览器布局和绘制之前立即执行。** 这意味着在 `useLayoutEffect` 中的代码可以改变 DOM，并且这些 DOM 变更将在用户看到任何更新之前生效。
 
 使用 `useLayoutEffect` 时需要格外小心，因为它可能会导致应用程序性能问题。如果没有必要在布局计算之前同步更新DOM，请考虑使用 `useEffect` 来代替。
 

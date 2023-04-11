@@ -39,7 +39,7 @@ function hoc(Cpn) {
 用途有俩种：
 
 - 属性代理（props proxy），高阶组件通过被包裹的 React 组件来操作 `props`；
-- 反向代理（inheritance inversion），高阶组件继承呗包裹的 React 组件。
+- 反向代理（inheritance inversion），高阶组件继承被包裹的 React 组件。
 
 ### 属性代理
 
@@ -88,13 +88,13 @@ const HighOrderComponent = (WrappedComponent) =>
       UNSAFE_componentWillMount() {
         this.begin = Date.now();
       }
-
+  
       componentDidMount() {
         this.end = Date.now();
         const interval = this.end - this.begin;
         console.log(`${WrapperCpn.name}渲染使用时间:${interval}ms`);
       }
-
+  
       render() {
         return <WrapperCpn {...this.props} />;
       }
@@ -251,7 +251,7 @@ export class App extends PureComponent {
 需要注意的是，动画类 CSS 的名称 “ `demoName` ” 需要定义在 `CSSTransition`的 class 属性上（即 `classNames`）。另外，为了让过渡动画动起来，还需为 `CSSTransition` 定义几个属性：
 
 - `in` ：（Boolean）触发进入或者退出状态。
-  - 当`in`为`true`时，触发进入状态，会添加`-enter`、-enter-acitve 的**class**开始执行动画，当动画执行结束后，会移除两个**class**， 并且添加 `-enter-done` 的**class**;
+  - 当`in`为`true`时，触发进入状态，会添加`-enter`、`-enter-acitve` 的**class**开始执行动画，当动画执行结束后，会移除两个**class**， 并且添加 `-enter-done` 的**class**;
   - 当`in`为`false`时，触发退出状态，会添加`-exit`、`-exit-active`的**class**开始执行动画，当动画执行结束后，会移除两个**class**，并 且添加`-enter-done`的**class**;
   - 如果添加了`unmountOnExit={true}`，那么该组件会在执行退出动画结束后被移除掉。
 - `timeout`：（Number）过渡动画时间。虽然在 css 中的`transition`定义了动画时间，但是该属性在 CSSTransition 上依旧是必要的。

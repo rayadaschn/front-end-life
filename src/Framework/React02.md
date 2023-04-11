@@ -46,7 +46,7 @@ $: npm start
 使用**class**定义一个组件：
 
 - **constructor**是可选的，我们通常在**constructor**中初始化一些数据。若不写，若需要传参，则直接用形如 `this.props.xxx`形式 ；
-- **this.state**中维护的就是我们组件内部的数据，优化部分在下文做进一步讨论；
+- **this.state**中维护的就是我们组件内部的数据，修改组件内部的数据需要用到 `this.setState()`函数，这是必须的，每次修改都会重新渲染组件，优化部分在下文做进一步讨论；
 - `render()` 方法是 class 组件中唯一必须实现的方法。需要注意的是，当 `render` 被调用时，它会检查 `this.props` （继承属性）和 `this.state` （组件自身属性）的变化并返回以下类型之一：
   - React 元素，也就是组件元素；
   - 数组或 `fragments`；
@@ -154,8 +154,6 @@ class HelloWorld extends React.Component {
 export default HelloWorld
 ```
 
-
-
 ## 组件通信
 
 - 父传子：父组件通过 **属性=值** 的形式来传递给子组件数据。如属性一般将数据传递给子组件；
@@ -224,8 +222,11 @@ export default HelloWorld
 
   ```jsx
   // 在函数式组件中
+  import PropTypes from "prop-types";
+  
   function MainBanner(props) {
-    const { banners, title } = props;
+    // 函数式进行解构并赋默认值
+    const { banners, title = '设置默认值' } = props;
     return (
       <div className='banner'>
         <h2>封装一个轮播图: {title}</h2>
@@ -239,6 +240,12 @@ export default HelloWorld
       </div>
     )
   }
+  // 对函数组件内部的值进行约束
+  MainBanner.propTypes = {
+    banners: PropTypes.array,
+  };
+  
+  export default MainBanner;
   ```
 
   
@@ -632,7 +639,7 @@ export class App extends PureComponent {
     console.log(this.refs.someString)
 
     // 2.方式二: 提前创建好ref对象, createRef(), 将创建出来的对象绑定到元素
-   console.log(this.titleRef.current)
+    console.log(this.titleRef.current)
 
     // 3.方式三: 传入一个回调函数, 在对应的元素被渲染之后, 回调函数被执行, 并且将元素传入
     console.log(this.titleEl)
@@ -641,9 +648,10 @@ export class App extends PureComponent {
   render() {
     return (
       <div>
-        <h2 ref="someString">字符串形式获取</h2>
-        <h2 ref={this.titleRef}> ref 对象形式获取,利用 current 进行调用</h2>
-        <h2 ref={el => this.titleEl = el}>函数形式获取</h2>
+        <h2 ref="someString">方式一：字符串形式获取</h2>
+        <h2 ref={this.titleRef}>方式二： ref 对象形式获取,利用 current 进行调用</h2>
+        <h2 ref={el => this.titleEl = el}>方式三：回调函数形式获取</h2>
+        
         <button onClick={e => this.getNativeDOM()}>获取DOM</button>
       </div>
     )
@@ -689,7 +697,7 @@ export class App extends PureComponent {
 export default App
 ```
 
-- 不能**在函数组件上使用** **ref** **属性**，因为他们没有实例。所以要获取函数子组件的 DOM，这时我们需要通过 [`React.forwardRef`](https://legacy.reactjs.org/docs/forwarding-refs.html) 来获取，此时在`forwardRef` 函数中能够获取俩个参数：`props`和父组件传递过来的`ref`。因此，通过父组件传递过来的 `ref`，能够达到父组件操作函数子组件的方法。当然，还有 `hooks`的操作方法，后续介绍。
+- 不能**在函数组件上使用** **ref** **属性**，因为他们没有实例。所以要获取函数子组件的 DOM，这时我们需要通过 [`React.forwardRef`](https://legacy.reactjs.org/docs/forwarding-refs.html) 来获取，此时在`forwardRef` 函数中能够获取俩个参数：`props`和父组件传递过来的`ref`。因此，通过父组件传递过来的 `ref`，能够达到父组件操作函数子组件的方法。当然，还有 `hooks`的操作方法，后续[Hooks 章节](https://rayadaschn.github.io/front-end-life/Framework/React06.html#useref)中进行介绍。
 
 ```jsx
 // 在函数组件上获取 DOM
@@ -751,7 +759,7 @@ export default {
 
 而在 React 中，表单的处理方式和普通的 DOM 元素不一样：表单元素通常会保存在一些内部的 **state** 。
 
-受控组件的定义为表单输入元素的值受 React 组件 `state` 或 `prop` 控制的元素。它的值受 React 管理，通过组件的 `setState()` 方法或者 `prop` 来更新。
+**受控组件的定义**为表单输入元素的值受 React 组件 `state` 或 `prop` 控制的元素。它的值受 React 管理，通过组件的 `setState()` 方法或者 `prop` 来更新。
 
 可以**使用受控组件来进行可预测的响应表单输入的变化**。它可以让开发人员很容易地管理表单的状态，并在表单提交时存储数据。也就是说，在 React 中，需要额外的监听如 `input` 等组件的 `value` 等输入值的变化。以下是文本绑定是示例：
 
@@ -990,7 +998,7 @@ handleFruitChange(event) {
 >
 > 1.类数组转换为数组
 >
-> 可以使用 Array.from() 或者 Array.prototype.slice.call() 方法将类数组转换为真正的数组。
+> 可以使用 `Array.from()` 或者 `Array.prototype.slice.call()` 方法将类数组转换为真正的数组。
 >
 > ```JavaScript
 > const arrLike = {0: 'foo', 1: 'bar', 2: 'baz', length: 3};
@@ -1003,7 +1011,7 @@ handleFruitChange(event) {
 >
 > 2.遍历类数组
 >
-> 可以使用 for 循环或者 forEach() 方法遍历类数组。
+> 可以使用 for 循环或者 `forEach()` 方法遍历类数组。
 >
 > ```JavaScript
 > const arrLike = {0: 'foo', 1: 'bar', 2: 'baz', length: 3};
