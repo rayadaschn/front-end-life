@@ -246,7 +246,8 @@ tag:
 
   合并规则： “正正取大值”、“正负相抵消相加”、“负负最负值”。
 
-- `margin: auto` 非常好用!!!，**`margin: auto` 的填充规则**:
+- `margin: auto` 非常好用！！！，**`margin: auto` 的填充规则**:
+  
   - 如果一侧定值，一侧 `auto`，则 `auto` 为剩余空间大小;
   - 如果俩侧都是 `auto`，则平分剩余空间。
 
@@ -267,7 +268,7 @@ tag:
   div { border: 1px solid; }
   ```
 
-- **`border-color` 在没有指定颜色时，会默认使用当前元素的 `color` 计算值作为边框颜色。**类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
+- **`border-color`在没有指定颜色时，会默认使用当前元素的`color`计算值作为边框颜色。**类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
 
   应用: 如利用行内元素（ `<a>` ）的边宽做下划线，则鼠标覆盖时，边框也会一同变色。
 
@@ -299,7 +300,9 @@ tag:
 
 `display` 计算值为 `inline`、`inline-block`、`inline-table` 或 `inline-cell` 的元素；
 
-常见内联元素: `<span>` 、`<strong>` 、`<em>` ; 常见替换元素: `<img>` 、`<button>` 、`<input>` 。
+常见内联元素: `<span>` 、`<strong>` 、`<em>` ; 
+
+常见替换元素: `<img>` 、`<button>` 、`<input>` 。
 
 ### 俩大难点：`line-height`和`vertical-align`
 
@@ -309,7 +312,7 @@ tag:
 
   `line-height` 的高度由固定高度（行距）和不固定高度（`font-size`）决定。
 
-  行距就是文字之间的间隔，计算公式：**`行距 = line-height -font-size `** 。
+  行距就是文字之间的间隔，计算公式：**`行距 = line-height - font-size `** 。
 
 - `line-height` 默认值在各个浏览器中的值不一样。其最终高度值同 `font-size` 相关，**若为数值 一般建议为 1.5**。
 
@@ -323,7 +326,7 @@ tag:
 
 - 需要注意的是每个行框盒子外部都有一个宽度为 0 ，表现形式都如同字符的“幽灵节点”。
 
-  因此，`line-height` 还有一个[大值特性]([行高内联元素“大值特性”演示 » CSS世界demo演示 (cssworld.cn)](https://demo.cssworld.cn/5/2-6.php)) ：
+  因此，`line-height` 还有一个[大值特性](https://demo.cssworld.cn/5/2-6.php) ：
 
   ```html
   <div class="box box1">
@@ -343,19 +346,20 @@ tag:
   }
   .box1 { line-height: 96px; }
   .box1 span { line-height: 20px; }
+  
   .box2 { line-height: 20px; }
   .box2 span { line-height: 96px; }
   ```
-
-  以上，俩个 `.box` 的行高都是 `96px` ，原因就是幽灵节点，高度也是 `96px`，而`行框盒子`的高度是由最高的那个内联盒子觉得，所以最终 `.box` 的行高也是 `96px`。
+  
+  以上，**俩个 `.box` 的行高都是 `96px`** ，原因就是幽灵节点，高度也是 `96px`，而**行框盒子**的高度是由最高的那个内联盒子觉得，所以最终`.box` 的行高也是 `96px`。
 
 关于 `line-height` 的几个误区:
 
-- 误区 1: “要想让单行文字垂直居中，只要设置 `line-height` 大小和 `height`高度一样就行了。” 其实，当然从效果上看确实如此。（原理：行高等于盒子高度，中间内容天然垂直居中显示）但是这句话也存在误导，只需要设置 `line-height` 就行了（盒子高度由行高决定）。
+- 误区 1：“要想让单行文字垂直居中，只要设置 `line-height` 大小和 `height`高度一样就行了。” 其实，当然从效果上看确实如此。（原理：行高等于盒子高度，中间内容天然垂直居中显示）但是这句话也存在误导，只需要设置 `line-height` 就行了（盒子高度由行高决定）。
 
   ![误区 1](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/20230318125852.png)
 
-- 误区 2: “行高控制文字垂直居中，不使用于多行”。实际上，多行也可以。（准确是说近似居中，如微软雅黑文字会略微下沉）多行垂直居中的原理和单行的不同，需要借助 **`vertical-align`** 。原理如下：
+- 误区 2： “行高控制文字垂直居中，不使用于多行。”实际上，多行也可以。（准确是说近似居中，如微软雅黑文字会略微下沉）多行垂直居中的原理和单行的不同，需要借助 **`vertical-align`** 。原理如下：
 
   多行文字用一个标签包裹起来，然后设置 `display: inline-block`。好处在于既能重置外部的 `line-height`为正常大小，又能保持内联元素 特性，从而可以设置 `vertical-align: middle` （只对内联元素有效），并且会带来一个幽灵空白节点，有了这个幽灵节点，可以让行高 `line-height` 有了作用对象，从而相当于在盒子外部撑起了一个高度与父元素相当的内联元素。
 
