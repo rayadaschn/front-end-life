@@ -16,8 +16,6 @@ sticky: false
 
 ## 1. 是什么?
 
-继承是面向对象中的一个重点，笔者也是反复学习了多次（时而懂，时而不懂，其实就是不懂，哈哈哈）。
-
 我们还是先来看原型的这张神图：
 
 ![Developer settings](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@main/img/jsobj.jpg)
