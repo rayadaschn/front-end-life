@@ -339,3 +339,63 @@ app.listen(9000, () => {
 
 ## 创建路由
 
+```js
+// useRouter.js
+const express = require("express");
+
+// 创建路由
+const useRouter = express.Router();
+
+// 定义路由对象中的映射接口
+useRouter.get("/", (res, req, next) => {
+  res.json("用户列表数据")
+})
+useRouter.get("/:id", (req, res, next) => {
+  const id = req.params.id;
+  res.json("某一个用户的数据:" + id);
+});
+useRouter.post("/", (req, res, next) => {
+  res.json("创建用户成功");
+});
+useRouter.delete("/:id", (req, res, next) => {
+  const id = req.params.id;
+  res.json("删除某一个用户的数据:" + id);
+});
+useRouter.patch("/:id", (req, res, next) => {
+  const id = req.params.id;
+  res.json("修改某一个用户的数据:" + id);
+});
+
+// 3.将路由导出
+module.exports = useRouter;
+```
+
+使用路由：
+
+```js
+// index.js
+const express = require('express')
+const userRouter = require('./router/userRouter')
+
+// 创建app对象
+const app = express()
+
+
+// 编写中间件
+app.post('/login', (req, res, next) => {
+	// xxxxxx
+})
+
+app.get('/home', (req, res, next) => {
+	// xxxxxx
+})
+
+// 让路由生效
+app.use('/users', useRouter)
+
+// 启动服务器
+app.listen(9000, () => {
+  console.log('express服务器启动成功~')
+})
+```
+

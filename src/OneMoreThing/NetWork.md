@@ -64,7 +64,11 @@ sticky: false
 
   分组嗅探器（packet sniffer）会记录每个流经的分组，常作为一台被动的接收机部署在无线传输设备附近，类似的软件包括Wireshark;
 
+## 概述 TCP/IP 模型
 
+<img src="/Users/huy/Library/Application%20Support/typora-user-images/image-20230417105410865.png" alt="TCP/IP模型" style="zoom:50%;" />
+
+![强缓存和协商缓存](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304171356212.png)
 
 ## Chap 2 应用层
 
