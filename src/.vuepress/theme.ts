@@ -2,8 +2,6 @@ import { hopeTheme } from "vuepress-theme-hope";
 import { Navbar } from "./navbar/index.js";
 
 export default hopeTheme({
-  hostname: "https://mister-hope.github.io",
-
   author: {
     name: "Huy",
     url: "https://github.com/rayadaschn",
