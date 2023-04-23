@@ -468,6 +468,19 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 
 需要注意的是，在极端情况下，如果创建了许多大型的 `Buffer` 实例，并且持有它们的引用，可能会导致内存泄漏等问题。因此，在使用 `Buffer` 时，建议注意内存的使用情况，并及时释放不再需要的对象。
 
+## OneMoreThing: 浏览器与 Node 的事件循环区别
+
+> 前置知识：进程和线程的区别？
+>
+> 进程是 CPU 资源分配的最小单位，线程是 CPU 调度的最小单位。俩者的区别就好比工厂和工厂里的流水线。一个工厂里允许有多条流水线，而一条流水线一个项目只能做一种零部件。
+>
+> JS 单线程的意思就是运行的工厂里只有一条流水线，所以任务得一个一个来，不能同时进行。
+>
+> 多线程就是多条流水线同时进行。（想象特斯拉工厂在多条流水线的转态下一个星期造一辆车）
+
+
+
 ## 参考文章
 
 - [Deep-into-node](https://github.com/yjhjstz/deep-into-node/blob/master/chapter1/chapter1-0.md)
+- [浏览器与Node的事件循环(Event Loop)有何区别?](https://www.cnblogs.com/fundebug/p/diffrences-of-browser-and-node-in-event-loop.html)

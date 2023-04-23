@@ -21,8 +21,6 @@ import BlogHome from "/Users/huy/Coder/Blog/node_modules/.pnpm/vuepress-theme-ho
 import BlogType from "/Users/huy/Coder/Blog/node_modules/.pnpm/vuepress-theme-hope@2.0.0-beta.171_guzizxotfico6cmqfg4ix5w4my/node_modules/vuepress-theme-hope/lib/client/modules/blog/layouts/BlogType.js";
 import Timeline from "/Users/huy/Coder/Blog/node_modules/.pnpm/vuepress-theme-hope@2.0.0-beta.171_guzizxotfico6cmqfg4ix5w4my/node_modules/vuepress-theme-hope/lib/client/modules/blog/layouts/Timeline.js";
 import "/Users/huy/Coder/Blog/node_modules/.pnpm/vuepress-theme-hope@2.0.0-beta.171_guzizxotfico6cmqfg4ix5w4my/node_modules/vuepress-theme-hope/lib/client/modules/blog/styles/layout.scss";
-import GlobalEncrypt from "@theme-hope/modules/encrypt/components/GlobalEncrypt";
-import LocalEncrypt from "@theme-hope/modules/encrypt/components/LocalEncrypt";
 import Slide from "/Users/huy/Coder/Blog/node_modules/.pnpm/vuepress-theme-hope@2.0.0-beta.171_guzizxotfico6cmqfg4ix5w4my/node_modules/vuepress-theme-hope/lib/client/layouts/Slide.js";
 
 
@@ -40,8 +38,6 @@ export default defineClientConfig({
     injectDarkmode(app);
 
     app.component("BloggerInfo", BloggerInfo);
-    app.component("GlobalEncrypt", GlobalEncrypt);
-    app.component("LocalEncrypt", LocalEncrypt);
     
   },
   setup: () => {

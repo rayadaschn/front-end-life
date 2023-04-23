@@ -28,6 +28,7 @@
 <li><RouterLink to="/JavaScript/Node02.html">Node 服务器开发基础</RouterLink></li>
 <li><RouterLink to="/JavaScript/Node03.html">Express 基础</RouterLink></li>
 <li><RouterLink to="/JavaScript/Node04.html">Koa 基础</RouterLink></li>
+<li><RouterLink to="/JavaScript/Node05.html">MySql 基础</RouterLink></li>
 </ul>
 <h2 id="其它" tabindex="-1"><a class="header-anchor" href="#其它" aria-hidden="true">#</a> 其它</h2>
 <ul>
