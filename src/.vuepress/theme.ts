@@ -16,7 +16,7 @@ export default hopeTheme({
   repo: "https://github.com/rayadaschn",
 
   docsDir: "src", // 文档所属文件夹，默认为仓库根目录
-  darkmode: "auto",
+  darkmode: "toggle",
 
   blog: {
     medias: {
@@ -72,38 +72,12 @@ export default hopeTheme({
 
       blog: {
         description: "自先沉稳 而后爱人",
-        // intro: "/intro.html",
       },
 
       metaLocales: {
-        editLink: "Edit this page on GitHub",
+        editLink: "帮助博主改进此页面ヾ(=･ω･=)o",
       },
     },
-
-    /**
-     * Chinese locale config
-     */
-    // "/zh/": {
-    //   // navbar
-    //   navbar: zhNavbar,
-
-    //   // sidebar
-    //   // sidebar: zhSidebar,
-
-    //   footer: "默认页脚",
-
-    //   displayFooter: true,
-
-    //   blog: {
-    //     description: "一个前端开发者",
-    //     intro: "/zh/intro.html",
-    //   },
-
-    //   // page meta
-    //   metaLocales: {
-    //     editLink: "在 GitHub 上编辑此页",
-    //   },
-    // },
   },
 
   encrypt: {
