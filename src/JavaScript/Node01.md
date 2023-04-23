@@ -11,6 +11,8 @@ tag:
 
 首先要理解服务器开发是什么？简单的说就是通过一门语音，操作处理各种文件——增删改查。
 
+例如 Java 、Python 等可以作为全栈的高级语言，就是因为其满足服务器开发要求。前端如今的工厂化，实际上都源于 Node，在本地运行一个服务，持续运行编辑中的代码。这是本质，而浏览器呢？如 V8 引擎实际上只是做了 js 代码的解析工作。
+
 ## Node 是什么?
 
 **Node.js** 是一个基于 V8 JavaScript 引擎的 JavaScrip t 运行时环境。简单理解，就是 Node 是基于 V8 引擎的能够在本地运行 JavaScript 代码的环境。当然由于 Chrome 浏览器内部还需要解析、渲染 HTML 和 CSS 等相关渲染引擎，另外还需要提供支持浏览器操作的 API、浏览器自己的事件循环等，这部分做了取舍。但是同时由于要处理本地文件，所以 Node 自身也添加了一些额外的 API 如文件系统读/写、网络 IO、加密、压缩解压文件等。
@@ -477,6 +479,215 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 > JS 单线程的意思就是运行的工厂里只有一条流水线，所以任务得一个一个来，不能同时进行。
 >
 > 多线程就是多条流水线同时进行。（想象特斯拉工厂在多条流水线的转态下一个星期造一辆车）
+
+**浏览器中的 Event Loop:**
+
+1. 宏任务（Macro-Task）和微任务（Micro-Task）：
+
+   宏任务：setTimeOut、setInterval、setImmediate、script（整体代码）、I/O 操作和 UI 渲染等。
+
+   其中 setImmediate 是一个异步编程函数，执行优先程度更高，可以更快的响应。该方法用来把一些需要长时间运行的操作放在一个回调函数里，在浏览器完成后面的其他语句后，就立刻执行这个回调函数。值得注意的是，该方法并不标准，仅在 Node.js 和 Edge12 后实现。因此更多的在 Node 中讨论。
+
+   微任务：`new Promise().then(回调)`、`process.nextTick`、`MutationObserver(html5 新特性)` 等。
+
+   `process.nextTick`这个微任务较为特殊，在Node中进行介绍，在 Node11 后，它会优先于其它微任务先执行。
+
+2. 实际执行顺序：队列结构，先进先出。宏任务中包裹微任务，依次执行。
+
+   ```js
+   console.log('Global1')  // 1
+   
+   Promise.resolve().then(()=>{
+     console.log('Promise1')  // 4
+     setTimeout(()=>{
+       console.log('setTimeout2')  // 7
+     },0)
+   })
+   
+   console.log('Global2')  // 2
+   
+   setTimeout(()=>{
+     console.log('setTimeout1')  // 5
+     Promise.resolve().then(()=>{
+       console.log('Promise2')  // 6
+     })
+   },0)
+   
+   console.log('Global3')  // 3
+   ```
+
+   - 上述代码，首先执行 `script` 中的全体宏任务，所以依次打印 “Global1、Global2、Global3”。这其中会插入1个微任务`Promise.resolve().then()` 和一个新的宏任务 `setTimeout`。
+   - 执行微任务，打印“`Promise1`”，而后再插入一个宏任务 `setTimeout`。微任务执行结束，开始轮询新的宏任务。
+   - 此时有俩个宏任务，依次执行，打印“`setTimeout1`”，再插入一个微任务 `Promise.resolve().then()`。
+   - 有微任务，先执行队列中的微任务。打印“`Promise2`”。结束当前宏任务。
+   - 执行剩下的宏任务，打印“`Promise2`”。
+
+   因此最终的执行顺序是：“Global1、Global2、Global3、Promise1、setTimeout1、Promise2、setTimeout2”。
+
+   一句话总结，宏任务依次执行，当每一个宏任务中存在微任务，则先执行微任务队列中的所有任务。待宏任务中没有微任务了，则继续执行剩下的宏任务。
+
+**Node中的 Event Loop:**
+
+Node.js 的运行机制如下:
+
+- V8 引擎解析 JavaScript 脚本。
+- 解析后的代码，调用 Node API。
+- libuv 库负责 Node API 的执行。**它将不同的任务分配给不同的线程，形成一个 Event Loop（事件循环），以异步的方式将任务的执行结果返回给 V8 引擎。**
+- V8 引擎再将结果返回给用户。
+
+ libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当队列为空或者执行的回调函数数量到达系统设定的阈值，就会进入下一阶段。
+
+![Node 事件循环](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304231358737.png)
+
+执行顺序为：
+**incoming外部输入数据** --> **轮询阶段(poll)** --> 
+**检查阶段(check)** --> **关闭事件回调阶段(close callback)** --> 
+**定时器检测阶段(timer)** --> **I/O 事件回调阶段(I/O callbacks)** --> **闲置阶段(idle, prepare)** --> 
+**新的轮询阶段(new poll)**
+
+- timers 阶段：这个阶段执行 timer（**setTimeout**、**setInterval**）的回调
+- I/O callbacks 阶段：处理一些上一轮循环中的少数未执行的 I/O 回调
+- idle, prepare 阶段：仅 node 内部使用
+- poll 阶段：获取新的 I/O 事件, 适当的条件下 node 将阻塞在这里
+- check 阶段：执行 **`setImmediate()`** 的回调
+- close callbacks 阶段：执行 socket 的 close 事件回调
+
+从上面可以看出，值得注意的阶段是 `timer`、`poll`和 `check`三个阶段。
+
+- `timer` 阶段会执行 setTImeout 和 setInterval 的回调，并且这由 poll 阶段所控制的。**但区别于浏览器，这里的定时器所指定的时间并不精确，它只能是尽快执行。** 简单理解：在浏览器中的定时器是不同的宏任务，会按照创建顺序依次执行，而 Node 是尽快执行。
+
+- `poll`阶段，会做很多事：
+
+  1. 回到 `timer`阶段，执行 timer 的回调；
+  2. 执行 `I/O` 的回调。
+
+  并且在进入该阶段时如果没有设定了 timer 的话，会发生以下两件事情
+
+  - 如果 poll 队列不为空，会遍历回调队列并同步执行，直到队列为空或者达到系统限制
+  - 如果 poll 队列为空时，会有两件事发生
+    - **如果有 setImmediate 回调需要执行，poll 阶段会停止并且进入到 check 阶段执行回调**
+    - 如果没有 setImmediate 回调需要执行，会等待回调被加入到队列中并立即执行回调，这里同样会有个超时时间设置防止一直等待下去
+
+  当然设定了 timer 的话且 poll 队列为空，则会判断是否有 timer 超时，如果有的话会回到 timer 阶段执行回调。
+
+- `check` 阶段，`setImmediate()`的回调会被加入 check 队列中，从 event loop 的阶段图可以知道，check 阶段的执行顺序在 poll 阶段之后。
+
+> 与浏览器的宏任务微任务共用一个队列结构不同的地方在于，现在的异步宏任务分成了多个阶段，**每个阶段都对应着一个事件队列！**
+>
+> 每当 Event Loop 执行当某个阶段时，便会执行对应的事件队列中的事件，并以此执行。
+>
+> 当该阶段的事件队列执行完毕，才会进入下一个阶段。
+>
+> 需要注意的是，**`Event Loop`每次切换一个事件执行队列时，便会查看微任务的队列，然后再切换到下一个队列中去。**
+>
+> 可以想象成，浏览器中，只有一个宏任务队列，每次新加的宏任务，会依次执行；而在 Node 中有多个宏任务队列，需要轮询进行执行。
+
+知道了不同阶段有对应着不同的事件队列，就能理解 **process.nextTick** 了，它是在切换不同事件阶段的时候进行执行，并且这个函数其实是独立于 Event Loop 之外的，它有一个自己的队列，当每个阶段完成后，如果存在 nextTick 队列，就会清空队列中的所有回调函数，并且**优先于其他 微任务 执行**。这不同于**setImmediate**，**setImmediate** 只在 check 阶段执行，即 Event Loop 循环一次后，才执行一次。
+
+```node
+setTimeout(() => {
+
+  console.log("timer1");
+
+	Promise.resolve().then(function () {
+    console.log("promise1");
+  });
+  
+  process.nextTick(() => {
+    console.log("nextTick");
+    process.nextTick(() => {
+      console.log("nextTick");
+      process.nextTick(() => {
+        console.log("nextTick");
+        process.nextTick(() => {
+          console.log("nextTick");
+        });
+      });
+    });
+  });
+  
+}, 0);
+
+// 打印: timer1 => nextTick => nextTick => nextTick => nextTick => promise1
+```
+
+先看一个简单的事件循环：
+
+```node
+console.log('start')
+
+setTimeout(() => {
+  console.log('timer1')
+  Promise.resolve().then(function() {
+    console.log('promise1')
+  })
+}, 0)
+
+setTimeout(() => {
+  console.log('timer2')
+  Promise.resolve().then(function() {
+    console.log('promise2')
+  })
+}, 0)
+
+Promise.resolve().then(function() {
+  console.log('promise3')
+})
+
+console.log('end')
+
+// start => end => promise3 => timer1 => timer2 => promise1 => promise2
+```
+
+思路非常清晰：
+
+- 先执行全体宏任务，打印“start、end”，期间对 `timer`事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 `Promise.resolve.then()` 微任务；
+- 切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；
+- Event Loop轮询，到 timer 阶段，事件队列中存在俩个setTImeout事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个`Promise.resolve.then()` 微任务；
+- 执行微任务队列，打印“promise1、promise2”。轮询完毕。
+
+再看一个完整的事件循环：
+
+```node
+setImmediate(() => {
+  console.log("setImmediate1");
+
+  setTimeout(() => {
+    console.log("setTimeout1");
+  }, 0);
+});
+
+setTimeout(() => {
+  console.log("setTimeout2");
+  
+  Promise.resolve().then(function() {
+    console.log('promise1');
+  })
+
+  process.nextTick(() => {
+    console.log("nextTick1");
+  });
+
+  setImmediate(() => {
+    console.log("setImmediate2");
+  });
+}, 0);
+
+// 情况 1: setImmediate1 => setTimeout2 => nextTick1 => promise1 => setImmediate2 => setTimeout1
+// 情况 2: setImmediate1 => setTimeout2 => nextTick1 => promise1 => setTimeout1 => setImmediate2
+```
+
+此时有俩种情况，我们来理一下思路：
+需要说明的俩点是：1. 像`setTimeout(() => {}, 0)`这样的，虽然设置的等待时间是 0，但实际上执行还是会有 4ms 的延迟；2. 在 Node11 后，**每个阶段的每个宏任务执行完毕后，都会去执行所有微任务**。知道这两点，就能理解上述的代码了。
+
+- 首先执行整体宏任务，此代码中没有别的任务，便给 check 事件队列插入`setImmediate1`，同时`setTimeout2`这个异步事件开始执行，产生事件等待。此时还没有打印，而后进行 Event Loop 轮询；
+- 进入到 check 阶段，事件队列有任务，执行打印“setImmediate1”。执行异步函数`setTimeout1`，产生新的事件等待。可以理解为此时 timer 事件队列为【setTimeout2，setTimeout1】。
+- check 阶段执行完毕，查看微任务队列，没有微任务，进入到 timer 阶段。
+- 进入到 timer 阶段，由于事件队列先后顺序的问题，此时应 setTImeout2 先执行（等待时间相同，先插入队列）。打印“setTimeout2”；给微任务队列插入“promise1”；给 `nextTick`事件队列插入`nextTick1`；给 check 事件插入 setImmediate2事件；
+- 此时，宏任务`setTImeout2`执行完毕，开始执行微任务。此时 nextTick 事件队列有任务，因此先执行，打印“nextTick1”；再看微任务队列，有任务内容，打印“promise1”；
+- 微任务执行完毕，**此时较为关键**，也是产生俩种结果的原因：
+  - 情况 1：timer 事件队列中的`setTimeout1`已经执行等待完毕，继续执行宏任务setTimeout1，打印`setTimeout1`。而后轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”。
+  - 情况 2：timer 事件队列中的`setTimeout1`还在等待阶段，轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”；而后，再轮询到新的 timer 阶段，执行宏任务setTimeout1，打印`setTimeout1`。
 
 
 
