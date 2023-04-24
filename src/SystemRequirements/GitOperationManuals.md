@@ -14,6 +14,51 @@ sticky: false
 
 # Git 操作手册指南
 
+## 新建项目操作
+
+1. 克隆项目到本地：`git clone xxxxx` ；
+
+2. 设置Git用户信息：
+
+   - 设置用户名: `git config user.name "yourName"`
+
+   - 设置用户邮箱：`git config user.email "123xxx678+yourEmail@users.noreply.github.com"` 
+
+     `noreply`为隐私邮箱，具体设置可看[GitHub 设置提交电子邮箱地址](https://docs.github.com/zh/enterprise-cloud@latest/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)
+
+3. 设置 GPG 签名：
+
+   若无 GPG 秘钥，可看 [GIthub添加GPG 签名](GIthubAddGPG.md) 一文。
+
+   - 列出本地公钥:
+
+     ```bash
+     $: gpg --list-keys
+     
+     /xxxx...xxxx/pubring.kbx
+     -----------------------------
+     pub   edxxx 2023-xx-xx [SC] [expires: 2025-xx-xx]
+           C1Fxxxxxxx79D
+     uid           [ultimate] yourName <123xxx678+yourEmail@users.noreply.github.com>
+     sub   cvxxx 2023-xx-xx [E] [expires: 2025-xx-xx]
+     ```
+
+   - 对提交 commit 进行签名：
+
+     ```bash
+     $: git config user.signingkey [PRIMARYKEYID]
+     ```
+
+     - 其中 **PRIMARYKEYID** 为公钥 `C1Fxxxxxxx79D`
+
+   - 设置自动对 commit 进行签名：
+
+     ```bash
+     $: git config commit.gpgsign true
+     ```
+
+   > 注：上述的 `git config` 均可在后面添加 `--global` 将设置变成全局。
+
 ## 分支管理规范
 
 - **master** 主分支，受保护，不存放源代码，不直接提交代码，所有的 上线文件 需要推送到此分支。

@@ -161,22 +161,22 @@ We need to generate a lot of random bytes. It is a good idea to perform
 some other action (type on the keyboard, move the mouse, utilize the
 disks) during the prime generation; this gives the random number
 generator a better chance to gain enough entropy.
-gpg: revocation certificate stored as '/Users/huy/.gnupg/openpgp-revocs.d/---------.rev'
+gpg: revocation certificate stored as '/Users/xxx...xxx/openpgp-revocs.d/---------.rev'
 public and secret key created and signed.
 
-pub   ed25519 2023-03-09 [SC] [expires: 2025-03-08]
-      C1F89F0xxxxxxxxxxxxxD
+pub   edxxx 2023-xx-xx [SC] [expires: 2025-xx-xx]
+      C1Fxxxxxxx79D
 uid                      userName <xxxxxxx@github.com>
-sub   cv25519 2023-03-09 [E] [expires: 2025-03-08]
+sub   cvxxx 2023-xx-xx [E] [expires: 2025-xx-xx]
 ```
 
-需要注意的是，这里的主公钥名称为**[PRIMARYKEYID]**： `C1F89F0xxxxxxxxxxxxxD` 。
+需要注意的是，这里的主公钥名称为**[PRIMARYKEYID]**： `C1Fxxxxxxx79D` 。
 
 再对上述结果进行说明:
 
-- `pub` : 显示的是公钥特性。加密算法为 `ed25519`，然后是时间，主密钥：`C1F89F0xxxxxxxxxxxxxD` 。
+- `pub` : 显示的是公钥特性。加密算法为 `ed25519`，然后是时间，主密钥：`C1Fxxxxxxx79D` 。
 
-  如果你选择了其它加密算法，则依据具体情况而定，如 `RSA` ： `pub 4096R/EDDD6D76 2013-07-11`。这串的释义是 RSA 加密的公钥特征（4096 位，Hash 字符串和生成时间）
+  如果你选择了其它加密算法，则依据具体情况而定，如 `RSA` ： `pub 4096R/EDDD6D76 2022-03-15`。这串的释义是 RSA 加密的公钥特征（4096 位，Hash 字符串和生成时间）
 
 - `uid`: 为用户 ID；
 
@@ -206,6 +206,14 @@ $: git config --global user.email "xxxxxxx@github.com"
 ```bash
 $: gpg --list-keys
 $: gpg --list-key [用户ID]
+
+
+/xxxx...xxxx/pubring.kbx
+-----------------------------
+pub   edxxx 2023-xx-xx [SC] [expires: 2025-xx-xx]
+      C1Fxxxxxxx79D
+uid           [ultimate] yourName <xxxxxxx@github.com>
+sub   cvxxx 2023-xx-xx [E] [expires: 2025-xx-xx]
 ```
 
 列出私钥：
@@ -221,6 +229,8 @@ $: gpg --list-secret-keys
 ```bash
 $: git config --global user.signingkey [PRIMARYKEYID]
 ```
+
+- 其中 **PRIMARYKEYID** 为主公钥 `C1Fxxxxxxx79D`
 
 **Step 4**：（可选）macOS 如果使用时需要输入密码，请安装 `pinentry-mac`。
 
