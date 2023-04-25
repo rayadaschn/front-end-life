@@ -43,16 +43,15 @@ sticky: false
 
 2. `Object.create(proto, [propertiesObject])` 方法创建一个新对象，使用现有的对象来提供新创建的对象的 `__proto__` 。 它接收两个参数，不过第二个可选参数是属性描述符（不常用，默认是`undefined`）。(ES5 新增)
 
-   ```JavaScript
+   ```js
    // 内部简易实现, 实际上原理就是 原型式继承
-   if(typeof Object.create !== 'function'){
-       Object.create = function(proto){
-           function F() {}
-           F.prototype = proto;
-           return new F();
-       }
+   if (typeof Object.create !== "function") {
+     Object.create = function (proto) {
+       function F() {}
+       F.prototype = proto;
+       return new F();
+     };
    }
-
    ```
 
 3. `Object.setPrototypeOf(obj, prototype)` 方法设置一个指定的对象的原型 ( 即, 内部`[[Prototype]]`属性）到另一个对象或 `null`。(ES6 提供)
