@@ -12,6 +12,18 @@ sticky: true
 
 # 原型-原型链-new 的二三事
 
+## 0. 先说结论
+
+在 JavaScript 中，每个函数都有一个 `prototype` 属性和一个 `__proto__` 属性。它们两者之间有以下区别：
+
+1. `prototype` 是函数**独有**的属性，而 `__proto__` 是每个对象（包括函数对象）**都有**的属性。
+2. `prototype` 属性是用于实现基于原型的继承的。它指向一个对象，该对象被用作构造函数创建的所有对象的**原型**。而 `__proto__` 属性则指向该对象的原型，即该对象继承自哪个对象。
+3. 在构造函数中，`prototype` 属性通常用于添加方法和属性，以便通过该构造函数创建的所有对象都可以访问这些方法和属性。而 `__proto__` 属性则用于从父对象继承属性和方法。
+4. 由于 `prototype` 是函数特有的属性，因此只能在函数内部使用；而 `__proto__` 属性是每个对象都有的属性，因此可以在任何对象上使用。
+5. `prototype` 属性不会随着对象创建而自动赋值给该对象的 `__proto__` 属性，需要使用 `new` 关键字来创建对象并将其 `__proto__` 属性指向构造函数的 `prototype` 属性。而 `__proto__` 属性则会自动指向构造函数的 `prototype` 属性所引用的对象。
+
+总之，`prototype` 属性用于定义构造函数创建的所有对象共享的属性和方法，而 `__proto__` 属性用于实现继承和访问对象原型链上的属性和方法。
+
 ## 1. 到底是什么?
 
 笔者在 [彻底理解 this 指向](./彻底理解this指向.md) 一文中，简单描述了 new 一个对象的过程。在此，再进行进一步的梳理。
@@ -27,10 +39,10 @@ sticky: true
 
 ```javascript
 function new(parentFn, args) {
-    // 1.新建一个空对象
+    // 1.新建一个空对象(或后续返回的实例)
     const obj = {};
     // 2.将新对象的__proto__属性赋值为构造函数的prototype指向的值
-    // 也可以用 obj.__proto__ = Object.create(parentFn.prototype) 实现
+    // 也可以用 obj = Object.create(parentFn.prototype) 实现
     obj.__proto__ = parentFn.prototype;
     // 3.在新对象的作用域下执行构造函数
     const result = parentFn.apply(obj, args);
@@ -54,7 +66,7 @@ function new(parentFn, args) {
 - 被构造函数 `Foo( )` 所创建的 `f1/f2` 对象有一个 `__proto__` 属性，它指向构造函数 Foo( )的原型对象 Foo.prototype；
 - 原型对象 `Foo.prototype` 自身有一个特有属性 `constructor` 指回构造函数 `Foo( )`。
 
-我们对照图，来详细说说。构造函数 `Foo( )` 每次创建一个新的实例/对象的时候，实例/对象 中都有一个 **[[prototy]]** 的内部属性，它指向了构造函数 `Foo( )` 的原型对象( `Foo.prototype` )。**关键点！** **关键点!！** **关键点!!！** 这个 创建出来的 实例/对象的 **`[[prototy]]`** 内部属性该怎么访问它呢？现代浏览器中的 JS 引擎都用 `__proto__` 这个属性暴露出来。
+我们对照图，来详细说说。构造函数 `Foo( )` 每次创建一个新的实例/对象的时候，实例/对象 中都有一个 **[[prototy]]** 的内部属性，它指向了构造函数 `Foo( )` 的原型对象( `Foo.prototype` )。**关键点！** **关键点!！** **关键点!!！** 这个 创建出来的 实例/对象的 **`[[prototy]]`**内部属性 （区别于构造函数，直接通过 prototype 属性访问）该怎么访问它呢？ **现代浏览器中的 JS 引擎都用`__proto__`这个属性暴露出来。**
 
 然后再来看啊，构造函数 `Foo( )` 的**原型对象( Foo.prototype )**。 它叫原型对象是吧，它也是一个对象，是由 **Object( )构造函数**创建出来的! 所以它的`__proto__` 指向 `Object( )`构造函数的原型对象(`Object.prototype`)。`Object.prototype` 这个原型对象已经到头了，没有其它构造函数创建它了，所以指向 `null`。
 

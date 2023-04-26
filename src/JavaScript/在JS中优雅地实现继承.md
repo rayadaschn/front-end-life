@@ -20,19 +20,42 @@ sticky: false
 
 ![Developer settings](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@main/img/jsobj.jpg)
 
-原理咱们不再过多讨论，我们现在想说的是通过原型链，我们的 `Foo()` 函数可以继承 `Object()` 的一些实例属性和方法。所以，其实继承就干了俩件事：
+ES6 中有俩条原型链，构造器原型链和实例原型链，原理咱们先不过多讨论。看到的是通过原型链，我们的 `Foo()` 函数可以继承 `Object()` 的一些实例属性和方法。其实在 ES6 中的继承就干了俩件事（两条原型链）：
+
+> 大多数浏览器的 ES5 实现之中，每一个对象都有`__proto__`属性，指向对应的构造函数的`prototype`属性。Class 作为构造函数的语法糖，同时有`prototype`属性和`__proto__`属性，因此同时存在两条继承链。
+>
+> （1）子类的`__proto__`属性，表示构造函数的继承，总是指向父类。
+>
+> （2）子类`prototype`属性的`__proto__`属性，表示方法的继承，总是指向父类的`prototype`属性。
+>
+> ```js
+> class A {
+> }
+> 
+> class B extends A {
+> }
+> 
+> B.__proto__ === A // true
+> B.prototype.__proto__ === A.prototype // true
+> ```
+>
+> 这个和构造函数同实例的原型有所不同。
 
 - 把子类构造函数(`Child`)的原型(`__proto__`)指向了父类构造函数(`Parent`) ：
 
   `Child.__proto__ = Parent`
 
+  使得子构造器继承自父构造器的属性和方法。
+
 - 把子类实例 `child` 的原型对象(`Child.prototype`) 的原型(`__proto__`)指向了父类`parent`的原型对象(`Parent.prototype`)：
 
   `Child.prototype.__proto__ = Parent.prototype `
+  
+  使得子类实例对象能够通过原型链访问到父类原型对象上的属性和方法。
 
 ![继承的实际关系](https://chinese.freecodecamp.org/news/content/images/2021/09/3.png)
 
-对照这张图，我们看的很清楚，这俩步骤：
+对照这张图，我们看的很清楚，这俩步骤（注意实现它们的目的）：
 
 - `Child.__proto__ = Parent`
 - `Child.prototype.__proto__ = Parent.prototype `
@@ -45,13 +68,15 @@ sticky: false
 
    ```js
    // 内部简易实现, 实际上原理就是 原型式继承
-   if (typeof Object.create !== "function") {
-     Object.create = function (proto) {
-       function F() {}
-       F.prototype = proto;
+   Object.myCreate = function(proto, properties) {
+       function F() {};
+       F.prototype = proto;  // 继承父集
+       if(properties) {
+           Object.defineProperties(F, properties);
+       }
        return new F();
-     };
    }
+   var bar = Object.myCreate({parentProperty: 955}, {myProperty: {value: 999}});
    ```
 
 3. `Object.setPrototypeOf(obj, prototype)` 方法设置一个指定的对象的原型 ( 即, 内部`[[Prototype]]`属性）到另一个对象或 `null`。(ES6 提供)
@@ -72,15 +97,15 @@ sticky: false
 2. 子构造函数在实例化的时候，不能给父构造函数传参数。
 
 ```js
-function Patent() {
+function Parent() {
   this.colors = ["red", "blue", "green"];
 }
 
-Patent.prototype.sing = () => console.log("唱歌"); // Parent 的原型方法
+Parent.prototype.sing = () => console.log("唱歌"); // Parent 的原型方法
 
 function Son() {}
 // 让Son继承Patent 的关键点
-Son.prototype = new Patent();
+Son.prototype = new Parent();
 
 let instance1 = new Son();
 instance1.colors.push("black");
@@ -253,6 +278,7 @@ function Son(name, age) {
   this.age = age;
 }
 // Son.prototype = new Patent(); // 用 Object.create() 代替
+// 等效于 Son.prototype.__proto__ == Patent.prototype
 Son.prototype = Object.create(Parent.prototype); // 继承Parent原型上的属性, 即重写原型,但导致默认 constructor 丢失
 Son.prototype.constructor = Son; // 指回自身, 修复constructor
 
@@ -369,4 +395,5 @@ console.log(Son.sayWord("hello world"));
 
 ## 引用资料
 
-[一文看懂 JS 的继承](https://www.freecodecamp.org/chinese/news/inheritance-in-js/)
+- [《ES6 入门》](https://es6.ruanyifeng.com/#docs/class-extends)
+- [一文看懂 JS 的继承](https://www.freecodecamp.org/chinese/news/inheritance-in-js/)
