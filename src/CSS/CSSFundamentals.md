@@ -268,9 +268,9 @@ tag:
   div { border: 1px solid; }
   ```
 
-- **`border-color`在没有指定颜色时，会默认使用当前元素的`color`计算值作为边框颜色。**类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
+- **`border-color`在没有指定颜色时，会默认使用当前元素的`color`计算值作为边框颜色。** 类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
 
-  应用: 如利用行内元素（ `<a>` ）的边宽做下划线，则鼠标覆盖时，边框也会一同变色。
+  应用：如利用行内元素（ `<a>` ）的边宽做下划线，则鼠标覆盖时，边框也会一同变色。
 
 - 透明边框可以增加点击区域：
 
@@ -455,3 +455,216 @@ tag:
 关键原理：`vertical-align: middle` 定义了元素的中线和字符 x 中心点对齐。在上述中，`container`容器设置了 `font-size: 0` ，所以 x 中心点位置就是 `container` 的上边缘，此时，高度 100% 的宽度为 0的伪元素和这个中心点位置对齐。如果中心点位置不动，这个伪元素的上半部分位置应该在容器的外部（好好理解一下这句话），但是 CSS 中默认是左上角排列对齐。所以伪元素和这个原本在容器上边缘的 x 中心点一起往下移动了半个容器高度。也就是说，此时x 中心点就在容器的垂直中心线上。
 
 其次， 弹窗元素也设置了 `vertical-align: middle` ，此时弹窗的垂直中心位置和 x 中心点位置对齐。x 中心点就在容器的垂直中心位置。于是弹窗和容器的垂直中心就对齐了。
+
+## 布局方式
+
+### BFC 块级格式化上下文
+
+BFC 的全称为 block formatting context。实际作用：当一个元素具有 BFC，那么内部子元素不会影响到外部元素。相当于结界隔离起来了。
+
+因此，能够触发 BFC 的方法有：
+
+1. `<html>` 根元素；
+2. `float` 的值不为 none，浮动元素；
+3. `overflow` 的值为 `auto`、`scroll`或者 `hidden`，能够截取元素；
+4. `display`的值为 `table-cell`、`table-captain`和 `inline-block` 等行内块级化；
+5. `position` 不为 `relative` 和 `static`，脱离文档流。
+
+上面这些方法无需使用 `clear:both` 属性去除浮动的影响，即可实现 BFC。BFC 的实际目的就是为了去除浮动的影响，附带有去除 `margin` 重叠。
+
+### 关于 overflow
+
+`overflow`的属性值有：
+
+- `visible` 默认显示；
+- `hidden` 裁剪；
+- `scroll`：**滚动条区域一直在**；
+- `auto`： 不足以滚动时没有滚动条，可以滚动时滚动条出现。
+
+> 关于滚动条：HTML 中有俩个标签是默认可以产生滚动条的，一个是根元素`<html>` ，另一个是文本域`<textarea>`。产生原因，是因为这俩个标签的 `overflow` 属性不是 `visible` 而是 `auto`。
+
+自定义滚动条，需要支持 `-webkit-` 前缀的浏览器（如 Chrome）：
+
+- 整体部分，`::-webkit-scrollbar`
+- 两端部分，`::-webkit-scrollbar-button`
+- 外层轨道，`::-webkit-scrollbar-track`
+- 内层轨道，`::-webkit-scrollbar-track-piece`
+- 滚动滑块，`::-webkit-scrollbar-thumb`
+- 边角，`::-webkit-scrollbar-corner`
+
+一般会用的自定义：
+
+```css
+::-webkit-scrollbar { /* 定义整体血槽宽高 */
+  width: 8px; height: 8px;
+}
+::-webkit-scrollbar-thumb { /* 拖动条 */
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track { /* 底部背景墙 */
+  background-color: #ddd;
+  border-radius: 6px;
+}
+```
+
+利用 `overflow` 单行文字溢出：
+
+```css
+.text {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+```
+
+利用 `overflow` 单多行文字溢出：
+
+```css
+.text {
+  /* 最多显示两行 补充代码 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; 
+  /* 补充代码 */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+```
+
+### 锚点定位
+
+锚点定位是改变**容器**滚动高度或者宽度来实现的，并且定位行为是由内而外的。
+
+返回页面顶部的方法有俩种：
+
+- URL 的 `#` 返回（推荐）
+
+  ```html
+  <a href="#">返回顶部</a>
+  ```
+
+- URL 的 `JavaScript:` 返回
+
+  ```html
+  <a href="javascript:">返回顶部</a>
+  ```
+
+## 绝对定位 absolute
+
+设置了绝对定位的元素会被块状化。自适应的最大宽度由器“包含块”决定。
+
+> 普通元素的包含块是其父元素，而绝对定位元素的宽度是相对于第一个 `position` 不为 `static`的祖先元素决定。
+>
+> - 根元素（可看成`<html>`）被称为初始包含块，其尺寸等同于浏览器的可视窗口大小。
+> - 对于其它元素，若该元素的 `position` 为`relative`或 `static`，则包含块由其最近的块统一祖先盒的 content box 边界形成。
+> - 若元素的 `position:fixed`，则包含块是初始包含块，即`<html>`。
+> - 若元素的 `position:absolute`，则包含块位最近的`position` 不为 `static`的祖先元素决定。
+
+## 相对定位 relative
+
+`relative`的定位有俩大特性：相对自身、无侵入。
+
+值得注意的是，虽然定位位移是相对于自身，但是百分比值的计算值不是。`top`和`bottom`的百分比计算值和 `height`一样。同时，若包含块的高度是 `auto`（父元素没有设置高度或不是“格式化高度”），那么计算值是 0，结果无偏移。
+
+最小化影响原则：
+
+- 尽量不使用 `relative`，先试试能否用无依赖的绝对定位；
+- 若场景受限，一定要使用 `relative`，并且改 `relative`务必最小化，即只影响我们需要的元素。
+
+## CSS 层叠规则
+
+`z-index`值有定位元素不为 `static`时，才生效，可以是正数也可以是负数。（CSS3 中 `transform`不为 `none` 也会产生层叠上下文）
+
+![层叠规则](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304281651927.png)
+
+层叠规则：
+
+- 谁大谁上，层叠水平值大的覆盖层叠小的那一个；
+- 后来居上，当层叠在同一水平时，DOM 流在后面的覆盖前面的。请注意务必根据 DOM 元素的层级关系进行层叠对比！
+
+层叠上下文元素和定位元素是一个层叠顺序的，于是当它们发生层叠时，遵循“后来居上”准则。
+
+CSS3 中新的层叠顺序规则：
+
+![新的层叠顺序规则](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304281649520.png)
+
+- 若层叠上下文元素不依赖 `z-index`数值，则其层叠顺序是`z-index:auto`，可看成是`z-index:0`级别；
+- 若层叠上下文元素依赖 `z-index`数值，则其层叠顺序由`z-index`数值决定。
+
+## 文本处理能力
+
+### 1. font-size
+
+`line-height` 的部分类别属性值（数值型）是相对于 `font-size` 计算的，`vertical-align` 百分比值属性值又是相对于`line-height`计算的。
+
+几个高度单位：
+
+- `ex`：字符 x 高度，显然和 font-size 关系密切。
+- `em`：em 在传统排版中指一个字模的高度，其一般由`'M'`的宽度决定（方方正正），在中文中em 就是“中”字的高度。em 相对于当前元素。
+- `rem`：rem 相对于根元素（`<html>`）。
+
+### 2. font-family
+
+支持两类数值，一是“字体名”，二是“字体族”。
+
+若是字体名包含空格，需要使用引号包起来。
+
+### 3. font-weight
+
+表示"字重"，表示文字的粗细程度。
+
+400 表示文字正常，等同于 normal；700 等同于 bold。
+
+### 4. font-style
+
+表示文字是斜体还是正体。
+
+- `font-style: normal;` 
+- `font-style: italic;`  使用当前字体的斜体字体。
+- `font-style: oblique;`  只是单纯让字体形状变形。
+
+### 5. 缩写 font
+
+缩写在 font 属性中的属性非常多，包括 font-style、font-variant、 font-weight、font-size、line-height、font-family 等。
+
+```css
+[ [ font-style || font-variant || font-weight ]? font-size [ / line-height ]? font-family ]
+```
+
+​	`||`表示或，`?`和正则表达式中的`?`的含义一致，表示 0 个或 1 个。仔细观察上面的语法，会发现 `font-size` 和 `font-family` 后面没有问号，也就是说是必需的，是不可以省略的。这和 `background` 属性不一样，`background` 属性虽然也支持缩写，但是并没有需要两个属性值同时存在的限制。
+
+> 如果你的 font 属性缩写无效，检查一下 `font-size` 和 `font-family` 这两个属 性是否同时存在。
+
+```css
+/* 实践方法 */
+html { font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei'; }
+```
+
+## background 背景
+
+当我们使用 `background` 属性的时候，实际上使用的是一系列 `background` 相关属性的集合，包括:
+
+- `background-image: none` 背景图片地址。
+- `background-position: 0% 0%` 
+- `background-repeat: repeat`
+- `background-color: transparent`
+- `background-attachment: scroll`
+
+### background-position 百分比计算方式
+
+`<position>`值支持 1~4 个值，可以是具体数值，也可以是百分比值，还可以是 `left`、 `top`、`right`、`center` 和 `bottom` 等关键字。
+
+如果缺省偏移关键字，则会认为是 `center`，因此 `background-position:top center` 可以直接写成 `background-position:top`。
+
+![position 偏移方式](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304281718773.png)
+
+百分比计算公式：
+
+- **positionX = (容器的宽度 - 图片的宽度) * percentX;** 
+- **positionY = (容器的高度 - 图片的高度) * percentY;**
+
+### background-color
+
+`background` 无论是单背景图还是多背景图，背景色一定是在最底下的位置。
