@@ -1,5 +1,5 @@
 ---
-title: Webpack 开发服务端配置
+title: 解决前端跨域问题
 icon: webpack
 category:
   - 框架
