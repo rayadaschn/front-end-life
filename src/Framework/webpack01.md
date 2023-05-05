@@ -7,6 +7,7 @@ tag:
   - webpack
 star: false
 sticky: false
+
 ---
 
 # 解决前端跨域问题
@@ -83,9 +84,9 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
    ```js
    const express = require("express");
    const { createproxymiddleware } = require("http-proxy-middleware");
-
+   
    const app = express();
-
+   
    app.use(
      "/api",
      createproxymiddleware({
@@ -96,7 +97,7 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
        },
      })
    );
-
+   
    app.listen(3000, () => {
      console.log("server started on port 3000");
    });
