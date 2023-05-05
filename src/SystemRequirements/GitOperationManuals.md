@@ -8,8 +8,7 @@ category:
 tag:
   - linux
 star: true
-# sticky: true
-sticky: false
+sticky: true
 ---
 
 # Git 操作手册指南
@@ -222,13 +221,13 @@ $: git push
 
   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
 
-  > **--soft :** **不删除**工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
+  > **--soft**： **不删除**工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
   >
-  > **--hard :** **删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
+  > **--hard**： **删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
   > - 注意完成这个操作后，就恢复到了上一次的 commit 状态。
   >
-  > **--mixed :** 【默认参数】**不删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
+  > **--mixed**：【默认参数】**不删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
   > 简单的讲，正常提交是： `git add .` --> `git commit`
   >
@@ -266,7 +265,7 @@ $: git reset a4e21523xxxxxxxxx68e9976948a35e [options]
 $: git reset --hard commitId（通过git log可查看提交的commitId）
 ```
 
-汇总:
+**汇总**：
 
 ```shell
 # 恢复暂存区的指定文件到工作区

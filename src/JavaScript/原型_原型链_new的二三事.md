@@ -7,7 +7,7 @@ category:
 tag:
   - javascript
 star: true
-sticky: true
+sticky: false
 ---
 
 # 原型-原型链-new 的二三事
