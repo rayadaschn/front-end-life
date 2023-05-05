@@ -1,6 +1,6 @@
 ---
 title: Webpack 开发服务端配置
-icon: webpack
+icon: build
 category:
   - 框架
 tag:

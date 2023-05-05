@@ -1,6 +1,6 @@
 ---
 title: 解决前端跨域问题
-icon: webpack
+icon: build
 category:
   - 框架
 tag:
