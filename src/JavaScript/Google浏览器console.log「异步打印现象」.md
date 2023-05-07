@@ -1,7 +1,6 @@
 ---
 title: Google浏览器console.log「异步打印现象」
 icon: javascript
-order: 2
 category:
   - javascript
 tag:

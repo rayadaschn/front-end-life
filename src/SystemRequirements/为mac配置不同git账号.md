@@ -1,8 +1,7 @@
 ---
 title: 为 Mac 配置不同的 Git 账号
-index: 2
 icon: linux
-date: 2023-02-1
+# date: 2023-02-1
 category:
   - linux
 tag:
@@ -20,11 +19,11 @@ sticky: false
 
 【注】全文的用户环境为 MacOS，一些文件的目录有所不同。
 
-- 检查配置 
+- 检查配置
 
   ```shell
-  $: git config --list  # 加 --global 为全局配置查看  
-  
+  $: git config --list  # 加 --global 为全局配置查看
+
   // 配置全局git用户名
   $: git config --global user.name "zhangsan"
   // 配置全局git提交邮箱
@@ -36,7 +35,7 @@ sticky: false
   ```shell
   $: ssh-keygen -t rsa -C 'emailA.gmail.com'
   # 三次回车, 可以不设置相应存储密码。emailA 的秘钥为全局git通用
-  
+
   # 设置第二个邮箱 emailB@gmail.com
   $: ssh-keygen -t rsa -f ~/.ssh/id_rsa_emailB@gmail.com -C "emailB@gmail.com"
   ```
@@ -46,7 +45,7 @@ sticky: false
   ```shell
   # 复制邮箱的公钥(默认全局私钥为: id_rsa) 到远程
   $: pbcopy < ~/.ssh/id_rsa.pub
-  
+
   # 额外的第二个邮箱 emailB@gmail.com，复制公钥到远程
   $: pbcopy < ~/.ssh/id_rsa_emailB@gmail.com.pub
   ```
@@ -64,13 +63,13 @@ sticky: false
   AddKeysToAgent yes
   IdentityFile ~/.ssh/id_rsa
   KexAlgorithms +diffie-hellman-group1-sha1
-  
+
   # 全局默认邮箱
   Host gitlab.xxx.cn
   Hostname gitlab.xxx.cn
   IdentityFile ~/.ssh/id_rsa
   User company
-  
+
   # gmail
   Host gmail.github.com
   Hostname github.com
@@ -80,12 +79,12 @@ sticky: false
 
 - 测试连接
 
-  格式： `ssh -T git@{config里面的user}.{config里面的Hostname}` 
+  格式： `ssh -T git@{config里面的user}.{config里面的Hostname}`
 
   ```shell
   # 全局默认的个人账户，若没有配置 config， 则直接 ssh -T git@gitlab.xxx.cn
   $: ssh -T git@company.gitlab.xxx.cn
-  
+
   # 额外配置邮箱 <User> 为全局配置中的 User
   $: ssh -T git@gmail.github.com
   ```
@@ -95,18 +94,18 @@ sticky: false
   格式： `git clone git@{config里面的user}.{config里面的Hostname}:{具体项目地址}.git`
 
   ```shell
-  # User 为 'gmail' 
+  # User 为 'gmail'
   $: git clone git@gmail.github.com:vuejs/vue.git
   ```
 
 - 不同项目不同的邮箱
 
-  由于存在多个账户，为避免提交代码时使用个人邮箱，在每个项目前，最好进行git邮箱检查。
+  由于存在多个账户，为避免提交代码时使用个人邮箱，在每个项目前，最好进行 git 邮箱检查。
 
   若 `git config --list` 局部本地配置与预期不符，则进行局部设置。
 
   ```shell
-  $: cd 项目名 
+  $: cd 项目名
   # 设置该项目使用的git账号和邮箱
   $: git config user.name 'AnotherName'
   $: git config user.email 'AnotherEmail'
@@ -114,13 +113,11 @@ sticky: false
   $: git config --list
   ```
 
-  
-
 ## 准备
 
- 首先，先 [下载 Git](https://git-scm.com/download) ，并按照提示，一路选择安转即可。
+首先，先 [下载 Git](https://git-scm.com/download) ，并按照提示，一路选择安转即可。
 
- 安转完成后，验证是否安转成功：
+安转完成后，验证是否安转成功：
 
 ```bash
 $: git --version
@@ -132,7 +129,7 @@ $: git --version
 
 ## 添加全局默认 git 账号和邮箱, 用于每次提交代码
 
- 如果需要添加全局默认 git 账号的话，可以执行此步骤。若怕忘记弄混账号，则可对此步骤忽略（并不影响后续操作）：
+如果需要添加全局默认 git 账号的话，可以执行此步骤。若怕忘记弄混账号，则可对此步骤忽略（并不影响后续操作）：
 
 ```bash
 // 配置全局git用户名, eg: git config --global user.name "zhangsan"
@@ -153,7 +150,7 @@ $: git config --global --unset user.email
 
 ## 生成秘钥
 
- 利用 Git 自带的加密算法，给不同的 Git 账户生成不同的 **ssh-key** 秘钥，如公司一个，个人一个账号（全局也算单独一个）。
+利用 Git 自带的加密算法，给不同的 Git 账户生成不同的 **ssh-key** 秘钥，如公司一个，个人一个账号（全局也算单独一个）。
 
 ### 检查秘钥
 
@@ -167,17 +164,17 @@ $: ls
 $: open ~/.ssh/
 ```
 
- 对 `.ssh` 文件夹下的文件进行简要说明，可以后续看完全文再来回看这部分，能更好理解其作用。
+对 `.ssh` 文件夹下的文件进行简要说明，可以后续看完全文再来回看这部分，能更好理解其作用。
 
- **id_rsa** : 私钥，通过 ras 算法对 git 账号生成。与公钥 **id_ras.pub** 是一对，注意一个 git 账号一般只有一对秘钥，当然你可以额外配置**全局默认 git 秘钥**，但是这样会多出来一个。私钥存放于本机中，用于与公钥验证。
+**id_rsa** : 私钥，通过 ras 算法对 git 账号生成。与公钥 **id_ras.pub** 是一对，注意一个 git 账号一般只有一对秘钥，当然你可以额外配置**全局默认 git 秘钥**，但是这样会多出来一个。私钥存放于本机中，用于与公钥验证。
 
- **id_ras.pub** ：公钥，与私钥是一对，文件名结尾会多一个 `.pub` 表示是公开的意思。公钥需要存放于服务器上，用于信息交互。所以后续需要把它存储的内容复制粘贴到服务器内。
+**id_ras.pub** ：公钥，与私钥是一对，文件名结尾会多一个 `.pub` 表示是公开的意思。公钥需要存放于服务器上，用于信息交互。所以后续需要把它存储的内容复制粘贴到服务器内。
 
- **config**: 相关配置，一般开始是没有 `config` 文件的，需要自己创建，在通过 `ssh` 连接主机时，对于不同的主机地址和密码需要不同的配置，后续会对该文件进行详细介绍。
+**config**: 相关配置，一般开始是没有 `config` 文件的，需要自己创建，在通过 `ssh` 连接主机时，对于不同的主机地址和密码需要不同的配置，后续会对该文件进行详细介绍。
 
- **known_hosts**: 记录文件(不用管它= =)，当你用 `ssh` 方式去连接主机时，该文件会记录你访问主机的公钥，如果下次你再次访问相同主机时，这个时候 `OpenSSH` 会再次核对这个公钥，如果公钥不一样，那 `OpenSSH` 会发出警告，你的公钥被人改了，提醒你可能会收到 `DNS Hijack` 之类的攻击。
+**known_hosts**: 记录文件(不用管它= =)，当你用 `ssh` 方式去连接主机时，该文件会记录你访问主机的公钥，如果下次你再次访问相同主机时，这个时候 `OpenSSH` 会再次核对这个公钥，如果公钥不一样，那 `OpenSSH` 会发出警告，你的公钥被人改了，提醒你可能会收到 `DNS Hijack` 之类的攻击。
 
- **known_hosts_old**: 字面意思，记录文件 **known_hosts** 的备份，也不用管它。
+**known_hosts_old**: 字面意思，记录文件 **known_hosts** 的备份，也不用管它。
 
 ### 秘钥生成
 
@@ -275,11 +272,11 @@ User gmail
 
 我们来看看配置的相关设置：
 
-| 键           | 值       | 规则                                                         |
-| ------------ | -------- | ------------------------------------------------------------ |
-| Host         | 主机     | 主机名。如果你不知道，可以填写主机名，**通用配置就填 "*"**。 |
-| **Hostname** | 主机名   | **【必须准确无误】**这里填写对应 Git 仓库的公有地址。如果你不知道，可以在 Git 仓库下通过 SSH 方式克隆一个项目，一般会出现如: `git@github.com:vuejs/vue.git` ，在 **git@** **后面的 `github.com` 即为主机名**。 |
-| IdentityFile | 身份文件 | **【写绝对路径】**相应账号的私钥存放地址，如：`~/.ssh/id_rsa` |
+| 键           | 值       | 规则                                                                                                                                                                                                                                       |
+| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Host         | 主机     | 主机名。如果你不知道，可以填写主机名，**通用配置就填 "\*"**。                                                                                                                                                                              |
+| **Hostname** | 主机名   | **【必须准确无误】**这里填写对应 Git 仓库的公有地址。如果你不知道，可以在 Git 仓库下通过 SSH 方式克隆一个项目，一般会出现如: `git@github.com:vuejs/vue.git` ，在 **git@** **后面的 `github.com` 即为主机名**。                             |
+| IdentityFile | 身份文件 | **【写绝对路径】**相应账号的私钥存放地址，如：`~/.ssh/id_rsa`                                                                                                                                                                              |
 | **User**     | 用户     | 用户名。但是建议使用同**Host**的前面的名称部分。如：`Host gmail.github.com` ，则填写 `github` 。在后面具体 clone 操作中都会用到这个**User** 用户名。本文配置中，是为了后续做区分 因此 填写的是 ``yourName", 在前文总结中写的是 "company"。 |
 
 再来看开始的通用配置，可有可无，主要用于解决 **`Unable to reach a settlement: [diffie-hellman-group1-sha1, diffie-hellman-group-exchange-sha1]...`** 的问题。许多公司的 Git 仓库还在用老旧的 `diffie-hellman-group1-sha1` 和 `diffie-hellman-group-exchange-sha1` 密钥交换算法，但是 **OpenSSH** 在 6.7 版本之后默认不再采用以上算法，因此我们需要在**相应主机**下手动添加 `KexAlgorithms +diffie-hellman-group1-sha1` 。
@@ -288,7 +285,7 @@ User gmail
 
 ## 测试连接
 
-测试 Git 账户连接：如果单个账户情况一般就是 `ssh -T git@xxx主机名` ，如果配置了 config，那么可以这样测试：` `**ssh -T git@{config里面的user}.{config里面的Hostname}** 
+测试 Git 账户连接：如果单个账户情况一般就是 `ssh -T git@xxx主机名` ，如果配置了 config，那么可以这样测试：` `**ssh -T git@{config 里面的 user}.{config 里面的 Hostname}**
 
 ```bash
 // 全局默认的个人账户
@@ -326,12 +323,10 @@ $: git clone git@yourName.github.com:vuejs/vue.git
 // 实际上就是 git clone git@<User>.github.com:vuejs/vue.git
 ```
 
-
-
 ## 为不同项目配置不同的 Git
 
 ```shell
-$: cd 项目名 
+$: cd 项目名
 // 设置该项目使用的git账号和邮箱
 $: git config user.name 'AnotherName'
 $: git config user.email 'AnotherEmail'

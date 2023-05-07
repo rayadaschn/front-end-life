@@ -1,7 +1,7 @@
 ---
 title: Jenkins 持续集成
 icon: linux
-date: 2023-03-09
+# date: 2023-03-09
 category:
   - linux
 tag:
@@ -9,23 +9,21 @@ tag:
 star: true
 # sticky: true
 sticky: false
-
-
 ---
 
 # Jenkins 持续集成
 
 ## Jenkins 安装
 
-Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.jenkins.io/zh/doc/tutorials/build-a-node-js-and-react-app-with-npm/) 介绍，其中多用到 Docker，可以看Docker [官网安装介绍](https://vuepress.mirror.docker-practice.com/install/centos/#)。
+Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.jenkins.io/zh/doc/tutorials/build-a-node-js-and-react-app-with-npm/) 介绍，其中多用到 Docker，可以看 Docker [官网安装介绍](https://vuepress.mirror.docker-practice.com/install/centos/#)。
 
-这里介绍一种通用型方案：利用 Java 运行WAR文件进行安装部署。这种方案的好处在于，无需服务 Root 权限，便可在线安装部署 Jenkins。
+这里介绍一种通用型方案：利用 Java 运行 WAR 文件进行安装部署。这种方案的好处在于，无需服务 Root 权限，便可在线安装部署 Jenkins。
 
-> Jenkins的Web应用程序ARchive（WAR）文件版本可以安装在任何支持Java的操作系统或平台上。
+> Jenkins 的 Web 应用程序 ARchive（WAR）文件版本可以安装在任何支持 Java 的操作系统或平台上。
 
 具体流程如下：
 
-1. 将[最新的稳定Jenkins WAR包](https://updates.jenkins.io/download/war/) 下载到您计算机上的相应目录。
+1. 将[最新的稳定 Jenkins WAR 包](https://updates.jenkins.io/download/war/) 下载到您计算机上的相应目录。
 
 2. 在下载的目录内打开一个终端/命令提示符窗口到。
 
@@ -38,11 +36,11 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
      /var/lib/jenkins/secrets/initialAdminPassword
      ```
 
-   - 值得注意的是，此时确保安装的 Java 版本符合要求。若是下载了较新的 WAR 包，则建议安装Java11 以上，具体看下文介绍。
+   - 值得注意的是，此时确保安装的 Java 版本符合要求。若是下载了较新的 WAR 包，则建议安装 Java11 以上，具体看下文介绍。
 
    - 并且该指令无作做到持久化，关闭窗口后，便会停止，下文介绍持久化操作。
 
-4. 浏览 `http://localhost:8080` 并等到 *Unlock Jenkins* 页面出现。
+4. 浏览 `http://localhost:8080` 并等到 _Unlock Jenkins_ 页面出现。
 
    这里并非一定是 localhost，localhost 是本地服务。应该根据服务器地址自行设置。
 
@@ -62,13 +60,13 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
 
    ```bash
    # 请务必确认好版本
-   
+
    # 1.8 版
    $: yum install java-1.8.0-openjdk.x86_64
-   
+
    # 11 版
    $: yum install java-11-openjdk.x86_64
-   
+
    # 验证安装
    $: java -version
    ```
@@ -85,16 +83,16 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
    >
    > ```bash
    > $: update-alternatives --config java
-   > 
+   >
    > There are 2 programs which provide 'java'.
-   > 
+   >
    >   Selection    Command
    > -----------------------------------------------
    > *+ 1           java-1.8.0-openjdk.x86_64 (/usr/lib/jvm/java-1.8.0-openjdk/bin/java)
    >    2           java-11-openjdk.x86_64 (/usr/lib/jvm/java-11-openjdk/bin/java)
    > ```
    >
-   > 查看当前Java 版本的同时，括号内会展现不同 Java 安装的路径。利用这个路径便可使用指定的 Java 版本了。
+   > 查看当前 Java 版本的同时，括号内会展现不同 Java 安装的路径。利用这个路径便可使用指定的 Java 版本了。
    >
    > 用法（需要用参数 `-jar`）：
    >
@@ -104,7 +102,7 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
    >
    > 这将使用 /usr/lib/jvm/java-11-openjdk 目录下的 Java 可执行程序来运行 myapp.jar 文件。
 
-### java运行持久化
+### java 运行持久化
 
 在使用 Jenkins 时，如果希望在关闭浏览器后仍然保持 Jenkins 后台运行，则可以使用以下方法：
 
@@ -181,9 +179,7 @@ $: ps aux | grep <your_process_name>
 
 需要注意的是，在使用以上命令时，请确保您已经正确标识了要关闭的进程，并且已经备份了任何重要的数据或配置文件。
 
-
-
 ## 参考文章
 
 - [使用 Jenkins 持续集成](https://www.liaoxuefeng.com/article/1083282007018592)
-- [使用Jenkins一键打包部署SpringBoot应用，就是这么6！](https://www.macrozheng.com/mall/reference/jenkins.html)
+- [使用 Jenkins 一键打包部署 SpringBoot 应用，就是这么 6！](https://www.macrozheng.com/mall/reference/jenkins.html)

@@ -1,8 +1,7 @@
 ---
 title: Linux服务器配置记录
-index: 5
 icon: linux
-date: 2023-02-1
+# date: 2023-02-1
 category:
   - linux
 tag:

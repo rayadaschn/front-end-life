@@ -1,12 +1,10 @@
 ---
 title: 多种方式实现居中
 icon: style
-order: 2
 category:
   - CSS
 tag:
   - CSS
-
 ---
 
 # 多种方式实现居中
@@ -18,7 +16,7 @@ tag:
 ```html
 <body>
   <div class="parent">
-  	<div class="son son-size"> 居中内容 </div>
+    <div class="son son-size">居中内容</div>
   </div>
 </body>
 ```
@@ -29,7 +27,7 @@ tag:
 
 ```css
 .son-size {
-	width: 100px;
+  width: 100px;
   heigh: 100px;
 }
 ```
@@ -70,7 +68,7 @@ tag:
 }
 ```
 
-`calc` 中的百分比依旧遵循 *绝对定位元素的百分比是基于父元素的宽高计算出来的。* 
+`calc` 中的百分比依旧遵循 _绝对定位元素的百分比是基于父元素的宽高计算出来的。_
 
 ### 1.3 absolute + margin auto 较好的实现
 
@@ -116,7 +114,7 @@ tag:
 }
 ```
 
-像这种，一边固定，宽度和高度用 `100%` 去继承父级 包含块，就不是很好的用法。因为“格式化宽度”是 父级包含块的  `padding box` ，所以如果父级包含块 有 `padding` 或者 `margin` 等属性时，这个时候 子元素就不是 父级包含块的 宽高大小了。
+像这种，一边固定，宽度和高度用 `100%` 去继承父级 包含块，就不是很好的用法。因为“格式化宽度”是 父级包含块的 `padding box` ，所以如果父级包含块 有 `padding` 或者 `margin` 等属性时，这个时候 子元素就不是 父级包含块的 宽高大小了。
 
 ## 2 居中元素不定高
 
@@ -178,13 +176,13 @@ tag:
 
 ```html
 <table>
-	<tbody>
-		<tr>
-			<td class="parent">
-				<div class="son"> 居中内容 </div>
-			</td>
-		</tr>
-	</tbody>
+  <tbody>
+    <tr>
+      <td class="parent">
+        <div class="son">居中内容</div>
+      </td>
+    </tr>
+  </tbody>
 </table>
 ```
 
@@ -215,7 +213,7 @@ tag:
 终于轮到 flex 布局了，现代流行的一维强大布局方式。
 
 ```css
-.parent{
+.parent {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -229,7 +227,7 @@ tag:
 相对于 flex 布局，grid 布局更多用于二维，但是也是布局能手。
 
 ```css
-.parent{
+.parent {
   display: grid;
 }
 .son {

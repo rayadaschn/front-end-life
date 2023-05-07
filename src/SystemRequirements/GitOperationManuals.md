@@ -1,8 +1,7 @@
 ---
 title: Git 操作手册
-index: 4
 icon: linux
-date: 2023-02-1
+# date: 2023-02-1
 category:
   - linux
 tag:
@@ -17,23 +16,23 @@ sticky: true
 
 1. 克隆项目到本地：`git clone xxxxx` ；
 
-2. 设置Git用户信息：
+2. 设置 Git 用户信息：
 
    - 设置用户名: `git config user.name "yourName"`
 
-   - 设置用户邮箱：`git config user.email "123xxx678+yourEmail@users.noreply.github.com"` 
+   - 设置用户邮箱：`git config user.email "123xxx678+yourEmail@users.noreply.github.com"`
 
      `noreply`为隐私邮箱，具体设置可看[GitHub 设置提交电子邮箱地址](https://docs.github.com/zh/enterprise-cloud@latest/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address)
 
 3. 设置 GPG 签名：
 
-   若无 GPG 秘钥，可看 [GIthub添加GPG 签名](GIthubAddGPG.md) 一文。
+   若无 GPG 秘钥，可看 [GIthub 添加 GPG 签名](GIthubAddGPG.md) 一文。
 
    - 列出本地公钥:
 
      ```bash
      $: gpg --list-keys
-     
+
      /xxxx...xxxx/pubring.kbx
      -----------------------------
      pub   edxxx 2023-xx-xx [SC] [expires: 2025-xx-xx]
@@ -196,7 +195,7 @@ $: git commit -m [message]
 $: git push
 ```
 
- 若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用
+若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用
 
 个人使用，已经写完代码了，用方案 1 推送；还未写完，则用方案 2 临时贮藏。
 

@@ -338,11 +338,11 @@ Foo.call(obj);
    function foo() {
      console.log(this);
    }
-   
+
    var obj = {
      name: "obj",
    };
-   
+
    // var foo = new foo.call(obj);
    var bar = foo.bind(obj);
    var foo = new bar(); // 打印foo, 说明使用的是new绑定

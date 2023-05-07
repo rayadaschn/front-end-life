@@ -1,7 +1,7 @@
 ---
 title: 使用PicGo+GitHub 图床
 icon: linux
-date: 2023-03-09
+# date: 2023-03-09
 category:
   - linux
 tag:
@@ -9,10 +9,9 @@ tag:
 star: true
 # sticky: true
 sticky: false
-
 ---
 
-# 使用PicGo+GitHub 图床
+# 使用 PicGo+GitHub 图床
 
 图床有很多，看了半天最终入手 `PicGo` ，开源简单省心。为此记录一下配置过程。
 
@@ -73,5 +72,5 @@ sticky: false
 好了，到此我们的图床使用流程为：
 
 - 剪切板剪切图片；
-- `CommandOrControl + Shift`  上传图片
+- `CommandOrControl + Shift` 上传图片
 - 待上传完毕，直接粘贴使用。
