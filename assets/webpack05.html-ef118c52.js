@@ -1,1 +1,0 @@
-import{_ as a,V as c,W as t,X as e,Y as r}from"./framework-2060dede.js";const s={},o=e("h1",{id:"webpack-配置分离",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#webpack-配置分离","aria-hidden":"true"},"#"),r(" Webpack 配置分离")],-1),n=[o];function _(d,i){return c(),t("div",null,n)}const l=a(s,[["render",_],["__file","webpack05.html.vue"]]);export{l as default};
