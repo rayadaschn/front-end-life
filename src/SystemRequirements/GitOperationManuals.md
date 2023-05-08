@@ -1,7 +1,7 @@
 ---
 title: Git 操作手册
 icon: linux
-# date: 2023-02-1
+date: 2023-02-1
 category:
   - linux
 tag:

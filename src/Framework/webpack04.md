@@ -1,21 +1,21 @@
 ---
 title: Webpack 性能优化之文件压缩
 icon: build
+date: 2023-04-20
+
 category:
   - 框架
 tag:
   - webpack
 star: false
 sticky: false
-
-
 ---
 
 # Webpack 性能优化之文件压缩
 
-## Terser JS压缩
+## Terser JS 压缩
 
-在webpack 的优化(Optimization)选项中，还有俩个选择：
+在 webpack 的优化(Optimization)选项中，还有俩个选择：
 
 - `optimization.minimize`: Boolean，告知 webpack 是否使用 [TerserPlugin](https://webpack.docschina.org/plugins/terser-webpack-plugin/) 或其它在 [`optimization.minimizer`](https://webpack.docschina.org/configuration/optimization/#optimizationminimizer)定义的插件压缩 bundle。
 - `optimization.minimizer`: `[TerserPlugin]` 或 `[function (compiler)]`，允许你通过提供一个或多个定制过的 [TerserPlugin](https://webpack.docschina.org/plugins/terser-webpack-plugin/) 实例，覆盖默认压缩工具(minimizer)。
@@ -24,7 +24,7 @@ TerserPlugin 形式：
 
 ```js
 // webpack.config.js
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   optimization: {
@@ -50,7 +50,7 @@ module.exports = {
     minimize: true,
     minimizer: [
       (compiler) => {
-        const TerserPlugin = require('terser-webpack-plugin');
+        const TerserPlugin = require("terser-webpack-plugin");
         new TerserPlugin({
           /* 你的配置 */
         }).apply(compiler);
@@ -63,13 +63,13 @@ module.exports = {
 一些重要的配置，详细配置可看[官方文档](https://terser.org/docs/cli-usage)：
 
 - **Compress option**：
-  - `arrows`：class 或者object 中的函数，转换成箭头函数；
+  - `arrows`：class 或者 object 中的函数，转换成箭头函数；
   - `arguments`：将函数中使用 `arguments[index]`转成对应的形参名称；
   - `dead_code`：移除不可达的代码（tree shaking）。如永远为 false 的 if 判断函数。
 - **Mangle option**：
-    - `toplevel`：默认值是`false`，顶层作用域中的变量名称，进行丑化（转换）；
-    - `keep_classnames`：默认值是`false`，是否保持依赖的类名称;
-    - `keep_fnames`：默认值是`false`，是否保持原来的函数名称;
+  - `toplevel`：默认值是`false`，顶层作用域中的变量名称，进行丑化（转换）；
+  - `keep_classnames`：默认值是`false`，是否保持依赖的类名称;
+  - `keep_fnames`：默认值是`false`，是否保持原来的函数名称;
 
 > 在 terser 中，compress 和 mangle 都是优化 JavaScript 代码的选项。
 >
@@ -87,7 +87,7 @@ module.exports = {
     minimize: true,
     minimizer: [
       (compiler) => {
-        const TerserPlugin = require('terser-webpack-plugin');
+        const TerserPlugin = require("terser-webpack-plugin");
         new TerserPlugin({
           /* 你的配置 */
         }).apply(compiler);
@@ -103,7 +103,7 @@ module.exports = {
 
 - CSS 压缩通常是去除无用的空格等，因为很难去修改选择器、属性的名称、值等；
 - CSS 的压缩我们可以使用另外一个插件：`css-minimizer-webpack-plugin`；
-- `css-minimizer-webpack-plugin` 是使用 cssnano工具来优化、压缩CSS（也可以单独使用）;
+- `css-minimizer-webpack-plugin` 是使用 cssnano 工具来优化、压缩 CSS（也可以单独使用）;
 
 使用步骤：
 
@@ -113,9 +113,9 @@ module.exports = {
 
    ```js
    // webpack.config.js
-   const TerserPlugin = require('terser-webpack-plugin');
-   const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-   
+   const TerserPlugin = require("terser-webpack-plugin");
+   const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
    module.exports = {
      optimization: {
        minimize: true,
@@ -124,10 +124,10 @@ module.exports = {
            parallel: true,
            // other ....
          }),
-         
+
          new CssMinimizerPlugin({
            parallel: true,
-         })
+         }),
        ],
      },
    };
@@ -187,20 +187,20 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: ['babel-loader'],
+        use: ["babel-loader"],
       },
     ],
   },
   // 只有 Lodash 中的某些方法会有副作用
   // 因此，我们可以使用数组来指定哪些文件或目录中的代码具有副作用
   // 注意：该配置仅在 mode 设置为 production 时生效
-  sideEffects: ['lodash/includes.js', 'lodash/isEmpty.js'],
+  sideEffects: ["lodash/includes.js", "lodash/isEmpty.js"],
 };
 ```
 
 需要注意的是，`sideEffects` 的配置项仅在 Webpack 的 production 模式下才会生效。在 development 模式下，Webpack 默认会假设所有代码都具有副作用，并且不会进行 Tree Shaking。因此，默认情况下，开发模式下的打包结果更大，但构建速度更快。
 
-###  CSS 实现 Tree Shaking
+### CSS 实现 Tree Shaking
 
 需要安装 [PurgeCss](https://www.purgecss.cn/plugins/webpack/) 的 webpack 插件：
 
@@ -213,82 +213,79 @@ $: npm install purgecss-webpack-plugin -D
 ```js
 // webpack.config.js
 
-const path = require('path')
-const glob = require('glob')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const PurgecssPlugin = require('purgecss-webpack-plugin')
+const path = require("path");
+const glob = require("glob");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const PurgecssPlugin = require("purgecss-webpack-plugin");
 
 const PATHS = {
-  src: path.join(__dirname, 'src')
-}
+  src: path.join(__dirname, "src"),
+};
 
 module.exports = {
-  entry: './src/index.js',
+  entry: "./src/index.js",
   output: {
-    filename: 'bundle.js',
-    path: path.join(__dirname, 'dist')
+    filename: "bundle.js",
+    path: path.join(__dirname, "dist"),
   },
   optimization: {
     splitChunks: {
       cacheGroups: {
         styles: {
-          name: 'styles',
+          name: "styles",
           test: /\.css$/,
-          chunks: 'all',
-          enforce: true
-        }
-      }
-    }
+          chunks: "all",
+          enforce: true,
+        },
+      },
+    },
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader"
-        ]
-      }
-    ]
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+    ],
   },
   plugins: [
     new MiniCssExtractPlugin({
       filename: "[name].css",
     }),
     new PurgecssPlugin({
-      paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
+      paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
     }),
-  ]
-}
+  ],
+};
 ```
 
 ## HTML 压缩
 
-HTTP压缩是一种内置在 服务器 和 客户端 之间的，以改进传输速度和带宽利用率的方式。旨在通过消除不必要的空格、注释和其他冗余内容来提高页面加载速度。在 Webpack 中使用 `html-webpack-plugin` 插件可以很容易地实现 HTML 压缩。
+HTTP 压缩是一种内置在 服务器 和 客户端 之间的，以改进传输速度和带宽利用率的方式。旨在通过消除不必要的空格、注释和其他冗余内容来提高页面加载速度。在 Webpack 中使用 `html-webpack-plugin` 插件可以很容易地实现 HTML 压缩。
 
 以下是一个示例 Webpack 配置，展示了如何在生产模式下使用 `html-webpack-plugin` 和 `html-minifier-terser` 插件对 HTML 文件进行压缩：
 
 ```js
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlMinimizerPlugin = require('html-minimizer-webpack-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
 
 module.exports = {
   // ...
-  mode: 'production',
+  mode: "production",
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'path/to/template.html',
+      template: "path/to/template.html",
       minify: {
         collapseWhitespace: true,
         removeComments: true,
         removeRedundantAttributes: true,
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
-        useShortDoctype: true
-      }
+        useShortDoctype: true,
+      },
     }),
-    new HtmlMinimizerPlugin()
-  ]
+    new HtmlMinimizerPlugin(),
+  ],
 };
 ```
 

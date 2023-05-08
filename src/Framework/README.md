@@ -1,6 +1,6 @@
 ---
 title: 框架类
-date: 2023-02-12
+# date: 2023-02-12
 index: false
 icon: vue
 category:
@@ -9,10 +9,10 @@ category:
 
 ## Catalog
 
-- [Vue3 中的 script-setup](Vue3中的script-setup.md)
-- [Vue3 中的全局注册](Vue3中的全局注册.md)
-- [Vue3 中的懒加载](Vue3中的懒加载.md)
-- [Vue3 中的动态路由懒加载实例](Vue3中的动态路由懒加载实例.md)
+- [Vue3 中的 script-setup](Vue01.md)
+- [Vue3 中的全局注册](Vue02.md)
+- [Vue3 中的懒加载](Vue03.md)
+- [Vue3 中的动态路由懒加载实例](Vue04.md)
 
 ## React 学习之路
 

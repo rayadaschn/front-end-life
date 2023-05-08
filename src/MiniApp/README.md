@@ -1,6 +1,6 @@
 ---
 title: 小程序
-date: 2023-02-12
+# date: 2023-02-12
 index: false
 icon: mini-app
 category:
@@ -9,4 +9,4 @@ category:
 
 ## Catalog
 
-- [小程序编程技巧](小程序编程技巧.md)
+- [小程序编程技巧](mini-app-01)

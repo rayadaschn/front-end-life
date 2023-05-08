@@ -1,22 +1,20 @@
 ---
 title: React之Hooks
 icon: react
+date: 2023-03-25
 category:
   - 框架
 tag:
   - React
 star: true
 sticky: true
-
-
-
 ---
 
-# React之Hooks
+# React 之 Hooks
 
 React Hooks 是 React 16.8 新增的功能，它允许函数组件中使用状态和其他 React 特性。Hooks 可以帮助我们更轻松地编写可复用、独立和易于测试的组件，并且可以避免类组件中常见的代码冗余和样板代码。
 
-先看看，在过去的Class 组件中所存在的问题：
+先看看，在过去的 Class 组件中所存在的问题：
 
 - 复杂组件难以理解；
 - ES6 中的 class 和 React 中的 this 指向入门难度较高；
@@ -26,13 +24,13 @@ React Hooks 是 React 16.8 新增的功能，它允许函数组件中使用状�
 
 ```jsx
 function HelloWorld(props) {
-  let message = "Hello World!"
+  let message = "Hello World!";
   return (
     <div>
       <h2>文本内容: {message}</h2>
-      <button onClick={e => message = "Hello React!"}>修改文本</button>
+      <button onClick={(e) => (message = "Hello React!")}>修改文本</button>
     </div>
-  )
+  );
 }
 ```
 
@@ -70,7 +68,8 @@ console.log("message", message);
 ```jsx
 import { memo, useState } from "react";
 
-function useFoo() { // 自定义 Hook
+function useFoo() {
+  // 自定义 Hook
   const [message] = useState("Hello World");
   return message;
 }
@@ -116,7 +115,7 @@ const [state, setState] = useState(initialState);
 接下来，让我们看一个简单的例子，使用 useState Hook 来实现计数器的功能：
 
 ```jsx
-import { useState } from 'react';
+import { useState } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -147,9 +146,9 @@ function Counter() {
 
 除了定义状态，还需要解决函数组件中的生命周期问题，`useEffect` 这个 Effect Hook 便是用来干这个的。
 
-先来回顾一下一个名词：副作用。像网络请求、手动更新DOM、一些事件的监听等都是React更新DOM的一些副作用(**Side Effects**)。因此，对于完成这些功能的Hook被称之为 Effect Hook。
+先来回顾一下一个名词：副作用。像网络请求、手动更新 DOM、一些事件的监听等都是 React 更新 DOM 的一些副作用(**Side Effects**)。因此，对于完成这些功能的 Hook 被称之为 Effect Hook。
 
-`useEffect` 可以告诉React需要在渲染后执行某些操作，它用于在函数组件中添加副作用，例如订阅数据、设置定时器等。**它接受一个回调函数，并在组件渲染时调用**。
+`useEffect` 可以告诉 React 需要在渲染后执行某些操作，它用于在函数组件中添加副作用，例如订阅数据、设置定时器等。**它接受一个回调函数，并在组件渲染时调用**。
 
 以下是 useEffect Hook 的基本语法：
 
@@ -166,17 +165,17 @@ useEffect(() => {
 接下来，让我们看一个简单的例子，使用 useEffect Hook 来实现在组件挂载时和卸载时输出信息的功能：
 
 ```jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function Example() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
     // 此处也常用语添加监听事件,但需要记得在卸载时取消监听
-    console.log('Component mounted!'); // 每次渲染周期结束后执行一次,相当于生命周期中的 componentDidMount
+    console.log("Component mounted!"); // 每次渲染周期结束后执行一次,相当于生命周期中的 componentDidMount
     return () => {
       // 此处常用于取消监听, 同上面的添加监听相对应
-      console.log('Component unmounted!'); // 组件卸载时执行，相当于生命周期中的 componentWillUnmount
+      console.log("Component unmounted!"); // 组件卸载时执行，相当于生命周期中的 componentWillUnmount
     };
   }, []);
 
@@ -198,7 +197,7 @@ function Example() {
 需要注意的是，在 useEffect Hook 中我们返回了一个清理函数，这个函数会在组件卸载时执行。它可以用于清除副作用，例如取消订阅或清除定时器等。可以参考这个回调函数的定义：
 
 ```typescript
-type EffectCallback = () => (void | (() => void | undefined));
+type EffectCallback = () => void | (() => void | undefined);
 ```
 
 最后，在组件的返回值中，我们渲染了当前的计数器值和一个按钮，并将更新状态的方法绑定在了对应的按钮上。
@@ -332,7 +331,7 @@ function Counter() {
 
 ## useRef
 
-useRef返回一个**ref对象**，返回的 **ref对象** 在组件的整个生命周期保持不变。**它用于在函数组件中保存和访问可变值。它接受一个初始值，并返回一个对象，其中 `current` 属性包含着*最近一次赋值的值*。**
+useRef 返回一个**ref 对象**，返回的 **ref 对象** 在组件的整个生命周期保持不变。**它用于在函数组件中保存和访问可变值。它接受一个初始值，并返回一个对象，其中 `current` 属性包含着*最近一次赋值的值*。**
 
 以下是 useRef Hook 的基本语法：
 
@@ -349,7 +348,7 @@ const ref = useRef(initialValue);
 1. 使用 useRef Hook 来保存和访问组件的上一个状态：
 
 ```jsx
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -382,7 +381,7 @@ function Counter() {
 2. 使用 useRef Hook 来保存和访问 DOM 元素的引用：
 
 ```jsx
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 
 function Input() {
   const inputRef = useRef(null); // 初始定义 { current: null }, 后续被绑定到组件上, current 值为组件 DOM 节点
@@ -390,7 +389,7 @@ function Input() {
   useEffect(() => {
     inputRef.current.focus(); // 使得焦点聚集到 input 的输入框
   }, []);
- 
+
   function showInputValue() {
     console.log("input 输入值为:", inputRef.current.value);
   }
@@ -420,12 +419,9 @@ function Input() {
 以下是 useCallback Hook 的基本语法：
 
 ```jsx
-const memoizedCallback = useCallback(
-  () => {
-    // do something...
-  },
-  [dependencies],
-);
+const memoizedCallback = useCallback(() => {
+  // do something...
+}, [dependencies]);
 ```
 
 其中，`memoizedCallback` 是缓存后的回调函数，`dependencies` 是可选的依赖列表，用于控制回调函数的缓存时机。
@@ -435,7 +431,7 @@ const memoizedCallback = useCallback(
 接下来，让我们看一个简单的例子，使用 useCallback Hook 来缓存一个更新状态的方法：
 
 ```jsx
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -480,7 +476,7 @@ function Counter() {
 举一个案例：
 
 ```jsx
-import { useState } from 'react';
+import { useState } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -548,7 +544,7 @@ const memoizedCallback = useCallback(() => {
 
 通过使用 `useCallback`，我们可以避免因为闭包陷阱导致的不必要组件重新渲染，提高应用程序的性能和稳定性。
 
-### 进一步优化useCallback
+### 进一步优化 useCallback
 
 实际上，上述代码依旧有性能问题，`useCallback` 返回的是回调函数，也就是如果 `count` 不变则这个回调函数不应该被重新定义。`memoizedCallback` 永远等于回调函数 `() => console.log(count)` 。可以看到的是，就算 `count` 改变了，我们也不应当重新定义 `memoizedCallback` 这个回调函数。那如何去优化呢？
 
@@ -571,7 +567,7 @@ const App = memo(function () {
 
   const countRef = useRef(); // 定义一个 Ref 对象
   countRef.current = count; // 将对象内的 current 值赋值为 count
-  
+
   const increment = useCallback(function foo() {
     console.log("increment");
     setCount(countRef.current + 1); // 通过 countRef.current 存储 counter 的值
@@ -597,13 +593,13 @@ const App = memo(function () {
 以下是一个简单的例子，展示了如何使用 `useMemo` 来优化组件渲染性能：
 
 ```jsx
-import { useMemo, useState } from 'react';
+import { useMemo, useState } from "react";
 
 function ExpensiveComponent(props) {
   const [count, setCount] = useState(0);
 
   const expensiveValue = useMemo(() => {
-    console.log('Calculating expensive value...');
+    console.log("Calculating expensive value...");
     let result = 0;
     for (let i = 0; i < count * 10000000; i++) {
       result += Math.random();
@@ -628,7 +624,7 @@ function ExpensiveComponent(props) {
 
 由于 `useMemo` 的缓存机制，只有在 `count` 发生变化时才会重新计算 `expensiveValue` 值，从而避免了不必要的计算和组件重新渲染，提高了应用程序的性能和稳定性。
 
-### useMemo和 useCallback 的区别
+### useMemo 和 useCallback 的区别
 
 `useMemo` 和 `useCallback` 在 React 中都是用于优化组件性能的 Hook，它们的作用相似但略有不同。
 
@@ -637,11 +633,11 @@ function ExpensiveComponent(props) {
 例如，在以下代码中，我们可以通过 `useMemo` 缓存一个由 `props.firstname` 和 `props.lastname` 计算得到的值：
 
 ```jsx
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 function MyComponent(props) {
   const result = useMemo(() => {
-    console.log('Calculating result...');
+    console.log("Calculating result...");
     return props.firstname + props.lastname;
   }, [props.firstname, props.lastname]);
 
@@ -654,11 +650,11 @@ function MyComponent(props) {
 例如，在以下代码中，我们可以通过 `useCallback` 缓存一个处理点击事件的回调函数：
 
 ```jsx
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
 function MyComponent(props) {
   const handleClick = useCallback(() => {
-    console.log('Button clicked!');
+    console.log("Button clicked!");
   }, []);
 
   return <button onClick={handleClick}>Click me</button>;
@@ -674,7 +670,7 @@ function MyComponent(props) {
 `useImperativeHandle` 它允许我们在父组件中通过 Ref 访问子组件的特定方法或属性。这个 Hook 常常与 `forwardRef` 方法一起使用。
 
 ```jsx
-useImperativeHandle(ref, createHandle, [deps])
+useImperativeHandle(ref, createHandle, [deps]);
 ```
 
 1. `ref`：需要被赋值的`ref`对象。
@@ -686,7 +682,7 @@ useImperativeHandle(ref, createHandle, [deps])
 以下是一个简单的例子，展示了如何使用 `useImperativeHandle` 在子组件中暴露一个名为 `focusInput` 的方法：
 
 ```jsx
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
 const MyInput = forwardRef((props, ref) => {
   const inputRef = useRef();
@@ -694,7 +690,7 @@ const MyInput = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     focusInput: () => {
       inputRef.current.focus();
-    }
+    },
   }));
 
   return <input type="text" ref={inputRef} />;
@@ -712,7 +708,7 @@ export default MyInput;
 在父组件中，我们可以通过 Ref 访问子组件中暴露的 `focusInput` 方法，并在需要时手动调用该方法，以将输入框聚焦：
 
 ```jsx
-import MyInput from './MyInput';
+import MyInput from "./MyInput";
 
 function ParentComponent() {
   const inputRef = useRef();
@@ -736,21 +732,21 @@ function ParentComponent() {
 
 ## useLayoutEffect
 
-`useLayoutEffect` 非常类似于 `useEffect`，区别是，**`useLayoutEffect`中注册的回调函数会在React完成更新 DOM 后、浏览器布局和绘制之前立即执行。** 这意味着在 `useLayoutEffect` 中的代码可以改变 DOM，并且这些 DOM 变更将在用户看到任何更新之前生效。
+`useLayoutEffect` 非常类似于 `useEffect`，区别是，**`useLayoutEffect`中注册的回调函数会在 React 完成更新 DOM 后、浏览器布局和绘制之前立即执行。** 这意味着在 `useLayoutEffect` 中的代码可以改变 DOM，并且这些 DOM 变更将在用户看到任何更新之前生效。
 
-使用 `useLayoutEffect` 时需要格外小心，因为它可能会导致应用程序性能问题。如果没有必要在布局计算之前同步更新DOM，请考虑使用 `useEffect` 来代替。
+使用 `useLayoutEffect` 时需要格外小心，因为它可能会导致应用程序性能问题。如果没有必要在布局计算之前同步更新 DOM，请考虑使用 `useEffect` 来代替。
 
 以下是一个简单的例子，展示了如何使用 `useLayoutEffect` 在组件渲染后立刻更新 DOM：
 
 ```jsx
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from "react";
 
 function MyComponent() {
   const containerRef = useRef();
 
   useLayoutEffect(() => {
-    console.log('Updating DOM...');
-    containerRef.current.style.color = 'red';
+    console.log("Updating DOM...");
+    containerRef.current.style.color = "red";
   }, []);
 
   return <div ref={containerRef}>Hello, World!</div>;
@@ -774,7 +770,7 @@ function MyComponent() {
 以下是一个简单的例子，展示了如何创建一个名为 `useWindowWidth` 的自定义 Hook，用于跟踪浏览器窗口的宽度：
 
 ```jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function useWindowWidth() {
   const [width, setWidth] = useState(window.innerWidth);
@@ -784,10 +780,10 @@ function useWindowWidth() {
       setWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize); // 监听事件
+    window.addEventListener("resize", handleResize); // 监听事件
 
     return () => {
-      window.removeEventListener('resize', handleResize); // 注销事件
+      window.removeEventListener("resize", handleResize); // 注销事件
     };
   }, []);
 
@@ -804,7 +800,7 @@ function useWindowWidth() {
 以下是一个示例，演示了如何在 React 组件中使用 `useWindowWidth` 自定义 Hook：
 
 ```jsx
-import { useWindowWidth } from './useWindowWidth';
+import { useWindowWidth } from "./useWindowWidth";
 
 function MyComponent() {
   const width = useWindowWidth();

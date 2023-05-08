@@ -1,6 +1,7 @@
 ---
 title: React 高阶组件、动画及 CSS
 icon: react
+date: 2023-03-22
 category:
   - 框架
 tag:
@@ -88,13 +89,13 @@ const HighOrderComponent = (WrappedComponent) =>
       UNSAFE_componentWillMount() {
         this.begin = Date.now();
       }
-  
+
       componentDidMount() {
         this.end = Date.now();
         const interval = this.end - this.begin;
         console.log(`${WrapperCpn.name}渲染使用时间:${interval}ms`);
       }
-  
+
       render() {
         return <WrapperCpn {...this.props} />;
       }

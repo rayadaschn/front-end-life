@@ -1,13 +1,13 @@
 ---
 title: React 工程化开发
 icon: react
+date: 2023-03-21
 category:
   - 框架
 tag:
   - React
 star: true
 sticky: false
-
 ---
 
 # React 工程化开发
@@ -20,13 +20,13 @@ sticky: false
 
 ## 创建 React 项目
 
-要创建一个React项目，首先需要安装Node.js和npm。然后，可以使用以下命令在终端窗口中创建一个新项目：
+要创建一个 React 项目，首先需要安装 Node.js 和 npm。然后，可以使用以下命令在终端窗口中创建一个新项目：
 
 ```bash
 $: npx create-react-app my-app
 ```
 
-其中，`my-app` 是项目的名称。这个命令会自动创建一个基本的React项目，包括开发服务器，Webpack构建系统和初始文件结构。
+其中，`my-app` 是项目的名称。这个命令会自动创建一个基本的 React 项目，包括开发服务器，Webpack 构建系统和初始文件结构。
 
 要启动开发服务器，请使用以下命令：
 
@@ -41,7 +41,7 @@ $: npm start
 
 类组件即如基础语法中所示，用一个类来定义一个组件。内部封装了方法函数、数据以及 `render`函数。
 
-在ES6之前，可以通过`create-react-class` 模块来定义类组件，但是目前官网建议我们使用ES6的class类定义。
+在 ES6 之前，可以通过`create-react-class` 模块来定义类组件，但是目前官网建议我们使用 ES6 的 class 类定义。
 
 使用**class**定义一个组件：
 
@@ -60,9 +60,7 @@ $: npm start
 
 ```jsx
 export default function App() {
-  return (
-  	<div>Hello World</div>
-  )
+  return <div>Hello World</div>;
 }
 ```
 
@@ -87,71 +85,76 @@ export default function App() {
 
 ![React 完整生命周期](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/20230325230255.png)
 
-- `getDerivedStateFromProps：state` 的值在任何时候都依赖于 props时使用；该方法返回一个对象来更新state；
-- `getSnapshotBeforeUpdate`：在React更新DOM之前回调的一个函数，可以获取DOM更新前的一些信息（比如说滚动位置）；
-- `shouldComponentUpdate`：该生命周期函数实际较为很常用，它用于控制组件是否需要重新渲染，即如果函数返回 `false` 则组件不进行重新渲染。一般情况下，是用于比对 `this.state` 和 `this.props` 是否发生改变（**浅比较**），若没有发生变化，则返回 `false` 。不过一个一个的比对的话，着实比较费力，所以 React 为我们提供了 `PureComponent` 来代替  `React.Component` ，如此这部分的优化就无需我们手动控制了；
+- `getDerivedStateFromProps：state` 的值在任何时候都依赖于 props 时使用；该方法返回一个对象来更新 state；
+- `getSnapshotBeforeUpdate`：在 React 更新 DOM 之前回调的一个函数，可以获取 DOM 更新前的一些信息（比如说滚动位置）；
+- `shouldComponentUpdate`：该生命周期函数实际较为很常用，它用于控制组件是否需要重新渲染，即如果函数返回 `false` 则组件不进行重新渲染。一般情况下，是用于比对 `this.state` 和 `this.props` 是否发生改变（**浅比较**），若没有发生变化，则返回 `false` 。不过一个一个的比对的话，着实比较费力，所以 React 为我们提供了 `PureComponent` 来代替 `React.Component` ，如此这部分的优化就无需我们手动控制了；
 
 ```jsx
-import React from "react"
+import React from "react";
 
 class HelloWorld extends React.Component {
   // 1.构造方法: constructor
   constructor() {
-    console.log("HelloWorld constructor")
-    super()
+    console.log("HelloWorld constructor");
+    super();
 
     this.state = {
-      message: "Hello World"
-    }
+      message: "Hello World",
+    };
   }
 
   changeText() {
-    this.setState({ message: "你好啊, React" })
+    this.setState({ message: "你好啊, React" });
   }
 
   // 2.执行render函数
   render() {
-    console.log("HelloWorld render")
-    const { message } = this.state
+    console.log("HelloWorld render");
+    const { message } = this.state;
 
     return (
       <div>
         <h2>{message}</h2>
         <p>{message}是程序员的第一个代码!</p>
-        <button onClick={e => this.changeText()}>修改文本</button>
+        <button onClick={(e) => this.changeText()}>修改文本</button>
       </div>
-    )
+    );
   }
 
   // 3.组件被渲染到DOM: 被挂载到DOM
   componentDidMount() {
-    console.log("HelloWorld componentDidMount")
+    console.log("HelloWorld componentDidMount");
   }
 
   // 4.组件的DOM被更新完成： DOM发生更新
   componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log("HelloWorld componentDidUpdate:", prevProps, prevState, snapshot)
+    console.log(
+      "HelloWorld componentDidUpdate:",
+      prevProps,
+      prevState,
+      snapshot
+    );
   }
 
   // 5.组件从DOM中卸载掉： 从DOM移除掉
   componentWillUnmount() {
-    console.log("HelloWorld componentWillUnmount")
+    console.log("HelloWorld componentWillUnmount");
   }
 
   // 不常用的生命周期补充
   shouldComponentUpdate() {
-    return true
+    return true;
   }
 
   getSnapshotBeforeUpdate() {
-    console.log("getSnapshotBeforeUpdate")
+    console.log("getSnapshotBeforeUpdate");
     return {
-      scrollPosition: 1000
-    }
+      scrollPosition: 1000,
+    };
   }
 }
 
-export default HelloWorld
+export default HelloWorld;
 ```
 
 ## 组件通信
@@ -159,7 +162,7 @@ export default HelloWorld
 - 父传子：父组件通过 **属性=值** 的形式来传递给子组件数据。如属性一般将数据传递给子组件；
 
   ```jsx
-  <MainBanner banners={banners} title="轮播图"/>
+  <MainBanner banners={banners} title="轮播图" />
   ```
 
   此时，子组件通过在 constructor 中的 **props** 参数获取父组件传递过来的数据。
@@ -170,52 +173,50 @@ export default HelloWorld
 
   ```jsx
   // 类组件
-  import React, { Component } from 'react'
-  import PropTypes from "prop-types"
-  
+  import React, { Component } from "react";
+  import PropTypes from "prop-types";
+
   export class MainBanner extends Component {
     // static defaultProps = {
     //   banners: [],
     //   title: "默认标题"
     // }
-  
+
     constructor(props) {
-      super(props)
-      this.state = {}
+      super(props);
+      this.state = {};
     }
-  
+
     render() {
       // console.log(this.props)
-      const { title, banners } = this.props
-  
+      const { title, banners } = this.props;
+
       return (
-        <div className='banner'>
+        <div className="banner">
           <h2>封装一个轮播图: {title}</h2>
           <ul>
-            {
-              banners.map(item => {
-                return <li key={item.acm}>{item.title}</li>
-              })
-            }
+            {banners.map((item) => {
+              return <li key={item.acm}>{item.title}</li>;
+            })}
           </ul>
         </div>
-      )
+      );
     }
   }
-  
+
   // MainBanner传入的props类型进行验证
   MainBanner.propTypes = {
     banners: PropTypes.array,
-    title: PropTypes.string
-  }
-  
+    title: PropTypes.string,
+  };
+
   // MainBanner传入的props的默认值
   MainBanner.defaultProps = {
     banners: [],
-    title: "默认标题"
-  }
-  
-  export default MainBanner
+    title: "默认标题",
+  };
+
+  export default MainBanner;
   ```
 
   在函数式编程中，则同 Vue3 中的 `setup` 一般，需要在函数中显示传递 `props` 参数。
@@ -223,32 +224,28 @@ export default HelloWorld
   ```jsx
   // 在函数式组件中
   import PropTypes from "prop-types";
-  
+
   function MainBanner(props) {
     // 函数式进行解构并赋默认值
-    const { banners, title = '设置默认值' } = props;
+    const { banners, title = "设置默认值" } = props;
     return (
-      <div className='banner'>
+      <div className="banner">
         <h2>封装一个轮播图: {title}</h2>
         <ul>
-          {
-            banners.map(item => {
-              return <li key={item.acm}>{item.title}</li>
-            })
-          }
+          {banners.map((item) => {
+            return <li key={item.acm}>{item.title}</li>;
+          })}
         </ul>
       </div>
-    )
+    );
   }
   // 对函数组件内部的值进行约束
   MainBanner.propTypes = {
     banners: PropTypes.array,
   };
-  
+
   export default MainBanner;
   ```
-
-  
 
 - 子传父: 是通过 `props` 传递数据，则是让父组件给子组件传递一个回调函数，在子组件中调用这个函数即可。
 
@@ -256,26 +253,26 @@ export default HelloWorld
   // 父组件
   class App extends Component {
     constructor() {
-      super()
+      super();
       this.state = {
-        counter: 100
-      }
+        counter: 100,
+      };
     }
-  
+
     changeCounter(count) {
-      this.setState({ counter: this.state.counter + count })
+      this.setState({ counter: this.state.counter + count });
     }
-  
+
     render() {
-      const { counter } = this.state
-  
+      const { counter } = this.state;
+
       return (
         <div>
           <h2>当前计数: {counter}</h2>
-          <AddCounter addClick={(count) => this.changeCounter(count)}/>
-          <SubCounter subClick={(count) => this.changeCounter(count)}/>
+          <AddCounter addClick={(count) => this.changeCounter(count)} />
+          <SubCounter subClick={(count) => this.changeCounter(count)} />
         </div>
-      )
+      );
     }
   }
   ```
@@ -285,14 +282,14 @@ export default HelloWorld
   export class AddCounter extends Component {
     addCount(count) {
       // 自身定义一个方法, 调用在 props 上传递过来的父组件的方法, 从而改变父组件中的数据
-      this.props.addClick(count)
+      this.props.addClick(count);
     }
     render() {
       return (
         <div>
-          <button onClick={e => this.addCount(1)}>+1</button>
+          <button onClick={(e) => this.addCount(1)}>+1</button>
         </div>
-      )
+      );
     }
   }
   ```
@@ -308,7 +305,7 @@ export default HelloWorld
 // 父组件
 export class App extends Component {
   render() {
-    const btn = <button>按钮2</button>
+    const btn = <button>按钮2</button>;
 
     return (
       <div>
@@ -320,13 +317,13 @@ export class App extends Component {
         </NavBar>
 
         {/* 2.使用props实现插槽 */}
-        <NavBarTwo 
+        <NavBarTwo
           leftSlot={btn}
           centerSlot={<h2>呵呵呵</h2>}
           rightSlot={<i>斜体2</i>}
         />
       </div>
-    )
+    );
   }
 }
 ```
@@ -335,16 +332,16 @@ export class App extends Component {
 // 子组件: 第一种 使用children实现插槽
 export class NavBar extends Component {
   render() {
-    const { children } = this.props
-    console.log(children)
+    const { children } = this.props;
+    console.log(children);
 
     return (
-      <div className='nav-bar'>
+      <div className="nav-bar">
         <div className="left">{children[0]}</div>
         <div className="center">{children[1]}</div>
         <div className="right">{children[2]}</div>
       </div>
-    )
+    );
   }
 }
 ```
@@ -353,15 +350,15 @@ export class NavBar extends Component {
 // 子组件: 第二种 直接通过 props 属性传递
 export class NavBarTwo extends Component {
   render() {
-    const { leftSlot, centerSlot, rightSlot } = this.props
+    const { leftSlot, centerSlot, rightSlot } = this.props;
 
     return (
-      <div className='nav-bar'>
+      <div className="nav-bar">
         <div className="left">{leftSlot}</div>
         <div className="center">{centerSlot}</div>
         <div className="right">{rightSlot}</div>
       </div>
-    )
+    );
   }
 }
 ```
@@ -385,42 +382,42 @@ export class NavBarTwo extends Component {
 // 父组件
 export class App extends Component {
   constructor() {
-    super()
+    super();
 
     this.state = {
       titles: ["流行", "新款", "精选"],
-      tabIndex: 0
-    }
+      tabIndex: 0,
+    };
   }
 
   tabClick(tabIndex) {
-    this.setState({ tabIndex })
+    this.setState({ tabIndex });
   }
 
   getTabItem(item) {
     if (item === "流行") {
-      return <span>{item}</span>
+      return <span>{item}</span>;
     } else if (item === "新款") {
-      return <button>{item}</button>
+      return <button>{item}</button>;
     } else {
-      return <i>{item}</i>
+      return <i>{item}</i>;
     }
   }
 
   render() {
-    const { titles, tabIndex } = this.state
+    const { titles, tabIndex } = this.state;
 
     return (
-      <div className='app'>
-        <TabControl 
-          titles={titles} 
-          tabClick={i => this.tabClick(i)}
+      <div className="app">
+        <TabControl
+          titles={titles}
+          tabClick={(i) => this.tabClick(i)}
           // itemType={item => <button>{item}</button>}
-          itemType={item => this.getTabItem(item)}
+          itemType={(item) => this.getTabItem(item)}
         />
         <h1>{titles[tabIndex]}</h1>
       </div>
-    )
+    );
   }
 }
 ```
@@ -429,43 +426,41 @@ export class App extends Component {
 // 子组件
 export class TabControl extends Component {
   constructor() {
-    super()
+    super();
 
     this.state = {
-      currentIndex: 0
-    }
+      currentIndex: 0,
+    };
   }
 
   itemClick(index) {
     // 1.自己保存最新的index
-    this.setState({ currentIndex: index })
+    this.setState({ currentIndex: index });
 
     // 2.让父组件执行对应的函数
-    this.props.tabClick(index)
+    this.props.tabClick(index);
   }
 
   render() {
-    const { titles, itemType } = this.props // 父组件传递过来的数据
-    const { currentIndex } = this.state
+    const { titles, itemType } = this.props; // 父组件传递过来的数据
+    const { currentIndex } = this.state;
 
     return (
-      <div className='tab-control'>
-        {
-          titles.map((item, index) => {
-            return (
-              <div 
-                className={`item ${index === currentIndex?'active':''}`} 
-                key={item}
-                onClick={e => this.itemClick(index)}
-              >
-                {/* <span className='text'>{item}</span> */}
-                {itemType(item)}
-              </div>
-            )
-          })
-        }
+      <div className="tab-control">
+        {titles.map((item, index) => {
+          return (
+            <div
+              className={`item ${index === currentIndex ? "active" : ""}`}
+              key={item}
+              onClick={(e) => this.itemClick(index)}
+            >
+              {/* <span className='text'>{item}</span> */}
+              {itemType(item)}
+            </div>
+          );
+        })}
       </div>
-    )
+    );
   }
 }
 ```
@@ -482,7 +477,7 @@ export class TabControl extends Component {
 
 - React 的更新流程是：
 
-  监听到 `props 和 state` 的变化 --> `render` 函数重新执行 --> 产生新的虚拟 DOM 树  --> 新旧虚拟 DOM 树进行 Diff 算法比较  --> 计算出虚拟 DOM 树中不同的地方进行更新 --> 再更新到真实 DOM 树
+  监听到 `props 和 state` 的变化 --> `render` 函数重新执行 --> 产生新的虚拟 DOM 树 --> 新旧虚拟 DOM 树进行 Diff 算法比较 --> 计算出虚拟 DOM 树中不同的地方进行更新 --> 再更新到真实 DOM 树
 
 从上面的更新流程中可以看出，我们可以在 第一步 “监听到 `props 和 state` 的变化” 和 “新旧虚拟 DOM 树进行 Diff 算法比较 ” 俩个方面进行优化，其余步骤更多为框架自动完成。
 
@@ -503,14 +498,14 @@ export class Bar extends PureComponent {
 
 ```jsx
 // 函数组件
-import { memo } from "react"
+import { memo } from "react";
 
-const Profile = memo(function(props) {
-  console.log("profile render")
-  return <h2>Profile: {props.message}</h2>
-})
+const Profile = memo(function (props) {
+  console.log("profile render");
+  return <h2>Profile: {props.message}</h2>;
+});
 
-export default Profile
+export default Profile;
 ```
 
 需要注意的是，这里的方法实际上都是调用 **shallowEqual** 进行浅比较，即 **`!shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)`** ，意为对比是否为浅拷贝，如果是浅拷贝指向的对象地址没有发生变化，则不会进行重写渲染。
@@ -550,7 +545,7 @@ changeCount(index) {
   this.state = {
   	message: 'Hello World!'
   }
-  
+
   changeText() {
     setTimeout(() => {
       this.setState({
@@ -561,15 +556,15 @@ changeCount(index) {
   }
   ```
 
-  在React18 以前这个宏任务会不同操作，最终结果为：“`'Hello React!'`”；如今则不会，统一变成异步操作，结果会打印成操作 `setState` 之前的值：“`'Hello World!'`”。
+  在 React18 以前这个宏任务会不同操作，最终结果为：“`'Hello React!'`”；如今则不会，统一变成异步操作，结果会打印成操作 `setState` 之前的值：“`'Hello World!'`”。
 
-  其次，在React18 以前直接操作原生 DOM 事件中的监听回调，在内部调用 `setState` 也是同步操作的：
+  其次，在 React18 以前直接操作原生 DOM 事件中的监听回调，在内部调用 `setState` 也是同步操作的：
 
   ```jsx
   this.state = {
   	message: 'Hello World!'
   }
-  
+
   componentDidMount() {
     const btnEl = document.getElementById("btn")
     btnEl.addEventListener('click', () => {
@@ -581,7 +576,7 @@ changeCount(index) {
   }
   ```
 
-  结果同上面的 `setTimeout` 一样。 
+  结果同上面的 `setTimeout` 一样。
 
 - 在 React 18 之后，所有的操作都默认放到批处理（异步处理）。若还是想要同步则需要引入一个全新的 API `flushSync`：
 
@@ -589,17 +584,17 @@ changeCount(index) {
   this.state = {
   	message: 'Hello World!'
   }
-  
+
   changeText() {
     flushSync(() => {
       setTimeout(() => {
         this.setState({ message: 'Hello React!' })
         // 这里依旧是批处理, 异步操作 'Hello World!'
-        console.log('message 的结果为:', this.state.message) 
+        console.log('message 的结果为:', this.state.message)
       }, 0)
     })
     // 这里紧接着 flushSync , 会变为操作 'Hello React!'
-    console.log('message 的结果为:', this.state.message) 
+    console.log('message 的结果为:', this.state.message)
   }
   ```
 
@@ -617,7 +612,7 @@ changeCount(index) {
 
 - 传入字符串： 通过 `this.refs` 传入的字符串格式获取对应的元素;
 - 传入一个对象：对象是通过 React.createRef() 方式创建出来的。使用时获取到创建的对象其中有一个`current`属性就是对应的元素;
-- 传入一个函数：该函数会在DOM被挂载时进行回调，这个函数会传入一个 元素对象，我们可以自己保存。使用时，直接拿到之前保存的元素对象即可。
+- 传入一个函数：该函数会在 DOM 被挂载时进行回调，这个函数会传入一个 元素对象，我们可以自己保存。使用时，直接拿到之前保存的元素对象即可。
 
 需要注意的是，**ref** 的值根据节点的类型而有所不同：
 
@@ -625,36 +620,38 @@ changeCount(index) {
 
 ```jsx
 // 获取 DOM 元素属性
-import React, { PureComponent, createRef } from 'react'
+import React, { PureComponent, createRef } from "react";
 
 export class App extends PureComponent {
   constructor() {
-    super()
-    this.titleRef = createRef() // 需要用到 createRef()
-    this.titleEl = null
+    super();
+    this.titleRef = createRef(); // 需要用到 createRef()
+    this.titleEl = null;
   }
 
   getNativeDOM() {
     // 1.方式一: 在React元素上绑定一个ref字符串
-    console.log(this.refs.someString)
+    console.log(this.refs.someString);
 
     // 2.方式二: 提前创建好ref对象, createRef(), 将创建出来的对象绑定到元素
-    console.log(this.titleRef.current)
+    console.log(this.titleRef.current);
 
     // 3.方式三: 传入一个回调函数, 在对应的元素被渲染之后, 回调函数被执行, 并且将元素传入
-    console.log(this.titleEl)
+    console.log(this.titleEl);
   }
 
   render() {
     return (
       <div>
         <h2 ref="someString">方式一：字符串形式获取</h2>
-        <h2 ref={this.titleRef}>方式二： ref 对象形式获取,利用 current 进行调用</h2>
-        <h2 ref={el => this.titleEl = el}>方式三：回调函数形式获取</h2>
-        
-        <button onClick={e => this.getNativeDOM()}>获取DOM</button>
+        <h2 ref={this.titleRef}>
+          方式二： ref 对象形式获取,利用 current 进行调用
+        </h2>
+        <h2 ref={(el) => (this.titleEl = el)}>方式三：回调函数形式获取</h2>
+
+        <button onClick={(e) => this.getNativeDOM()}>获取DOM</button>
       </div>
-    )
+    );
   }
 }
 ```
@@ -663,75 +660,75 @@ export class App extends PureComponent {
 
 ```jsx
 // 获取 class 组件
-import React, { PureComponent, createRef } from 'react'
+import React, { PureComponent, createRef } from "react";
 
 class SonComponent extends PureComponent {
   testFunc() {
-    console.log("test------")
+    console.log("test------");
   }
   render() {
-    return <h1>子组件</h1>
+    return <h1>子组件</h1>;
   }
 }
 
 export class App extends PureComponent {
   constructor() {
-    super()
-    this.someString = createRef() // 先定义ref
+    super();
+    this.someString = createRef(); // 先定义ref
   }
 
   getComponent() {
-    console.log(this.someString.current) 
-    this.someString.current.testFunc() // 获取子组件上的属性方法
+    console.log(this.someString.current);
+    this.someString.current.testFunc(); // 获取子组件上的属性方法
   }
 
   render() {
     return (
       <div>
-        <SonComponent ref={this.someString}/>
-        <button onClick={e => this.getComponent()}>获取组件实例</button>
+        <SonComponent ref={this.someString} />
+        <button onClick={(e) => this.getComponent()}>获取组件实例</button>
       </div>
-    )
+    );
   }
 }
-export default App
+export default App;
 ```
 
 - 不能**在函数组件上使用** **ref** **属性**，因为他们没有实例。所以要获取函数子组件的 DOM，这时我们需要通过 [`React.forwardRef`](https://legacy.reactjs.org/docs/forwarding-refs.html) 来获取，此时在`forwardRef` 函数中能够获取俩个参数：`props`和父组件传递过来的`ref`。因此，通过父组件传递过来的 `ref`，能够达到父组件操作函数子组件的方法。当然，还有 `hooks`的操作方法，后续[Hooks 章节](https://rayadaschn.github.io/front-end-life/Framework/React06.html#useref)中进行介绍。
 
 ```jsx
 // 在函数组件上获取 DOM
-import React, { PureComponent, createRef, forwardRef } from 'react'
+import React, { PureComponent, createRef, forwardRef } from "react";
 
-const FuncSonComponent = forwardRef(function(props, ref) {
+const FuncSonComponent = forwardRef(function (props, ref) {
   return (
     <div>
       <h1 ref={ref}>函数子组件</h1>
     </div>
-  )
-})
+  );
+});
 
 export class App extends PureComponent {
   constructor() {
-    super()
-    this.someString = createRef() // 先定义ref
+    super();
+    this.someString = createRef(); // 先定义ref
   }
 
   getComponent() {
-    console.log(this.someString.current) // 获取子组件上的 DOM 节点
+    console.log(this.someString.current); // 获取子组件上的 DOM 节点
   }
 
   render() {
     return (
       <div>
-        <FuncSonComponent ref={this.someString}/>
-        <button onClick={e => this.getComponent()}>获取函数子组件实例</button>
+        <FuncSonComponent ref={this.someString} />
+        <button onClick={(e) => this.getComponent()}>获取函数子组件实例</button>
       </div>
-    )
+    );
   }
 }
 
-export default App
+export default App;
 ```
 
 ## 受控组件
@@ -741,7 +738,7 @@ export default App
 ```vue
 <template>
   <div>
-    <input v-model="message" placeholder="Enter message">
+    <input v-model="message" placeholder="Enter message" />
     <p>Message is: {{ message }}</p>
   </div>
 </template>
@@ -750,9 +747,9 @@ export default App
 export default {
   data() {
     return {
-      message: ""
+      message: "",
     };
-  }
+  },
 };
 </script>
 ```
@@ -766,32 +763,37 @@ export default {
 ```jsx
 export class App extends PureComponent {
   constructor() {
-    super()
+    super();
 
     this.state = {
-      inputValue: "" // input 中的初始值
-    }
+      inputValue: "", // input 中的初始值
+    };
   }
 
-  inputChange(event) { // 监听 input 中键入的事件变化
-    console.log("inputChange:", event.target.value)
-    this.setState({ inputValue: event.target.value })
+  inputChange(event) {
+    // 监听 input 中键入的事件变化
+    console.log("inputChange:", event.target.value);
+    this.setState({ inputValue: event.target.value });
   }
 
   render() {
-    const { inputValue } = this.state
+    const { inputValue } = this.state;
 
     return (
       <div>
         {/* 受控组件 */}
-        <input type="checkbox" value={inputValue} onChange={e => this.inputChange(e)}/>
+        <input
+          type="checkbox"
+          value={inputValue}
+          onChange={(e) => this.inputChange(e)}
+        />
 
         {/* 非受控组件 */}
         <input type="text" />
-        
+
         <h2>inputValue输入值: {inputValue}</h2>
       </div>
-    )
+    );
   }
 }
 ```
@@ -838,7 +840,7 @@ class App extends React.Component {
             name="MultilineMessage"
             value={this.state.MultilineMessage}
             onChange={(e) => this.handleChange(e)}
-            />
+          />
         </label>
         <input type="submit" value="Submit" />
       </form>
@@ -887,9 +889,9 @@ class App extends React.Component {
       ],
     };
   }
-  
+
   handleAgreeChange(event) {
-    this.setState({ isAgree: event.target.checked })
+    this.setState({ isAgree: event.target.checked });
   }
 
   handleHobbiesChange(event, index) {
@@ -904,15 +906,15 @@ class App extends React.Component {
       <div>
         {/* 在 React 中 checkbox 单选 */}
         <label htmlFor="agree">
-          <input 
-            id='agree' 
-            type="checkbox" 
-            checked={isAgree} 
-            onChange={e => this.handleAgreeChange(e)}
-            />
+          <input
+            id="agree"
+            type="checkbox"
+            checked={isAgree}
+            onChange={(e) => this.handleAgreeChange(e)}
+          />
           同意协议
         </label>
-        
+
         {/* 在 React 中 checkbox 多选 */}
         <div>
           您的爱好:
@@ -924,7 +926,7 @@ class App extends React.Component {
                   id={item.value}
                   checked={item.isChecked}
                   onChange={(e) => this.handleHobbiesChange(e, index)}
-                  />
+                />
                 <span>{item.text}</span>
               </label>
             );
@@ -1004,7 +1006,7 @@ handleFruitChange(event) {
 > const arrLike = {0: 'foo', 1: 'bar', 2: 'baz', length: 3};
 > const arr = Array.from(arrLike);
 > console.log(arr); // ['foo', 'bar', 'baz']
-> 
+>
 > const arr2 = Array.prototype.slice.call(arrLike);
 > console.log(arr2); // ['foo', 'bar', 'baz']
 > ```
@@ -1015,11 +1017,11 @@ handleFruitChange(event) {
 >
 > ```JavaScript
 > const arrLike = {0: 'foo', 1: 'bar', 2: 'baz', length: 3};
-> 
+>
 > for (let i = 0; i < arrLike.length; i++) {
 >   console.log(arrLike[i]);
 > }
-> 
+>
 > Array.prototype.forEach.call(arrLike, (item) => {
 >   console.log(item);
 > });
@@ -1031,8 +1033,7 @@ handleFruitChange(event) {
 >
 > ```JavaScript
 > const arrLike = {0: 1, 1: 2, 2: 3, length: 3};
-> 
+>
 > const max = Math.max.apply(null, arrLike);
 > console.log(max); // 3
 > ```
-

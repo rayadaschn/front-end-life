@@ -1,16 +1,13 @@
 ---
 title: Webpack 开发服务端配置
 icon: build
+date: 2023-04-01
 category:
   - 框架
 tag:
   - webpack
 star: false
 sticky: false
-
-
-
-
 ---
 
 # Webpack 开发服务端配置
@@ -59,11 +56,11 @@ npx webpack init
 
 可以看到，我们之前运行 `npm run build:dev` 和 `npm run build:prod` 等，主要区别在于给 Webpack 传递的 `mode` 参数不同。实际上，配置对象`webpack.config.js`中也可以设置 mode，只是不太常用，它有做较多预设。
 
-| mode 选项     | 描述                                                         |
-| :------------ | :----------------------------------------------------------- |
-| `development` | 会将 `DefinePlugin` 中 `process.env.NODE_ENV` 的值设置为 `development`. 为模块和 chunk 启用有效的名。 |
+| mode 选项     | 描述                                                                                                                                                                                                                                          |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `development` | 会将 `DefinePlugin` 中 `process.env.NODE_ENV` 的值设置为 `development`. 为模块和 chunk 启用有效的名。                                                                                                                                         |
 | `production`  | 会将 `DefinePlugin` 中 `process.env.NODE_ENV` 的值设置为 `production`。为模块和 chunk 启用确定性的混淆名称，`FlagDependencyUsagePlugin`，`FlagIncludedChunksPlugin`，`ModuleConcatenationPlugin`，`NoEmitOnErrorsPlugin` 和 `TerserPlugin` 。 |
-| `none`        | 不使用任何默认优化选项                                       |
+| `none`        | 不使用任何默认优化选项                                                                                                                                                                                                                        |
 
 如果没有设置，webpack 会给 `mode` 的默认值设置为 `production`。
 
@@ -126,18 +123,17 @@ module.exports = () => {
   };
   ```
 
-  **它的主要作用是如果我们打包后的资源，又依赖于其他的一些资源，那么就需要指定从该定义的路径中查找相关内容。** 
+  **它的主要作用是如果我们打包后的资源，又依赖于其他的一些资源，那么就需要指定从该定义的路径中查找相关内容。**
 
 - `devServer.hotOnly`: `hotOnly`是当代码编译失败时，是否刷新整个页面:
 
-  - 默认情况下当代码编译失败修复后，我们会重新刷新整个页面; 
+  - 默认情况下当代码编译失败修复后，我们会重新刷新整个页面;
 
-  - 如果不希望重新刷新整个页面，可以设置hotOnly为true;
+  - 如果不希望重新刷新整个页面，可以设置 hotOnly 为 true;
 
+- `devServer.host`: host 设置主机地址: 默认值是`localhost`; 如果希望其他地方也可以访问，可以设置为 `0.0.0.0`;
 
-- `devServer.host`: host设置主机地址: 默认值是`localhost`; 如果希望其他地方也可以访问，可以设置为 `0.0.0.0`;
-
-  > **localhost** **和** **0.0.0.0** **的区别:
+  > **localhost** **和** **0.0.0.0** \*\*的区别:
   >
   > - `localhost`:本质上是一个域名，通常情况下会被解析成`127.0.0.1`;
   >
@@ -145,15 +141,15 @@ module.exports = () => {
   >
   >   - 正常的数据库包经常 应用层 - 传输层 - 网络层 - 数据链路层 - 物理层 ;
   >
-  >   - 而回环地址，是在网络层直接就被获取到了，是不会经常数据链路层和物理层的; ✓ 比如我们监听 `127.0.0.1`时，在同一个网段下的主机中，通过ip地址是不能访问的;
+  >   - 而回环地址，是在网络层直接就被获取到了，是不会经常数据链路层和物理层的; ✓ 比如我们监听 `127.0.0.1`时，在同一个网段下的主机中，通过 ip 地址是不能访问的;
   >
-  > - `0.0.0.0`:监听IPV4上所有的地址，再根据端口找到不同的应用程序;
+  > - `0.0.0.0`:监听 IPV4 上所有的地址，再根据端口找到不同的应用程序;
   >
-  >   - 比如我们监听 `0.0.0.0`时，在同一个网段下的主机中，通过ip地址是可以访问的;
+  >   - 比如我们监听 `0.0.0.0`时，在同一个网段下的主机中，通过 ip 地址是可以访问的;
 
 - `devServer.open`: 设置是否打开浏览器，默认`false`。
 
-- `devServer.compress`: 是否为静态文件开启 `gzip compression`，默认值是false。
+- `devServer.compress`: 是否为静态文件开启 `gzip compression`，默认值是 false。
 
 - `devServer.proxy`: **设置代理解决跨域访问的问题** :
 
@@ -179,11 +175,8 @@ module.exports = () => {
 
   > 关于**changeOrigin**，若不设置，默认情况下请求访问会使用 8000 的端口号进行数据请求。若改为 true，则使用自定义的端口号。
 
-- `devServer.historyApiFallback`: 解决 SPA 页面在路由跳转之后，进行页面刷新时，返回 404 的错误。 
+- `devServer.historyApiFallback`: 解决 SPA 页面在路由跳转之后，进行页面刷新时，返回 404 的错误。
 
-  类型一：Boolean 类型，默认为 false，如果设置为 true，那么在刷新时，返回404 错误时，会自动返回 `index.html` 的内容。
+  类型一：Boolean 类型，默认为 false，如果设置为 true，那么在刷新时，返回 404 错误时，会自动返回 `index.html` 的内容。
 
   类型 二：Object 类型，可以配置 from 来匹配路径，决定要跳转到哪一个页面。
-
- 
-

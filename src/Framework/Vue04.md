@@ -1,7 +1,7 @@
 ---
 title: Vue3中的动态路由懒加载实例
 icon: vue
-order: 4
+date: 2023-03-19
 category:
   - 框架
 tag:

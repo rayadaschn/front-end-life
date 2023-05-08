@@ -1,7 +1,7 @@
 ---
 title: Vue3中的全局注册
 icon: vue
-order: 2
+date: 2023-03-17
 category:
   - 框架
 tag:

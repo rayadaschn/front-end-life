@@ -1,7 +1,7 @@
 ---
 title: 使用PicGo+GitHub 图床
 icon: linux
-# date: 2023-03-09
+date: 2023-03-09
 category:
   - linux
 tag:

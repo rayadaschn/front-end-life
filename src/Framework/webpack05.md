@@ -1,22 +1,21 @@
 ---
 title: Webpack 配置分离
 icon: build
+date: 2023-05-03
+
 category:
   - 框架
 tag:
   - webpack
 star: false
 sticky: false
-
-
-
 ---
 
 # Webpack 配置分离
 
 ## 前言
 
-首先，我们来看我们在运行 `npm run build` 或者  `npm run watch` 时的实际代码是什么？在 `package.json` 中：
+首先，我们来看我们在运行 `npm run build` 或者 `npm run watch` 时的实际代码是什么？在 `package.json` 中：
 
 ```json
 "scripts": {
@@ -25,8 +24,8 @@ sticky: false
   "build:prod": "webpack --mode=production --node-env=production",
   "watch": "webpack --watch",
   "serve": "webpack serve",
-  
-  "myBuild": "webpack --config ./config/comm.config.js --env production",    
+
+  "myBuild": "webpack --config ./config/comm.config.js --env production",
   "myServe": "webpack serve --config ./config/comm.config.js --env development",
 },
 ```
@@ -39,7 +38,7 @@ sticky: false
 
 `process.env.NODE_ENV`是一个 Node.js 环境变量，通常用于指示当前正在运行的应用程序的环境（例如 development 或 production ）。可以直接在 js 中获取。
 
-在Webpack配置文件中，通常会根据`process.env.NODE_ENV`的值来进行不同的操作，例如在生产环境下启用代码压缩等优化。因此，`env.production`和`process.env.NODE_ENV`都可以用于指定当前 Webpack 构建的环境，但它们的作用略有不同。
+在 Webpack 配置文件中，通常会根据`process.env.NODE_ENV`的值来进行不同的操作，例如在生产环境下启用代码压缩等优化。因此，`env.production`和`process.env.NODE_ENV`都可以用于指定当前 Webpack 构建的环境，但它们的作用略有不同。
 
 现在， 修改一下 `webpack.config.js` 的配置：
 
@@ -67,7 +66,7 @@ module.exports = (envParams) => {
 };
 ```
 
-上面可以看到，`module.exports` 可以写成一个函数形式，此时 `webpack.config.js`  便可以接收相应的参数 **envParams** 。
+上面可以看到，`module.exports` 可以写成一个函数形式，此时 `webpack.config.js` 便可以接收相应的参数 **envParams** 。
 
 再运行下列代码：
 
@@ -120,9 +119,9 @@ webpack 自定义的环境变量 env:  { WEBPACK_WATCH: true, production: true, 
 
 ```js
 // webpack.config.js
-const { merge } = require('webpack-merge')
-const devConfig = require('./dev.config')
-const prodConfig = require('./prod.config')
+const { merge } = require("webpack-merge");
+const devConfig = require("./dev.config");
+const prodConfig = require("./prod.config");
 
 /**
  * 抽取开发和生产环境的配置文件
@@ -134,21 +133,20 @@ const prodConfig = require('./prod.config')
 const getCommonConfig = (isProduction) => {
   return {
     // 此对象为 commonConfig 公共配置
-    entry: './src/main.js',
-    output: { 
-     // ...
+    entry: "./src/main.js",
+    output: {
+      // ...
     },
     // ...
-  }
-}
+  };
+};
 
 // webpack 导出一个函数
-module.exports = function(env) {
-  const isProduction = env.production // 返回值为 Boolean
-  let mergeConfig = isProduction ? prodConfig: devConfig
-  return merge( getCommonConfig(isProduction), mergeConfig )
-}
+module.exports = function (env) {
+  const isProduction = env.production; // 返回值为 Boolean
+  let mergeConfig = isProduction ? prodConfig : devConfig;
+  return merge(getCommonConfig(isProduction), mergeConfig);
+};
 ```
 
 依据 merge 函数，合并本地 `getCommonConfig()` 配置和不同环境下的特殊配置。
-

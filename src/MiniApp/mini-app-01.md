@@ -1,7 +1,7 @@
 ---
-title: 小程序
+title: 小程序 Debug 宝典
 icon: mini-app
-# date: 2023-02-07
+date: 2023-02-07
 category:
   - mini-app
 tag:

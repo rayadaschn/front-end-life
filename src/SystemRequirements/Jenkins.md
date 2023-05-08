@@ -1,7 +1,7 @@
 ---
 title: Jenkins 持续集成
 icon: linux
-# date: 2023-03-09
+date: 2023-03-09
 category:
   - linux
 tag:

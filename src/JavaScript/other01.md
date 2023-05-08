@@ -1,7 +1,7 @@
 ---
 title: 代码规范和自动格式化
 icon: javascript
-order: 1
+date: 2023-02-26
 category:
   - javascript
 tag:

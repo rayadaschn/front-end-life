@@ -1,25 +1,24 @@
 ---
 title: React之路由管理
 icon: react
+date: 2023-03-24
 category:
   - 框架
 tag:
   - React
 star: true
 sticky: false
-
-
 ---
 
-# React之路由管理
+# React 之路由管理
 
 ## 前言
 
-前端路由的核心是改变 URL，但是也没不进行整体的刷新。由此带来了俩种模式：Hash 和HTML5 的 History。
+前端路由的核心是改变 URL，但是也没不进行整体的刷新。由此带来了俩种模式：Hash 和 HTML5 的 History。
 
 ### URL 的 hash
 
-**URL的hash也就是锚点(#)**，本质上是改变`window.location`的`href`属性；我们可以通过直接赋值`location.hash`来改变`href`，但是页面不发生刷新。
+**URL 的 hash 也就是锚点(#)**，本质上是改变`window.location`的`href`属性；我们可以通过直接赋值`location.hash`来改变`href`，但是页面不发生刷新。
 
 以下是最常用的用法，当用户点击页面中的链接时，可以使用 hash 来实现不同内容的展示，而不需要重新加载整个页面。以下是一个简单的 HTML 示例，演示了如何在页面中使用 hash：
 
@@ -27,7 +26,7 @@ sticky: false
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Hash Example</title>
   </head>
   <body>
@@ -59,7 +58,7 @@ sticky: false
 
 ### HTML5 的 History
 
-HTML5的History API是一组用于操作浏览器历史记录（history）和URL的JavaScript接口。通过 History API，可以实现在不刷新整个页面的情况下改变页面的 URL 和内容，从而实现单页应用（SPA）中的路由跳转、前进/后退功能等。
+HTML5 的 History API 是一组用于操作浏览器历史记录（history）和 URL 的 JavaScript 接口。通过 History API，可以实现在不刷新整个页面的情况下改变页面的 URL 和内容，从而实现单页应用（SPA）中的路由跳转、前进/后退功能等。
 
 History API 主要包括以下几个方法：
 
@@ -78,7 +77,7 @@ History API 主要包括以下几个方法：
 history.pushState({ page: 1 }, "Page 1", "/page1");
 
 // 监听 popstate 事件，当用户点击浏览器的后退或前进按钮时触发
-window.addEventListener("popstate", function(event) {
+window.addEventListener("popstate", function (event) {
   // 获取最近的历史记录并更新页面内容
   var state = event.state;
   if (state && state.page === 1) {
@@ -115,9 +114,9 @@ import { BrowserRouter } from "react-router-dom";
 
 <React.StrictMode>
   <BrowserRouter>
-  	<App />
+    <App />
   </BrowserRouter>
-</React.StrictMode>
+</React.StrictMode>;
 ```
 
 ```jsx
@@ -126,9 +125,9 @@ import { HashRouter } from "react-router-dom";
 
 <React.StrictMode>
   <HashRouter>
-  	<App />
+    <App />
   </HashRouter>
-</React.StrictMode>
+</React.StrictMode>;
 ```
 
 ### 路由映射配置
@@ -136,10 +135,10 @@ import { HashRouter } from "react-router-dom";
 定义完路由模式后，可以设置路由的映射关系。React Router 6 中的路由映射配置并不像 React Router 5 中那样使用 `<Route>` 组件，而是通过 `<Routes>` 和 `<Route>` 组件配合使用来实现。以下是一个示例：
 
 ```jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './Home';
-import About from './About';
-import Contact from './Contact';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import About from "./About";
+import Contact from "./Contact";
 
 function App() {
   return (
@@ -179,15 +178,25 @@ function App() {
 以下是一个使用 `Link` 和 `NavLink` 组件的示例：
 
 ```jsx
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink } from "react-router-dom";
 
 function Header() {
   return (
     <nav>
       <ul>
-        <li><Link to="/">Home</Link></li>
-        <li><NavLink to="/about" activeClassName="active">About</NavLink></li>
-        <li><NavLink to="/contact" activeClassName="active">Contact</NavLink></li>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <NavLink to="/about" activeClassName="active">
+            About
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/contact" activeClassName="active">
+            Contact
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );
@@ -196,12 +205,12 @@ function Header() {
 
 在上述代码中，我们使用 `Link` 和 `NavLink` 组件生成了三个链接，并使用 `to` 属性指定了对应的路由路径。`NavLink` 组件还使用了 `activeClassName` 属性来指定激活时的样式类名。
 
-此外，还有一个 `Navigate` 组件用于路由的重定向，**当这个组件出现时，就会执行跳转到对应的 `to` 路径中。** 与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过 *编程方式* 进行页面导航的。
+此外，还有一个 `Navigate` 组件用于路由的重定向，**当这个组件出现时，就会执行跳转到对应的 `to` 路径中。** 与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过 _编程方式_ 进行页面导航的。
 
 以下是一个使用 `Navigate` 组件的示例：
 
 ```jsx
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
 function LoginPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -232,7 +241,7 @@ function LoginPage() {
 若是路由未能匹配到，则需要一个 Not Found 页面：
 
 ```jsx
-<Route path='*' element={<NotFound/>} />
+<Route path="*" element={<NotFound />} />
 ```
 
 ### 路由的嵌套
@@ -240,9 +249,14 @@ function LoginPage() {
 在开发中，路由是存在嵌套关系的，也就是多级路由。这里同 Vue 有点类似，需要用到 `<Outlet>` 占位组件，先看代码：
 
 ```jsx
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import Home from './Home';
-import Products from './Products';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
+import Home from "./Home";
+import Products from "./Products";
 
 function App() {
   return (
@@ -255,7 +269,6 @@ function App() {
           <Route path="/:productId" element={<ProductDetail />} />
         </Route>
       </Routes>
-      
     </Router>
   );
 }
@@ -285,14 +298,14 @@ Router 6 版本之后，代码类 API 都迁移到了 hooks 写法去了（可�
 以下是一个使用 `useNavigate` Hook 的示例：
 
 ```js
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
 
   function handleLogin() {
     // 登录成功后进行页面导航
-    navigate('/dashboard');
+    navigate("/dashboard");
   }
 
   return (
@@ -320,8 +333,8 @@ function LoginPage() {
 在 React Router 6 中，可以使用冒号 `:` 来定义动态路由。例如：
 
 ```jsx
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProductDetail from './ProductDetail';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProductDetail from "./ProductDetail";
 
 function App() {
   return (
@@ -346,7 +359,7 @@ function App() {
 以下是一个示例：
 
 ```jsx
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 function ProductDetail() {
   const { productId } = useParams();
@@ -376,23 +389,23 @@ function ProductDetail() {
 
 ```jsx
 // routes.jsx
-import Home from './Home';
-import About from './About';
-import Contact from './Contact';
-import Products from './Products';
-import ProductList from './ProductList';
-import ProductDetail from './ProductDetail';
+import Home from "./Home";
+import About from "./About";
+import Contact from "./Contact";
+import Products from "./Products";
+import ProductList from "./ProductList";
+import ProductDetail from "./ProductDetail";
 
 export const routes = [
-  { path: '/', element: <Home /> },
-  { path: '/about', element: <About /> },
-  { path: '/contact', element: <Contact /> },
+  { path: "/", element: <Home /> },
+  { path: "/about", element: <About /> },
+  { path: "/contact", element: <Contact /> },
   {
-    path: '/products/*',
+    path: "/products/*",
     element: <Products />,
     children: [
-      { path: '/', element: <ProductList /> },
-      { path: ':productId', element: <ProductDetail /> },
+      { path: "/", element: <ProductList /> },
+      { path: ":productId", element: <ProductDetail /> },
     ],
   },
 ];
@@ -404,8 +417,8 @@ export const routes = [
 
 ```jsx
 // App:
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { routes } from './routes';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { routes } from "./routes";
 
 function App() {
   return (
@@ -413,9 +426,10 @@ function App() {
       <Routes>
         {routes.map((route, index) => (
           <Route key={index} path={route.path} element={route.element}>
-            {route.children && route.children.map((child, i) => (
-              <Route key={i} path={child.path} element={child.element} />
-            ))}
+            {route.children &&
+              route.children.map((child, i) => (
+                <Route key={i} path={child.path} element={child.element} />
+              ))}
           </Route>
         ))}
       </Routes>
@@ -432,15 +446,16 @@ function App() {
 
 ```jsx
 // App:
-import { BrowserRouter as Router, Routes, Route, useRoutes } from 'react-router-dom';
-import { routes } from './routes';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useRoutes,
+} from "react-router-dom";
+import { routes } from "./routes";
 
 function App() {
-  return (
-    <div className="counter">
-    	{useRoutes(routes)}
-    </div>
-  );
+  return <div className="counter">{useRoutes(routes)}</div>;
 }
 ```
 
@@ -449,11 +464,11 @@ function App() {
 React Router 6 支持路由的懒加载，可以大幅度减小应用程序的初始加载时间，提高应用程序的性能。
 
 ```jsx
-import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { lazy, Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-const Home = lazy(() => import('./Home'));
-const About = lazy(() => import('./About'));
+const Home = lazy(() => import("./Home"));
+const About = lazy(() => import("./About"));
 
 function App() {
   return (

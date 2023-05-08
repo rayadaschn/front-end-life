@@ -1,6 +1,6 @@
 ---
 title: JavaScript
-date: 2023-02-15
+# date: 2023-02-15
 index: false
 icon: javascript
 category:
@@ -9,17 +9,17 @@ category:
 
 ## JavaScript 碎碎念
 
-- [彻底理解 this 指向](彻底理解this指向.md)
+- [彻底理解 this 指向](JS01.md)
 
-- [原型-原型链-new 的二三事](原型_原型链_new的二三事.md)
+- [原型-原型链-new 的二三事](JS02.md)
 
-- [异步小案例](异步小案例.md)
+- [异步小案例](JS03.md)
 
-- [前端代码埋点实现](前端代码埋点实现.md)
+- [前端代码埋点实现](JS04.md)
 
-- [在 JS 中优雅地实现继承](在JS中优雅地实现继承.md)
+- [在 JS 中优雅地实现继承](JS05.md)
 
-- [令人困惑的闭包](令人困惑的闭包.md)
+- [令人困惑的闭包](JS06.md)
 
 - [关于 JS 对象的二三事](JS07.md)
 
@@ -33,8 +33,8 @@ category:
 
 ## 其它
 
-- [代码规范和自动格式化](代码规范和自动格式化.md)
+- [代码规范和自动格式化](other01.md)
 
-- [Google 浏览器 console.log「异步打印现象」](Google浏览器console.log「异步打印现象」.md)
+- [Google 浏览器 console.log「异步打印现象」](other02.md)
 
-- [JavaScript 中的位运算](JavaScript中的位运算.md)
+- [JavaScript 中的位运算](other03.md)
