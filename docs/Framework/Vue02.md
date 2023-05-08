@@ -230,7 +230,7 @@ declare type PluginInstallFunction<Options> = Options extends unknown[]
 
 以上是函数式插件，那我们定义一个对象式插件呢？（自定义的指令就是用对象式来定义哒~）
 
-关于自定义指令可以看《[Vue3 中的 script-setup](Vue3中的script-setup.md)》。
+关于自定义指令可以看《[Vue3 中的 script-setup](Vue01)》。
 
 ```ts
 // src/plugins/directive.ts

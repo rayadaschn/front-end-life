@@ -259,4 +259,4 @@ sudo chmod -R 777 /usr/share/nginx/html
 
 ## 参考文件
 
-1. [详解如何部署前端代码到云服务器上 - 掘金 (juejin.cn)](https://juejin.cn/post/7081343211603492871)
+1. [详解如何部署前端代码到云服务器上](https://juejin.cn/post/7081343211603492871)

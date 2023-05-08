@@ -365,7 +365,7 @@ export class NavBarTwo extends Component {
 
 ### 作用域插槽
 
-在 Vue 中[作用域插槽](https://cn.vuejs.org/guide/components/slots.html#dynamic-slot-names)的意思是在某些场景下插槽的内容可能想要**同时使用父组件域内和子组件域内的数据**。要做到这一点，我们需要一种方法来让子组件在渲染时将一部分数据提供给插槽。
+在 Vue 中 [作用域插槽](https://cn.vuejs.org/guide/components/slots.html#dynamic-slot-names) 的意思是在某些场景下插槽的内容可能想要**同时使用父组件域内和子组件域内的数据**。要做到这一点，我们需要一种方法来让子组件在渲染时将一部分数据提供给插槽。
 
 ```vue
 <!-- 在 Vue 中的作用域插槽 -->
