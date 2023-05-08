@@ -1,6 +1,6 @@
 ---
 title: JavaScript
-# date: 2023-02-15
+date: 2023-02-15
 index: false
 icon: javascript
 category:

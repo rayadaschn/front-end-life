@@ -1,6 +1,6 @@
 ---
 title: Mac&Linux配置
-# date: 2023-02-20
+date: 2023-02-20
 index: false
 icon: linux
 category:
