@@ -1,12 +1,13 @@
 ---
 title: JavaScript
+date: 2023-02-15
 index: false
 icon: javascript
 category:
   - Guide
 ---
 
-##  JavaScript 碎碎念
+## JavaScript 碎碎念
 
 - [彻底理解 this 指向](彻底理解this指向.md)
 
@@ -20,17 +21,15 @@ category:
 
 - [令人困惑的闭包](令人困惑的闭包.md)
 
-- [关于JS对象的二三事](JS07.md)
+- [关于 JS 对象的二三事](JS07.md)
 
 ## 从零开始 Node 学习之路
 
-- [Node基础](Node01.md)
+- [Node 基础](Node01.md)
 - [Node 服务器开发基础](Node02.md)
 - [Express 基础](Node03.md)
 - [Koa 基础](Node04.md)
 - [MySql 基础](Node05.md)
-
-
 
 ## 其它
 

@@ -8,17 +8,29 @@ export default hopeTheme({
   },
 
   iconAssets: "iconfont",
-
   logo: "logo.png",
+
   sidebar: "structure", // 自动生成侧边栏
 
   // 项目仓库地址
   repo: "https://github.com/rayadaschn",
-
   docsDir: "src", // 文档所属文件夹，默认为仓库根目录
-  darkmode: "toggle",
 
+  darkmode: "toggle", // 主题模式手动切换
+
+  //页面元数据：贡献者，最后修改时间，编辑链接
   contributors: false,
+  lastUpdated: true,
+  editLink: true,
+
+  // 主题颜色
+  themeColor: {
+    blue: "#2196f3",
+    red: "#f26d6d",
+    green: "#3eaf7c",
+    orange: "#fb9b5f",
+  },
+  fullscreen: true,
 
   blog: {
     medias: {
@@ -34,7 +46,8 @@ export default hopeTheme({
       navbar: Navbar,
       navbarAutoHide: "mobile",
 
-      footer: "MIT Licensed | Copyright",
+      footer:
+        '本站原创内容基于 <a class="underline" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> 共享, 转载请注明出处。',
 
       displayFooter: true,
 
@@ -54,6 +67,16 @@ export default hopeTheme({
 
   plugins: {
     blog: true,
+
+    //评论配置
+    comment: {
+      // Giscus 备用配置
+      provider: "Giscus",
+      repo: "rockbenben/LearnData",
+      repoId: "R_kgDOHdfk6Q",
+      category: "Comments",
+      categoryId: "DIC_kwDOHdfk6c4CQYNn",
+    },
 
     // Disable features you don’t want here
     mdEnhance: {

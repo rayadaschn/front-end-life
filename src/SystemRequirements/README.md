@@ -1,5 +1,6 @@
 ---
 title: Mac&Linux配置
+date: 2023-02-20
 index: false
 icon: linux
 category:
@@ -11,7 +12,7 @@ category:
 - [GitLab 操作手册指南](GitOperationManuals.md)
 - [GIthub 添加 GPG 签名](GIthubAddGPG.md)
 - [为 Mac 配置不同的 Git 账号](为mac配置不同git账号.md)
-- [Jenkins持续集成](Jenkins.md)
+- [Jenkins 持续集成](Jenkins.md)
 - [Linux 操作记录](LinuxServerConfigurationRecord.md)
 - [数据加密原理](数据加密原理.md)
 - [Mac 配置记录](Mac配置记录.md)

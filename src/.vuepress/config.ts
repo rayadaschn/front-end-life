@@ -1,5 +1,6 @@
 import { defineUserConfig } from "vuepress";
 import theme from "./theme.js";
+import { path } from "@vuepress/utils";
 import { searchProPlugin } from "vuepress-plugin-search-pro";
 
 export default defineUserConfig({
@@ -8,13 +9,16 @@ export default defineUserConfig({
 
   locales: {
     "/": {
-      lang: "zh-CN",
-      title: "Huy's Blog",
-      description: "A blogfront-end blog",
+      lang: "zh-CN", // 网站语言，默认为中文
+      title: "Huy's Blog", // 网站标题
+      description: "A blogfront-end blog", // 网站描述
     },
   },
 
   theme,
+  //修改页面模板，@vuepress-theme-hope/templates/index.build.html
+  templateBuild: path.resolve(__dirname, "templateBuild.html"),
+
   // 配置插件
   plugins: [
     searchProPlugin({
@@ -34,5 +38,5 @@ export default defineUserConfig({
     }),
   ],
 
-  shouldPrefetch: true,
+  shouldPrefetch: true, // 预拉取
 });

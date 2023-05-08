@@ -1,11 +1,11 @@
 ---
 title: CSS 基本常识
+# date: 2023-02-10
 icon: style
 category:
   - CSS
 tag:
   - CSS
-
 ---
 
 # CSS 基本常识
@@ -17,25 +17,25 @@ tag:
 ## 基础内容
 
 - **长度单位**
-  
+
   - 相对字体长度单位：`em` 、`rem`、`ch`（字符 0 的宽度）；
   - 相对视区长度单位： `vh`（视高）、`vw`（视宽）。
-  
+
 - **选择器**
-  
+
   - 类 选择器：“`.`” 开头；
   - ID 选择器：“`#`” 开头；
   - 属性选择器： 指含有“`[]`”选择器，如 `[title]{}`；
   - 伪类选择器： 指前面有一个英文冒号（`:`）
   - 伪元素选择器： 指前面有一个英文冒号（`::`），如： `::before`、`::after`。
-  
+
 - **关系选择器**
-  
+
   - 后代选择器： 空格连接；
   - 相邻后代选择器：`>` 连接；
   - 兄弟选择器：`~` 连接；
   - 相邻兄弟选择器：+连接。
-  
+
 - **块级元素**
 
   `display` 为 `block`、`table`和如 `<li>`元素的 `list-item` 。
@@ -44,7 +44,7 @@ tag:
 
   块级元素具有换行特性，可以配合 `clear` 属性清除浮动带来的影响。
 
-  -  `list-item`是标记盒子，专门用于存放圆点和数字这些项目符号。
+  - `list-item`是标记盒子，专门用于存放圆点和数字这些项目符号。
   - 如行内块 `display：inline-block` ，实际上是由俩个盒子共同组成，一个内部块级的“容器盒子”和一个外部的内联级的外在盒子共同组成。
 
 - **内联元素**
@@ -54,21 +54,21 @@ tag:
   如： `<span>`、 `<button>` 、 `<img>` 、`<em>`
 
   需要注意的是，内联盒子模型中，存在一个幽灵空白节点，在 `line-height` 和 `vertical-align` 影响巨大。
-  
+
   ### 内容区域、内联盒子、行框盒子、包含盒子
-  
+
   - **内容区域(content area)**：是一种围绕文字看不见的盒子，其大小仅受字符本身特性控制，本质上是一个字符盒子（character box）。内容区域的大小与 `font-size` 大小和 `font-family` 相关，与 `line-height` 没有任何关系。
-  
+
   - **内联盒子(inline boxes)**：**每个行内元素会生成一个行内框**，行内框是一个浏览器渲染模型中的一个概念，无法显示出来。内联盒子不会让内容成块显示，而是排成一行。
-  
-    如：外部包含inline水平的标签(span、a、em、strong等)，则属于内联盒子。如果是个光秃秃的文字，则属于匿名内联盒子。行内框默认等于内容区域，除非设置了padding。
-  
+
+    如：外部包含 inline 水平的标签(span、a、em、strong 等)，则属于内联盒子。如果是个光秃秃的文字，则属于匿名内联盒子。行内框默认等于内容区域，除非设置了 padding。
+
   - **行框盒子(line boxes)：** **每一行就是一个行框盒子，每个行框盒子又是由一个一个内联盒子组成**。行框盒子是浏览器渲染模式中的一个概念，无法显示出来。行框高度等于本行中所有行内框高度的最大值。**当有多行内容时，每一行都有自己的行框**。
-  
+
   - **包含盒子(containing box)**：或者准确为**包含块**，**由一行一行的行框盒子组成**，**高度就是单行文本高度的累加**。
-  
+
   ![盒子模型](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/20230318123201.png)
-  
+
 - **幽灵空白节点**，内联元素的所有解析和渲染表现就如同每个行框盒子的前面有一个“空白节点”，这个“空白节点”永远透明，不占据任何宽度，看不见也无法通过脚本获取，就如同幽灵一样，但又确确实实地存在，表现如图文本节点一般。
 
 ## width 宽度特性
@@ -109,14 +109,18 @@ tag:
   >
   > 优点: 保留了 `display` 的计算值，让尺寸有了确定的值。
 
-- `box-sizing: border-box` 
+- `box-sizing: border-box`
 
   `width` 的宽度最终是施加于 `content box` 内容盒子上。影响盒子的大小可以用 css3 中的 `box-sizing` 改变，或者用 “宽度分离” ，在外部增加一个设置宽度确定的父级元素。
 
   一般而言，需要重置 `width` 宽度的为：
 
   ```css
-  input, textarea, img, video, object{
+  input,
+  textarea,
+  img,
+  video,
+  object {
     box-sizing: border-box;
   }
   ```
@@ -147,10 +151,10 @@ tag:
 应用实例，点击按钮，高度动画展开：
 
 ```css
-.element{
+.element {
   max-height: 0;
   overflow: hidden;
-  transition: max-height .25s;
+  transition: max-height 0.25s;
 }
 .element.active {
   max-height: 100px;
@@ -175,7 +179,7 @@ tag:
 
   ```css
   img:hover {
-   content: url(xxx.png); 
+    content: url(xxx.png);
   }
   ```
 
@@ -209,14 +213,22 @@ tag:
 
   ```css
   /* 图片左侧, 右侧文字 */
-  .box { overflow: hidden; }
-  .box > img { float: left; }
-  .box > p { margin-left: 100px; }
+  .box {
+    overflow: hidden;
+  }
+  .box > img {
+    float: left;
+  }
+  .box > p {
+    margin-left: 100px;
+  }
   ```
 
   ```css
   /* 除去行内块最后一块的 margin 间距 */
-  .box { margin-left: -20px; }
+  .box {
+    margin-left: -20px;
+  }
   .box > li {
     float: left;
     width: 100px;
@@ -226,15 +238,17 @@ tag:
 
   ```css
   /* 双栏瀑布流 */
-  .box { ovewflow: hidden; }
+  .box {
+    ovewflow: hidden;
+  }
   .box-content-right,
-  .box-content-left{
+  .box-content-left {
     margin-bottom: -9999px;
     padding-bottom: 9999px;
   }
   ```
 
-  解释一下，**双栏瀑布流**：`margin-bottom: -9999px` 意味着元素的外部尺寸在垂直方向上小了 `-9999px` 。默认情况下，垂直方向块级元素上下距离为0，一旦`margin-bottom: -9999px` 就意味着后面所有元素和上面元素的空间距离变成了 `-9999px` ，也就是后面的元素都向上移动了 `9999px`。此时，通过 `padding-bottom: 9999px` 增加元素高度，这正负一抵消，对布局层并无影响，但却带来了 **视觉层 `9999px` 高度的可使用的背景色** 。但是这里的 `9999px` 背景实在是太大了，所以父级用 `ovewflow: hidden` 把多出来的色块背景隐藏掉了，于是实现了视觉上的等高布局效果。
+  解释一下，**双栏瀑布流**：`margin-bottom: -9999px` 意味着元素的外部尺寸在垂直方向上小了 `-9999px` 。默认情况下，垂直方向块级元素上下距离为 0，一旦`margin-bottom: -9999px` 就意味着后面所有元素和上面元素的空间距离变成了 `-9999px` ，也就是后面的元素都向上移动了 `9999px`。此时，通过 `padding-bottom: 9999px` 增加元素高度，这正负一抵消，对布局层并无影响，但却带来了 **视觉层 `9999px` 高度的可使用的背景色** 。但是这里的 `9999px` 背景实在是太大了，所以父级用 `ovewflow: hidden` 把多出来的色块背景隐藏掉了，于是实现了视觉上的等高布局效果。
 
   缺点：子元素如果需要定位到容器之外的地方，父级的 `ovewflow: hidden` 是一个棘手的限制；其次，当触发锚点定位或者使用 `DOM.scrollIntoview()` 方法时，可能会出现奇怪的定位问题。
 
@@ -247,7 +261,7 @@ tag:
   合并规则： “正正取大值”、“正负相抵消相加”、“负负最负值”。
 
 - `margin: auto` 非常好用！！！，**`margin: auto` 的填充规则**:
-  
+
   - 如果一侧定值，一侧 `auto`，则 `auto` 为剩余空间大小;
   - 如果俩侧都是 `auto`，则平分剩余空间。
 
@@ -258,14 +272,20 @@ tag:
 - `border-style`，默认为 `none`。因此，单独设置以下样式是无边框的：
 
   ```css
-  div { border: 10px; }
-  div { border: red; }
+  div {
+    border: 10px;
+  }
+  div {
+    border: red;
+  }
   ```
 
   需要加 `border-style: solid` :
 
   ```css
-  div { border: 1px solid; }
+  div {
+    border: 1px solid;
+  }
   ```
 
 - **`border-color`在没有指定颜色时，会默认使用当前元素的`color`计算值作为边框颜色。** 类似特性在 `outline`、`box-shadow`、`text-shadow` 都有类似特性。
@@ -293,14 +313,13 @@ tag:
   }
   ```
 
-
 ## 最难内联元素
 
 块级元素负责结构，而内联元素负责内容。
 
 `display` 计算值为 `inline`、`inline-block`、`inline-table` 或 `inline-cell` 的元素；
 
-常见内联元素: `<span>` 、`<strong>` 、`<em>` ; 
+常见内联元素: `<span>` 、`<strong>` 、`<em>` ;
 
 常见替换元素: `<img>` 、`<button>` 、`<input>` 。
 
@@ -330,27 +349,35 @@ tag:
 
   ```html
   <div class="box box1">
-      <span>span: line-height:20px</span>
+    <span>span: line-height:20px</span>
   </div>
   <div class="box box2">
-      <span>span: line-height:20px</span>
+    <span>span: line-height:20px</span>
   </div>
   ```
 
   ```css
   .box {
-      width: 280px;
-      margin: 1em auto;
-      outline: 1px solid #beceeb;
-      background: #f0f3f9;
+    width: 280px;
+    margin: 1em auto;
+    outline: 1px solid #beceeb;
+    background: #f0f3f9;
   }
-  .box1 { line-height: 96px; }
-  .box1 span { line-height: 20px; }
-  
-  .box2 { line-height: 20px; }
-  .box2 span { line-height: 96px; }
+  .box1 {
+    line-height: 96px;
+  }
+  .box1 span {
+    line-height: 20px;
+  }
+
+  .box2 {
+    line-height: 20px;
+  }
+  .box2 span {
+    line-height: 96px;
+  }
   ```
-  
+
   以上，**俩个 `.box` 的行高都是 `96px`** ，原因就是幽灵节点，高度也是 `96px`，而**行框盒子**的高度是由最高的那个内联盒子觉得，所以最终`.box` 的行高也是 `96px`。
 
 关于 `line-height` 的几个误区:
@@ -367,7 +394,7 @@ tag:
 
   ![误区 2](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/20230318131410.png)
 
-#### `vertical-align` 
+#### `vertical-align`
 
 **`vertical-align`** 用来指定行内元素（inline）或表格单元格（table-cell）元素的垂直对齐方式。它只对行内元素、表格单元格元素生效，**不能用它垂直对齐块级元素**。
 
@@ -400,24 +427,23 @@ tag:
 
 ```css
 .icon {
-    display: inline-block; 
-    width:20px; height:20px; 
-    white-space: nowrap; 
-    letter-spacing: -1em; /* 字符间隔 */
-    text-indent: -999em; /* 隐藏文字 */
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  white-space: nowrap;
+  letter-spacing: -1em; /* 字符间隔 */
+  text-indent: -999em; /* 隐藏文字 */
 }
 .icon:before {
-    content:'\3000'; /* 图标里面有文字,此处为空格 */
+  content: "\3000"; /* 图标里面有文字,此处为空格 */
 }
 ```
-
-
 
 **最终应用： 水平垂直居中弹窗**
 
 ```html
-<div class='container'>
-  <div class='dialog'>占位内容</div>
+<div class="container">
+  <div class="dialog">占位内容</div>
 </div>
 ```
 
@@ -429,8 +455,8 @@ tag:
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(0,0,0,.5);
-  text-align: center;  /* 弹窗水平居中*/
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center; /* 弹窗水平居中*/
   white-space: nowrap;
   font-size: 0; /* 压缩中心点 */
   z-index: 99;
@@ -452,7 +478,7 @@ tag:
 }
 ```
 
-关键原理：`vertical-align: middle` 定义了元素的中线和字符 x 中心点对齐。在上述中，`container`容器设置了 `font-size: 0` ，所以 x 中心点位置就是 `container` 的上边缘，此时，高度 100% 的宽度为 0的伪元素和这个中心点位置对齐。如果中心点位置不动，这个伪元素的上半部分位置应该在容器的外部（好好理解一下这句话），但是 CSS 中默认是左上角排列对齐。所以伪元素和这个原本在容器上边缘的 x 中心点一起往下移动了半个容器高度。也就是说，此时x 中心点就在容器的垂直中心线上。
+关键原理：`vertical-align: middle` 定义了元素的中线和字符 x 中心点对齐。在上述中，`container`容器设置了 `font-size: 0` ，所以 x 中心点位置就是 `container` 的上边缘，此时，高度 100% 的宽度为 0 的伪元素和这个中心点位置对齐。如果中心点位置不动，这个伪元素的上半部分位置应该在容器的外部（好好理解一下这句话），但是 CSS 中默认是左上角排列对齐。所以伪元素和这个原本在容器上边缘的 x 中心点一起往下移动了半个容器高度。也就是说，此时 x 中心点就在容器的垂直中心线上。
 
 其次， 弹窗元素也设置了 `vertical-align: middle` ，此时弹窗的垂直中心位置和 x 中心点位置对齐。x 中心点就在容器的垂直中心位置。于是弹窗和容器的垂直中心就对齐了。
 
@@ -495,14 +521,18 @@ BFC 的全称为 block formatting context。实际作用：当一个元素具有
 一般会用的自定义：
 
 ```css
-::-webkit-scrollbar { /* 定义整体血槽宽高 */
-  width: 8px; height: 8px;
+::-webkit-scrollbar {
+  /* 定义整体血槽宽高 */
+  width: 8px;
+  height: 8px;
 }
-::-webkit-scrollbar-thumb { /* 拖动条 */
-  background-color: rgba(0,0,0,0.3);
+::-webkit-scrollbar-thumb {
+  /* 拖动条 */
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 6px;
 }
-::-webkit-scrollbar-track { /* 底部背景墙 */
+::-webkit-scrollbar-track {
+  /* 底部背景墙 */
   background-color: #ddd;
   border-radius: 6px;
 }
@@ -525,7 +555,7 @@ BFC 的全称为 block formatting context。实际作用：当一个元素具有
   /* 最多显示两行 补充代码 */
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; 
+  -webkit-line-clamp: 2;
   /* 补充代码 */
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -602,7 +632,7 @@ CSS3 中新的层叠顺序规则：
 几个高度单位：
 
 - `ex`：字符 x 高度，显然和 font-size 关系密切。
-- `em`：em 在传统排版中指一个字模的高度，其一般由`'M'`的宽度决定（方方正正），在中文中em 就是“中”字的高度。em 相对于当前元素。
+- `em`：em 在传统排版中指一个字模的高度，其一般由`'M'`的宽度决定（方方正正），在中文中 em 就是“中”字的高度。em 相对于当前元素。
 - `rem`：rem 相对于根元素（`<html>`）。
 
 ### 2. font-family
@@ -621,9 +651,9 @@ CSS3 中新的层叠顺序规则：
 
 表示文字是斜体还是正体。
 
-- `font-style: normal;` 
-- `font-style: italic;`  使用当前字体的斜体字体。
-- `font-style: oblique;`  只是单纯让字体形状变形。
+- `font-style: normal;`
+- `font-style: italic;` 使用当前字体的斜体字体。
+- `font-style: oblique;` 只是单纯让字体形状变形。
 
 ### 5. 缩写 font
 
@@ -633,13 +663,15 @@ CSS3 中新的层叠顺序规则：
 [ [ font-style || font-variant || font-weight ]? font-size [ / line-height ]? font-family ]
 ```
 
-​	`||`表示或，`?`和正则表达式中的`?`的含义一致，表示 0 个或 1 个。仔细观察上面的语法，会发现 `font-size` 和 `font-family` 后面没有问号，也就是说是必需的，是不可以省略的。这和 `background` 属性不一样，`background` 属性虽然也支持缩写，但是并没有需要两个属性值同时存在的限制。
+​ `||`表示或，`?`和正则表达式中的`?`的含义一致，表示 0 个或 1 个。仔细观察上面的语法，会发现 `font-size` 和 `font-family` 后面没有问号，也就是说是必需的，是不可以省略的。这和 `background` 属性不一样，`background` 属性虽然也支持缩写，但是并没有需要两个属性值同时存在的限制。
 
 > 如果你的 font 属性缩写无效，检查一下 `font-size` 和 `font-family` 这两个属 性是否同时存在。
 
 ```css
 /* 实践方法 */
-html { font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei'; }
+html {
+  font-family: -apple-system, BlinkMacSystemFont, "Microsoft YaHei";
+}
 ```
 
 ## background 背景
@@ -647,7 +679,7 @@ html { font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei'; }
 当我们使用 `background` 属性的时候，实际上使用的是一系列 `background` 相关属性的集合，包括:
 
 - `background-image: none` 背景图片地址。
-- `background-position: 0% 0%` 
+- `background-position: 0% 0%`
 - `background-repeat: repeat`
 - `background-color: transparent`
 - `background-attachment: scroll`
@@ -662,8 +694,8 @@ html { font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei'; }
 
 百分比计算公式：
 
-- **positionX = (容器的宽度 - 图片的宽度) * percentX;** 
-- **positionY = (容器的高度 - 图片的高度) * percentY;**
+- **positionX = (容器的宽度 - 图片的宽度) \* percentX;**
+- **positionY = (容器的高度 - 图片的高度) \* percentY;**
 
 ### background-color
 
