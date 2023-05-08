@@ -1,6 +1,5 @@
 import { defineUserConfig } from "vuepress";
 import { viteBundler } from "@vuepress/bundler-vite";
-import { createHtmlPlugin } from "vite-plugin-html";
 
 import theme from "./theme.js";
 import { path } from "@vuepress/utils";
@@ -47,16 +46,13 @@ export default defineUserConfig({
   // 打包优化
   bundler: viteBundler({
     viteOptions: {
-      plugins: [
-        createHtmlPlugin({
-          minify: true,
-        }),
-      ],
+      plugins: [],
     },
     vuePluginOptions: {
       template: {
         compilerOptions: {
           whitespace: "condense",
+          optimizeImports: true,
         },
       },
     },
