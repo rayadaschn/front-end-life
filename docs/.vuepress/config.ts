@@ -1,5 +1,7 @@
 import { defineUserConfig } from "vuepress";
 import { viteBundler } from "@vuepress/bundler-vite";
+import { createHtmlPlugin } from "vite-plugin-html";
+
 import theme from "./theme.js";
 import { path } from "@vuepress/utils";
 import { searchProPlugin } from "vuepress-plugin-search-pro";
@@ -44,7 +46,13 @@ export default defineUserConfig({
 
   // 打包优化
   bundler: viteBundler({
-    viteOptions: {},
+    viteOptions: {
+      plugins: [
+        createHtmlPlugin({
+          minify: true,
+        }),
+      ],
+    },
     vuePluginOptions: {
       template: {
         compilerOptions: {
