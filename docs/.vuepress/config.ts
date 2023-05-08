@@ -1,7 +1,9 @@
 import { defineUserConfig } from "vuepress";
+import { viteBundler } from "@vuepress/bundler-vite";
 import theme from "./theme.js";
 import { path } from "@vuepress/utils";
 import { searchProPlugin } from "vuepress-plugin-search-pro";
+import vue from "@vitejs/plugin-vue";
 
 export default defineUserConfig({
   base: "/front-end-life/", // github
@@ -39,4 +41,16 @@ export default defineUserConfig({
   ],
 
   shouldPrefetch: true, // 预拉取
+
+  // 打包优化
+  bundler: viteBundler({
+    viteOptions: {},
+    vuePluginOptions: {
+      template: {
+        compilerOptions: {
+          whitespace: "condense",
+        },
+      },
+    },
+  }),
 });
