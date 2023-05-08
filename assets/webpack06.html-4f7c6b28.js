@@ -1,0 +1,1 @@
+import{_ as a,V as c,W as t,X as e,Y as r}from"./framework-2060dede.js";const o={},s=e("h1",{id:"webpack-自定义-loader",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#webpack-自定义-loader","aria-hidden":"true"},"#"),r(" Webpack 自定义 loader")],-1),d=[s];function n(_,l){return c(),t("div",null,d)}const h=a(o,[["render",n],["__file","webpack06.html.vue"]]);export{h as default};
