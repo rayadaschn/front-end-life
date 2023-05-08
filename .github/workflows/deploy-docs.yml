@@ -40,7 +40,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=8192
         run: |-
           npm run docs:build
-          > src/.vuepress/dist/.nojekyll
+          > docs/.vuepress/dist/.nojekyll
 
       - name: 部署文档
         uses: JamesIves/github-pages-deploy-action@v4
@@ -48,5 +48,5 @@ jobs:
           #  文档部署到的分支名称
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
           BRANCH: master # The branch the action should deploy to.
-          FOLDER: src/.vuepress/dist/
+          FOLDER: docs/.vuepress/dist/
           CLEAN: true

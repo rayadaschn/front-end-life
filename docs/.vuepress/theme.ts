@@ -14,9 +14,7 @@ export default hopeTheme({
 
   // 项目仓库地址
   repo: "https://github.com/rayadaschn",
-  docsDir: "src", // 文档所属文件夹，默认为仓库根目录
-
-  darkmode: "toggle", // 主题模式手动切换
+  docsDir: "docs/", // 文档所属文件夹，默认为仓库根目录
 
   //页面元数据：贡献者，最后修改时间，编辑链接
   contributors: false,
@@ -30,6 +28,7 @@ export default hopeTheme({
     green: "#3eaf7c",
     orange: "#fb9b5f",
   },
+  darkmode: "toggle", // 主题模式手动切换
   fullscreen: true,
 
   blog: {
