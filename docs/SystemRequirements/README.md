@@ -10,7 +10,7 @@ category:
 ## Catalog
 
 - [GitLab 操作手册指南](GitOperationManuals.md)
-- [GIthub 添加 GPG 签名](GIthubAddGPG.md)
+- [Github 添加 GPG 签名](GIthubAddGPG.md)
 - [为 Mac 配置不同的 Git 账号](system02.md)
 - [Jenkins 持续集成](Jenkins.md)
 - [Linux 操作记录](LinuxServerConfigurationRecord.md)
