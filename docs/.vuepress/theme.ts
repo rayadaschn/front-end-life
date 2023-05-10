@@ -32,6 +32,7 @@ export default hopeTheme({
   fullscreen: true,
 
   blog: {
+    intro: "/intro.html",
     medias: {
       GitHub: "https://github.com/rayadaschn",
     },
