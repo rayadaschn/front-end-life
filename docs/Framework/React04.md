@@ -382,7 +382,7 @@ store.dispatch(addTodoAction);
     return function (dispatch) {
       // dispatch the initial action to indicate that we're starting the request
       dispatch({ type: "FETCH_TODOS_REQUEST" });
-
+  
       // make the actual API request
       return api
         .fetchTodos()
@@ -568,7 +568,11 @@ export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不�
 
 上面代码中，我们通过 `createSlice` 创建了一个名为 `counter` 的 reducer，并定义了它的初始状态为 `0`。同时，我们还定义了三个 action：`increment`、`decrement` 和 `incrementByAmount`。这三个 action 分别对应的 reducer 中的逻辑是，对状态进行加一、减一和加上指定值。
 
-**`createSlice` 方法的第一个参数是一个包含 `name`、`initialState` 和 `reducers` 的对象。**其中，`name` 用于定义 reducer 的名称（在之后的 redux-devtool 中会显示对应的名词）；`initialState` 用于定义 reducer 的初始状态（第一次初始化时的值）；`reducers` 是一个对象，用于定义所有的 action 和对应的 reducer 函数，这些函数类似于 redux 原来 reducer 中的一个 case 判断语句，函数的参数有俩个： `state` 和 调用这个 `action` 时传递过来的 action 参数。
+**`createSlice`方法的第一个参数是一个包含`name`、`initialState`和`reducers`的对象。** 
+
+- `name` 用于定义 reducer 的名称（在之后的 redux-devtool 中会显示对应的名词）；
+- `initialState` 用于定义 reducer 的初始状态（第一次初始化时的值）；
+- `reducers` 是一个对象，用于定义所有的 action 和对应的 reducer 函数，这些函数类似于 redux 原来 reducer 中的一个 case 判断语句，函数的参数有俩个： `state` 和 调用这个 `action` 时传递过来的 action 参数。
 
 同时，在上面的代码中，我们使用了一个简洁的写法，将 action 和 reducer 函数组合在一起定义。**通过 `createSlice` 生成的对象，我们可以直接将这些 action 导出，然后在组件中使用它们，无需再手动编写 action creator 和 reducer。**
 

@@ -6,7 +6,11 @@ index: false
 icon: note
 ---
 
-## 技术记录
+## 前端技术学习记录
+
+从 2021年 11 月开始决定转码，不知不觉已经有一年半了，在此记录一下所学的一些技术知识点，以作整体回顾。
+
+
 
 ## JavaScript
 
@@ -24,8 +28,6 @@ icon: note
     - 数组 Array
     - 函数 Function
 - 函数
-- ⭐️ 概念
-- ⭐️ 自定义函数
 - 调用方式
   - ⭐️ 全局调用
   - 构造函数调用
@@ -220,6 +222,10 @@ icon: note
 - Nginx
 - Jenkins
 - Github Action
+
+## 服务端渲染 SSR
+
+- [ ] Nuxt (学习中 ing)
 
 ## 性能优化
 
