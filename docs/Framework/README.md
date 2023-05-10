@@ -24,7 +24,7 @@ category:
 6. [React 之 Hooks](React06.md)
 7. [React 之 项目实战](React07.md)
 
-## Webpack
+## Webpack/Vite
 
 - [解决前端跨域问题](webpack01.md)
 - [Webpack 开发服务端配置](webpack02.md)
@@ -32,3 +32,4 @@ category:
 - [Webpack 性能优化之文件压缩](webpack04)
 - [Webpack 配置分离](webpack05)
 - [Webpack 使用总结](webpack06)
+- [Vite使用总结](vite01)
