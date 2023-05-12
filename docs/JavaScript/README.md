@@ -1,10 +1,8 @@
 ---
 title: JavaScript
-icon: javascript
 date: 2023-02-15
-article: false
 index: false
-
+icon: javascript
 category:
   - Guide
 ---

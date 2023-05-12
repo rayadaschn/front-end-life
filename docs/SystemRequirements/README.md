@@ -1,10 +1,8 @@
 ---
 title: Mac&Linux配置
-icon: linux
 date: 2023-02-20
-article: false
 index: false
-
+icon: linux
 category:
   - Guide
 ---

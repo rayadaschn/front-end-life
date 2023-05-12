@@ -1,8 +1,6 @@
 ---
 title: node 基础
 icon: nodeJS
-date: 2023-02-25
-article: false
 category:
   - javascript
 tag:
@@ -492,33 +490,33 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 
    微任务：`new Promise().then(回调)`、`process.nextTick`、`MutationObserver(html5 新特性)` 等。
 
-   `process.nextTick`这个微任务较为特殊，在 Node 中进行介绍，在 Node11 后，它会优先于其它微任务先执行。
+   `process.nextTick`这个微任务较为特殊，在Node中进行介绍，在 Node11 后，它会优先于其它微任务先执行。
 
 2. 实际执行顺序：队列结构，先进先出。宏任务中包裹微任务，依次执行。
 
    ```js
-   console.log("Global1"); // 1
-
-   Promise.resolve().then(() => {
-     console.log("Promise1"); // 4
-     setTimeout(() => {
-       console.log("setTimeout2"); // 7
-     }, 0);
-   });
-
-   console.log("Global2"); // 2
-
-   setTimeout(() => {
-     console.log("setTimeout1"); // 5
-     Promise.resolve().then(() => {
-       console.log("Promise2"); // 6
-     });
-   }, 0);
-
-   console.log("Global3"); // 3
+   console.log('Global1')  // 1
+   
+   Promise.resolve().then(()=>{
+     console.log('Promise1')  // 4
+     setTimeout(()=>{
+       console.log('setTimeout2')  // 7
+     },0)
+   })
+   
+   console.log('Global2')  // 2
+   
+   setTimeout(()=>{
+     console.log('setTimeout1')  // 5
+     Promise.resolve().then(()=>{
+       console.log('Promise2')  // 6
+     })
+   },0)
+   
+   console.log('Global3')  // 3
    ```
 
-   - 上述代码，首先执行 `script` 中的全体宏任务，所以依次打印 “Global1、Global2、Global3”。这其中会插入 1 个微任务`Promise.resolve().then()` 和一个新的宏任务 `setTimeout`。
+   - 上述代码，首先执行 `script` 中的全体宏任务，所以依次打印 “Global1、Global2、Global3”。这其中会插入1个微任务`Promise.resolve().then()` 和一个新的宏任务 `setTimeout`。
    - 执行微任务，打印“`Promise1`”，而后再插入一个宏任务 `setTimeout`。微任务执行结束，开始轮询新的宏任务。
    - 此时有俩个宏任务，依次执行，打印“`setTimeout1`”，再插入一个微任务 `Promise.resolve().then()`。
    - 有微任务，先执行队列中的微任务。打印“`Promise2`”。结束当前宏任务。
@@ -528,7 +526,7 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 
    一句话总结，宏任务依次执行，当每一个宏任务中存在微任务，则先执行微任务队列中的所有任务。待宏任务中没有微任务了，则继续执行剩下的宏任务。
 
-**Node 中的 Event Loop:**
+**Node中的 Event Loop:**
 
 Node.js 的运行机制如下:
 
@@ -537,14 +535,14 @@ Node.js 的运行机制如下:
 - libuv 库负责 Node API 的执行。**它将不同的任务分配给不同的线程，形成一个 Event Loop（事件循环），以异步的方式将任务的执行结果返回给 V8 引擎。**
 - V8 引擎再将结果返回给用户。
 
-libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当队列为空或者执行的回调函数数量到达系统设定的阈值，就会进入下一阶段。
+ libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当队列为空或者执行的回调函数数量到达系统设定的阈值，就会进入下一阶段。
 
 ![Node 事件循环](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304231358737.png)
 
 执行顺序为：
-**incoming 外部输入数据** --> **轮询阶段(poll)** -->
-**检查阶段(check)** --> **关闭事件回调阶段(close callback)** -->
-**定时器检测阶段(timer)** --> **I/O 事件回调阶段(I/O callbacks)** --> **闲置阶段(idle, prepare)** -->
+**incoming外部输入数据** --> **轮询阶段(poll)** --> 
+**检查阶段(check)** --> **关闭事件回调阶段(close callback)** --> 
+**定时器检测阶段(timer)** --> **I/O 事件回调阶段(I/O callbacks)** --> **闲置阶段(idle, prepare)** --> 
 **新的轮询阶段(new poll)**
 
 - timers 阶段：这个阶段执行 timer（**setTimeout**、**setInterval**）的回调
@@ -588,12 +586,13 @@ libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复�
 
 ```node
 setTimeout(() => {
+
   console.log("timer1");
 
-  Promise.resolve().then(function () {
+	Promise.resolve().then(function () {
     console.log("promise1");
   });
-
+  
   process.nextTick(() => {
     console.log("nextTick");
     process.nextTick(() => {
@@ -606,6 +605,7 @@ setTimeout(() => {
       });
     });
   });
+  
 }, 0);
 
 // 打印: timer1 => nextTick => nextTick => nextTick => nextTick => promise1
@@ -614,27 +614,27 @@ setTimeout(() => {
 先看一个简单的事件循环：
 
 ```node
-console.log("start");
+console.log('start')
 
 setTimeout(() => {
-  console.log("timer1");
-  Promise.resolve().then(function () {
-    console.log("promise1");
-  });
-}, 0);
+  console.log('timer1')
+  Promise.resolve().then(function() {
+    console.log('promise1')
+  })
+}, 0)
 
 setTimeout(() => {
-  console.log("timer2");
-  Promise.resolve().then(function () {
-    console.log("promise2");
-  });
-}, 0);
+  console.log('timer2')
+  Promise.resolve().then(function() {
+    console.log('promise2')
+  })
+}, 0)
 
-Promise.resolve().then(function () {
-  console.log("promise3");
-});
+Promise.resolve().then(function() {
+  console.log('promise3')
+})
 
-console.log("end");
+console.log('end')
 
 // start => end => promise3 => timer1 => timer2 => promise1 => promise2
 ```
@@ -643,7 +643,7 @@ console.log("end");
 
 - 先执行全体宏任务，打印“start、end”，期间对 `timer`事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 `Promise.resolve.then()` 微任务；
 - 切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；
-- Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个`Promise.resolve.then()` 微任务；
+- Event Loop轮询，到 timer 阶段，事件队列中存在俩个setTImeout事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个`Promise.resolve.then()` 微任务；
 - 执行微任务队列，打印“promise1、promise2”。轮询完毕。
 
 再看一个完整的事件循环：
@@ -659,10 +659,10 @@ setImmediate(() => {
 
 setTimeout(() => {
   console.log("setTimeout2");
-
-  Promise.resolve().then(function () {
-    console.log("promise1");
-  });
+  
+  Promise.resolve().then(function() {
+    console.log('promise1');
+  })
 
   process.nextTick(() => {
     console.log("nextTick1");
@@ -683,13 +683,15 @@ setTimeout(() => {
 - 首先执行整体宏任务，此代码中没有别的任务，便给 check 事件队列插入`setImmediate1`，同时`setTimeout2`这个异步事件开始执行，产生事件等待。此时还没有打印，而后进行 Event Loop 轮询；
 - 进入到 check 阶段，事件队列有任务，执行打印“setImmediate1”。执行异步函数`setTimeout1`，产生新的事件等待。可以理解为此时 timer 事件队列为【setTimeout2，setTimeout1】。
 - check 阶段执行完毕，查看微任务队列，没有微任务，进入到 timer 阶段。
-- 进入到 timer 阶段，由于事件队列先后顺序的问题，此时应 setTImeout2 先执行（等待时间相同，先插入队列）。打印“setTimeout2”；给微任务队列插入“promise1”；给 `nextTick`事件队列插入`nextTick1`；给 check 事件插入 setImmediate2 事件；
+- 进入到 timer 阶段，由于事件队列先后顺序的问题，此时应 setTImeout2 先执行（等待时间相同，先插入队列）。打印“setTimeout2”；给微任务队列插入“promise1”；给 `nextTick`事件队列插入`nextTick1`；给 check 事件插入 setImmediate2事件；
 - 此时，宏任务`setTImeout2`执行完毕，开始执行微任务。此时 nextTick 事件队列有任务，因此先执行，打印“nextTick1”；再看微任务队列，有任务内容，打印“promise1”；
 - 微任务执行完毕，**此时较为关键**，也是产生俩种结果的原因：
-  - 情况 1：timer 事件队列中的`setTimeout1`已经执行等待完毕，继续执行宏任务 setTimeout1，打印`setTimeout1`。而后轮询到新的 check 阶段，执行 setImmediate2，打印“`setImmediate2`”。
-  - 情况 2：timer 事件队列中的`setTimeout1`还在等待阶段，轮询到新的 check 阶段，执行 setImmediate2，打印“`setImmediate2`”；而后，再轮询到新的 timer 阶段，执行宏任务 setTimeout1，打印`setTimeout1`。
+  - 情况 1：timer 事件队列中的`setTimeout1`已经执行等待完毕，继续执行宏任务setTimeout1，打印`setTimeout1`。而后轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”。
+  - 情况 2：timer 事件队列中的`setTimeout1`还在等待阶段，轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”；而后，再轮询到新的 timer 阶段，执行宏任务setTimeout1，打印`setTimeout1`。
+
+
 
 ## 参考文章
 
 - [Deep-into-node](https://github.com/yjhjstz/deep-into-node/blob/master/chapter1/chapter1-0.md)
-- [浏览器与 Node 的事件循环(Event Loop)有何区别?](https://www.cnblogs.com/fundebug/p/diffrences-of-browser-and-node-in-event-loop.html)
+- [浏览器与Node的事件循环(Event Loop)有何区别?](https://www.cnblogs.com/fundebug/p/diffrences-of-browser-and-node-in-event-loop.html)

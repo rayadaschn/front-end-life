@@ -2,7 +2,6 @@
 title: 多种方式实现居中
 date: 2023-02-11
 icon: style
-article: false
 category:
   - CSS
 tag:

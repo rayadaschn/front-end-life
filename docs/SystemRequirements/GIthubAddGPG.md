@@ -2,7 +2,6 @@
 title: GIthub添加GPG 签名
 icon: linux
 date: 2023-03-09
-article: false
 category:
   - linux
 tag:

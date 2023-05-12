@@ -1,8 +1,7 @@
 ---
 title: 为 MacOS 设置终端代理
 icon: linux
-date: 2023-02-01
-article: false
+date: 2023-02-1
 category:
   - linux
 tag:

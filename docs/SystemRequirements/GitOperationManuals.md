@@ -1,5 +1,5 @@
 ---
-title: Git 操作总结
+title: Git 操作手册
 icon: linux
 date: 2023-02-1
 category:
@@ -10,7 +10,7 @@ star: true
 sticky: true
 ---
 
-# Git 操作手册总结
+# Git 操作手册指南
 
 ## 新建项目操作
 

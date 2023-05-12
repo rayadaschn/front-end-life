@@ -2,7 +2,6 @@
 title: 解决前端跨域问题
 icon: build
 date: 2023-03-27
-article: false
 category:
   - 框架
 tag:

@@ -1,8 +1,6 @@
 ---
 title: 计算机网络自顶向下_第八版
 icon: note
-date: 2023-04-15
-article: false
 category:
   - anonymous
 tag:

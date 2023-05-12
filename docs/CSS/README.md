@@ -1,7 +1,7 @@
 ---
 title: CSS备忘录
 date: 2023-02-10
-article: false
+
 index: false
 icon: style
 category:

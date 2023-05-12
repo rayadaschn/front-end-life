@@ -2,7 +2,6 @@
 title: 优质博文
 icon: note
 date: 2023-03-12
-article: false
 category:
   - anonymous
 tag:

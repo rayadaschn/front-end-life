@@ -2,7 +2,6 @@
 title: React之数据管理 Redux
 icon: react
 date: 2023-03-23
-article: false
 category:
   - 框架
 tag:
@@ -383,7 +382,7 @@ store.dispatch(addTodoAction);
     return function (dispatch) {
       // dispatch the initial action to indicate that we're starting the request
       dispatch({ type: "FETCH_TODOS_REQUEST" });
-
+  
       // make the actual API request
       return api
         .fetchTodos()
@@ -569,7 +568,7 @@ export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不�
 
 上面代码中，我们通过 `createSlice` 创建了一个名为 `counter` 的 reducer，并定义了它的初始状态为 `0`。同时，我们还定义了三个 action：`increment`、`decrement` 和 `incrementByAmount`。这三个 action 分别对应的 reducer 中的逻辑是，对状态进行加一、减一和加上指定值。
 
-**`createSlice`方法的第一个参数是一个包含`name`、`initialState`和`reducers`的对象。**
+**`createSlice`方法的第一个参数是一个包含`name`、`initialState`和`reducers`的对象。** 
 
 - `name` 用于定义 reducer 的名称（在之后的 redux-devtool 中会显示对应的名词）；
 - `initialState` 用于定义 reducer 的初始状态（第一次初始化时的值）；

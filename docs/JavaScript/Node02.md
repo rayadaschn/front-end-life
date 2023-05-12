@@ -1,12 +1,12 @@
 ---
 title: Node 服务器开发基础
 icon: nodeJS
-date: 2023-02-25
-article: false
 category:
   - javascript
 tag:
   - node
+
+
 ---
 
 # Node 服务器开发基础
@@ -64,32 +64,32 @@ const readStream = fs.createReadStream(path[, options])
 例如，以下代码演示了如何使用 `fs.createReadStream()` 方法从文件中读取数据，并将其输出到控制台：
 
 ```js
-const fs = require("fs");
+const fs = require('fs')
 
-const readStream = fs.createReadStream("example.txt", { encoding: "utf8" });
+const readStream = fs.createReadStream('example.txt', { encoding: 'utf8' })
 
-let formData = ""; // 保存的最终完整数据
+let formData = '' // 保存的最终完整数据
 // 监听读取到的数据
-readStream.on("data", (chunk) => {
-  console.log(chunk); // 会持续更新, 如需完整数据需要及时保存
+readStream.on('data', chunk => {
+  console.log(chunk) // 会持续更新, 如需完整数据需要及时保存
   formData += chunk;
-
+  
   readStream.pause(); // 中途暂停读取
 
   setTimeout(() => {
     readStream.resume(); // 恢复读取
   }, 2000);
-});
+})
 
 // 监听打开事件--事件开启
-readStream.on("open", (fd) => {
-  console.log("通过流将文件打开~", fd);
-});
+readStream.on('open', (fd) => {
+  console.log('通过流将文件打开~', fd)
+})
 
 // 监听事件即将关闭,此时还可接着写入数据
-readStream.on("end", () => {
-  console.log("已经读取到end位置");
-});
+readStream.on('end', () => {
+  console.log('已经读取到end位置')
+})
 ```
 
 在上面的例子中，我们使用 `fs.createReadStream()` 方法创建了一个可读流，并从文件 `'example.txt'` 中读取数据。由于我们在配置项中设置了 `encoding: 'utf8'`，因此每次读取到的数据块都会以字符串的形式输出到控制台。然后，我们监听了该可读流的 `'data'` 和 `'end'` 等事件，以便在可读流有新的数据块可用或所有数据块都被消费完毕时执行相应的操作。
@@ -107,27 +107,27 @@ readStream.on("end", () => {
 以下是一个简单的示例，演示如何创建一个可写流，并使用它将数据写入控制台：
 
 ```js
-const { Writable } = require("stream");
+const { Writable } = require('stream')
 
 class MyWritable extends Writable {
   constructor(options) {
-    super(options);
+    super(options)
   }
 
   _write(chunk, encoding, callback) {
-    console.log(`Received data: ${chunk.toString()}`);
-    callback();
+    console.log(`Received data: ${chunk.toString()}`)
+    callback()
   }
 }
 
-const myWritable = new MyWritable();
+const myWritable = new MyWritable()
 
-myWritable.write("a\n");
-myWritable.write("b\n");
-myWritable.write("c\n");
+myWritable.write('a\n')
+myWritable.write('b\n')
+myWritable.write('c\n')
 myWritable.end(() => {
-  console.log("Done");
-});
+  console.log('Done')
+})
 ```
 
 在上面的例子中，我们创建了一个名为 `MyWritable` 的可写流，并实现了 `_write()` 方法，以便在每次有新的数据块可用时消费它。然后，我们创建了一个新的 `MyWritable` 实例，并使用 `myWritable.write()` 方法将数据块推送到可写流中。
@@ -137,18 +137,18 @@ myWritable.end(() => {
 当然，我们可以使用内置的 `fs.createWriteStream()`、`http.request()` 和 `net.Socket` 等方法创建可写流，并通过调用可写流的接口来进行数据写入。例如：
 
 ```js
-const fs = require("fs");
+const fs = require('fs')
 
-const writeStream = fs.createWriteStream("output.txt");
+const writeStream = fs.createWriteStream('output.txt')
 
-writeStream.write("a\n");
-writeStream.write("b\n");
-writeStream.write("c\n");
+writeStream.write('a\n')
+writeStream.write('b\n')
+writeStream.write('c\n')
 writeStream.end(() => {
   // end 方法实际上干了俩件事: 将最后的内容写入到文件中; 并且关闭文件
   // 也就是同时做了 'finish' 和 'close' 俩个事件
-  console.log("Done");
-});
+  console.log('Done')
+})
 ```
 
 在上面的例子中，我们使用 `fs.createWriteStream()` 方法创建了一个可写流，并将数据块 `'a\n'`、`'b\n'` 和 `'c\n'` 推送到该可写流中。当所有数据块都被推送完毕后，我们会调用 `writeStream.end()` 方法来结束可写流，并在回调函数中执行相应的操作。
@@ -160,19 +160,23 @@ writeStream.end(() => {
 在 Node.js 中，可以使用 `pipeline()` 方法将两个或多个流连接起来，并自动处理错误和关闭流等问题。以下是一个简单的示例，演示如何创建一个可读流、一个可写流和一个拷贝流，并使用它们将数据从文件 `'input.txt'` 复制到文件 `'output.txt'`：
 
 ```js
-const fs = require("fs");
-const { pipeline } = require("stream");
+const fs = require('fs')
+const { pipeline } = require('stream')
 
-const readStream = fs.createReadStream("input.txt");
-const writeStream = fs.createWriteStream("output.txt");
+const readStream = fs.createReadStream('input.txt')
+const writeStream = fs.createWriteStream('output.txt')
 
-pipeline(readStream, writeStream, (err) => {
-  if (err) {
-    console.error("Pipeline failed", err);
-  } else {
-    console.log("Pipeline succeeded");
+pipeline(
+  readStream,
+  writeStream,
+  err => {
+    if (err) {
+      console.error('Pipeline failed', err)
+    } else {
+      console.log('Pipeline succeeded')
+    }
   }
-});
+)
 ```
 
 在上面的例子中，我们使用 `fs.createReadStream()` 和 `fs.createWriteStream()` 方法创建了一个可读流和一个可写流。然后，我们使用 `pipeline()` 方法将这两个流连接起来，并定义一个回调函数以处理错误和成功完成的情况。
@@ -182,7 +186,7 @@ pipeline(readStream, writeStream, (err) => {
 `pipeline()` 函数的语法如下：
 
 ```js
-pipeline(source, ...transforms, destination, callback);
+pipeline(source, ...transforms, destination, callback)
 ```
 
 其中：
@@ -230,7 +234,7 @@ HTTP 模块是 Node.js 中一个核心模块，它提供了一组 API，用于�
 在 Node.js 中，可以使用 HTTP 模块来创建 HTTP 服务器，并监听来自客户端的 HTTP 请求。以下是一个简单的示例，演示如何使用 HTTP 模块来创建一个 HTTP 服务器：
 
 ```js
-const http = require("http");
+const http = require('http')
 
 const server = http.createServer((req, res) => {
   // req 对象中包含本次客户端请求的所有信息
@@ -238,18 +242,18 @@ const server = http.createServer((req, res) => {
   // 请求的method
   // 请求的headers
   // 请求携带的数据
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "text/plain");
-  res.end("Hello World\n");
-});
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'text/plain')
+  res.end('Hello World\n')
+})
 
 // 开启对应的服务器, 并且告知需要监听的端口
 // 监听端口时, 监听1024以上的端口, 666535以下的端口（1024 以下为系统预留端口）
 // 1025~65535之间的端口
 // 2个字节 => 256*256 => 65536 => 0~65535
 server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000/");
-});
+  console.log('Server running at http://localhost:3000/')
+})
 ```
 
 在上面的例子中，我们使用 `http.createServer()` 方法创建了一个 HTTP 服务器，并定义一个回调函数来处理每个客户端请求。在该回调函数中，我们设置了 HTTP 响应的状态码、头信息和正文内容，并在处理完请求后通过 `res.end()` 方法结束响应。
@@ -281,53 +285,55 @@ server.listen([port[, hostname[, backlog]]][, callback])
 服务器对 URL 进行处理是必要的，因为不同的 URL 表示不同的请求地址，其次，它上面可能还会携带不同的请求参数。因此，服务器需要根据不同的请求地址做出不同的响应。（当然，现在有很多的框架帮我简化了这些基础操作）
 
 ```js
-const http = require("http");
+const http = require('http')
 
 // 1.创建server服务器
 const server = http.createServer((req, res) => {
-  const url = req.url;
+  const url = req.url
 
   // 区别不同的 URL
-  if (url === "/login") {
-    res.end("登录成功~");
-  } else if (url === "/products") {
-    res.end("商品列表~");
-  } else if (url === "/other") {
-    res.end("其它");
+  if (url === '/login') {
+    res.end('登录成功~')
+  } else if (url === '/products') {
+    res.end('商品列表~')
+  } else if (url === '/other') {
+    res.end('其它')
   }
-});
+})
+
 
 // 2.开启server服务器
 server.listen(8000, () => {
-  console.log("服务器开启成功~");
-});
+  console.log('服务器开启成功~')
+})
 ```
 
 ```js
 // 参数处理
-const url = require("url");
-const qs = require("querystring");
+const url = require('url')
+const qs = require('querystring')
 
 // 1.创建server服务器
 const server = http.createServer((req, res) => {
   // 1.参数一: query类型参数
   // /home/list?offset=100&size=20
   // 1.1.解析url
-  const urlString = req.url;
-  const urlInfo = url.parse(urlString);
+  const urlString = req.url
+  const urlInfo = url.parse(urlString)
 
   // 1.2.解析query: offset=100&size=20
-  const queryString = urlInfo.query;
-  const queryInfo = qs.parse(queryString);
-  console.log("offset:", queryInfo.offset, "size:", queryInfo.size);
+  const queryString = urlInfo.query
+  const queryInfo = qs.parse(queryString)
+  console.log('offset:', queryInfo.offset, 'size:', queryInfo.size)
 
-  res.end("请求结束");
-});
+  res.end('请求结束')
+})
+
 
 // 2.开启server服务器
 server.listen(8000, () => {
-  console.log("服务器开启成功~");
-});
+  console.log('服务器开启成功~')
+})
 ```
 
 ### 区别不同的 method
@@ -343,8 +349,8 @@ server.listen(8000, () => {
 
 ```js
 const server = http.createServer((req, res) => {
-  const method = req.method; // 在 req 请求里
-});
+  const method = req.method // 在 req 请求里
+})
 ```
 
 ### 解析 Body 参数
@@ -356,26 +362,25 @@ const server = http.createServer((req, res) => {
 `req.on('data', callback)`：用于监听 HTTP 请求主体数据的 'data' 事件，并在收到新的数据时调用指定的回调函数。例如：
 
 ```js
-const http = require("http");
+const http = require('http')
 
 const server = http.createServer((req, res) => {
-  let body = "";
-  req.setEncoding("utf-8"); // body 解析格式
-
-  req.on("data", (chunk) => {
-    body += chunk.toString();
-  });
-
-  req.on("end", () => {
-    // 在请求主体结束后调用指定的回调函数。
-    console.log(body);
-    res.end("Hello World\n");
-  });
-});
+  let body = ''
+  req.setEncoding('utf-8') // body 解析格式
+  
+  req.on('data', chunk => {
+    body += chunk.toString()
+  })
+  
+  req.on('end', () => { // 在请求主体结束后调用指定的回调函数。
+    console.log(body)
+    res.end('Hello World\n')
+  })
+})
 
 server.listen(3000, () => {
-  console.log("Server running at http://localhost:3000/");
-});
+  console.log('Server running at http://localhost:3000/')
+})
 ```
 
 在上面的例子中，我们使用 `req.on('data', callback)` 方法监听 'data' 事件，并在每次接收到新的数据块时将其添加到请求主体字符串中。
@@ -392,9 +397,9 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 着重说一下 `content-type`，作为请求携带的数据类型，它定义了解析数据的方式，如果不指定则默认客户端接收到的是字符串，客户端会按照自己默认的方式进行处理。
 
 - `application/x-www-form-urlencoded`:表示数据被编码成以 `'&'` 分隔的键 `-` 值对，同时以 `'='` 分隔键和值 ；
-- `application/json`:表示是一个 json 类型；
+-  `application/json`:表示是一个json类型；
 - `text/plain`:表示是文本类型；
-- `application/xml`:表示是 xml 类型；
+- `application/xml`:表示是xml类型；
 - `multipart/form-data`:表示是上传文件；
 
 ### 响应对象
@@ -410,17 +415,17 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 1. `res.writeHead(statusCode, [reasonPhrase], [headers])`：用于设置响应的状态行和头部信息。例如：
 
    ```js
-   const http = require("http");
-
+   const http = require('http')
+   
    const server = http.createServer((req, res) => {
-     res.writeHead(200, { "Content-Type": "text/plain" });
-     res.write("Hello World\n");
-     res.end();
-   });
-
+     res.writeHead(200, { 'Content-Type': 'text/plain' })
+     res.write('Hello World\n')
+     res.end()
+   })
+   
    server.listen(3000, () => {
-     console.log("Server running at http://localhost:3000/");
-   });
+     console.log('Server running at http://localhost:3000/')
+   })
    ```
 
    在上面的例子中，我们使用 `res.writeHead()` 方法设置了响应的状态码为 200，状态描述为默认值 OK，以及 Content-Type 头部字段为 text/plain，并发送了一个简单的文本响应。
@@ -428,18 +433,18 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 2. `res.write(chunk, [encoding])`：用于向响应主体中写入数据。例如：
 
    ```js
-   const http = require("http");
-
+   const http = require('http')
+   
    const server = http.createServer((req, res) => {
-     res.writeHead(200, { "Content-Type": "text/plain" });
-     res.write("Hello ");
-     res.write("World\n");
-     res.end();
-   });
-
+     res.writeHead(200, { 'Content-Type': 'text/plain' })
+     res.write('Hello ')
+     res.write('World\n')
+     res.end()
+   })
+   
    server.listen(3000, () => {
-     console.log("Server running at http://localhost:3000/");
-   });
+     console.log('Server running at http://localhost:3000/')
+   })
    ```
 
    在上面的例子中，我们使用 `res.write()` 方法两次向响应主体中写入数据，并在最后通过 `res.end()` 方法结束响应。
@@ -447,50 +452,48 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 3. `res.end([data], [encoding])`：用于结束响应并向客户端发送响应数据。例如：
 
    ```js
-   const http = require("http");
-
+   const http = require('http')
+   
    const server = http.createServer((req, res) => {
-     res.writeHead(200, { "Content-Type": "text/plain" });
-     res.end("Hello World\n");
-   });
-
+     res.writeHead(200, { 'Content-Type': 'text/plain' })
+     res.end('Hello World\n')
+   })
+   
    server.listen(3000, () => {
-     console.log("Server running at http://localhost:3000/");
-   });
+     console.log('Server running at http://localhost:3000/')
+   })
    ```
 
    在上面的例子中，我们使用 `res.end()` 方法向客户端发送了一个完整的响应，并结束了响应过程。
 
 ### 发送数据请求
 
-Axios 库可以在浏览器中使用，也可以在 Node 中使用。区别是在浏览器中，使用的是封装`xhr`；在 Node 中，使用的是`http`内置模块。没错，`http`不仅可以创建服务，还可以发起请求。
+Axios 库可以在浏览器中使用，也可以在 Node 中使用。区别是在浏览器中，使用的是封装`xhr`；在Node中，使用的是`http`内置模块。没错，`http`不仅可以创建服务，还可以发起请求。
 
 以下是使用 Axios 发送 HTTP 请求的示例：
 
 ```js
-const axios = require("axios");
+const axios = require('axios');
 
 // 发送 GET 请求
-axios
-  .get("https://jsonplaceholder.typicode.com/posts")
-  .then((response) => {
+axios.get('https://jsonplaceholder.typicode.com/posts')
+  .then(response => {
     console.log(response.data);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
   });
 
 // 发送 POST 请求
-axios
-  .post("https://jsonplaceholder.typicode.com/posts", {
-    title: "foo",
-    body: "bar",
-    userId: 1,
+axios.post('https://jsonplaceholder.typicode.com/posts', {
+    title: 'foo',
+    body: 'bar',
+    userId: 1
   })
-  .then((response) => {
+  .then(response => {
     console.log(response.data);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
   });
 ```
@@ -501,33 +504,31 @@ Axios 还提供了其他一些方便的功能，例如设置请求头、发送�
 
 ```js
 // 设置请求头
-axios
-  .get("https://jsonplaceholder.typicode.com/posts", {
+axios.get('https://jsonplaceholder.typicode.com/posts', {
     headers: {
-      Authorization: "Bearer token",
-    },
+      'Authorization': 'Bearer token'
+    }
   })
-  .then((response) => {
+  .then(response => {
     console.log(response.data);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
   });
 
 // 发送 FormData 数据
 const formData = new FormData();
-formData.append("file", file);
+formData.append('file', file);
 
-axios
-  .post("https://example.com/upload", formData, {
+axios.post('https://example.com/upload', formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   })
-  .then((response) => {
+  .then(response => {
     console.log(response.data);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
   });
 ```
@@ -538,42 +539,40 @@ axios
 
 ```js
 const http = require("http");
-const fs = require("fs");
+const fs = require('fs')
 
 // 1.创建server服务器
 const server = http.createServer((req, res) => {
-  req.setEncoding("binary");
+  req.setEncoding('binary')
 
   // 获取 boundary
-  const boundary = req.headers["content-type"]
-    .split("; ")[1]
-    .replace("boundary=", "");
-  console.log(boundary);
+  const boundary = req.headers['content-type'].split('; ')[1].replace('boundary=', '')
+  console.log(boundary)
 
   // 客户端传递的数据是表单数据(请求体)
-  let formData = "";
+  let formData = ''
   req.on("data", (data) => {
-    formData += data;
+    formData += data
   });
 
   req.on("end", () => {
-    console.log(formData);
+    console.log(formData)
     // 1.截图从image/jpeg位置开始后面所有的数据
-    const imgType = "image/jpeg";
-    const imageTypePosition = formData.indexOf(imgType) + imgType.length;
-    let imageData = formData.substring(imageTypePosition);
+    const imgType = 'image/jpeg'
+    const imageTypePosition = formData.indexOf(imgType) + imgType.length
+    let imageData = formData.substring(imageTypePosition)
 
     // 2.imageData开始位置会有两个空格
-    imageData = imageData.replace(/^\s\s*/, "");
+    imageData = imageData.replace(/^\s\s*/, '')
 
     // 3.替换最后的boundary
-    imageData = imageData.substring(0, imageData.indexOf(`--${boundary}--`));
+    imageData = imageData.substring(0, imageData.indexOf(`--${boundary}--`))
 
     // 4.将imageData的数据存储到文件中
-    fs.writeFile("./bar.png", imageData, "binary", () => {
-      console.log("文件存储成功");
+    fs.writeFile('./bar.png', imageData, 'binary', () => {
+      console.log('文件存储成功')
       res.end("文件上传成功~");
-    });
+    })
   });
 });
 

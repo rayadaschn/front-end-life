@@ -2,7 +2,6 @@
 title: vite  使用总结
 icon: build
 date: 2023-05-10
-article: false
 
 category:
   - 框架
@@ -10,6 +9,7 @@ tag:
   - vite
 star: false
 sticky: false
+
 ---
 
 # Vite 使用总结
@@ -31,7 +31,7 @@ Vite 是一种新型前端构建工具，官方定位：下一代前端开发与
 
 ### 天然对 TypeScript 支持
 
-只需导入，vite 会直接使用 ESBuild 来完成编译。但是需要注意的是，vite 只对 TypeScript 进行转译工作，并 **不** 执行任何类型检查。
+只需导入，vite 会直接使用 ESBuild来完成编译。但是需要注意的是，vite 只对 TypeScript 进行转译工作，并 **不** 执行任何类型检查。
 
 ### 天然支持对 CSS 支持
 
@@ -52,13 +52,15 @@ $: npm install -D postcss postcss-preset-env
 ```js
 // postcss.config.js
 module.exports = {
-  plugins: [require("postcss-preset-env")],
-};
+  plugins: [
+    require('postcss-preset-env')
+  ]
+}
 ```
 
 ### 打包项目
 
-除了良好的本地服务支持外，vite 利用 rollup 完成对项目的打包。（在 2022 年 vite 完成了几个大版的升级，其中因为就 Rollup 从 2.0 升级到 3.0，连带 Vite 也完成了一个大版的升级）
+除了良好的本地服务支持外，vite 利用 rollup 完成对项目的打包。（在2022 年 vite 完成了几个大版的升级，其中因为就 Rollup从 2.0升级到 3.0，连带 Vite 也完成了一个大版的升级）
 
 打包非常便利：
 
@@ -71,3 +73,4 @@ $: npx vite build
 ```bash
 $: npx vite preview
 ```
+

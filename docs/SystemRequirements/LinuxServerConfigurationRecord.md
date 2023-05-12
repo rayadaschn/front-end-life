@@ -2,7 +2,6 @@
 title: Linux服务器配置记录
 icon: linux
 date: 2023-02-1
-article: false
 category:
   - linux
 tag:
@@ -15,6 +14,8 @@ sticky: false
 # Linux 服务器配置记录
 
 ## 目录
+
+[toc]
 
 ## 操作指令记录
 
