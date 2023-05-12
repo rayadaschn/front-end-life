@@ -14,6 +14,8 @@ sticky: false
 
 # 为 Mac 配置不同的 Git 账号
 
+[toc]
+
 ## 总结
 
 【注】全文的用户环境为 MacOS，一些文件的目录有所不同。
@@ -67,7 +69,7 @@ sticky: false
   Host gitlab.xxx.cn
   Hostname gitlab.xxx.cn
   IdentityFile ~/.ssh/id_rsa
-  User yourName
+  User company
 
   # gmail
   Host gmail.github.com
@@ -78,11 +80,11 @@ sticky: false
 
 - 测试连接
 
-  格式： `ssh -T git@< config 里面的 Host 别名>`
+  格式： `ssh -T git@{config里面的user}.{config里面的Hostname}`
 
   ```shell
   # 全局默认的个人账户，若没有配置 config， 则直接 ssh -T git@gitlab.xxx.cn
-  $: ssh -T git@gitlab.xxx.cn
+  $: ssh -T git@company.gitlab.xxx.cn
 
   # 额外配置邮箱 <User> 为全局配置中的 User
   $: ssh -T git@gmail.github.com
@@ -90,15 +92,10 @@ sticky: false
 
 - clone 使用
 
-  格式： `git@{Host别名}:{具体项目地址}.git`
-
-  以 GitHub 为例，假设你需要使用 github_account1 账号克隆 example_user/example_repo 仓库，则可以在命令行中执行以下命令：
-
-  - SSH 下载：`git clone git@gmail.github.com:example_user/example_repo.git`
-  - HTTPS 下载：`git clone https://gmail.github.com/example_user/example_repo.git`
+  格式： `git clone git@{config里面的user}.{config里面的Hostname}:{具体项目地址}.git`
 
   ```shell
-  # Host 别名为 'gmail.github.com'
+  # User 为 'gmail'
   $: git clone git@gmail.github.com:vuejs/vue.git
   ```
 
@@ -276,12 +273,12 @@ User gmail
 
 我们来看看配置的相关设置：
 
-| 键           | 值       | 规则                                                                                                                                                                                                            |
-| ------------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Host         | 主机     | 主机别名。如果你不知道，可以填写主机名，**通用配置就填 "\*"**。                                                                                                                                                 |
-| **Hostname** | 主机名   | **【必须准确无误】** 这里填写对应 Git 仓库的公有地址。如果你不知道，可以在 Git 仓库下通过 SSH 方式克隆一个项目，一般会出现如: `git@github.com:vuejs/vue.git` ，在 **git@** **后面的 `github.com` 即为主机名**。 |
-| IdentityFile | 身份文件 | **【写绝对路径】** 相应账号的私钥存放地址，如：`~/.ssh/id_rsa`                                                                                                                                                  |
-| **User**     | 用户     | 用户名。                                                                                                                                                                                                        |
+| 键           | 值       | 规则                                                                                                                                                                                                                                       |
+| ------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Host         | 主机     | 主机名。如果你不知道，可以填写主机名，**通用配置就填 "\*"**。                                                                                                                                                                              |
+| **Hostname** | 主机名   | **【必须准确无误】**这里填写对应 Git 仓库的公有地址。如果你不知道，可以在 Git 仓库下通过 SSH 方式克隆一个项目，一般会出现如: `git@github.com:vuejs/vue.git` ，在 **git@** **后面的 `github.com` 即为主机名**。                             |
+| IdentityFile | 身份文件 | **【写绝对路径】**相应账号的私钥存放地址，如：`~/.ssh/id_rsa`                                                                                                                                                                              |
+| **User**     | 用户     | 用户名。但是建议使用同**Host**的前面的名称部分。如：`Host gmail.github.com` ，则填写 `github` 。在后面具体 clone 操作中都会用到这个**User** 用户名。本文配置中，是为了后续做区分 因此 填写的是 ``yourName", 在前文总结中写的是 "company"。 |
 
 再来看开始的通用配置，可有可无，主要用于解决 **`Unable to reach a settlement: [diffie-hellman-group1-sha1, diffie-hellman-group-exchange-sha1]...`** 的问题。许多公司的 Git 仓库还在用老旧的 `diffie-hellman-group1-sha1` 和 `diffie-hellman-group-exchange-sha1` 密钥交换算法，但是 **OpenSSH** 在 6.7 版本之后默认不再采用以上算法，因此我们需要在**相应主机**下手动添加 `KexAlgorithms +diffie-hellman-group1-sha1` 。
 
@@ -295,11 +292,12 @@ User gmail
 // 全局默认的个人账户
 $: ssh -T git@gmail.github.com
 
-// 额外设置的公司git账户(同上文中 config 的设置)
-// ssh -T git@{Host 别名}
+// 额外设置的公司git账户(同上文中 config 的设置, User YourName)
+// ssh -T git@<User>.gitlab.xxx.cn
+$: ssh -T git@yourName.gitlab.xxx.cn
 ```
 
-- **「第一次连接」** 会出现主机连接验证： `Are you sure you want to continue connecting (yes/no/[fingerprint])? ` **输入** **`yes`** **回车**就行了。
+- **「第一次连接」**会出现主机连接验证： `Are you sure you want to continue connecting (yes/no/[fingerprint])? ` **输入** **`yes`** **回车**就行了。
 - 若连接成功则会出现类似信息:
 
 ```bash
@@ -322,7 +320,8 @@ $: cd xxxx
 $: git clone git@github.com:vuejs/vue.git
 
 // 利用公司的账户进行下载
-$: git clone git@{ Host 别名 }:vuejs/vue.git
+$: git clone git@yourName.github.com:vuejs/vue.git
+// 实际上就是 git clone git@<User>.github.com:vuejs/vue.git
 ```
 
 ## 为不同项目配置不同的 Git
