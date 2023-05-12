@@ -5,7 +5,6 @@ category:
   - anonymous
 tag:
   - note
-star: true
 # sticky: true
 sticky: false
 ---

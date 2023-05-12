@@ -7,10 +7,8 @@ category:
   - 框架
 tag:
   - ssr
-star: false
+star: true
 sticky: false
-
-
 ---
 
 # 服务端渲染 SSR 概述

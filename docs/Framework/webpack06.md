@@ -7,13 +7,11 @@ category:
   - 框架
 tag:
   - webpack
-star: false
+star: true
 sticky: false
 ---
 
 # Webpack 使用总结
-
-
 
 ## 梳理 Webpack 运行流程
 
@@ -44,7 +42,7 @@ Webpack 的运行流程可以简单地概括为以下几个步骤：
 // webpack.config.js
 
 module.exports = {
-  entry: "./index.js"
+  entry: "./index.js",
 };
 ```
 
@@ -60,8 +58,8 @@ module.exports = {
   entry: "./index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "outputFileName.bundle.js"
-  }
+    filename: "outputFileName.bundle.js",
+  },
 };
 ```
 
@@ -72,7 +70,7 @@ module.exports = {
 ```js
 // webpack.config.js
 const path = require("path");
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const isProdution = true;
 
@@ -80,7 +78,7 @@ module.exports = {
   entry: "./index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "outputFileName.bundle.js"
+    filename: "outputFileName.bundle.js",
   },
   module: {
     rules: [
@@ -90,19 +88,19 @@ module.exports = {
         // 使用对应的loader处理文件
         use: {
           loader: "babel-loader",
-        }
+        },
       },
       {
         test: /\.css$/,
         use: [
           // 'style-loader', //开发阶段
           // MiniCssExtractPlugin.loader, // 生产阶段
-          isProdution ? MiniCssExtractPlugin.loader: 'style-loader',
-          'css-loader'
-        ]
-      }
-    ]
-  }
+          isProdution ? MiniCssExtractPlugin.loader : "style-loader",
+          "css-loader",
+        ],
+      },
+    ],
+  },
 };
 ```
 
@@ -121,8 +119,8 @@ module.exports = {
 > ```js
 > // myLoader.js
 > const loaderUtils = require("loader-utils");
-> 
-> module.exports = function(content) {
+>
+> module.exports = function (content) {
 >   // 获取loader中传递的配置信息
 >   const options = loaderUtils.getOptions(this);
 >   // 返回处理后的内容
@@ -131,8 +129,6 @@ module.exports = {
 >   // return "/ *增加一个注释 */" + content;
 > };
 > ```
->
-> 
 
 ### plugins
 
@@ -147,7 +143,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   // ...
-  plugins: [new HtmlWebpackPlugin({ template: "./src/index.html" })]
+  plugins: [new HtmlWebpackPlugin({ template: "./src/index.html" })],
 };
 ```
 
@@ -171,8 +167,8 @@ class MyPlugin {
 ```js
 class MyPlugin {
   apply(compiler) {
-    compiler.hooks.done.tap('MyPlugin', stats => {
-      console.log('Webpack 构建完成！', stats );
+    compiler.hooks.done.tap("MyPlugin", (stats) => {
+      console.log("Webpack 构建完成！", stats);
     });
   }
 }
@@ -183,12 +179,10 @@ class MyPlugin {
 4. 将插件安装到项目中。可以使用 `npm install` 命令将插件安装到项目中，然后在 Webpack 配置文件中引入并实例化该插件。
 
 ```js
-const MyPlugin = require('my-webpack-plugin');
+const MyPlugin = require("my-webpack-plugin");
 
 module.exports = {
-  plugins: [
-    new MyPlugin()
-  ]
+  plugins: [new MyPlugin()],
 };
 ```
 
@@ -208,10 +202,10 @@ Webpack 已经做了很多预置的性能优化处理，可以直接在 Webpack 
      resolve: {
        // 使用别名，加快搜索
        alias: {
-         "~": path.resolve(__dirname, "../src")
+         "~": path.resolve(__dirname, "../src"),
        },
        // 配置用到的后缀名，方便webpack查找
-       extensions: ["js", "css"]
+       extensions: ["js", "css"],
      },
    };
    ```

@@ -6,7 +6,6 @@ category:
   - 框架
 tag:
   - Vue
-star: true
 sticky: false
 ---
 

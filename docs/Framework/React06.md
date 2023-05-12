@@ -6,7 +6,6 @@ category:
   - 框架
 tag:
   - React
-star: true
 sticky: true
 ---
 

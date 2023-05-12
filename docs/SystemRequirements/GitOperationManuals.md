@@ -6,7 +6,6 @@ category:
   - linux
 tag:
   - linux
-star: true
 sticky: true
 ---
 

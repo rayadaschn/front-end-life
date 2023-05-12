@@ -6,7 +6,6 @@ category:
   - 框架
 tag:
   - webpack
-star: false
 sticky: false
 ---
 
