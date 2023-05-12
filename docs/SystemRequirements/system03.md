@@ -1,7 +1,8 @@
 ---
 title: 数据加密原理
 icon: linux
-date: 2023-02-1
+date: 2023-02-01
+article: false
 category:
   - linux
 tag:

@@ -1,7 +1,8 @@
 ---
 title: React 工程化开发
-icon: react
 date: 2023-03-21
+icon: react
+article: false
 category:
   - 框架
 tag:

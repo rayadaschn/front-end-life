@@ -1,7 +1,8 @@
 ---
 title: 为 Mac 配置不同的 Git 账号
 icon: linux
-date: 2023-02-1
+date: 2023-02-01
+article: false
 category:
   - linux
 tag:

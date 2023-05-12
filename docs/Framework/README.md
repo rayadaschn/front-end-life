@@ -1,8 +1,10 @@
 ---
 title: 框架类
-date: 2023-02-12
-index: false
 icon: vue
+date: 2023-02-12
+article: false
+index: false
+
 category:
   - Guide
 ---
@@ -32,7 +34,7 @@ category:
 - [Webpack 性能优化之文件压缩](webpack04)
 - [Webpack 配置分离](webpack05)
 - [Webpack 使用总结](webpack06)
-- [Vite使用总结](vite01)
+- [Vite 使用总结](vite01)
 
 ## 服务端渲染 SSR
 
