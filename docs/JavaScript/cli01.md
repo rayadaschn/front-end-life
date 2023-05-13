@@ -263,14 +263,15 @@ node my-program.js -p 8080 --env production
 const { program } = require('commander');
 
 program
-  .command('start <name>')
+  .command('start <name> [otherArgs...]')
   .description('start server')
-  .action((name) => {
+  .action((name, args) => {
     console.log(`Starting server ${name}...`);
+    console.log(`Araay: ${args}`)
   });
 ```
 
-其中，`<name>` 表示该子命令需要输入一个参数，这个参数的值会被传递给 `.action()` 中的回调函数。
+其中，`<name>` 表示该子命令需要输入一个参数，这个参数的值会被传递给 `.action()` 中的回调函数。`[otherArgs...]` 表示非必要的其它参数，以空格划分，最后输出 `args` 数组形式。
 
 在程序运行时，可以通过 `program.parse()` 方法解析命令行参数，并根据不同的命令执行不同的操作。例如，在以下代码中，如果用户输入了 `start` 子命令，则会执行 `.action()` 中的回调函数：
 
