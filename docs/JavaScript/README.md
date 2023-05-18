@@ -23,6 +23,8 @@ category:
 
 - [关于 JS 对象的二三事](JS07.md)
 
+- [利用 JS 打印 a-z](JS08)
+
 ## 从零开始 Node 学习之路
 
 - [Node 基础](Node01.md)
