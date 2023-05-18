@@ -1,5 +1,5 @@
 ---
-title: Mac配置记录
+title: Docker 速通
 icon: linux
 date: 2023-05-16
 category:
@@ -11,7 +11,7 @@ tag:
 sticky: false
 ---
 
-# Docker 入门
+# Docker 速通
 
 ## 前置知识
 
@@ -35,6 +35,15 @@ CentOS 安装：
    - `rm -rf /var/lib/containerd`
 
 容器常用指令：
+
+总体步骤：
+
+1. 搜索镜像：**docker search tomcat**
+2. 拉取镜像
+3. 查看镜像
+4. 启动镜像
+5. 停止镜像
+6. 移除容器
 
 有镜像才能创建容器，下载镜像相当于下拉包：
 
@@ -106,6 +115,14 @@ CentOS 安装：
     ```bash
     $: docker export 123456 > README.md
     ```
+    
+16. 容器卷同宿主机连接：`docker run -it --privileged=true -v </宿主机绝对路径目录:/容器目录> <镜像名或 ID>:<版本号>`
+
+    ```bash
+    $: docker run -d --privileged=true -v /mydocker/u:/tmp ubuntu
+    ```
+
+    
 
 
 
