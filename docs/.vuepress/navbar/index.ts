@@ -3,26 +3,26 @@ import { navbar } from "vuepress-theme-hope";
 export const Navbar = navbar([
   "/",
   {
-    icon: "nodeJS",
     text: "JS/Node",
+    icon: "nodeJS",
     prefix: "JavaScript/",
     link: "/JavaScript/",
   },
   {
-    icon: "react",
     text: "框架类",
+    icon: "react",
     prefix: "Framework/",
     link: "/Framework/", // 此处link 要相对目录
   },
   {
-    text: "Mac/Linux配置",
+    text: "运维环境",
     icon: "note",
     prefix: "SystemRequirements/",
     link: "/SystemRequirements/",
   },
   {
-    icon: "style",
     text: "CSS",
+    icon: "style",
     prefix: "CSS/",
     link: "/CSS/", // 此处link 要相对目录
   },
