@@ -162,6 +162,10 @@ $: docker <OPTIONS> --help
     $: docker run -d --privileged=true -v /mydocker/u:/tmp ubuntu
     ```
 
+    `-v` 是 volume 卷。
+
+    >  容器之间的配置信息的传递，数据卷容器的生命周期会一直持续到没有容器使用为止，一旦持久化到了本地，则这个本地的数据是不会删除的。
+
 18. 从容器中拷贝文件：
 
 ```bash
@@ -186,3 +190,39 @@ $: docker cp <容器 ID>:<目录> <宿主机目标目录>
 > ```
 >
 > 需要注意的是，`docker cp` 命令只能用于正在运行的 Docker 容器，而不是已经停止的容器或镜像。另外，`docker cp` 命令可以使用 `-r` 选项来递归复制整个目录。
+
+## 自定义发布镜像
+
+commit 自制镜像
+
+```bash
+$: docker commit -m="提交的信息" -a="作者" <容器 id> <目标镜像名>:<TAG>
+
+$: docker commit -m="新增的一个自定义镜像" -a="Huy" 123xxxabc ubuntu_huy:1.0 
+```
+
+docker push  发布镜像。
+
+### DockerFile
+
+Dockerfile是用于构建Docker镜像的文本文件。它包含一组指令，这些指令描述了如何构建Docker镜像，包括从哪里获取基础镜像、如何安装软件包、如何设置环境变量、如何暴露端口等等。
+
+简单的 Dockerfile 示例（注意这是一个纯文本文件，通常直接命名为“Dockerfile”）：
+
+```Dockerfile
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y nginx
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+该 Dockerfile 指定了使用最新版的 Ubuntu 作为基础镜像，并安装了Nginx服务器。它还将端口80暴露给外部，并在容器启动时运行Nginx服务器。
+
+要使用 Dockerfile 构建 Docker 镜像，可以使用 `docker build` 命令。例如，假设 Dockerfile 文件在当前目录中，可以使用以下命令构建镜像：
+
+```bash
+$: docker build -t my-nginx-image .
+```
+
+该命令将使用当前目录中的 Dockerfile 文件构建名为"my-nginx-image"的 Docker 镜像。注意，最后一个**"`.`"**表示使用当前目录作为构建上下文。构建上下文是指构建镜像时 Docker 引擎可以访问到的文件和目录。
