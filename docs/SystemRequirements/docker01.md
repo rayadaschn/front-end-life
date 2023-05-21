@@ -23,7 +23,7 @@ sticky: false
 
 ## 前置知识
 
-**systemctl** 指令，可以查阅《[Systemd 入门教程：命令篇](https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)》。system 是一个 systemd 工具，主要负责控制 systemd 系统和服务管理器。诸如 timedatectl 等以 ctl 结尾的命令，其中 **ctl的意思是control，也就是控制**。
+**systemctl** 指令，可以查阅《[Systemd 入门教程：命令篇](https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)》。system 是一个 systemd 工具，主要负责控制 systemd 系统和服务管理器。诸如 timedatectl 等以 ctl 结尾的命令，其中 **ctl 的意思是 control，也就是控制**。
 
 **Docker** 是什么? 为了解决运行环境和配置问题的软件容器，方便做持续集成并有助于整体发布的容器虚拟化技术。
 
@@ -42,9 +42,9 @@ $: brew install docker
 服务器端 CentOS 安装：
 
 1. 安装： `yum -y install docker-ce docker-ce-cli containerd.io `
-2. 启动 Docker： `systemctl start docker` 
+2. 启动 Docker： `systemctl start docker`
 3. 测试：`docker version`
-4. 卸载： 
+4. 卸载：
    - `systemctl stop docker`
    - `yum remove docker-ce docker-ce-cli containerd.io`
    - `rm -rf /var/lib/docker`
@@ -88,7 +88,7 @@ $: brew install docker
    >
    > `docker run -d nginx`：容器后台运行。
 
-2. 列出当前所有正在运行的容器：`docker ps [OPTIONS]` 
+2. 列出当前所有正在运行的容器：`docker ps [OPTIONS]`
 
    - `-a`：列出当前所有正在运行的容器 + 历史上运行过的；
    - `-l`：显示最近创建的容器；
@@ -108,55 +108,63 @@ $: brew install docker
 
 7. 强制停止容器：`docker kill <容器 ID 或容器名>`
 
+   > stop 优于 kill
+   >
+   > 容器会收到信号后尝试执行一些清理工作，如保存数据、关闭连接等，然后自行退出。如果容器在一定时间内（默认为 10 秒）没有正常退出，Docker 会发送 `SIGKILL` 信号强制终止容器。
+
 8. 删除已停止的容器：`docker rm <容器 ID>`
 
-9. 查看容器日志：`docker logs <容器 ID>`
+9. 删除本地的 Docker 镜像，可以删除一个或多个镜像: `docker rmi <镜象 ID>`
 
-10. 查看容器内运行的进程：`docker top <容器 ID>`
+10. 查看容器日志：`docker logs <容器 ID>`
 
-11. 查看容器内部细节：`docker inspect <容器 ID>`
+11. 查看容器内运行的进程：`docker top <容器 ID>`
 
-12. 进入正在运行的容器并以命令行交互：`docker exec -it <容器 ID> bashShell`
+12. 查看容器内部细节：`docker inspect <容器 ID>`
 
-13. 从容器内部拷贝文件到主机上：`docker cp <容器 ID> <目的主机路径>`
+13. 进入正在运行的容器并以命令行交互：`docker exec -it <容器 ID> bashShell`
 
-14. 导入容器：`cat <文件名.文件后缀> | docker import - <镜像用户/镜像名:镜像版本号>`
+14. 从容器内部拷贝文件到主机上：`docker cp <容器 ID> <目的主机路径>`
+
+15. 导入容器：`cat <文件名.文件后缀> | docker import - <镜像用户/镜像名:镜像版本号>`
 
     ```bash
     $: cat README.md | docker import - huy/ubuntu:2.0
     ```
 
-15. 导出容器：`docker export <容器 ID> > <文件名.文件后缀>`
+16. 导出容器：`docker export <容器 ID> > <文件名.文件后缀>`
 
     ```bash
     $: docker export 123456 > README.md
     ```
-    
-16. 容器卷同宿主机连接：`docker run -it --privileged=true -v </宿主机绝对路径目录:/容器目录> <镜像名或 ID>:<版本号>`
+
+17. 容器卷同宿主机连接：`docker run -it --privileged=true -v </宿主机绝对路径目录:/容器目录> <镜像名或 ID>:<版本号>`
 
     ```bash
     $: docker run -d --privileged=true -v /mydocker/u:/tmp ubuntu
     ```
 
-    
+18. 从容器中拷贝文件：
 
+```bash
+$: docker cp <容器 ID>:<目录> <宿主机目标目录>
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+> export 和 cp 的区别：
+>
+> `docker export` 和 `docker cp` 都是 Docker 命令，但它们的功能和使用场景是不同的。
+>
+> `docker export` 命令用于将 Docker 容器的文件系统打包成一个 tar 归档文件并导出，可以用于备份、迁移、共享镜像等。但是，导出的文件不包含容器的元数据信息，比如容器的名称、标签、网络配置等，也不包含容器的历史记录。因此，使用 `docker export` 命令导出的文件不能直接用于创建 Docker 镜像或容器。示例命令如下：
+>
+> ```bash
+> $: docker export [OPTIONS] CONTAINER_ID > archive.tar
+> ```
+>
+> `docker cp` 命令用于在 Docker 容器和主机之间复制文件或目录。可以从容器中复制文件到主机，也可以将主机中的文件复制到容器中。示例命令如下：
+>
+> ```bash
+> $: docker cp [OPTIONS] CONTAINER_ID:SRC_PATH DEST_PATH
+> $: docker cp [OPTIONS] SRC_PATH CONTAINER_ID:DEST_PATH
+> ```
+>
+> 需要注意的是，`docker cp` 命令只能用于正在运行的 Docker 容器，而不是已经停止的容器或镜像。另外，`docker cp` 命令可以使用 `-r` 选项来递归复制整个目录。
