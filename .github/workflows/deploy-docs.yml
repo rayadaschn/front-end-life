@@ -43,7 +43,7 @@ jobs:
           > docs/.vuepress/dist/.nojekyll
 
       - name: 部署文档
-        uses: Huy/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           #  文档部署到的分支名称
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
