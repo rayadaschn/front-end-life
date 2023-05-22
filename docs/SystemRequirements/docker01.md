@@ -43,11 +43,13 @@ Docker 中镜像和容器是两个不同的概念。
 
 本地开发端 Mac 安装：
 
-推荐使用 Brew，简化安装过程、升级版本便利，还能确保环境的干净和可重复性。
+1. 推荐使用 Brew，简化安装过程、升级版本便利，还能确保环境的干净和可重复性。
 
 ```bash
 $: brew install docker
 ```
+
+2. 手动下载图形化界面：如果你的电脑搭载的是 M1 芯片（`arm64` 架构），请点击以下 [链接](https://desktop.docker.com/mac/main/arm64/Docker.dmg) 下载 Docker Desktop for Mac。
 
 服务器端 CentOS 安装：
 
@@ -205,7 +207,7 @@ docker push  发布镜像。
 
 ### DockerFile
 
-Dockerfile是用于构建Docker镜像的文本文件。它包含一组指令，这些指令描述了如何构建Docker镜像，包括从哪里获取基础镜像、如何安装软件包、如何设置环境变量、如何暴露端口等等。
+Dockerfile 是用于构建 Docker 镜像的文本文件。它包含一组指令，这些指令描述了如何构建 Docker 镜像，包括从哪里获取基础镜像、如何安装软件包、如何设置环境变量、如何暴露端口等等。
 
 简单的 Dockerfile 示例（注意这是一个纯文本文件，通常直接命名为“Dockerfile”）：
 
@@ -217,7 +219,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-该 Dockerfile 指定了使用最新版的 Ubuntu 作为基础镜像，并安装了Nginx服务器。它还将端口80暴露给外部，并在容器启动时运行Nginx服务器。
+该 Dockerfile 指定了使用最新版的 Ubuntu 作为基础镜像，并安装了 Nginx 服务器。它还将端口 80 暴露给外部，并在容器启动时运行 Nginx 服务器。
 
 要使用 Dockerfile 构建 Docker 镜像，可以使用 `docker build` 命令。例如，假设 Dockerfile 文件在当前目录中，可以使用以下命令构建镜像：
 
@@ -226,3 +228,23 @@ $: docker build -t my-nginx-image .
 ```
 
 该命令将使用当前目录中的 Dockerfile 文件构建名为"my-nginx-image"的 Docker 镜像。注意，最后一个**"`.`"**表示使用当前目录作为构建上下文。构建上下文是指构建镜像时 Docker 引擎可以访问到的文件和目录。
+
+指令释义：
+
+1. FROM： 定制的镜像都是基于 FROM 的镜像，在定义基础镜像后，则都是基于自定义的镜像；
+
+2. RUN：指令格式 `RUN <命令行命令>`
+
+   两种命令格式：`shell` 和 `exec`
+
+   - Shell 形式：`RUN <command>`
+     - 使用 `/bin/sh -c` 执行命令
+     - 可以使用 shell 内置的命令、管道和环境变量
+     - 构建时会创建一个新的 shell 进程并执行命令
+     - 适合复杂的操作和任务
+
+   - Exec 形式：`RUN ["executable", "param1", "param2"]`
+     - 直接执行可执行文件或脚本
+     - 不依赖于 shell 环境，因此更快且更安全
+     - 不支持一些 shell 特性，例如通配符扩展（wildcard expansion）、重定向（redirection）和变量替换（variable substitution）
+     - 适合简单的命令和操作
