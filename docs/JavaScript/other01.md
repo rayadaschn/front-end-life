@@ -10,7 +10,15 @@ tag:
 
 # 代码规范和自动格式化
 
-​ 在团队开发中，统一代码规范是必不可少的。[**ESlint**](https://cn.eslint.org/docs/user-guide/configuring) 是我们前端工程化中代码检测的一款常用工具。它不仅可以检测 `JS` 还支持 `Vue` 和 `JSX` 。
+ 在团队开发中，统一代码规范是必不可少的。[**ESlint**](https://cn.eslint.org/docs/user-guide/configuring) 是我们前端工程化中代码检测的一款常用工具。它不仅可以检测 `JS` 还支持 `Vue` 和 `JSX` 。
+
+> 前置知识——最佳实践：
+>
+> - ESlint 检测不合规的代码，npm 包也有修复功能，但是没有 Prettier 强大。
+> - Prettier 修复不合规的代码
+> - Editorconfig 统一不同操作系统下的编码格式
+>
+> 三者都有对应的 VScode 插件。但需要明白的是，VScode 插件是通过本地的配置，在编写代码时就帮开发者 检测、修复代码！而通过 npm 安装的包，是通过指令的方式检测、修复。俩者的功能和用途是不一样的！
 
 ## 安装和使用
 
@@ -26,9 +34,9 @@ tag:
 
 ### ESlint 配合 VScode 插件使用
 
-虽然通过指令，可以做到统一修复代码，但是如果想在编写代码的时候立即发现不合规的地方，我们还是需要通过 **VScode** 插件 **“ESLint“** 来完成。
+虽然通过指令，可以做到统一修复代码，但是如果想在编写代码的时候立即发现不合规的地方，我们还是需要通过 **VScode** 插件 **“ESLint”** 来完成。
 
-但我们安装完 **“ESLint“** 插件后，便会在编辑文件中，看到报错提示信息。当然，我们可以更进一步，利用 **ESLint** 进行自动修复（更流行的是用 **Prettier** 进行修复，下文会介绍），通过 `设置`打开 `setting.json` , 在其中编辑改写:
+但我们安装完 **“ESLint”** 插件后，便会在编辑文件中，看到报错提示信息。当然，我们可以更进一步，利用 **ESLint** 进行自动修复（更流行的是用 **Prettier** 进行修复，下文会介绍），通过 `设置`打开 `setting.json` , 在其中编辑改写:
 
 ```json
 "editor.codeActionsOnSave": {
@@ -102,13 +110,20 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   rules: {
-    "import/extensions": "off", // 不在 import其它 moudle时填写文件后缀名
-    "no-use-before-define": "off", // typescript中的interface以及type不存在变量提升的问题
+    // 不在 import 其它 moudle时，填写文件后缀名
+    "import/extensions": "off", 
+    
+     // typescript 中的 interface 以及 type 不存在变量提升的问题
+    "no-use-before-define": "off",
+    
+    // 保证eslint见到 interface 或者 type 在声明前使用时不会报错
     "@typescript-eslint/no-use-before-define": [
       "error",
       { ignoreTypeReferences: true },
-    ], // 保证eslint见到interface或者type在声明前使用时不会报错
-    "import/prefer-default-export": "off", // 如果单文件中只有一个导出项，则eslint会告诉你使用export default的方式导出, 关闭次功能
+    ], 
+    
+    // 如果单文件中只有一个导出项，则eslint会告诉你使用export default的方式导出, 关闭次功能
+    "import/prefer-default-export": "off", 
   },
   settings: {
     "import/resolver": {
@@ -124,8 +139,10 @@ module.exports = {
 };
 ```
 
+当然，我们还需要为 VScode 进行本地设置，来更好的配置我们的插件（告诉 VScode，对这些文件进行敲代码时，你要给我干活ヽ(^o^)丿）：
+
 ```json
-// setting.json
+// VScode 的 setting.json
   /* ESlint 设置 */
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true, // 开启eslint自动修复js/ts/jsx/tsx功能
@@ -160,3 +177,69 @@ module.exports = {
     "*.json": "jsonc",
   },
 ```
+
+## 统一代码风格实战
+
+> 问题：项目中遇到 ESLint 报错：“Expected linebreaks to be 'CRLF' but found 'LF'.”
+
+查阅官方文档后，了解到由于不同的操作系统的换行符不同，因此存在兼容性问题。
+
+**报错原因**：
+
+1. 这个问题是用户的操作系统可能为 Mac/Linux 等系统；
+2. 手动配置过 VScode 换行编码风格为 "\n"；
+3. 安装过 Editorconfig 插件，并且设置了换行规则 "`end_of_line = lf`"
+
+并且，配置了 ESlint 规则：`'linebreak-style': ['error', 'windows']`。
+
+因此先看 ESlint 用于控制代码换行符的兼容性和格式的配置规则：`'linebreak-style': ['error', 'windows']`。该规则可设置为以下三个值之一：
+
+- `"unix"`：表示 Unix/Linux/Mac 等系统中通用的换行符风格（即 "\n"）；
+- `"windows"`：表示 Windows 系统默认的换行符风格（即 "\r\n"）；
+- `"auto"`：根据当前平台自动选择上述两种风格之一。
+
+在这里，配置为 `['error', 'windows']` 表示强制使用 windows 风格的换行符，并且如果检测到代码文件中存在不兼容 windows 换行符的内容，就会报错并提示更正。其中 `"error"` 用来指定该规则是一个错误类型的告警，并将由其影响停止进程执行。
+
+**解决办法**：
+
+统一 “`.editorconfig`” 和 “`.eslintrc.js`” 俩个配置文件。
+
+`.editorconfig`：
+
+```.editorconfig
+[*]
+charset = utf-8
+indent_style = tab
+end_of_line = lf # 统一换行符
+```
+
+`.eslintrc.js`：
+
+```js
+module.exports = {
+	root: true,
+	env: {
+		node: true
+	},
+	extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
+	parserOptions: {
+		parser: 'babel-eslint'
+	},
+	rules: {
+		// ...
+    // 统一换行符检测规则
+		'linebreak-style': ['error', 'unix']
+	}
+}
+```
+
+当然，只是这样还不够，我们还应当配置“`.prettierrc`” 帮助我们修复不合规的代码。配置规则为：
+
+```json
+{
+	// ...
+	"endOfLine": "lf",
+}
+```
+
+通过如上三个设置，就能统一换行编码风格为 “ \n ”。
