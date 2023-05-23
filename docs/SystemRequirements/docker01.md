@@ -227,7 +227,7 @@ CMD ["nginx", "-g", "daemon off;"]
 $: docker build -t my-nginx-image .
 ```
 
-该命令将使用当前目录中的 Dockerfile 文件构建名为"my-nginx-image"的 Docker 镜像。注意，最后一个**"`.`"**表示使用当前目录作为构建上下文。构建上下文是指构建镜像时 Docker 引擎可以访问到的文件和目录。
+该命令将使用当前目录中的 Dockerfile 文件构建名为"my-nginx-image"的 Docker 镜像。注意，最后一个 **"`.`"** 表示使用当前目录作为构建上下文。构建上下文是指构建镜像时 Docker 引擎可以访问到的文件和目录。
 
 指令释义：
 
