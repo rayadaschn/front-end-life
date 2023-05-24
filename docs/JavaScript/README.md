@@ -44,3 +44,5 @@ category:
 - [Google 浏览器 console.log「异步打印现象」](other02.md)
 
 - [JavaScript 中的位运算](other03.md)
+
+- [利用husky进行 git 提交前检查](other04)

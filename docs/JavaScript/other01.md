@@ -5,7 +5,7 @@ date: 2023-02-26
 category:
   - javascript
 tag:
-  - javascript
+  - 工程化
 ---
 
 # 代码规范和自动格式化
@@ -243,3 +243,6 @@ module.exports = {
 ```
 
 通过如上三个设置，就能统一换行编码风格为 “ \n ”。
+
+
+
