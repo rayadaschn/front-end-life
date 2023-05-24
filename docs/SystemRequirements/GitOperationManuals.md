@@ -114,7 +114,7 @@ $: git merge --no-ff newBranch
 $: git checkout myBranchName
     // 开发 xxxx, 开发完成后。先 rebase master 主分支
 $: git rebase master
-		// 变基后, 再执行步骤5。将个人分支合并到 master 分支上
+  // 变基后, 再执行步骤5。将个人分支合并到 master 分支上
 $: git checkout master
 $: git merge --no-ff myBranchName
 
@@ -169,11 +169,11 @@ $: git add .
 $: git commit -m [message]
 // 变基拉取 git pull --rebase 等于 git fetch + git rebase
 $: git pull --rebase
-	// 【有冲突】这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行 git rebase --continue, 这样git会继续apply余下的补丁。
-	$: git add .
-	$: git rebase --continue
-	// 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态
-	$: git rebase --abort
+ // 【有冲突】这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行 git rebase --continue, 这样git会继续apply余下的补丁。
+ $: git add .
+ $: git rebase --continue
+ // 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态
+ $: git rebase --abort
 $: git push
 ```
 
@@ -185,10 +185,10 @@ $: git stash
 $: git pull
 // 推出贮藏
 $: git stash pop
-	// 若有冲突 解决冲突; 注意, 若冲突,并不会将贮藏记录消除,还需使用 git stash drop 删除记录
-	$: git stash drop
-	// 若冲突过多, 可撤销贮藏改变
-	$: git reset --hard
+ // 若有冲突 解决冲突; 注意, 若冲突,并不会将贮藏记录消除,还需使用 git stash drop 删除记录
+ $: git stash drop
+ // 若冲突过多, 可撤销贮藏改变
+ $: git reset --hard
 $: git add .
 $: git commit -m [message]
 $: git push
@@ -219,7 +219,7 @@ $: git push
 
   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
 
-  > **--soft**： **不删除**工作空间改动代码，**撤销 commit**，**不撤销 `git add . `**
+  > **--soft**： **不删除**工作空间改动代码，**撤销 commit**，**不撤销 `git add .`**
   >
   > **--hard**： **删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
@@ -319,14 +319,14 @@ $: git stash show stash@{number}
 4. 应用贮藏, 默认第一个,加后缀为应用其它贮藏。number 为数值
 $: git stash apply
 $: git stash apply stash@{number}
-	4.1 应用贮藏,同时清除该stash
-	$: git stash pop
+ 4.1 应用贮藏,同时清除该stash
+ $: git stash pop
 
 5. 清理贮藏,默认第一个。加后缀为清理其它贮藏。number 为数值
 $: git stash drop
 $: git stash drop stash@{number}
-	5.1 清理所有贮藏
-	$: git stash clear
+ 5.1 清理所有贮藏
+ $: git stash clear
 ```
 
 ### 打标签 Tag
@@ -371,8 +371,8 @@ $: git checkout [tagname]
 ```bash
 // 1. 列出 commit 列表:
 $: git rebase -i
-	1.1 修改 commit 信息
-	1.2 修改完后,重复执行如下命令直到完成
+ 1.1 修改 commit 信息
+ 1.2 修改完后,重复执行如下命令直到完成
   $: git commit --amend --message="modify message by daodaotest" --author="name <email@gmail.com>"
   $: git rebase --continue
   1.3 中间也可跳过或退出 rebase 模式
@@ -505,9 +505,9 @@ Commit message 都包括三个部分：**Header** (必须)，Body 和 Footer。
 
   ```shell
   BREAKING CHANGE: isolate scope bindings definition has changed.
-  	xxxxx
-  	Before： xxxx
-  	After： xxxx
+   xxxxx
+   Before： xxxx
+   After： xxxx
   ```
 
 - 关闭 Issue
@@ -565,8 +565,8 @@ $: conventional-changelog -p angular -i CHANGELOG.md -s
 
 ## 参考文档
 
-- [ JDC 前端代码规范 (jdf2e.github.io)](https://jdf2e.github.io/jdc_fe_guide/docs/git/branch)
-- [Git 基本操作 ](https://www.runoob.com/git/git-basic-operations.html)
+- [JDC 前端代码规范 (jdf2e.github.io)](https://jdf2e.github.io/jdc_fe_guide/docs/git/branch)
+- [Git 基本操作](https://www.runoob.com/git/git-basic-operations.html)
 - [前端 CHANGELOG 生成指南](https://godbasin.github.io/2019/11/10/change-log/)
 - [Git 分支管理](https://www.ruanyifeng.com/blog/2012/07/git.html)
 - [Git --no--ff](https://segmentfault.com/q/1010000002477106)

@@ -69,7 +69,7 @@ sticky: false
   8. Typora: MarkDown 编辑器
   9. PDF Expert : pdf 编辑器
   10. Moment 日历记录
-  11. [clashX ](https://github.com/yichengchen/clashX/tags) 科学上网利器
+  11. [clashX](https://github.com/yichengchen/clashX/tags) 科学上网利器
   12. **[Maccy](https://maccy.app/)** 优秀的剪切板工具
   13. **Hidden Bar** 隐藏菜单栏过多, 应用商店下载。
   14. Drink 提示喝水, 应用商店下载
@@ -117,7 +117,7 @@ sticky: false
    $: git config --global --add safe.directory /opt/homebrew/Library/Taps/homebrew/homebrew-core
    ```
 
-2. [iTerm2 + oh-my-zsh + agnoster 配置 ](https://sliu.vip/notes/iterm2/)
+2. [iTerm2 + oh-my-zsh + agnoster 配置](https://sliu.vip/notes/iterm2/)
 
 3. Git
 

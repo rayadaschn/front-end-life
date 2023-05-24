@@ -50,7 +50,7 @@ tag:
 
 ### 设置 Prettier
 
-如上文所述，**Prettier** 的代码格式化功能更加强大，但是其语法和 **ESLint ** 却并不相同，所以还需要额外再设置一番。
+如上文所述，**Prettier** 的代码格式化功能更加强大，但是其语法和 **ESLint** 却并不相同，所以还需要额外再设置一番。
 
 1. 在`VScode` 中安装 `Prettier` 插件，并在项目中局部安装: `npm install -d prettier`
 
@@ -217,19 +217,19 @@ end_of_line = lf # 统一换行符
 
 ```js
 module.exports = {
-	root: true,
-	env: {
-		node: true
-	},
-	extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
-	parserOptions: {
-		parser: 'babel-eslint'
-	},
-	rules: {
-		// ...
+ root: true,
+ env: {
+  node: true
+ },
+ extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
+ parserOptions: {
+  parser: 'babel-eslint'
+ },
+ rules: {
+  // ...
     // 统一换行符检测规则
-		'linebreak-style': ['error', 'unix']
-	}
+  'linebreak-style': ['error', 'unix']
+ }
 }
 ```
 
@@ -237,12 +237,9 @@ module.exports = {
 
 ```json
 {
-	// ...
-	"endOfLine": "lf",
+ // ...
+ "endOfLine": "lf",
 }
 ```
 
 通过如上三个设置，就能统一换行编码风格为 “ \n ”。
-
-
-

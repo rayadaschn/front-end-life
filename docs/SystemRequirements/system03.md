@@ -73,14 +73,14 @@ const key = '****************************';
 
 function encryptByDES(message) {
 
-	let hash = CryptoJS.HmacSHA256(message,CryptoJS.enc.Base64.parse(key));
-	let hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
-	return hashInBase64
+ let hash = CryptoJS.HmacSHA256(message,CryptoJS.enc.Base64.parse(key));
+ let hashInBase64 = CryptoJS.enc.Base64.stringify(hash);
+ return hashInBase64
 }
 
 function getSign(data){
-	let _str = JSON.stringify(data);
-	return encryptByDES(_str)
+ let _str = JSON.stringify(data);
+ return encryptByDES(_str)
 }
 // 请求头处理函数
 const DealWithHeader=(data)=>{
@@ -98,21 +98,21 @@ const DealWithHeader=(data)=>{
  * data 以对象的格式传入
  */
 function request(url,data,success,fail=refail){
-	let header = DealWithHeader(data);
-	// header['Authorization'] = token;
-	uni.request({
-		url: url,
-		data: JSON.stringify(data),
-		method:"POST",
-		header:header,
-		success: success,
-		fail: fail
-	});
+ let header = DealWithHeader(data);
+ // header['Authorization'] = token;
+ uni.request({
+  url: url,
+  data: JSON.stringify(data),
+  method:"POST",
+  header:header,
+  success: success,
+  fail: fail
+ });
 }
 function refail(e){
-	uni.showToast({title:"接口数据请求失败！",icon:"none"});
-	// console.log(res)
-	console.log(e)
+ uni.showToast({title:"接口数据请求失败！",icon:"none"});
+ // console.log(res)
+ console.log(e)
 }
 
 
@@ -120,7 +120,7 @@ function refail(e){
  * 输出请求模块
  */
 export default{
-	encryptByDES,
-	request
+ encryptByDES,
+ request
 }
 ```

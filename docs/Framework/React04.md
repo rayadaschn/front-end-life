@@ -501,7 +501,7 @@ export default rootReducer;
 Redux 为开发者提供了一个 Redux DevTools 的浏览器插件，它可以帮助开发者更方便地调试 Redux 应用程序。下面是使用 Redux DevTools 的一些步骤：
 
 1. 安装 Redux DevTools 浏览器插件。Redux DevTools 提供了 Chrome 和 Firefox 版本的插件。安装好插件后，在浏览器的扩展程序中可以看到 Redux DevTools 的图标。
-2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。安装: `npm install redux-devtools-extension `（ 查看更多 [Redux-devtool-extension 的相关设置](https://github.com/zalmoxisus/redux-devtools-extension) ）
+2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。安装: `npm install redux-devtools-extension`（ 查看更多 [Redux-devtool-extension 的相关设置](https://github.com/zalmoxisus/redux-devtools-extension) ）
 
 ```js
 import { createStore, applyMiddleware } from "redux";
@@ -534,7 +534,7 @@ export default store;
 3. 提供了`createSlice`方法，可以通过一个简单的配置对象快速创建包含了 Reducer 和 action creator 的 Redux 模块。
 4. 内置了 Immer 库，使得 Reducer 中的状态更新可以通过直接修改对象来完成，而无需手动编写不可变更新的代码。
 
-安装: `npm install @reduxjs/toolkit react-redux `
+安装: `npm install @reduxjs/toolkit react-redux`
 
 `reduxjs/toolkit` 中几个核心 API 的简单介绍：
 
@@ -568,7 +568,7 @@ export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不�
 
 上面代码中，我们通过 `createSlice` 创建了一个名为 `counter` 的 reducer，并定义了它的初始状态为 `0`。同时，我们还定义了三个 action：`increment`、`decrement` 和 `incrementByAmount`。这三个 action 分别对应的 reducer 中的逻辑是，对状态进行加一、减一和加上指定值。
 
-**`createSlice`方法的第一个参数是一个包含`name`、`initialState`和`reducers`的对象。** 
+**`createSlice`方法的第一个参数是一个包含`name`、`initialState`和`reducers`的对象。**
 
 - `name` 用于定义 reducer 的名称（在之后的 redux-devtool 中会显示对应的名词）；
 - `initialState` 用于定义 reducer 的初始状态（第一次初始化时的值）；

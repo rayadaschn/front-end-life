@@ -114,8 +114,6 @@ ADD INDEX idx_name_score (name, score);
 
 **对于主键，关系数据库会自动对其创建主键索引。使用主键索引的效率是最高的，因为主键会保证绝对唯一。**
 
-
-
 ## CRUD 增删改查
 
 CRUD：Create、Retrieve、Update、Delete。
@@ -158,9 +156,9 @@ SELECT查询的结果是一个二维表。
 
    - 升序 `ORDER BY`，默认升序，效果等同后面加上 `ASC`
 
-     score 按照升序排序: `SELECT id, name, gender, score FROM students ORDER BY score;` 
+     score 按照升序排序: `SELECT id, name, gender, score FROM students ORDER BY score;`
 
-   - 倒序（Descending） 末尾加上 `DESC` 
+   - 倒序（Descending） 末尾加上 `DESC`
 
      按score从高到低: `SELECT id, name, gender, score FROM students ORDER BY score DESC;`
 

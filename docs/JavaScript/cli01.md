@@ -411,4 +411,3 @@ node my-program.js
 ```bash
 My command line tool
 ```
-

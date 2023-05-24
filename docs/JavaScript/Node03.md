@@ -21,14 +21,14 @@ tag:
 首先假定你已经安装了 [Node.js](https://nodejs.org/)，接下来为你的应用创建一个目录，然后进入此目录并将其作为当前工作目录。
 
 ```bash
-$ mkdir myapp
-$ cd myapp
+mkdir myapp
+cd myapp
 ```
 
 通过 `npm init` 命令为你的应用创建一个 `package.json` 文件。 欲了解 `package.json` 是如何起作用的，请参考 [Specifics of npm’s package.json handling](https://docs.npmjs.com/files/package.json).
 
 ```bash
-$ npm init
+npm init
 ```
 
 此命令将要求你输入几个参数，例如此应用的名称和版本。 你可以直接按“回车”键接受大部分默认设置即可，下面这个除外：
@@ -42,13 +42,13 @@ entry point: (index.js)
 接下来在 `myapp` 目录下安装 Express 并将其保存到依赖列表中。如下：
 
 ```bash
-$ npm install express --save
+npm install express --save
 ```
 
 如果只是临时安装 Express，不想将它添加到依赖列表中，可执行如下命令：
 
 ```bash
-$ npm install express --no-save
+npm install express --no-save
 ```
 
 ## 基本使用
@@ -383,11 +383,11 @@ const app = express()
 
 // 编写中间件
 app.post('/login', (req, res, next) => {
-	// xxxxxx
+ // xxxxxx
 })
 
 app.get('/home', (req, res, next) => {
-	// xxxxxx
+ // xxxxxx
 })
 
 // 让路由生效
@@ -398,4 +398,3 @@ app.listen(9000, () => {
   console.log('express服务器启动成功~')
 })
 ```
-

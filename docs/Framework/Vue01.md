@@ -369,7 +369,7 @@ emits("chang-name", "Tom");
 
 ### 3.4 attrs 额外参数的接收变化
 
-`attrs` 同 `emit` 一样，在原先到 `setup(props, { attrs })` 第二个参数 context 全局上下文对象中（ **非响应式的对象** ）。它所表示的是父组件定义下来的数据没有被指定为 `props` ，则会被挂载到 `attrs ` 对象上。为了获取到它，Vue3 提供了全新的 API ： `useAttrs` （这次不再是 define 开头了，这里是使用参数，而不是定义数据，所以也不是响应式对象），**另外像以 `default` 开头的全新 API 是属于全局编译器宏，而这里的 `useAttrs` 并不是，所以还需要从 `vue` 中额外导入** 。
+`attrs` 同 `emit` 一样，在原先到 `setup(props, { attrs })` 第二个参数 context 全局上下文对象中（ **非响应式的对象** ）。它所表示的是父组件定义下来的数据没有被指定为 `props` ，则会被挂载到 `attrs` 对象上。为了获取到它，Vue3 提供了全新的 API ： `useAttrs` （这次不再是 define 开头了，这里是使用参数，而不是定义数据，所以也不是响应式对象），**另外像以 `default` 开头的全新 API 是属于全局编译器宏，而这里的 `useAttrs` 并不是，所以还需要从 `vue` 中额外导入** 。
 
 ```js
 // 导入 useAttrs 组件

@@ -397,7 +397,7 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 着重说一下 `content-type`，作为请求携带的数据类型，它定义了解析数据的方式，如果不指定则默认客户端接收到的是字符串，客户端会按照自己默认的方式进行处理。
 
 - `application/x-www-form-urlencoded`:表示数据被编码成以 `'&'` 分隔的键 `-` 值对，同时以 `'='` 分隔键和值 ；
--  `application/json`:表示是一个json类型；
+- `application/json`:表示是一个json类型；
 - `text/plain`:表示是文本类型；
 - `application/xml`:表示是xml类型；
 - `multipart/form-data`:表示是上传文件；

@@ -38,7 +38,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 ```
 
-有了加载组件的方法，我们还需要将组件注册的途径，利用上述显式的在路由中注册当然可行，只是我们当前的需求为动态注册二级子组件，所以我们还需要用到 `router.addRoute`[ API](https://router.vuejs.org/zh/guide/advanced/dynamic-routing.html) 。`router.addRoute` 非常灵活，可以对路由进行添加、删除和嵌套等，我们这里就是用到它的嵌套路由用法：
+有了加载组件的方法，我们还需要将组件注册的途径，利用上述显式的在路由中注册当然可行，只是我们当前的需求为动态注册二级子组件，所以我们还需要用到 `router.addRoute`[API](https://router.vuejs.org/zh/guide/advanced/dynamic-routing.html) 。`router.addRoute` 非常灵活，可以对路由进行添加、删除和嵌套等，我们这里就是用到它的嵌套路由用法：
 
 要将嵌套路由添加到现有的路由中，可以**将路由的 _name_ 作为第一个参数传递给 `router.addRoute()`**，这将有效地添加路由，就像通过 `children` 添加的一样：
 

@@ -13,7 +13,7 @@ sticky: false
 
 # Docker 速通
 
-**Docker** 是什么? 
+**Docker** 是什么?
 
 没看懂的官网简介：“Docker 可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口（类似 iPhone 的 app），更重要的是容器性能开销极低。”
 
@@ -53,7 +53,7 @@ $: brew install docker
 
 服务器端 CentOS 安装：
 
-1. 安装： `yum -y install docker-ce docker-ce-cli containerd.io `
+1. 安装： `yum -y install docker-ce docker-ce-cli containerd.io`
 2. 启动 Docker： `systemctl start docker`
 3. 测试：`docker version`
 4. 卸载：

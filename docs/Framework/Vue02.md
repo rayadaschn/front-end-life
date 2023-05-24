@@ -31,7 +31,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 好，这里我们暂时把上述内容按下不表。我们先来看看什么是插件？ (● ﾟ ω ﾟ ●)
 
-[插件 (Plugins) ](https://cn.vuejs.org/guide/reusability/plugins.html)，Vue 官方的解释是一种能为 Vue 添加全局功能的工具代码。主要运用场景为:
+[插件 (Plugins)](https://cn.vuejs.org/guide/reusability/plugins.html)，Vue 官方的解释是一种能为 Vue 添加全局功能的工具代码。主要运用场景为:
 
 1. 通过 [`app.component()`](https://cn.vuejs.org/api/application.html#app-component) 和 [`app.directive()`](https://cn.vuejs.org/api/application.html#app-directive) 注册一到多个全局组件或自定义指令。
 2. 通过 [`app.provide()`](https://cn.vuejs.org/api/application.html#app-provide) 使一个资源[可被注入](https://cn.vuejs.org/guide/components/provide-inject.html)进整个应用。

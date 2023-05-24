@@ -165,8 +165,8 @@ sudo chmod -R 777 /usr/share/nginx/html
 1. 安装 `Nginx` (不同服务器的相关指令)
 
    ```shell
-   $ sudo yum install epel-release && yum install nginx [On CentOS]
-   $ sudo dnf install nginx [On Ubuntu]
+   sudo yum install epel-release && yum install nginx [On CentOS]
+   sudo dnf install nginx [On Ubuntu]
    ```
 
    安装成功后，检测指令： **`nginx -v`** 显示 nginx 版本。
@@ -205,7 +205,7 @@ sudo chmod -R 777 /usr/share/nginx/html
 
 4. 开启防火墙配置
 
-   为了让服务器的 **80 端口 **能够被外网访问, 我们还需要进行进一步设置:
+   为了让服务器的 **80 端口**能够被外网访问, 我们还需要进行进一步设置:
 
    - `http` 协议
 

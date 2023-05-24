@@ -136,5 +136,5 @@ sticky: false
 
 ## 参考文档
 
-- [字节跳动优秀文档 8 大秘籍 ](https://www.feishu.cn/docs/doccnBYiti3wwLmVGtnAabHIAwe)
+- [字节跳动优秀文档 8 大秘籍](https://www.feishu.cn/docs/doccnBYiti3wwLmVGtnAabHIAwe)
 - [中文技术文档的写作规范](https://github.com/ruanyf/document-style-guide/tree/master)

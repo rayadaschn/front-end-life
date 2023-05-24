@@ -540,9 +540,9 @@ Node.js 的运行机制如下:
 ![Node 事件循环](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304231358737.png)
 
 执行顺序为：
-**incoming外部输入数据** --> **轮询阶段(poll)** --> 
-**检查阶段(check)** --> **关闭事件回调阶段(close callback)** --> 
-**定时器检测阶段(timer)** --> **I/O 事件回调阶段(I/O callbacks)** --> **闲置阶段(idle, prepare)** --> 
+**incoming外部输入数据** --> **轮询阶段(poll)** -->
+**检查阶段(check)** --> **关闭事件回调阶段(close callback)** -->
+**定时器检测阶段(timer)** --> **I/O 事件回调阶段(I/O callbacks)** --> **闲置阶段(idle, prepare)** -->
 **新的轮询阶段(new poll)**
 
 - timers 阶段：这个阶段执行 timer（**setTimeout**、**setInterval**）的回调
@@ -589,7 +589,7 @@ setTimeout(() => {
 
   console.log("timer1");
 
-	Promise.resolve().then(function () {
+ Promise.resolve().then(function () {
     console.log("promise1");
   });
   
@@ -688,8 +688,6 @@ setTimeout(() => {
 - 微任务执行完毕，**此时较为关键**，也是产生俩种结果的原因：
   - 情况 1：timer 事件队列中的`setTimeout1`已经执行等待完毕，继续执行宏任务setTimeout1，打印`setTimeout1`。而后轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”。
   - 情况 2：timer 事件队列中的`setTimeout1`还在等待阶段，轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”；而后，再轮询到新的 timer 阶段，执行宏任务setTimeout1，打印`setTimeout1`。
-
-
 
 ## 参考文章
 

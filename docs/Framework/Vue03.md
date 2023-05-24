@@ -60,7 +60,7 @@ const routes: Array<RouteRecordRaw> = [
 ];
 ```
 
-其中，懒加载的配置便是在 `component` 中设置的，通过设置一个箭头函数，来动态加载。而 `import` 内部注释 /_ webpackChunkName: "home" _/ 起到的作用是项目打包后为切割后的代码文件命名（结果更加语义化）。
+其中，懒加载的配置便是在 `component` 中设置的，通过设置一个箭头函数，来动态加载。而 `import` 内部注释 /_webpackChunkName: "home"_/ 起到的作用是项目打包后为切割后的代码文件命名（结果更加语义化）。
 
 ```txt
 File                                        Size                    Gzipped

@@ -124,7 +124,7 @@ $: git --version
 // git version 2.24.3 (Apple Git-128)
 ```
 
-- 【**Tips**】`$: ` 表示 `Bash` 指令符，只需复制后面指令即可。
+- 【**Tips**】`$:` 表示 `Bash` 指令符，只需复制后面指令即可。
 
 ## 添加全局默认 git 账号和邮箱, 用于每次提交代码
 
@@ -200,7 +200,7 @@ The key's randomart image is:
 +----[SHA256]-----+
 ```
 
-【**Tips**】如果该命令式默认生成，默认会 `~/.ssh/` 文件夹下 生成 **id_rsa** 和 **id_ras.pub** 俩个文件，并且此时对应的 git 账号为全局默认账号。就是上文中 `git config --global user.xxx ` 所设置的。如果你要配置不同的账号，那还需如下的额外操作。
+【**Tips**】如果该命令式默认生成，默认会 `~/.ssh/` 文件夹下 生成 **id_rsa** 和 **id_ras.pub** 俩个文件，并且此时对应的 git 账号为全局默认账号。就是上文中 `git config --global user.xxx` 所设置的。如果你要配置不同的账号，那还需如下的额外操作。
 
 **假设你的全局默认 Git 账号和邮箱是你的个人账号，此时需要配置公司的 git 账号** ，希望你能耐心看完。
 
@@ -210,15 +210,15 @@ The key's randomart image is:
 $: ssh-keygen -t rsa -f ~/.ssh/id_rsa_yourName@company.com -C "yourName@company.com"
 ```
 
-同样再按三次回车, 会在 `~/.ssh/ ` 文件下生成相应的秘钥对 **`id_rsa_yourName@company.com`** 和 **`id_rsa_yourName@company.com.pub`** 。我们可以打开 `~/.ssh` 文件夹进行查看，如上一小节中 **检查秘钥** 一样，键入 ` open ~/.ssh/` 查看是否有相应的文件。
+同样再按三次回车, 会在 `~/.ssh/` 文件下生成相应的秘钥对 **`id_rsa_yourName@company.com`** 和 **`id_rsa_yourName@company.com.pub`** 。我们可以打开 `~/.ssh` 文件夹进行查看，如上一小节中 **检查秘钥** 一样，键入 `open ~/.ssh/` 查看是否有相应的文件。
 
 同理如果你要再生成其它邮箱的 git 账号，只需将 **`yourName@company.com`** 改成 你的其它邮箱就行了。
 
 ### 小结
 
-- 通过 `ssh-keygen ` 可以对邮箱利用 ras 加密方式， 在 `~/.ssh/` 文件夹下生成相应的秘钥对。
+- 通过 `ssh-keygen` 可以对邮箱利用 ras 加密方式， 在 `~/.ssh/` 文件夹下生成相应的秘钥对。
 - 如果要设置不同的 git 账户，在生成邮箱秘钥时，应当取相应别名；
-- 通过指令 `ssh-keygen -t ras -C 'yourEmail'` 生成的秘钥为全局默认 git 账户邮箱，使用它需要利用 `git config --global user.xxx ` 进行全局 git 设置。
+- 通过指令 `ssh-keygen -t ras -C 'yourEmail'` 生成的秘钥为全局默认 git 账户邮箱，使用它需要利用 `git config --global user.xxx` 进行全局 git 设置。
 - **如果你没有设置全局默认 git 账号和邮箱，那么全部统一按照配置额外的 git 账号设置，即： 不同邮箱重复同给公司邮箱设置 git 账号的方法。** 下同！
 
 ## 远程 **Git 仓库** 添加公钥
@@ -284,7 +284,7 @@ User gmail
 
 ## 测试连接
 
-测试 Git 账户连接：如果单个账户情况一般就是 `ssh -T git@xxx主机名` ，如果配置了 config，那么可以这样测试：` `**ssh -T git@{config 里面的 user}.{config 里面的 Hostname}**
+测试 Git 账户连接：如果单个账户情况一般就是 `ssh -T git@xxx主机名` ，如果配置了 config，那么可以这样测试：``**ssh -T git@{config 里面的 user}.{config 里面的 Hostname}**
 
 ```bash
 // 全局默认的个人账户
@@ -295,7 +295,7 @@ $: ssh -T git@gmail.github.com
 $: ssh -T git@yourName.gitlab.xxx.cn
 ```
 
-- **「第一次连接」**会出现主机连接验证： `Are you sure you want to continue connecting (yes/no/[fingerprint])? ` **输入** **`yes`** **回车**就行了。
+- **「第一次连接」**会出现主机连接验证： `Are you sure you want to continue connecting (yes/no/[fingerprint])?` **输入** **`yes`** **回车**就行了。
 - 若连接成功则会出现类似信息:
 
 ```bash
