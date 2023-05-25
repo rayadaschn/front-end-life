@@ -60,7 +60,7 @@ const HighOrderComponent = (WrappedComponent) =>
 
 这样组件就可以一层层地作为参数被调用，**原始组件就具备了高阶组件对它的修饰**。好处是，在保持单个组件封装性的同时还保留了易用性。
 
-### 其它应用:
+### 其它应用
 
 - 渲染判断鉴权
 
@@ -626,7 +626,7 @@ React 在 `JSX` 给了我们开发者足够多的灵活性，你可以像编写 
 
 ```jsx
 <div>
-	<h2 className={"title " + { isActive ? "active" : "" }> 以字符串空格分割 class 类名</h2>
+ <h2 className={"title " + { isActive ? "active" : "" }> 以字符串空格分割 class 类名</h2>
   <h2 className={["title", (isActive ? "active" : "")].join(" ") }> 以字符串空格分割 class 类名</h2>
 </div>
 ```

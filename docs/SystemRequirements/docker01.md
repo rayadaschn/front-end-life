@@ -43,13 +43,13 @@ Docker 中镜像和容器是两个不同的概念。
 
 本地开发端 Mac 安装：
 
-1. 推荐使用 Brew，简化安装过程、升级版本便利，还能确保环境的干净和可重复性。
+- 推荐使用 Brew，简化安装过程、升级版本便利，还能确保环境的干净和可重复性。
 
 ```bash
 $: brew install docker
 ```
 
-2. 手动下载图形化界面：如果你的电脑搭载的是 M1 芯片（`arm64` 架构），请点击以下 [链接](https://desktop.docker.com/mac/main/arm64/Docker.dmg) 下载 Docker Desktop for Mac。
+- 手动下载图形化界面：如果你的电脑搭载的是 M1 芯片（`arm64` 架构），请点击以下 [链接](https://desktop.docker.com/mac/main/arm64/Docker.dmg) 下载 Docker Desktop for Mac。
 
 服务器端 CentOS 安装：
 
@@ -121,7 +121,6 @@ $: docker <OPTIONS> --help
    - ctrl + p + q：run 进去容器， ctrl + p + q 退出，容器不停止。
 
 4. 启动已经停止运行的容器：`docker start <容器 ID 或容器名>`
-
 5. 重启容器：`docker restart <容器 ID 或容器名>`
 
 6. 停止容器：`docker stop <容器 ID 或容器名>`
@@ -166,7 +165,7 @@ $: docker <OPTIONS> --help
 
     `-v` 是 volume 卷。
 
-    >  容器之间的配置信息的传递，数据卷容器的生命周期会一直持续到没有容器使用为止，一旦持久化到了本地，则这个本地的数据是不会删除的。
+    > 容器之间的配置信息的传递，数据卷容器的生命周期会一直持续到没有容器使用为止，一旦持久化到了本地，则这个本地的数据是不会删除的。
 
 18. 从容器中拷贝文件：
 
@@ -200,10 +199,10 @@ commit 自制镜像
 ```bash
 $: docker commit -m="提交的信息" -a="作者" <容器 id> <目标镜像名>:<TAG>
 
-$: docker commit -m="新增的一个自定义镜像" -a="Huy" 123xxxabc ubuntu_huy:1.0 
+$: docker commit -m="新增的一个自定义镜像" -a="Huy" 123xxxabc ubuntu_huy:1.0
 ```
 
-docker push  发布镜像。
+docker push 发布镜像。
 
 ### DockerFile
 
@@ -238,6 +237,7 @@ $: docker build -t my-nginx-image .
    两种命令格式：`shell` 和 `exec`
 
    - Shell 形式：`RUN <command>`
+
      - 使用 `/bin/sh -c` 执行命令
      - 可以使用 shell 内置的命令、管道和环境变量
      - 构建时会创建一个新的 shell 进程并执行命令

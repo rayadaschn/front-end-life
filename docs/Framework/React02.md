@@ -542,7 +542,7 @@ changeCount(index) {
 
   ```jsx
   this.state = {
-  	message: 'Hello World!'
+   message: 'Hello World!'
   }
 
   changeText() {
@@ -561,7 +561,7 @@ changeCount(index) {
 
   ```jsx
   this.state = {
-  	message: 'Hello World!'
+   message: 'Hello World!'
   }
 
   componentDidMount() {
@@ -581,7 +581,7 @@ changeCount(index) {
 
   ```jsx
   this.state = {
-  	message: 'Hello World!'
+   message: 'Hello World!'
   }
 
   changeText() {

@@ -1,8 +1,20 @@
 {
   "name": "huy-blog",
-  "version": "2.0.0",
-  "description": "a Bolg",
+  "version": "1.0.0",
+  "description": "Huy's Bolg",
+  "author": "Huy <rayadaschn@gmail.com>",
+  "homepage": "https://rayadaschn.github.io/front-end-life",
+  "private": true,
+  "keywords": [
+    "vue3",
+    "vue",
+    "react",
+    "frontend"
+  ],
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rayadaschn/front-end-life/issues"
+  },
   "type": "module",
   "scripts": {
     "prepare": "husky install",
@@ -14,7 +26,7 @@
   },
   "lint-staged": {
     "docs/**/*.{md}": [
-      "markdownlint-cli2-fix"
+      "markdownlint-cli2-config '.markdownlint.jsonc'"
     ]
   },
   "devDependencies": {
