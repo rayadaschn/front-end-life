@@ -10,7 +10,7 @@ tag:
 
 # 代码规范和自动格式化
 
- 在团队开发中，统一代码规范是必不可少的。[**ESlint**](https://cn.eslint.org/docs/user-guide/configuring) 是我们前端工程化中代码检测的一款常用工具。它不仅可以检测 `JS` 还支持 `Vue` 和 `JSX` 。
+在团队开发中，统一代码规范是必不可少的。[**ESlint**](https://cn.eslint.org/docs/user-guide/configuring) 是我们前端工程化中代码检测的一款常用工具。它不仅可以检测 `JS` 还支持 `Vue` 和 `JSX` 。
 
 > 前置知识——最佳实践：
 >
@@ -24,11 +24,13 @@ tag:
 
 环境要求: [Node.js](https://nodejs.org/zh-cn/) (>=6.14), npm version 3+。
 
-可以使用 **npm** 安装 ESlint（开发时依赖） : `npm install ESlint -d`
+可以使用 **npm** 安装 ESlint（开发时依赖） : `npm install eslint -d`
 
 其次，你需要为 ESlint 设置配置文件: `npx eslint --init`
 
-采用 `init` 初始化指令时，可以依据你的需求，为 ESlint 设置配置文件，最后会在当前文件夹下生成 `.eslintre.js` 的配置文件。并且我们可以在配置文件中看到许多 **rules** 配置规则。
+采用 `init` 初始化指令时，可以依据你的需求，为 ESlint 设置配置文件，最后会在当前文件夹下生成 `.eslintre.cjs` 的配置文件。并且我们可以在配置文件中看到许多 **rules** 配置规则。
+
+> 【注意】若是新项目，请检查 package.json 文件中是否有书写 **`"type": "module"`** ，使用了 ES6 的模块导入。这时的配置文件不再接受 `.js` 格式的配置读写，想要使用 CommonJS 模块，需要用 `.cjs` 格式结尾配置文件才可被正常读取。
 
 此时，我们可以**通过指令: `npx eslint . --fix` 修复全部代码**。
 
@@ -54,7 +56,7 @@ tag:
 
 1. 在`VScode` 中安装 `Prettier` 插件，并在项目中局部安装: `npm install -d prettier`
 
-2. 由于目的是配合 **ESLint** 使用，因此，我们在根目录创建 `.eslintrc.js` 配置文件，以下列出部分通用设置：
+2. 由于目的是配合 **ESLint** 使用，因此，我们在根目录创建 `.prettierrc` 配置文件，以下列出部分通用设置：
 
    ```JavaScript
    {
@@ -74,20 +76,15 @@ tag:
 
 - 使用 `eslint-config-prettier` 这个插件，用来关闭所有和 **Prettier** 冲突的 **ESLint** 规则。
 
-  安装插件: `npm i eslint-config-prettier -d`
+  安装插件: `npm install -D eslint-config-prettier eslint-plugin-prettier`。
 
-- a. 在 `.eslintrc.js` 配置文件中的`extends` 处加入 `prettier` 的扩展：
+  > [eslint-plugin-prettier](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fprettier%2Feslint-plugin-prettier)： 基于 prettier 代码风格的 eslint 规则，即 eslint 使用 pretter 规则来格式化代码。
+  >
+  > [eslint-config-prettier](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fprettier%2Feslint-config-prettier)： 禁用所有与格式相关的 eslint 规则，解决 prettier 与 eslint 规则冲突，确保将其放在 extends 队列最后，这样它将覆盖其他配置。
+  >
+  > 后续只需在扩展末尾添加 `"plugin:prettier/recommended"` 即可。
 
-  ```JavaScript
-  // .eslintrc.js
-  module.exports = {
-    ......
-    extends: [..., 'prettier'], // 现在是以 prettier 为主,覆盖eslint格式配置。写在最后面，”...“代表其它插件
-    ......
-  }
-  ```
-
-- b. 继续修改:
+  在 `.eslintrc.cjs` 配置文件中的`extends` 处加入解决 `prettier` 的冲突 的扩展：
 
   ```JavaScript
   // .eslintrc.js
@@ -101,43 +98,55 @@ tag:
 ### 配合 Typescript
 
 ```javascript
-// .eslintrc.js
+// .eslintrc.cjs
 module.exports = {
   extends: [
-    "eslint-config-airbnb-base",
-    "plugin:@typescript-eslint/recommended",
+    'eslint-config-airbnb-base',
+    'plugin:@typescript-eslint/recommended',
   ],
-  parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint"],
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
   rules: {
     // 不在 import 其它 moudle时，填写文件后缀名
-    "import/extensions": "off", 
-    
-     // typescript 中的 interface 以及 type 不存在变量提升的问题
-    "no-use-before-define": "off",
-    
+    'import/extensions': 'off',
+
+    // typescript 中的 interface 以及 type 不存在变量提升的问题
+    'no-use-before-define': 'off',
+
     // 保证eslint见到 interface 或者 type 在声明前使用时不会报错
-    "@typescript-eslint/no-use-before-define": [
-      "error",
+    '@typescript-eslint/no-use-before-define': [
+      'error',
       { ignoreTypeReferences: true },
-    ], 
-    
+    ],
+
     // 如果单文件中只有一个导出项，则eslint会告诉你使用export default的方式导出, 关闭次功能
-    "import/prefer-default-export": "off", 
+    'import/prefer-default-export': 'off',
   },
   settings: {
-    "import/resolver": {
+    'import/resolver': {
       node: {
-        extensions: [".js", ".ts"],
-        moduleDirectory: ["node_modules", "./src"],
+        extensions: ['.js', '.ts'],
+        moduleDirectory: ['node_modules', './src'],
       },
     },
   },
   parserOptions: {
-    project: "./tsconfig.json",
+    project: './tsconfig.json',
   },
-};
+}
 ```
+
+> 值得注意的是，若是 Vue3 + Ts ，extends 中的“`plugin:vue/vue3-essential`” 插件，存在解析器 “`vue-eslint-parser`”，用`npx eslint --init` 生成的配置中，默认使用的是“_`@typescript-eslint/parser`_”解析器，而 extends 的顺序是 ts 在 vue 后面，因此将 vue 的解析器覆盖掉了，所以需要对解析器的配置做出微小调整：
+>
+> ```js
+> // "parser": "@typescript-eslint/parser",
+> "parser": "vue-eslint-parser",
+> "parserOptions": {
+> "ecmaVersion": "latest",
+> "parser": "@typescript-eslint/parser",
+> "sourceType": "module"
+> },
+> ```
 
 当然，我们还需要为 VScode 进行本地设置，来更好的配置我们的插件（告诉 VScode，对这些文件进行敲代码时，你要给我干活ヽ(^o^)丿）：
 
@@ -217,19 +226,19 @@ end_of_line = lf # 统一换行符
 
 ```js
 module.exports = {
- root: true,
- env: {
-  node: true
- },
- extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
- parserOptions: {
-  parser: 'babel-eslint'
- },
- rules: {
-  // ...
+  root: true,
+  env: {
+    node: true,
+  },
+  extends: ['plugin:vue/essential', 'eslint:recommended', '@vue/prettier'],
+  parserOptions: {
+    parser: 'babel-eslint',
+  },
+  rules: {
+    // ...
     // 统一换行符检测规则
-  'linebreak-style': ['error', 'unix']
- }
+    'linebreak-style': ['error', 'unix'],
+  },
 }
 ```
 
@@ -237,8 +246,8 @@ module.exports = {
 
 ```json
 {
- // ...
- "endOfLine": "lf",
+  // ...
+  "endOfLine": "lf"
 }
 ```
 
