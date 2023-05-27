@@ -25,9 +25,7 @@
     "git-push": "git add . && git commit -m 'update' && git push"
   },
   "lint-staged": {
-    "docs/**/*.{md}": [
-      // "markdownlint-cli2-fix"
-    ]
+    "docs/**/*.{md}": []
   },
   "devDependencies": {
     "@vuepress/client": "2.0.0-beta.60",
