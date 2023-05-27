@@ -45,4 +45,6 @@ category:
 
 - [JavaScript 中的位运算](other03.md)
 
-- [利用husky进行 git 提交前检查](other04)
+- [利用 husky 进行 git 提交前检查](other04)
+
+- [新版 stylelint 的配置](other05)

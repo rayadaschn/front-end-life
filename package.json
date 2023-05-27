@@ -26,8 +26,7 @@
   },
   "lint-staged": {
     "docs/**/*.{md}": [
-      "markdownlint-cli2-fix",
-      "markdownlint-cli2-config '.markdownlint.jsonc'"
+      // "markdownlint-cli2-fix"
     ]
   },
   "devDependencies": {
