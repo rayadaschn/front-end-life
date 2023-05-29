@@ -1,6 +1,7 @@
 # 个人博客 / Huy's Blog
 
 [![Author: Huy](https://img.shields.io/badge/Author-huy-yellow)](https://github.com/rayadaschn)
+![GitHub last commit](https://img.shields.io/github/last-commit/rayadaschn/front-end-life)
 [![License](https://img.shields.io/badge/LICENSE-CC--BY--SA--4.0-yellow)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
