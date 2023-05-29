@@ -10,10 +10,12 @@ tag:
 
 # 新版 stylelint 的配置
 
-很早就知道了前端代码格式化的几件套了：ESlint、Prettier、Stylelint。ESlint + Prettier 的配合已经非常流行了，但是对于 CSS 等样式进行检测修复的 Stylelint 却没有那么需要了。在项目中也不是必须的，但是对于维护一些老项目还是有用的，在过去的话不推荐的理由：
+众所周知的前端代码格式化三件套：ESlint、Prettier、Stylelint。其中，ESlint + Prettier 的配合已经非常流行了，能够满足项目的绝大部分需求，因此对于 CSS 等样式进行检测修复的 Stylelint 就没有那么需要了。本文还是梳理一下它的当下配置方法。
+
+在过去的话不推荐的理由：
 
 - ESlint 和 Prettier 已经是会产生冲突，再加入 Stylelint 会让本地配置变得更加复杂，包也变得更加臃肿（因此官方在@15 版本中做了优化配置，不再有冲突配置）；
-- 如今更加流行的是 CSS-in-JS ，能利用静态分析优化掉大量冗余的 CSS，减小包的体积；再如 Tailwind 等框架的流行，直接干掉了纯 CSS，Stylelint 也就不需要了。当然，它还是给予了 CSS-in-JS 支持，但是请注意 Stylelint 的版本，@15 已经做了大量的优化，[删除 processors 配置](https://stylelint.io/migration-guide/to-15/#removed-processors-configuration-property)。
+- 如今更加流行的是 CSS-in-JS ，能利用静态分析优化掉大量冗余的 CSS，减小包的体积；再如 Tailwind 等框架的流行，直接干掉了纯 CSS，Stylelint 就更不需要了。当然，新版的 Stylelint 还是给予了 CSS-in-JS 支持，并且 @15 也做了大量的优化，如[删除 processors 配置](https://stylelint.io/migration-guide/to-15/#removed-processors-configuration-property)等。
 
 总的来说，一般的项目中，ESlint + Prettier 已经足够满足项目需求了，若不是必须，可不做配置（配置项实在是太多了 T^T）。
 
@@ -21,7 +23,7 @@ tag:
 
 首先要明确自己的项目是老项目，还是新项目。所需要的 Stylelint 的版本是多少，最新的 Stylelint@15 同之前的配置有较大出入！@15 整合了同 Prettier 之间冲突的规则，不再需要扩展 [Prettier 的 Stylelint 配置](https://www.npmjs.com/package/stylelint-config-prettier)，因为应该没有冲突的规则！因此，接下来的配置说明都是基于新版@15 的。并且，由于已经对 Prettier 左右兼容性支持，因此不管项目中是否已经配置安装过了 ESlint + Prettier 都可以直接安装下面的配置入手。
 
-参考文档：[Stylelint 官方文档](https://stylelint.io/)。
+参考文档：[Stylelint 官方文档](https://stylelint.io/)，还是官方文档好使。
 
 基础性配置：
 

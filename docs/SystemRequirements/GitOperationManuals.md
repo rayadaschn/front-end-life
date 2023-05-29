@@ -6,7 +6,8 @@ category:
   - linux
 tag:
   - linux
-sticky: true
+sticky: false
+star: true
 ---
 
 # Git 操作手册指南
