@@ -428,6 +428,39 @@ $: git empty "Empty commit"
 
 对于别名，我们做一个 git fetch。然后我们得到合并后的分支，把它作为 egrep 命令的输入，过滤掉 `master` 分支，然后删除这些分支。
 
+## 配置代理
+
+配置 Git 全局代理：
+
+访问 Github 走代理模式
+
+```bash
+# 全局配置 socket5
+$: git config --global http.https://github.com.proxy socks5://127.0.0.1:7890
+```
+
+- `git config`：Git 命令行工具的配置命令。
+- `--global`：表示该配置是全局性质的，会应用在你的所有代码仓库中。
+- `http.https://github.com.proxy` ：作为配置项名称，它表示对应的是使用 HTTPS 协议访问 GitHub 并需要进行代理配置。
+- `socks5://127.0.0.1:7890`：代理服务器的地址和端口号。其中，socks5 表示使用 SOCKS5 协议进行代理，`127.0.0.1` 指的是代理服务器的 IP 地址或主机名，7890 则是端口号。你需要根据自己实际的代理情况进行相应的修改，并保证对应的代理能够正常工作。
+
+取消代理：
+
+```bash
+# 取消全局代理
+$: git config --global --unset http.proxy 
+$: git config --global --unset https.proxy
+```
+
+查看 git 配置：
+
+```bash
+# 查看全局配置
+$: git config --global --list
+# 查看本地局部配置
+$: git config --local --list
+```
+
 ## 开发流程
 
 1. 从 **develop** 分支检出分支 `feat/xxx` : `git checkout feat/xxx`
