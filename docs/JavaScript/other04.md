@@ -28,7 +28,23 @@ tag:
 
 ## 配置过程
 
-通常来说 git 推送代码的过程为：`git add` - `git commit` - `git push`，在 `git commit` 期间进行代码检测操作是较好的。接下来看处理过程：
+通常来说 git 推送代码的过程为：`git add` - `git commit` - `git push`，在 `git commit` 提交之前检测操作是较好的。
+
+Git 的钩子通常是放置在 `.git/hooks/` 文件夹内，它在我们初始化仓库时，便会自动生成。一般这个文件里会有如下内容：
+
+![Git Hooks](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202305291546790.png)
+
+以 `.sample` 结尾的文件便是钩子脚本，来看一下几个最常用的 Git 本地钩子：
+
+1. pre-commit：预提交钩子，在每次运行 `git commit` 命令之前执行；
+2. prepare-commit-msg：在调用 `pre-commit` 钩子之后执行。具体是在 Git 进入默认提交消息编辑器之前、生成 commit 信息前执行。该钩子在 commit-msg 钩子之前执行，允许在默认编辑器启动之前对提交消息进行额外的处理，比如为全新的 commit 添加 issue 编号或者其他信息。
+3. commit-msg：在 Git 执行完默认的提交消息编辑器之后、生成 commit 信息（包括消息、作者、时间等）之前执行。可以用来验证或重构提交消息的格式或内容，例如强制确保提交消息符合团队约定、添加额外的元数据等。
+
+   - 需要注意的是，这两个钩子都可以接收一个参数 $1，该参数表示即将被提交的信息文件的路径。
+
+4. post-commit：在 `commit-msg` 执行之后，用于改变 git commit 命令的输出，主要用于消息通知。
+
+一般来说，pre-commit 和 commit-msg 俩个钩子用的最多。前者用于检测代码质量；后者用于约束 commit 提交信息。接下来看处理过程：
 
 > 注意，以下皆为 husky@6.0 以上的版本，截止 2023.05.24 为 husky@8.0.3。
 >
