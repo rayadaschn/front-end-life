@@ -22,7 +22,7 @@
     "clean-dev": "vuepress dev docs --clean-cache",
     "dev": "vuepress dev docs",
     "lint-staged": "lint-staged",
-    "git-push": "git add . && git commit -m 'update' && git push"
+    "backup": "git add . && git commit -m \"chore: backup\" && git push"
   },
   "lint-staged": {
     "docs/**/*.{md}": [
