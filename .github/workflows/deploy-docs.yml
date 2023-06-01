@@ -12,7 +12,7 @@ on:
       - sourcecode # 只在master上push触发部署
     types: [closed]
   schedule:
-    - cron: "30 5,11 * * *" # Runs everyday at 11:30
+    - cron: '30 5,11 * * *' # Runs everyday at 11:30
 
 jobs:
   deploy-gh-pages:
@@ -50,3 +50,19 @@ jobs:
           BRANCH: master # The branch the action should deploy to.
           FOLDER: docs/.vuepress/dist/
           CLEAN: true
+      # 自动部署到阿里云服务器
+      - name: deploy to aliyun
+        uses: easingthemes/ssh-deploy@v2.1.5
+        env:
+          # 私钥
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          # scp参数
+          ARGS: '-rltgoDzvO --delete'
+          # 源目录，编译后生成的文件目录
+          SOURCE: docs/.vuepress/dist/
+          # 服务器ip：换成你的服务器IP
+          REMOTE_HOST: ${{ secrets.SERVER_IP }}
+          # 用户
+          REMOTE_USER: root
+          # 目标地址 你在服务器上部署代码的地方
+          TARGET: /var/www
