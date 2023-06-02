@@ -24,10 +24,23 @@ date: 2023-06-02
 
 虽然这三个框架都是面向 Web 开发的，但它们关注不同方面并解决了不同的问题。`Nest.js` 聚焦于构建高效、可扩展的后端服务，`Nuxt.js` 和 `Next.js` 均专注于实现前端应用程序的优化和性能提升。
 
-如何选择：
+## 如何选择：
 
 客户端渲染（CSR，Client-side Rendering）：Vue、React；
 
 服务端渲染（SSR，Server-side Rendering）：Nuxt、Next；
 
 构建服务器应用程序（后端开发）：Nest。
+
+## OneMoreThing
+
+`Nest.js` 的名称源自 Node.js, Express, Strongloop 和 TypeScript 组合。它被设计为一款使用 TypeScript 构建高度模块化、可测试性和可扩展性服务端应用程序的框架。
+
+- `Node.js`: Node.js 是一个适用于服务器端 Web 应用程序开发的 JavaScript 运行环境。它提供了对流、HTTP 请求、TCP 连接等核心网络协议的良好支持，并且具备异步 IO 处理能力及单线程的优势。
+- `Express.js`: Express.js 是 Node.js 社区中广泛使用的开源 Web 框架。它具有简单易懂、插件丰富的设计，支持路由管理、中间件编写、cookie 处理等 HTTP 端点处理留下了深刻的影响。
+- `Strongloop`: Strongloop （现在是 IBM API Connect）是 Node.js 生态系统中的企业级开发工具和支持服务提供者，致力于构建高效的可扩展微服务应用程序。它提供了解决方案和工具，可以帮助您在生产环境中快速、安全地构建出高质量的、大规模的服务端应用程序。
+- `TypeScript`: TypeScript 是一个面向对象的编程语言，它扩展了 JavaScript，增加了类、接口、类型注释等静态元素，从而使得 JavaScript 更加适合大型和复杂的代码库开发。
+
+因此，`Nest.js` 继承了每个组件的某些优点，而综合使用这些组件的最佳实践，在 TypeScript 的环境下构建出更好、更智慧的服务端应用程序。
+
+而 Next 和 Nuxt 好像并没有什么特殊含义。
