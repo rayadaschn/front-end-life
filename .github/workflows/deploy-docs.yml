@@ -25,36 +25,20 @@ jobs:
           # repo-token: ${{ secrets.DEPLOY_TOKEN }}
           # submodules: true
 
-      # - name: 设置 Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 18
-      #     cache: npm
-
-      # find yarn cache
-      - name: 获取 yarn 缓存
-        id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      # update cache
-      - name: 缓存依赖
-        uses: actions/cache@v3
+      - name: set Node.js
+        uses: actions/setup-node@v3
         with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 18
+          cache: npm
 
-      - name: 安装依赖
-        run: yarn install
-
-      - name: 构建文档
-        # env:
-        #   NODE_OPTIONS: --max_old_space_size=8192
+      - name: build docs
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
         run: |-
-          yarn docs:build
+          npm run docs:build
           > docs/.vuepress/dist/.nojekyll
 
-      - name: 部署文档
+      - name: deploy docs
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           #  文档部署到的分支名称
