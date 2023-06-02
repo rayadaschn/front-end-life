@@ -31,6 +31,9 @@ jobs:
           node-version: 18
           cache: npm
 
+      - name: npm install
+        run: npm ci
+
       - name: build docs
         env:
           NODE_OPTIONS: --max_old_space_size=8192
