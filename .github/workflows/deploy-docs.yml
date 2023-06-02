@@ -12,7 +12,7 @@ on:
       - sourcecode
     types: [closed]
   schedule:
-    - cron: '30 5,11 * * *' # Runs everyday at 11:30
+    - cron: '30 5,11 * * *'
 
 jobs:
   deploy-gh-pages:
@@ -25,20 +25,33 @@ jobs:
           # repo-token: ${{ secrets.DEPLOY_TOKEN }}
           # submodules: true
 
-      - name: 设置 Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: pnpm
+      # - name: 设置 Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18
+      #     cache: npm
+
+       # find yarn cache
+    - name: Get yarn cache path
+      id: yarn-cache
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    # update cache
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: ${{ steps.yarn-cache.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
 
       - name: 安装依赖
-        run: pnpm install
+        run: yarn install
 
       - name: 构建文档
         env:
           NODE_OPTIONS: --max_old_space_size=8192
         run: |-
-          pnpm docs:build
+          yarn docs:build
           > docs/.vuepress/dist/.nojekyll
 
       - name: 部署文档
@@ -46,7 +59,7 @@ jobs:
         with:
           #  文档部署到的分支名称
           GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-          BRANCH: master # The branch the action should deploy to.
+          BRANCH: master
           FOLDER: docs/.vuepress/dist/
           CLEAN: true
       # 自动部署到阿里云服务器
