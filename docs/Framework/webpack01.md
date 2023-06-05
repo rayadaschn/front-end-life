@@ -19,7 +19,7 @@ sticky: false
 
 > 实际上，跨域的产生和前后端分离有很大关系。若前后端不分离，数据全有后端提供，则无跨域问题。
 >
-> 当前后端分离后，浏览器发现静态资源和 API 接口(XHR、Fetch)请求不是来自同一个地方时(同源策略)，就产生了跨域。
+> 当前后端分离后，浏览器发现静态资源和 API 接口(XHR、Fetch)请求不是来自同一个地方时(同源策略)，就产生了跨域。这只发生在前端浏览器中，而后端服务器之间的数据请求，并不会产生跨域影响。因此，在后面介绍的 webpack 通过 devServer.proxy 配置或者其他跨域方案实现的代理转发，实际上就是利用后端服务进行数据请求操作，当请求完成后再将响应结果转发给前端客户端。
 
 ## 跨域的解决方案总结
 
@@ -41,31 +41,31 @@ cors 的实现需要浏览器和服务器共同支持。浏览器在发送跨域
 客户端代码：
 
 ```js
-fetch("http://www.example.com/data")
+fetch('http://www.example.com/data')
   .then((response) => response.json())
   .then((data) => console.log(data))
-  .catch((error) => console.error(error));
+  .catch((error) => console.error(error))
 ```
 
 服务器代码：
 
 ```js
-const http = require("http");
+const http = require('http')
 
 http
   .createserver((req, res) => {
-    res.setheader("access-control-allow-origin", "http://www.example.com");
-    res.setheader("access-control-allow-methods", "get, post, options");
-    res.setheader("access-control-allow-headers", "content-type");
-    if (req.method === "options") {
-      res.writehead(200);
-      res.end();
-      return;
+    res.setheader('access-control-allow-origin', 'http://www.example.com')
+    res.setheader('access-control-allow-methods', 'get, post, options')
+    res.setheader('access-control-allow-headers', 'content-type')
+    if (req.method === 'options') {
+      res.writehead(200)
+      res.end()
+      return
     }
-    res.writehead(200, { "content-type": "application/json" });
-    res.end(json.stringify({ message: "hello, world!" }));
+    res.writehead(200, { 'content-type': 'application/json' })
+    res.end(json.stringify({ message: 'hello, world!' }))
   })
-  .listen(8080);
+  .listen(8080)
 ```
 
 在这个例子中，客户端向`http://www.example.com/data`发送 get 请求，服务器返回一个 json 格式的数据。在服务器的响应头中，我们设置了`access-control-allow-origin`字段，允许`http://www.example.com`域名访问资源，若是允许任意域名访问则可设置为星号`*`。
@@ -81,25 +81,25 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
 2. 在 node.js 服务器代码中引入中间件，并设置代理规则：
 
    ```js
-   const express = require("express");
-   const { createproxymiddleware } = require("http-proxy-middleware");
+   const express = require('express')
+   const { createproxymiddleware } = require('http-proxy-middleware')
 
-   const app = express();
+   const app = express()
 
    app.use(
-     "/api",
+     '/api',
      createproxymiddleware({
-       target: "http://www.example.com", // 目标服务器地址
+       target: 'http://www.example.com', // 目标服务器地址
        changeorigin: true, // 是否跨域
        pathrewrite: {
-         "^/api": "", // 将 /api 前缀替换为空
+         '^/api': '', // 将 /api 前缀替换为空
        },
      })
-   );
+   )
 
    app.listen(3000, () => {
-     console.log("server started on port 3000");
-   });
+     console.log('server started on port 3000')
+   })
    ```
 
    在这个例子中，我们设置了一个代理规则，将以 /api 开头的请求转发到 `http://www.example.com/` 服务器上。同时，我们还设置了 **changeorigin** 为 **true**，表示允许跨域请求。**pathrewrite** 用于替换请求路径中的前缀，这里将 `/api` 前缀替换为空。
@@ -135,15 +135,17 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
 2. 在前端代码中发送请求时，将请求路径设置为代理路径即可：
 
    ```js
-   fetch("/api/data")
+   fetch('/api/data')
      .then((response) => response.json())
      .then((data) => console.log(data))
-     .catch((error) => console.error(error));
+     .catch((error) => console.error(error))
    ```
 
 ### Nginx 反向代理
 
-nginx 反向代理可以通过设置跨域请求头来解决跨域问题。具体实现步骤如下：
+nginx 反向代理可以通过设置跨域请求头来解决跨域问题。一般用于线上环境，解决跨域。（当然，更简单的是直接后端配置 CORS）
+
+具体实现步骤如下：
 
 1. 在 nginx 的配置文件中设置反向代理规则：
 
@@ -159,10 +161,10 @@ location /api {
 2. 在前端代码中发送请求时，将请求路径设置为反向代理路径即可：
 
 ```js
-fetch("/api/data")
+fetch('/api/data')
   .then((response) => response.json())
   .then((data) => console.log(data))
-  .catch((error) => console.error(error));
+  .catch((error) => console.error(error))
 ```
 
 在这个例子中，我们使用 fetch 发送请求时，将请求路径设置为 `/api/data`，nginx 反向代理会将该请求转发到 `http://www.example.com/data`，从而实现跨域请求。
@@ -182,14 +184,14 @@ JSONP 是一种常用的跨域解决方案，它通过动态创建`<script>`标�
 2. 服务端接收到请求后，将数据封装在回调函数中返回给客户端，如：
 
 ```js
-handleData({ name: "John", age: 30 });
+handleData({ name: 'John', age: 30 })
 ```
 
 3. 前端页面定义回调函数，解析返回的数据（实际返回的数据为函数+参数，参数为实际跨域返回的数据），如：
 
 ```js
 function handleData(data) {
-  console.log(data.name, data.age);
+  console.log(data.name, data.age)
 }
 ```
 
