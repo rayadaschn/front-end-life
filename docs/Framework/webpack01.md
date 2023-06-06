@@ -112,6 +112,10 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
 
 在 webpack 中设置 node 服务器代理，可以使用 webpack-dev-server 提供的 proxy 选项来实现。proxy 选项可以将请求代理到另一个服务器上，从而实现跨域请求。
 
+实际原理和 node 服务器代理是一样的，只不过这里的服务器是 webpack 开启的本地服务器，一般为 `http://localhost:8000`。我们在页面打开后，地址是 `http://localhost:8000/xxx/index`这里的同源 host 是 localhost，如果我们去请求其它服务器的 api 可能会产生跨域问题。所以让开发服务器帮咱们去请求，则可以解决这个问题，也就是 proxy 代理。
+
+代理成功后，如原请求 API 地址是 `https://api.github.com/users`，经过本地服务器代理，可以直接访问 `http://localhost:8000/users` 也可以得到原 API 的数据了。如此一来，所有的请求都在 localhost 这个同源地址下了，不再产生跨域问题。
+
 具体实现步骤如下：
 
 1. 在 webpack 配置文件中添加 devserver 配置项，并设置 proxy 选项：
@@ -119,18 +123,18 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
    ```js
    devserver: {
      proxy: {
-       '/api': {
-         target: 'http://www.example.com', // 目标服务器地址
+       '/api': {  // 以 `/api` 开头的接口，都会被代理
+         target: 'https://api.github.com', // 目标服务器地址, 如请求 http://localhost:8080/api 会被代理到 https://api.github.com
          changeorigin: true, // 是否跨域
          pathrewrite: {
-           '^/api': '', // 将 /api 前缀替换为空
+           '^/api': '', // 将 `/api` 前缀替换为空
          },
        },
      },
    }
    ```
 
-   在这个例子中，我们设置了一个代理规则，将以 `/api` 开头的请求转发到 `http://www.example.com/` 服务器上。同时，我们还设置了 **changeorigin** 为 **true**，表示允许跨域请求。**pathrewrite** 用于替换请求路径中的前缀，这里将 `/api` 前缀替换为空。
+   在这个例子中，我们设置了一个代理规则，将以 `/api` 开头的请求转发到 `https://api.github.com` 服务器上。同时，我们还设置了 **changeorigin** 为 **true**，表示允许跨域请求。**pathrewrite** 用于替换请求路径中的前缀，这里将 `/api` 前缀替换为空。
 
 2. 在前端代码中发送请求时，将请求路径设置为代理路径即可：
 
