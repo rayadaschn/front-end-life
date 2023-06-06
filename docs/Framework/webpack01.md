@@ -74,6 +74,8 @@ http
 
 node.js 服务器代理是一种解决服务端跨域请求的方式。它的基本原理是在 node.js 服务器上设置一个代理服务器，将跨域请求转发到目标服务器上，实现跨域请求。
 
+原理是：如请求原目标 API: `http://www.example.com`，但是它并未配置 CORS，但是我们有一台代理服务器，`http://www.api.proxy.com`，我们将原目标 API 的数据请求全部由代理服务器来进行，而代理服务器允许跨域或不存在跨域问题，如此一来便可以解决。即请求访问如 `https://api.github.com/users` 转由 `http://www.api.proxy.com/users` 来代理，直接请求代理服务器便可。
+
 具体实现步骤如下：
 
 1. 在 node.js 服务器上安装 http-proxy-middleware 中间件：`npm install http-proxy-middleware --save`
@@ -89,7 +91,7 @@ node.js 服务器代理是一种解决服务端跨域请求的方式。它的基
    app.use(
      '/api',
      createproxymiddleware({
-       target: 'http://www.example.com', // 目标服务器地址
+       target: 'http://www.example.com', // 目标服务器地址，实际访问地址
        changeorigin: true, // 是否跨域
        pathrewrite: {
          '^/api': '', // 将 /api 前缀替换为空
