@@ -33,6 +33,9 @@ tag:
 $: npm install --save-dev stylelint stylelint-config-standard-scss
 ```
 
+- stylelint：核心库
+- stylelint-config-standard：CSS 规范
+
 2 . 使用以下内容在项目的根目录中创建一个配置文件：`.stylelintrc.json`
 
 ```json
@@ -74,12 +77,13 @@ $: npx stylelint "**/*.scss"
 单文件的检测，并不能满足我们的项目需求，如还想让其帮助我们检测修复 `.vue` 格式的代码帮助我们检测修复 css 样式书写的顺序等，此时就要配置其它的插件了。
 
 - stylelint-config-recess-order：一个 Stylelint 配置，它像 Recess 和 Bootstrap 那样对 CSS 属性进行排序。
+- postcss-html：stylelint-config-recommended-vue 依赖这个包;
 - stylelint-config-recommended-vue：Stylelint 推荐的可共享 Vue 配置。
 
 1. 在上面的基础上，再将这俩个配置安装：
 
    ```bash
-   $: npm install --save-dev stylelint-config-recess-order stylelint-config-recommended-vue
+   $: npm install --save-dev stylelint-config-recess-order postcss-html stylelint-config-recommended-vue
    ```
 
 2. 在配置文件`.stylelintrc.json` 中新增这俩个配置：
@@ -158,7 +162,7 @@ $: npx stylelint "**/*.scss"
    }
    ```
 
-   > 注意，需要将 stylelint-config-recommended-vue 放置于末尾，否则可能会不起作用。这是由于配置的读取顺序决定的。
+   > 注意，需要将 stylelint-config-recommended-vue 放置于末尾，否则可能会不起作用。这是由于配置的读取顺序决定的。 类似于 ESLint 同 Prettier 解决冲突。
 
    除新增的配置外，还在其中规定了 css 样式的书写顺序规则 “order/properties-order” ：
 

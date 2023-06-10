@@ -189,7 +189,7 @@ Git 的钩子通常是放置在 `.git/hooks/` 文件夹内，它在我们初始�
    $: npm install -D eslint-config-prettier eslint-plugin-prettier
    ```
 
-   > [eslint-plugin-prettier](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fprettier%2Feslint-plugin-prettier)： 基于 prettier 代码风格的 eslint 规则，即 eslint 使用 pretter 规则来格式化代码。
+   > [eslint-plugin-prettier](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fprettier%2Feslint-plugin-prettier)： 基于 prettier 代码风格的 eslint 规则，即 eslint 使用 prettier 规则来格式化代码。
    >
    > [eslint-config-prettier](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fprettier%2Feslint-config-prettier)： 禁用所有与格式相关的 eslint 规则，解决 prettier 与 eslint 规则冲突，确保将其放在 extends 队列最后，这样它将覆盖其他配置。
    >
@@ -226,7 +226,6 @@ Git 的钩子通常是放置在 `.git/hooks/` 文件夹内，它在我们初始�
 
      ```.eslintignore
      .eslintrc.cjs
-     .prettierrc.js
      /node_modules/
      public
      dist
