@@ -7,7 +7,7 @@ category:
   - 框架
 tag:
   - ssr
-star: true
+star: false
 sticky: false
 ---
 
