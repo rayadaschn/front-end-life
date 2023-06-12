@@ -44,7 +44,7 @@ sticky: false
 
    - 创建 middleware 文件
 
-     在你的 Nuxt.js 项目中，你可以在 `middleware` 目录下创建一个新的 JavaScript 文件。该文件将包含你的 middleware 代码。例如，你可以创建一个名为 `auth.js` 的新文件：
+     在 Nuxt 项目中，在 `middleware` 目录下创建一个新的 JavaScript 文件。该文件将包含所有的 middleware 代码。例如，可以创建一个名为 `auth.js` 的新文件：
 
      ```js
      export default function ({ store, redirect }) {
@@ -59,7 +59,7 @@ sticky: false
 
    - 注册 middleware
 
-     在 Nuxt.js 中，你可以在路由配置对象或页面组件中注册 middleware。例如，你可以在 `nuxt.config.js` 文件中为全局路由注册 middleware：
+     在 Nuxt 中，可以在路由配置对象或页面组件中注册 middleware。例如，可以在 `nuxt.config.js` 文件中为全局路由注册 middleware：
 
      ```js
      export default {
@@ -71,7 +71,7 @@ sticky: false
 
      在上面的代码中，我们将 `auth` middleware 注册为全局路由 middleware。这意味着每个路由都将使用该 middleware。
 
-     你还可以在路由配置对象或页面组件中注册 middleware。例如，你可以在页面组件中注册 middleware：
+     此外，我们还可以在路由配置对象或页面组件中注册 middleware。在页面组件中注册 middleware：
 
      ```js
      export default {
