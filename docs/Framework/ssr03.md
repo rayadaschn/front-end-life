@@ -15,7 +15,10 @@ sticky: false
 
 ## 路由
 
-不同于常规的 Vue 项目是以 `index.js` 为项目的入口文件，Nuxt 将 `App.vue` 作为文件入口点，并为应用程序的每个路由展示内容。这是 Nuxt 的一个核心特性是文件系统路由器。pages/ 目录中的每个 Vue 文件都会创建一个相应的 URL(或路由)来显示文件的内容。
+不同于常规的 Vue 项目是以 `index.js` 为项目的入口文件，Nuxt 将 `App.vue` 作为文件入口点，并为应用程序的每个路由展示内容。这是 Nuxt 的一个核心特性是文件系统路由器。`pages/` 目录中的每个 Vue 文件都会创建一个相应的 URL(或路由)来显示文件的内容。
+
+> 路由的嵌套:
+> 路由的嵌套则直接是文件夹形式：pages 文件夹下新建子文件夹。
 
 1. 路由的占位：
 
@@ -40,13 +43,14 @@ sticky: false
 
 4. 导航守卫: 中间件 Middleware
 
-   在 Nuxt 中有一个中间件 Middleware 的概念。实际上就是导航守卫的作用。
+   在 Nuxt 中有一个中间件 Middleware 的概念。实际上就是导航守卫的作用。使用流程如下：
 
    - 创建 middleware 文件
 
      在 Nuxt 项目中，在 `middleware` 目录下创建一个新的 JavaScript 文件。该文件将包含所有的 middleware 代码。例如，可以创建一个名为 `auth.js` 的新文件：
 
      ```js
+     // auth.js
      export default function ({ store, redirect }) {
        // 如果用户未经身份验证，则重定向到登录页面
        if (!store.state.auth.loggedIn) {
@@ -74,6 +78,7 @@ sticky: false
      此外，我们还可以在路由配置对象或页面组件中注册 middleware。在页面组件中注册 middleware：
 
      ```js
+     // page/xxx.vue
      export default {
        middleware: ['auth'],
      }

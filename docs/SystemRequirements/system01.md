@@ -156,7 +156,16 @@ sticky: false
    $： nvm install 16
 
    # 8. 设置node 默认版本
+   $: nvm use 16
    $: nvm alias default 16
+
+   # 9. 升级当前的 node 版本
+   $: nvm install-latest-npm
+
+   # 10. 垮版本更新全局依赖包, 如 16 到 18
+   $: nvm use 18
+      # 这里的 16 为 包的版本 version
+   $: nvm reinstall-packages 16
    ```
 
    ```shell
