@@ -91,3 +91,49 @@ sticky: false
      现在，当用户访问需要身份验证的页面时，middleware 将运行并检查用户是否已经登录。如果用户未经身份验证，则 middleware 将将用户重定向到登录页面。
 
      这就是使用 middleware 的基本步骤。你可以使用 middleware 完成许多任务，例如身份验证、页面初始化、请求处理、性能指标跟踪等。在编写 middleware 时，请记住将其注册到正确的路由或页面上，并在 middleware 函数中执行必要的逻辑。
+
+## 生命周期
+
+Nuxt 的生命周期，全交由 Hooks 进行管理，先梳理一下：
+
+| Hook                     | Arguments           | Environment     | Description                                                                                                      |
+| :----------------------- | :------------------ | :-------------- | :--------------------------------------------------------------------------------------------------------------- |
+| `app:created`            | `vueApp`            | Server & Client | 创建初始`vueApp` 实例时调用。                                                                                    |
+| `app:error`              | `err`               | Server & Client | 发生致命错误时调用。                                                                                             |
+| `app:error:cleared`      | `{ redirect? }`     | Server & Client | 发生致命错误时调用。                                                                                             |
+| `app:data:refresh`       | `keys?`             | Server & Client | (internal)                                                                                                       |
+| `vue:setup`              | -                   | Server & Client | (internal)                                                                                                       |
+| `vue:error`              | `err, target, info` | Server & Client | 当 vue 错误跳转到根组件时调用。[了解更多](https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured). |
+| `app:rendered`           | `renderContext`     | Server          | 在 SSR 渲染完成时调用。                                                                                          |
+| `app:redirected`         | -                   | Server          | 在 SSR 重定向之前调用。                                                                                          |
+| `app:beforeMount`        | `vueApp`            | Client          | 在安装应用程序之前调用，仅在客户端调用。                                                                         |
+| `app:mounted`            | `vueApp`            | Client          | Vue 应用程序初始化并 mounted 浏览器时调用。                                                                      |
+| `app:suspense:resolve`   | `appComponent`      | Client          | 关于 [Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) resolved 事件。                        |
+| `link:prefetch`          | `to`                | Client          | 当观察到`<NuxtLink>` 被预取时调用。                                                                              |
+| `page:start`             | `pageComponent?`    | Client          | 在[Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) 等待事件中调用。                          |
+| `page:finish`            | `pageComponent?`    | Client          | 调用 [Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) resolved 事件。                        |
+| `page:transition:finish` | `pageComponent?`    | Client          | 页面转换 [onAfterLeave](https://vuejs.org/guide/built-ins/transition.html#javascript-hooks) 事件.                |
+
+使用方法也很简单:
+
+在 `nuxt.config.ts` 全局生命周期:
+
+```ts
+export default defineNuxtConfig({
+  hooks: {
+    close: () => {},
+  },
+})
+```
+
+在模块中使用:
+
+```js
+import { defineNuxtModule } from '@nuxt/kit'
+
+export default defineNuxtModule({
+  setup (options, nuxt) {
+    nuxt.hook('close', async () => { })
+  })
+})
+```

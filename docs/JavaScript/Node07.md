@@ -10,6 +10,8 @@ date: 2023-06-14
 
 # nvm 使用技巧
 
+> 之前记录过一次，再更新一版
+
 nvm（Node Version Manager）是一款针对 Node.js 的版本管理工具。它允许用户同时安装和管理多个 Node.js 版本，并提供了一些命令行工具来快速切换不同的版本，以适应不同的使用场景。
 
 官方文档: [Nvm 官方文档](https://github.com/nvm-sh/nvm#intro)
@@ -93,8 +95,9 @@ nvm 的主要优点包括：
    $: nvm install-latest-npm
 
    # 5. 垮版本更新全局依赖包, 如从 16 到 18
+      # 切换到 目标 18 的环境
    $: nvm use 18
-      # 这里的 16 为 包的版本 version
+      # 更新 16 的全局依赖，这里的 16 为 包的版本 version
    $: nvm reinstall-packages 16
    ```
 
