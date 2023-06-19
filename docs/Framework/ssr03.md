@@ -96,23 +96,25 @@ sticky: false
 
 Nuxt 的生命周期，全交由 Hooks 进行管理，先梳理一下：
 
-| Hook                     | Arguments           | Environment     | Description                                                                                                      |
-| :----------------------- | :------------------ | :-------------- | :--------------------------------------------------------------------------------------------------------------- |
-| `app:created`            | `vueApp`            | Server & Client | 创建初始`vueApp` 实例时调用。                                                                                    |
-| `app:error`              | `err`               | Server & Client | 发生致命错误时调用。                                                                                             |
-| `app:error:cleared`      | `{ redirect? }`     | Server & Client | 发生致命错误时调用。                                                                                             |
-| `app:data:refresh`       | `keys?`             | Server & Client | (internal)                                                                                                       |
-| `vue:setup`              | -                   | Server & Client | (internal)                                                                                                       |
-| `vue:error`              | `err, target, info` | Server & Client | 当 vue 错误跳转到根组件时调用。[了解更多](https://vuejs.org/api/composition-api-lifecycle.html#onerrorcaptured). |
-| `app:rendered`           | `renderContext`     | Server          | 在 SSR 渲染完成时调用。                                                                                          |
-| `app:redirected`         | -                   | Server          | 在 SSR 重定向之前调用。                                                                                          |
-| `app:beforeMount`        | `vueApp`            | Client          | 在安装应用程序之前调用，仅在客户端调用。                                                                         |
-| `app:mounted`            | `vueApp`            | Client          | Vue 应用程序初始化并 mounted 浏览器时调用。                                                                      |
-| `app:suspense:resolve`   | `appComponent`      | Client          | 关于 [Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) resolved 事件。                        |
-| `link:prefetch`          | `to`                | Client          | 当观察到`<NuxtLink>` 被预取时调用。                                                                              |
-| `page:start`             | `pageComponent?`    | Client          | 在[Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) 等待事件中调用。                          |
-| `page:finish`            | `pageComponent?`    | Client          | 调用 [Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) resolved 事件。                        |
-| `page:transition:finish` | `pageComponent?`    | Client          | 页面转换 [onAfterLeave](https://vuejs.org/guide/built-ins/transition.html#javascript-hooks) 事件.                |
+| Hook                     | Arguments           | Environment     | Description                                                                                       |
+| :----------------------- | :------------------ | :-------------- | :------------------------------------------------------------------------------------------------ |
+| `app:created`            | `vueApp`            | Server & Client | 创建初始`vueApp` 实例时调用。                                                                     |
+| `app:error`              | `err`               | Server & Client | 发生致命错误时调用。                                                                              |
+| `app:error:cleared`      | `{ redirect? }`     | Server & Client | 发生致命错误时调用。                                                                              |
+| `app:data:refresh`       | `keys?`             | Server & Client | (internal)                                                                                        |
+| `vue:setup`              | -                   | Server & Client | (internal)                                                                                        |
+| `vue:error`              | `err, target, info` | Server & Client | 当 vue 错误跳转到根组件时调用。                                                                   |
+| `app:rendered`           | `renderContext`     | Server          | 在 SSR 渲染完成时调用。                                                                           |
+| `app:redirected`         | -                   | Server          | 在 SSR 重定向之前调用。                                                                           |
+| `app:beforeMount`        | `vueApp`            | Client          | 在安装应用程序之前调用，仅在客户端调用。                                                          |
+| `app:mounted`            | `vueApp`            | Client          | Vue 应用程序初始化并 mounted 浏览器时调用。                                                       |
+| `app:suspense:resolve`   | `appComponent`      | Client          | 关于 [Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) resolved 事件。         |
+| `link:prefetch`          | `to`                | Client          | 当观察到`<NuxtLink>` 被预取时调用。                                                               |
+| `page:start`             | `pageComponent?`    | Client          | 在[Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) 等待事件中调用。           |
+| `page:finish`            | `pageComponent?`    | Client          | 调用 [Suspense](https://vuejs.org/guide/built-ins/suspense.html#suspense) resolved 事件。         |
+| `page:transition:finish` | `pageComponent?`    | Client          | 页面转换 [onAfterLeave](https://vuejs.org/guide/built-ins/transition.html#javascript-hooks) 事件. |
+
+语法：`nuxtApp.hook(app:created, func)`
 
 使用方法也很简单:
 
@@ -121,19 +123,62 @@ Nuxt 的生命周期，全交由 Hooks 进行管理，先梳理一下：
 ```ts
 export default defineNuxtConfig({
   hooks: {
-    close: () => {},
+    setup: () => {},
   },
 })
 ```
 
-在模块中使用:
+在页面中使用:
 
-```js
-import { defineNuxtModule } from '@nuxt/kit'
-
-export default defineNuxtModule({
-  setup (options, nuxt) {
-    nuxt.hook('close', async () => { })
-  })
+```vue
+<template>
+  <div>
+    <NuxtPage></NuxtPage>
+  </div>
+</template>
+<script setup>
+const nuxtApp = useNuxtApp()
+// Server & Client
+nuxtApp.hook('app:created', (vueApp) => {
+  // console.log("app:created");
 })
+// Client
+nuxtApp.hook('app:beforeMount', (vueApp) => {
+  // console.log("app:beforeMount");
+})
+
+// Server & Client
+nuxtApp.hook('vue:setup', () => {
+  // console.log("vue:setup");
+})
+
+// Server
+nuxtApp.hook('app:rendered', (renderContext) => {
+  // console.log("app:rendered");
+})
+
+// Client
+nuxtApp.hook('app:mounted', (vueApp) => {
+  // console.log("app:mounted");
+})
+</script>
 ```
+
+## 获取数据
+
+1.useAsyncData(key, func):专门解决异步获取数据的函数，会阻止页面导航。
+
+- 发起异步请求需用到 $fetch 全局函数(类似 Fetch API)
+- $fetch(url, opts)是一个类原生 fetch 的跨平台请求库
+
+  2.useFetch(url, opts):用于获取任意的 URL 地址的数据，会阻止页面导航
+
+- 本质是 useAsyncData(key, () => $fetch(url, opts)) 的语法糖。
+
+  3.useLazyFetch(url, opts):用于获取任意 URL 数据，不会阻止页面导航
+
+- 本质和 useFetch 的 lazy 属性设置为 true 一样
+
+  4.useLazyAsyncData(key, func):专门解决异步获取数据的函数。 不会阻止页面导航
+
+- 本质和 useAsyncData 的 lazy 属性设置为 true 一样
