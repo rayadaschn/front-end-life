@@ -168,17 +168,17 @@ nuxtApp.hook('app:mounted', (vueApp) => {
 
 1.useAsyncData(key, func):专门解决异步获取数据的函数，会阻止页面导航。
 
-- 发起异步请求需用到 $fetch 全局函数(类似 Fetch API)
-- $fetch(url, opts)是一个类原生 fetch 的跨平台请求库
+     - 发起异步请求需用到 $fetch 全局函数(类似 Fetch API)
+     - $fetch(url, opts)是一个类原生 fetch 的跨平台请求库
 
-  2.useFetch(url, opts):用于获取任意的 URL 地址的数据，会阻止页面导航
+2.useFetch(url, opts):用于获取任意的 URL 地址的数据，会阻止页面导航
 
-- 本质是 useAsyncData(key, () => $fetch(url, opts)) 的语法糖。
+     - 本质是 useAsyncData(key, () => $fetch(url, opts)) 的语法糖。
 
-  3.useLazyFetch(url, opts):用于获取任意 URL 数据，不会阻止页面导航
+3.useLazyFetch(url, opts):用于获取任意 URL 数据，不会阻止页面导航
 
-- 本质和 useFetch 的 lazy 属性设置为 true 一样
+     - 本质和 useFetch 的 lazy 属性设置为 true 一样
 
-  4.useLazyAsyncData(key, func):专门解决异步获取数据的函数。 不会阻止页面导航
+4.useLazyAsyncData(key, func):专门解决异步获取数据的函数。 不会阻止页面导航
 
-- 本质和 useAsyncData 的 lazy 属性设置为 true 一样
+     - 本质和 useAsyncData 的 lazy 属性设置为 true 一样
