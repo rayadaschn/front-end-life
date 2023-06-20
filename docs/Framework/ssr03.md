@@ -166,19 +166,119 @@ nuxtApp.hook('app:mounted', (vueApp) => {
 
 ## 获取数据
 
-1.useAsyncData(key, func):专门解决异步获取数据的函数，会阻止页面导航。
+1. useAsyncData(key, func, options):专门解决异步获取数据的函数，会阻止页面导航。
 
-     - 发起异步请求需用到 $fetch 全局函数(类似 Fetch API)
-     - $fetch(url, opts)是一个类原生 fetch 的跨平台请求库
+   - key： string 类型，不可重复
+   - func ：实际请求函数
+   - options：请求配置参数
 
-2.useFetch(url, opts):用于获取任意的 URL 地址的数据，会阻止页面导航
+   ```js
+   const { data, pending, error, refresh } = await useAsyncData(
+     'mountains',
+     () => $fetch('https://api.nuxtjs.dev/mountains')
+   )
+   ```
 
-     - 本质是 useAsyncData(key, () => $fetch(url, opts)) 的语法糖。
+2. useFetch(url, opts):用于获取任意的 URL 地址的数据，会阻止页面导航
 
-3.useLazyFetch(url, opts):用于获取任意 URL 数据，不会阻止页面导航
+   - 本质是 useAsyncData(key, () => $fetch(url, opts)) 的语法糖。
 
-     - 本质和 useFetch 的 lazy 属性设置为 true 一样
+   ```js
+   const { data, pending, error, refresh } = await useFetch(
+     'https://api.nuxtjs.dev/mountains',
+     {
+       pick: ['title'],
+     }
+   )
+   ```
 
-4.useLazyAsyncData(key, func):专门解决异步获取数据的函数。 不会阻止页面导航
+3. useLazyFetch(url, opts):用于获取任意 URL 数据，不会阻止页面导航
 
-     - 本质和 useAsyncData 的 lazy 属性设置为 true 一样
+   - 本质和 useFetch 的 lazy 属性设置为 true 一样
+   - opts 有如下选项:
+     - method: 请求方法;
+     - query: 向 URL 添加查询搜索参数;
+     - params: 参数别名;
+     - body: 请求主体, 若传递的是对象则会将其自动字符串化;
+     - headers: 请求头;
+     - baseURL: Base URL。
+
+4. useLazyAsyncData(key, func):专门解决异步获取数据的函数。 不会阻止页面导航
+
+   - 本质和 useAsyncData 的 lazy 属性设置为 true 一样
+
+**封装 useFetch 请求函数**:
+
+- 在 service 文件夹下新建一个 index.ts 的基础请求函数类：
+
+  ```ts
+  class HuyRequest {
+    request<T = any>(): Promise(){}
+    get<T = any>(){}
+    post<T = any>(){}
+  }
+  ```
+
+  基础请求方法由 request 实现，而对外只需定义实际应用的 get 和 post 方法。
+
+- 先看 get 和 post 对 request 的实际需求：仅需要定义请求的 url 便可发起请求，而后是请求参数和 fetch 相关的 options；
+
+  ```ts
+  import type { UseFetchOptions } from "nuxt/dist/app/composables";
+
+  class HuyRequest {
+    request<T = any>(): Promise(){}
+
+    get<T = any>(url: string, params?: any, options?: UseFetchOptions<T>) {
+      return this.request(url, "GET", params, options);
+    }
+
+    post<T = any>(url: string, data?: any, options?: UseFetchOptions<T>) {
+      return this.request(url, "POST", data, options);
+    }
+  }
+  ```
+
+- 最终完善 class：
+
+  ```ts
+  import type { AsyncData, UseFetchOptions } from 'nuxt/dist/app/composables'
+
+  type Methods = 'GET' | 'POST'
+
+  const BASE_URL = 'http://xxxxx/api/'
+
+  class HuyRequest {
+    request<T = any>(
+      url: string,
+      method: Methods,
+      data?: any,
+      options?: UseFetchOptions<T>
+    ): Promise<AsyncData<T, Error>> {
+      return new Promise((resolve, reject) => {
+        // Fetch 请求 options
+        const newOptions: UseFetchOptions<T> = {
+          baseURL: BASE_URL,
+          method: method,
+          ...options,
+        }
+
+        if (method === 'GET') newOptions.query = data
+        if (method === 'POST') newOptions.body = data
+
+        // 实际请求
+        useFetch<T>(url, newOptions)
+          .then((res) => resolve(res as AsyncData<T, Error>))
+          .catch((error) => reject(error))
+      })
+    }
+
+    get<T = any>(url: string, params?: any, options?: UseFetchOptions<T>) {
+      return this.request(url, 'GET', params, options)
+    }
+
+    post<T = any>(url: string, data?: any, options?: UseFetchOptions<T>) {
+      return this.request(url, 'POST', data, options)
+    }
+  }
+  ```
