@@ -94,7 +94,7 @@ sticky: false
 
 ## 生命周期
 
-Nuxt 的生命周期，全交由 Hooks 进行管理，先梳理一下：
+Nuxt 的生命周期同 Vue3 一样，但也可以由 plugins 插件形式进行监听，此时由 Hooks 进行管理，先梳理一下：
 
 | Hook                     | Arguments           | Environment     | Description                                                                                       |
 | :----------------------- | :------------------ | :-------------- | :------------------------------------------------------------------------------------------------ |
@@ -116,53 +116,91 @@ Nuxt 的生命周期，全交由 Hooks 进行管理，先梳理一下：
 
 语法：`nuxtApp.hook(app:created, func)`
 
-使用方法也很简单:
+使用方法也很简单，三种形式:
 
-在 `nuxt.config.ts` 全局生命周期:
+1. 在 `plugins/<lifecycle>.ts` (在 plugins 文件夹下自定义一个 ts 文件)全局生命周期:
 
-```ts
-export default defineNuxtConfig({
-  hooks: {
-    setup: () => {},
-  },
-})
-```
+   ```ts
+   export default defineNuxtPlugin((nuxtApp) => {
+     // 监听App的生命周期
+     Server & Client
+     nuxtApp.hook('app:created', (vueApp) => {
+       console.log('app:created')
+     })
+     // Client
+     nuxtApp.hook('app:beforeMount', (vueApp) => {
+       console.log('app:beforeMount')
+     })
+     // Server & Client
+     nuxtApp.hook('vue:setup', () => {
+       console.log('vue:setup')
+     })
+     // Server
+     nuxtApp.hook('app:rendered', (renderContext) => {
+       console.log('app:rendered')
+     })
+     // Client
+     nuxtApp.hook('app:mounted', (vueApp) => {
+       console.log('app:mounted')
+     })
+   })
+   ```
 
-在页面中使用:
+2. 在 `app.vue` 中使用，区分于 plugins (官网不建议这样使用, 官网建议 plugins 的形式进行监听):
 
-```vue
-<template>
-  <div>
-    <NuxtPage></NuxtPage>
-  </div>
-</template>
-<script setup>
-const nuxtApp = useNuxtApp()
-// Server & Client
-nuxtApp.hook('app:created', (vueApp) => {
-  // console.log("app:created");
-})
-// Client
-nuxtApp.hook('app:beforeMount', (vueApp) => {
-  // console.log("app:beforeMount");
-})
+   ```vue
+   <template>
+     <div>
+       <NuxtPage></NuxtPage>
+     </div>
+   </template>
+   <script setup>
+   const nuxtApp = useNuxtApp()
+   /** 由于此时是在 setup 下, 所以只会从 render 开始进行监听 */
+   // Server & Client
+   nuxtApp.hook('app:created', (vueApp) => {
+     // console.log("app:created");
+   })
+   // Client
+   nuxtApp.hook('app:beforeMount', (vueApp) => {
+     // console.log("app:beforeMount");
+   })
 
-// Server & Client
-nuxtApp.hook('vue:setup', () => {
-  // console.log("vue:setup");
-})
+   // Server & Client
+   nuxtApp.hook('vue:setup', () => {
+     // console.log("vue:setup");
+   })
+   /** 上面的生命周期不会调用 */
 
-// Server
-nuxtApp.hook('app:rendered', (renderContext) => {
-  // console.log("app:rendered");
-})
+   // Server
+   nuxtApp.hook('app:rendered', (renderContext) => {
+     // console.log("app:rendered");
+   })
 
-// Client
-nuxtApp.hook('app:mounted', (vueApp) => {
-  // console.log("app:mounted");
-})
-</script>
-```
+   // Client
+   nuxtApp.hook('app:mounted', (vueApp) => {
+     // console.log("app:mounted");
+   })
+   </script>
+   ```
+
+3. 在页面组件 page 里面进行使用
+
+   ```vue
+   <template>
+     <div class="home">home</div>
+   </template>
+
+   <script setup>
+   console.log('setup')
+   onBeforeMount(() => {
+     console.log('onBeforeMount')
+   })
+   onMounted(() => {
+     console.log('onMounted')
+   })
+   </script>
+   ```
 
 ## 获取数据
 
