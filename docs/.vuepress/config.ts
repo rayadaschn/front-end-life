@@ -1,26 +1,27 @@
-import { defineUserConfig } from "vuepress";
-import { viteBundler } from "@vuepress/bundler-vite";
+import { defineUserConfig } from 'vuepress'
+import { viteBundler } from '@vuepress/bundler-vite'
+import { googleAnalyticsPlugin } from '@vuepress/plugin-google-analytics'
 
-import theme from "./theme.js";
-import { path } from "@vuepress/utils";
-import { searchProPlugin } from "vuepress-plugin-search-pro";
-import vue from "@vitejs/plugin-vue";
+import theme from './theme.js'
+import { path } from '@vuepress/utils'
+import { searchProPlugin } from 'vuepress-plugin-search-pro'
+import vue from '@vitejs/plugin-vue'
 
 export default defineUserConfig({
-  base: "/front-end-life/", // github
+  base: '/front-end-life/', // github
   // base: "/", // 自定义 nginx
 
   locales: {
-    "/": {
-      lang: "zh-CN", // 网站语言，默认为中文
+    '/': {
+      lang: 'zh-CN', // 网站语言，默认为中文
       title: "Huy's Blog", // 网站标题
-      description: "A blogfront-end blog", // 网站描述
+      description: 'A blogfront-end blog', // 网站描述
     },
   },
 
   theme,
   //修改页面模板，@vuepress-theme-hope/templates/index.build.html
-  templateBuild: path.resolve(__dirname, "templateBuild.html"),
+  templateBuild: path.resolve(__dirname, 'templateBuild.html'),
 
   // 配置插件
   plugins: [
@@ -31,13 +32,17 @@ export default defineUserConfig({
       customFields: [
         {
           getter: (page) => page.frontmatter.category,
-          formatter: "分类：$content",
+          formatter: '分类：$content',
         },
         {
           getter: (page) => page.frontmatter.tag,
-          formatter: "标签：$content",
+          formatter: '标签：$content',
         },
       ],
+    }),
+    googleAnalyticsPlugin({
+      // 需要设置自己的 ID
+      id: 'G-HXK7YZ1S4N',
     }),
   ],
 
@@ -51,10 +56,10 @@ export default defineUserConfig({
     vuePluginOptions: {
       template: {
         compilerOptions: {
-          whitespace: "condense",
+          whitespace: 'condense',
           optimizeImports: true,
         },
       },
     },
   }),
-});
+})
