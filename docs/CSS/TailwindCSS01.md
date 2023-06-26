@@ -125,3 +125,97 @@ Tailwind 对响应式做了较好的兼容，如下是常用断点：
 ```
 
 ## 悬停、焦点和其他状态
+
+对于处于 hover、focus 等状态的元素，也有同样的状态变体前缀。但并非所有的功能都默认开启（以减小包的体积大小）。
+
+Hover 的状态变体前缀为 `hover:`：
+
+```html
+<button class="bg-red-500 hover:bg-red-700">Hover 变体</button>
+```
+
+默认情况下， 以下核心插件启用了该 ​hover ​ 变体：
+
+- backgroundColor
+- backgroundOpacity​​
+- borderColor​
+- borderOpacity​
+- ​boxShadow​
+- ​gradientColorStops​
+- ​opacity​
+- ​rotate​
+- ​scale​
+- ​skew
+- textColor​
+- ​textDecoration​
+- ​textOpacity​
+- ​translate​
+
+特殊的控件需要额外在 `tailwind.config.js` 文件中的 `variants` 中手动启用 `hover` 变体：
+
+```js
+// tailwind.config.js
+module.exports = {
+  // ...
+  variants: {
+    extend: {
+      padding: ['hover'],
+    },
+  },
+}
+```
+
+其它前缀也是类似操作:
+
+- Focus 的前缀为 `focus:`
+- Active 的前缀为 `active:`
+- Visited 的前缀为 `visited:`
+- Disabled 的前缀为 `disabled:`
+- ...
+
+悬停父元素时，子元素做出响应：给父元素添加 `group` 类，并为族元素的功能添加 `group-hover:` 前缀。
+
+```html
+<div
+  class="group border-indigo-500 hover:bg-white hover:shadow-lg hover:border-transparent"
+>
+  <p class="text-indigo-600 group-hover:text-gray-900">New Project</p>
+  <p class="text-indigo-500 group-hover:text-gray-500">
+    Create a new project from a variety of starting templates.
+  </p>
+</div>
+```
+
+同样的，focus 同 hover 一样，给父元素添加 `group` 类，并为族元素的功能添加 `group-focus:` 前缀。
+
+其它：
+
+- First-child 的前缀为 `first:`，以仅当元素是父元素的第一个子元素时才应用功能类。
+- Last-child 的前缀为 `last:`，以仅当元素是父元素的最后一个子元素时才应用功能类。
+
+## 为自定义功能类生成变体
+
+通过 `@variants` 指令包裹住自己的定义 CSS 类来生成状态变体：
+
+```css
+/* Input: */
+@variants group-hover, hover, focus {
+  .banana {
+    color: yellow;
+  }
+}
+
+/* Output: */
+.banana {
+  color: yellow;
+}
+.group:hover .group-hover\:banana {
+  color: yellow;
+}
+.hover\:banana:hover {
+  color: yellow;
+}
+.focus\:banana:focus {
+  color: yellow;
+}
+```
