@@ -10,8 +10,6 @@ sticky: false
 star: true
 ---
 
-# Git 操作手册指南
-
 ## 新建项目操作
 
 1. 克隆项目到本地：`git clone xxxxx` ；
@@ -442,13 +440,13 @@ $: git config --global http.https://github.com.proxy socks5://127.0.0.1:7890
 - `git config`：Git 命令行工具的配置命令。
 - `--global`：表示该配置是全局性质的，会应用在你的所有代码仓库中。
 - `http.https://github.com.proxy` ：作为配置项名称，它表示对应的是使用 HTTPS 协议访问 GitHub 并需要进行代理配置。
-- `socks5://127.0.0.1:7890`：代理服务器的地址和端口号。其中，socks5 表示使用 SOCKS5 协议进行代理，`127.0.0.1` 指的是代理服务器的 IP 地址或主机名，7890 则是端口号。你需要根据自己实际的代理情况进行相应的修改，并保证对应的代理能够正常工作。
+- `socks5://127.0.0.1:1086`：代理服务器的地址和端口号。其中，socks5 表示使用 SOCKS5 协议进行代理，`127.0.0.1` 指的是代理服务器的 IP 地址或主机名，1086 则是端口号。你需要根据自己实际的代理情况进行相应的修改，并保证对应的代理能够正常工作。
 
 取消代理：
 
 ```bash
 # 取消全局代理
-$: git config --global --unset http.proxy 
+$: git config --global --unset http.proxy
 $: git config --global --unset https.proxy
 ```
 
@@ -459,6 +457,9 @@ $: git config --global --unset https.proxy
 $: git config --global --list
 # 查看本地局部配置
 $: git config --local --list
+
+#  打开查看 Mac 中的 git config 文件
+$: open ~/.gitconfig
 ```
 
 ## 开发流程
