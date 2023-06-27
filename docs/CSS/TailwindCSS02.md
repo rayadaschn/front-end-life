@@ -1,5 +1,5 @@
 ---
-title: Tailwind 布局
+title: Tailwind 02 布局
 date: 2023-07-26
 icon: style
 category:
@@ -8,7 +8,8 @@ tag:
   - CSS
 ---
 
-> 本文记录一些常用的布局书写方式，以作查漏补缺。
+> 本文梳理记录一些 Tailwind 常用的布局书写方式，以作查漏补缺。
+> 内容较多，无需一次性全部记忆，但要有所印象。
 
 ## 容器
 
@@ -139,3 +140,155 @@ Position 定位非常便捷，直接书写 potion 的值即可：
 如上文 Position 所写一样，首先父元素要先设置为 `fixed`，变为弹性盒子。
 
 弹性盒子共分为俩部分，父元素控制整体布局，子元素控制元素细节。可见 [《弹性布局 Flex》](FlexboxLayoutTechniques)
+
+### 父元素整体布局设置
+
+先回顾一下原先到布局设置:
+
+1. **flex-direction** 属性与整体布局方向。
+
+   ```css
+   flex-direction: row | row-reverse | column | column-reverse;
+   ```
+
+2. **flex-wrap** 属性与整体布局的换行表现。
+
+   ```css
+   flex-wrap: nowrap | wrap | wrap-reverse;
+   ```
+
+3. **flex-flow** 属性是 **flex-direction** 和 flex-wrap 的缩写。
+
+- 在 Tailwind 中 flex 控制子项的方向 flex-direction 变化较大，直接省略了 direction 转而拼接值；此外 column 也采用缩写 col：
+
+  | Class            | Properties                      |
+  | :--------------- | :------------------------------ |
+  | flex-row         | flex-direction: row;            |
+  | flex-row-reverse | flex-direction: row-reverse;    |
+  | flex-col         | flex-direction: column;         |
+  | flex-col-reverse | flex-direction: column-reverse; |
+
+- 控制整体是否换行 flex-wrap 同 direction 一样是略去 wrap 关键词直接拼接值：
+
+  | Class             | Properties               |
+  | :---------------- | :----------------------- |
+  | flex-wrap         | flex-wrap: wrap;         |
+  | flex-wrap-reverse | flex-wrap: wrap-reverse; |
+  | flex-nowrap       | flex-wrap: nowrap;       |
+
+### 对齐特性
+
+实际上，Tailwind 对齐这一部分同 Grid 网格布局是同享的，先看原先对齐的几个属性值：
+
+1. **justify-content** 属性与整体布局的水平对齐
+
+   ```css
+   justify-content: normal | flex-start | flex-end | center | space-between |
+     space-around | space-evenly;
+   ```
+
+2. 垂直对齐属性 **align-items** 与 **align-self**
+
+   **区别:** **align-self**属性是设置在具体的**某一个 flex 子项**上的，而**align-items**属性是设置**在 flex 容器元素上**的，控制所有 flex 子项的垂直对齐方式。
+
+   ```css
+   align-items: stretch | flex-start | flex-end | center | baseline;
+
+   align-self: auto | stretch | flex-start | flex-end | center | baseline;
+   ```
+
+   - **auto**是**align-self 属性的默认值**，表示 flex 子项的垂直对齐 方式是由 flex 容器的 align-items 属性值决定的。
+   - **stretch**可以看成弹性布局中**align-items 属性的默认值**，表示 flex 子项在垂直方向上拉伸。
+
+3. **align-content** 属性与整体布局的垂直对齐
+
+   **区别:** **align-content** 属性和 **align-items** 属性的区别在于 **align-items** 属性设置的是每一个 **flex** 子项的垂直对齐方式，而 **align-content** 属性将 **所有 flex 子项作为一个整体进行垂直对齐设置**。
+
+   ```css
+   align-content: stretch | flex-start | flex-end | center | space-between |
+     space-around | space-evenly;
+   ```
+
+4. **order** 属性与单个子项的顺序控制
+
+   ```css
+   order: <integer>; /* 整数值，默认值是 0 */
+   ```
+
+在 Tailwind 中有如下变动:
+
+- justify-content 用于 flex 和 grid 沿容器整体布局的水平对齐方向：
+
+  | Class           | Properties                      |
+  | :-------------- | :------------------------------ |
+  | justify-start   | justify-content: flex-start;    |
+  | justify-end     | justify-content: flex-end;      |
+  | justify-center  | justify-content: center;        |
+  | justify-between | justify-content: space-between; |
+  | justify-around  | justify-content: space-around;  |
+  | justify-evenly  | justify-content: space-evenly;  |
+
+- align-content 用于 flex 和 grid 多行沿容器整体布局的垂直对齐方向：
+
+  | Class           | Properties                    |
+  | :-------------- | :---------------------------- |
+  | content-center  | align-content: center;        |
+  | content-start   | align-content: flex-start;    |
+  | content-end     | align-content: flex-end;      |
+  | content-between | align-content: space-between; |
+  | content-around  | align-content: space-around;  |
+  | content-evenly  | align-content: space-evenly;  |
+
+- align-items 用于 flex 和 grid 各单行沿容器整体布局的垂直对齐方向：
+
+  | Class          | Properties               |
+  | :------------- | :----------------------- |
+  | items-start    | align-items: flex-start; |
+  | items-end      | align-items: flex-end;   |
+  | items-center   | align-items: center;     |
+  | items-baseline | align-items: baseline;   |
+  | items-stretch  | align-items: stretch;    |
+
+- align-self 用于 flex 和 grid 单个子项沿容器的垂直对齐方向：
+
+  | Class         | Properties              |
+  | :------------ | :---------------------- |
+  | self-auto     | align-self: auto;       |
+  | self-start    | align-self: flex-start; |
+  | self-end      | align-self: flex-end;   |
+  | self-center   | align-self: center;     |
+  | self-stretch  | align-self: stretch;    |
+  | self-baseline | align-self: baseline;   |
+
+### flex 属性
+
+flex 属性是 flex-grow、flex-shrink 和 flex-basis 这 3 个属性的缩写。
+
+`flex:auto` 等同于 `flex: 1 1 auto` , 作用为 **flex** 子项自动填满剩余空间或自动收缩;
+
+`flex:none` 等同于 `flex:0 0 auto` , 作用为 **flex** 子项没有弹性, 涉河固定尺寸元素(无需设置**width**属性)。
+
+### flex-grow
+
+| Class       | Properties    |
+| :---------- | :------------ |
+| flex-grow-0 | flex-grow: 0; |
+| flex-grow   | flex-grow: 1; |
+
+### flex-shrink
+
+| Class         | Properties      |
+| :------------ | :-------------- |
+| flex-shrink-0 | flex-shrink: 0; |
+| flex-shrink   | flex-shrink: 1; |
+
+### 属性缩写
+
+属性缩写介绍，可见 [《弹性布局 Flex》](FlexboxLayoutTechniques)。
+
+| Class        | abbreviation   | Properties      |
+| :----------- | :------------- | :-------------- |
+| flex-1       | flex: 1;       | flex: 1 1 0%;   |
+| flex-auto    | flex: auto;    | flex: 1 1 auto; |
+| flex-initial | flex: initial; | flex: 1 1 auto; |
+| flex-none    | flex: none;    | flex: none;     |

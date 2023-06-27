@@ -41,7 +41,6 @@ export default defineUserConfig({
       ],
     }),
     googleAnalyticsPlugin({
-      // 需要设置自己的 ID
       id: 'G-HXK7YZ1S4N',
     }),
   ],

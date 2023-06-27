@@ -1,5 +1,5 @@
 ---
-title: Tailwind 入门
+title: Tailwind 01 安装
 date: 2023-07-21
 icon: style
 category:
