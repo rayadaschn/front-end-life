@@ -1,5 +1,5 @@
 ---
-title: Tailwind 01 安装
+title: Tailwind 01 安装及入门
 date: 2023-07-21
 icon: style
 category:
@@ -17,6 +17,8 @@ tag:
 - 改写样式更加安全。在以往的项目中，CSS 样式可能是全局的，所以一旦更改可能会对其它 HTML 造成破坏，从一部分情况上看，是降低了用户心智。
 
 ## 安装和初始化配置
+
+这里采用 PostCSS 的形式，其它的形式可以参考[官网](https://tailwindcss.com/docs/installation/framework-guides)。
 
 1. 通过 npm 安装 Tailwind：
 
@@ -104,6 +106,12 @@ tag:
 
    createApp(App).mount('#app')
    ```
+
+## 编辑器配置
+
+为了更好的开发体验，还需为编辑器安装相应的插件。
+
+VScode 中是 [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 
 ## 响应式设计
 
