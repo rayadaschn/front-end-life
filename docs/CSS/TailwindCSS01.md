@@ -8,12 +8,12 @@ tag:
   - CSS
 ---
 
-> 在接触 Tailwind 的刚开始，并没有感受到它的好处，反而觉得这是一种非常繁琐的事情。入门了几次都以失败告终，但是这一次，终于有一点小感悟了，遂记录下来。
+> 在接触 Tailwind 的刚开始，并没有感受到它的好处，反而觉得这是一种非常繁琐的事情。入门了几次都以失败告终，非常不适应。但是这一次，终于有一点小感悟了，遂记录下来。
 
 利用 Tailwind 去构建 CSS 的一些实在的好处：
 
-- 无需为给类命名而浪费时间。这对于同一代码规范非常友好，不用再纠结这个项目是 BEM(Block-Element-Modifier)的规范，而下一个项目是 SMACSS (Scalable and Modular Architecture for CSS)，因为想在全都是 Atomic CSS，全为 inline-style。
-- CSS 代码不再增加。因为所有的 CSS 都是可复用的，所以在大部分情况下都无需再写新的 CSS 样式了。
+- **无需再为给类命名而浪费时间**。觉得这个真的非常棒，这对于统一一代码规范非常友好，不用再纠结这个项目是 BEM(Block-Element-Modifier)的规范，而下一个项目是 SMACSS (Scalable and Modular Architecture for CSS)，因为想在全都是 Atomic CSS，全为 inline-style。
+- CSS 的代码不再增加。因为所有的 CSS 都是可复用的，所以在大部分情况下都无需再写新的 CSS 样式了。
 - 改写样式更加安全。在以往的项目中，CSS 样式可能是全局的，所以一旦更改可能会对其它 HTML 造成破坏，从一部分情况上看，是降低了用户心智。
 
 ## 安装和初始化配置

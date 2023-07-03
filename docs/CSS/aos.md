@@ -2,6 +2,7 @@
 title: 页面滚动动画库 AOS
 date: 2023-07-29
 icon: style
+star: 2
 category:
   - CSS
 tag:
@@ -26,7 +27,9 @@ $: npm install aos --save
 
 ## 引入
 
-在 `main.ts` 中引入 AOS(包括其 CSS 样式)，并将其初始化。
+> 注意，AOS 要在 APP mounted 挂载之后再进行初始化。
+
+### 方法 1: 在 `main.ts` 中直接引入 AOS(包括其 CSS 样式)，并将其初始化
 
 ```ts {1, 5, 13, 14}
 import AOS from 'aos'
@@ -45,7 +48,36 @@ app.mount('#app')
 AOS.init()
 ```
 
-> 注意，AOS 要在 APP mounted 挂载之后再进行初始化。
+### 方法 2: 在 App.vue 中的 onmounted 生命周期内进行初始化
+
+```vue
+<!-- App.vue -->
+
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import AOS from 'aos'
+
+onMounted(() => {
+  AOS.init()
+})
+</script>
+```
+
+但是样式文件 `Aos.css` 依旧需要在 `main.ts` 中进行全局引用。
+
+```ts
+// main.ts
+
+import { createApp } from 'vue'
+import App from './App.vue'
+
+// importing AOS css style globally
+import 'aos/dist/aos.css'
+
+const app = createApp(App)
+
+app.mount('#app')
+```
 
 ## 使用
 

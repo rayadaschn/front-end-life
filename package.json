@@ -17,12 +17,15 @@
   },
   "type": "module",
   "scripts": {
-    "prepare": "husky install",
-    "docs:build": "vuepress build docs",
-    "clean-dev": "vuepress dev docs --clean-cache",
     "dev": "vuepress dev docs",
+    "clean-dev": "vuepress dev docs --clean-cache",
+    "docs:build": "vuepress build docs",
+    "mirror:get": "npm config get registry",
+    "mirror:set": "npm config set registry https://registry.npmmirror.com",
+    "mirror:rm": "npm config rm registry",
     "lint-staged": "lint-staged",
-    "backup": "git add . && git commit -m \"chore: backup\" && git push"
+    "backup": "git add . && git commit -m \"chore: backup\" && git push",
+    "prepare": "husky install"
   },
   "lint-staged": {
     "docs/**/*.{md}": [
