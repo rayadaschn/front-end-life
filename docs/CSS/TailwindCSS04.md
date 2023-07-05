@@ -1,6 +1,6 @@
 ---
 title: Tailwind 04 排版
-date: 2023-07-27
+date: 2023-06-27
 icon: style
 category:
   - CSS

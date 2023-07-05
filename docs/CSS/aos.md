@@ -1,6 +1,6 @@
 ---
 title: 页面滚动动画库 AOS
-date: 2023-07-29
+date: 2023-06-29
 icon: style
 star: 2
 category:

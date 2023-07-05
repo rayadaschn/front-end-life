@@ -7,7 +7,7 @@ category:
   - Guide
 ---
 
-## Catalog
+## Vue3 碎碎念
 
 - [Vue3 中的 script-setup](Vue01.md)
 - [Vue3 中的全局注册](Vue02.md)
@@ -32,8 +32,13 @@ category:
 - [Webpack 性能优化之文件压缩](webpack04)
 - [Webpack 配置分离](webpack05)
 - [Webpack 使用总结](webpack06)
-- [Vite使用总结](vite01)
+- [Vite 使用总结](vite01)
 
 ## 服务端渲染 SSR
 
 -[服务端渲染概述](ssr01)
+
+## 小程序
+
+- [小程序 快速入门 01](mini-app-02)
+- [小程序编程技巧](mini-app-01)

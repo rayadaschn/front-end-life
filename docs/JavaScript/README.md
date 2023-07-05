@@ -7,8 +7,6 @@ category:
   - Guide
 ---
 
-# JS
-
 ## JavaScript 碎碎念
 
 - [彻底理解 this 指向](JS01.md)

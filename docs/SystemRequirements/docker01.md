@@ -74,12 +74,17 @@ $: docker <OPTIONS> --help
 
 总体步骤：
 
-1. 搜索镜像：**docker search tomcat**
-2. 拉取镜像
-3. 查看镜像
-4. 启动镜像
-5. 停止镜像
-6. 移除容器
+1. 搜索镜像：可以使用 docker search 命令来搜索 Docker Hub 中的镜像，命令格式为 `docker search [OPTIONS] TERM`，其中 TERM 是搜索关键词，OPTIONS 可以是一些可选参数，如 --filter、--format 等。
+
+2. 拉取镜像：可以使用 docker pull 命令来拉取 Docker Hub 中的镜像，命令格式为 `docker pull [OPTIONS] NAME[:TAG|@DIGEST]`，其中 NAME 是镜像名称，可以包含仓库地址，TAG 是镜像标签，可以指定具体的版本号。
+
+3. 查看镜像：可以使用 docker images 命令来列出本地已有的镜像，命令格式为 `docker images [OPTIONS] [REPOSITORY[:TAG]]`，其中 REPOSITORY 是镜像仓库名称，可以包含仓库地址，TAG 是镜像标签，可以指定具体的版本号。
+
+4. 启动镜像：可以使用 docker run 命令来启动一个容器，命令格式为 `docker run [OPTIONS] IMAGE [COMMAND] [ARG...]`，其中 IMAGE 是要启动的镜像名称，OPTIONS 可以是一些可选参数，如 -d（后台运行）、-p（端口映射）等，COMMAND 和 ARG 是可选的容器启动命令和参数。
+
+5. 停止镜像：可以使用 docker stop 命令来停止一个运行中的容器，命令格式为 `docker stop [OPTIONS] CONTAINER [CONTAINER...]`，其中 CONTAINER 是容器名称或 ID，OPTIONS 可以是一些可选参数，如 -t（指定停止超时时间）等。
+
+6. 移除容器：可以使用 docker rm 命令来移除一个已停止的容器，命令格式为 `docker rm [OPTIONS] CONTAINER [CONTAINER...]`，其中 CONTAINER 是容器名称或 ID，OPTIONS 可以是一些可选参数，如 -f（强制删除）等。
 
 有镜像才能创建容器，下载镜像相当于下拉包：
 

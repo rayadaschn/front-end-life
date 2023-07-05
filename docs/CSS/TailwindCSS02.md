@@ -1,6 +1,6 @@
 ---
 title: Tailwind 02 布局
-date: 2023-07-26
+date: 2023-06-26
 icon: style
 category:
   - CSS

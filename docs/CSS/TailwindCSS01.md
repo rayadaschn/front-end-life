@@ -1,6 +1,6 @@
 ---
 title: Tailwind 01 安装及入门
-date: 2023-07-21
+date: 2023-06-21
 icon: style
 category:
   - CSS

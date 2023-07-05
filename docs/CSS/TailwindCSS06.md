@@ -1,6 +1,6 @@
 ---
 title: Tailwind 06 边框
-date: 2023-07-28
+date: 2023-06-28
 icon: style
 category:
   - CSS
