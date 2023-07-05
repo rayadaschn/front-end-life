@@ -10,3 +10,4 @@ category:
 ## Catalog
 
 - [小程序编程技巧](mini-app-01)
+- [小程序 快速入门 01](mini-app-02)
