@@ -11,8 +11,6 @@ tag:
 sticky: false
 ---
 
-# Docker 速通
-
 **Docker** 是什么?
 
 没看懂的官网简介：“Docker 可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口（类似 iPhone 的 app），更重要的是容器性能开销极低。”
@@ -49,7 +47,7 @@ Docker 中镜像和容器是两个不同的概念。
 $: brew install docker
 ```
 
-- 手动下载图形化界面：如果你的电脑搭载的是 M1 芯片（`arm64` 架构），请点击以下 [链接](https://desktop.docker.com/mac/main/arm64/Docker.dmg) 下载 Docker Desktop for Mac。
+- 手动下载图形化界面：如果你的电脑搭载的是 Apple M 系列芯片（`arm64` 架构），请点击以下 [链接](https://desktop.docker.com/mac/main/arm64/Docker.dmg) 下载 Docker Desktop for Mac。
 
 服务器端 CentOS 安装：
 
