@@ -1,5 +1,5 @@
 ---
-title: 小程序 快速入门 01
+title: 小程序 快速入门
 icon: mini-app
 date: 2023-07-04
 category:
@@ -7,6 +7,8 @@ category:
 tag:
   - mini-app
 ---
+
+本节对微信小程序做一些基础的介绍梳理。
 
 ## 适用场景
 
