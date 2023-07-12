@@ -1,1 +1,0 @@
-import{_ as e,X as t,Y as n,Z as c}from"./framework-97fa2d96.js";const o={},s=c,_=t,r=n,a=s("p",null,"从这里开始学习设计模式。",-1),l=[a];function i(d,m){return _(),r("div",null,l)}const p=e(o,[["render",i],["__file","DesignPatterns01.html.vue"]]);export{p as default};
