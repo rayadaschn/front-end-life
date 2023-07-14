@@ -18,6 +18,7 @@ sticky: false
   - [简单实现单例模式](#简单实现单例模式)
   - [封装一个通用的单例模式](#封装一个通用的单例模式)
 - [策略模式](#策略模式)
+  - [简单实现策略模式](#简单实现策略模式)
 - [代理模式](#代理模式)
 - [迭代模式](#迭代模式)
 - [发布-订阅模式](#发布-订阅模式)
@@ -92,7 +93,40 @@ render()
 
 ## 策略模式
 
-策略模式:
+策略模式的定义是:定义一系列的算法，把它们一个个封装起来，并且使它们可以相互替换。
+
+通俗的理解就是厨子为了做饭准备了一些列的厨具，例如菜刀系列都可以切肉，但是每把刀都有所差异。
+
+策略模式的使用，是定义一系列的算法，把它们一个个封装起来。将不变的部分和变化的部分隔开是每个设计模式的主题，目的是将算法的使用与算法的实现分离开来。
+
+### 简单实现策略模式
+
+以发统计绩效奖金为例，定义一个 strategy 策略计算不同绩效下的奖金：
+
+```js
+let strategies = {
+  S: function (salary) {
+    return salary * 4
+  },
+  A: function (salary) {
+    return salary * 3
+  },
+  B: function (salary) {
+    return salary * 2
+  },
+}
+```
+
+实际奖金的计算则交由专门的 context 去做：
+
+```js
+let calculateBonus = function (level, salary) {
+  return strategies[level](salary)
+}
+
+console.log(calculateBonus('S', 20000)) // 输出:80000
+console.log(calculateBonus('A', 10000)) // 输出:30000
+```
 
 ## 代理模式
 

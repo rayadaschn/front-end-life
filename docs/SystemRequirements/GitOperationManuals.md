@@ -163,35 +163,35 @@ $: git push --all
 
 1. 【方案 1】正常流程,在 `push` 时,先用 `git pull --rebase` 拉取变基代码。而后，再解决冲突，推送。
 
-```bash
-$: git add .
-$: git commit -m [message]
-// 变基拉取 git pull --rebase 等于 git fetch + git rebase
-$: git pull --rebase
- // 【有冲突】这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行 git rebase --continue, 这样git会继续apply余下的补丁。
- $: git add .
- $: git rebase --continue
- // 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态
- $: git rebase --abort
-$: git push
-```
+   ```bash
+   $: git add .
+   $: git commit -m [message]
+   // 变基拉取 git pull --rebase 等于 git fetch + git rebase
+   $: git pull --rebase
+   // 【有冲突】这时Git会停止rebase并让用户去解决冲突，解决完冲突后，用git add命令去更新这些内容，然后不用执行git-commit,直接执行 git rebase --continue, 这样git会继续apply余下的补丁。
+   $: git add .
+   $: git rebase --continue
+   // 在任何时候，都可以用git rebase --abort参数来终止rebase的行动，并且mywork分支会回到rebase开始前的状态
+   $: git rebase --abort
+   $: git push
+   ```
 
 2. 【方案 2】先 `git stash` 临时贮藏代码，正常拉取。而后 `git stash pop` 推出，解决冲突，推送。
 
-```bash
-$: git stash
-// 不同分支, 则用 git rebase <otherBranch>
-$: git pull
-// 推出贮藏
-$: git stash pop
- // 若有冲突 解决冲突; 注意, 若冲突,并不会将贮藏记录消除,还需使用 git stash drop 删除记录
- $: git stash drop
- // 若冲突过多, 可撤销贮藏改变
- $: git reset --hard
-$: git add .
-$: git commit -m [message]
-$: git push
-```
+   ```bash
+   $: git stash
+   // 不同分支, 则用 git rebase <otherBranch>
+   $: git pull
+   // 推出贮藏
+   $: git stash pop
+   // 若有冲突 解决冲突; 注意, 若冲突,并不会将贮藏记录消除,还需使用 git stash drop 删除记录
+   $: git stash drop
+   // 若冲突过多, 可撤销贮藏改变
+   $: git reset --hard
+   $: git add .
+   $: git commit -m [message]
+   $: git push
+   ```
 
 若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用
 
@@ -236,31 +236,31 @@ $: git push
 
 1. 如果我们的有两次 commit 但是没有 push 代码
 
-```bash
-$: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
-```
+   ```bash
+   $: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
+   ```
 
-4. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
+2. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
 
-```bash
-$: git reset --hard HEAD~2   //本地的Wroking Copy回退到2个版本之前。
-$: git push origin <banchName> --force  // --force 为强制覆盖远程分支
-// 但更建议使用 `--force-with-lease`,确保不会覆盖他人的代码
-```
+   ```bash
+   $: git reset --hard HEAD~2   //本地的Wroking Copy回退到2个版本之前。
+   $: git push origin <banchName> --force  // --force 为强制覆盖远程分支
+   // 但更建议使用 `--force-with-lease`,确保不会覆盖他人的代码
+   ```
 
-> 注意！当我们使用强制指令时，若在远程的该分支中有他人的贡献，`--force` 是会覆盖掉他人的代码的，所以为了保险起见，应当用 `--force-with-lease` 。
+   > 注意！当我们使用强制指令时，若在远程的该分支中有他人的贡献，`--force` 是会覆盖掉他人的代码的，所以为了保险起见，应当用 `--force-with-lease` 。
 
-5. 只回退某个指定文件到指定版本
+3. 只回退某个指定文件到指定版本
 
-```bash
-$: git reset a4e21523xxxxxxxxx68e9976948a35e [options]
-```
+   ```bash
+   $: git reset a4e21523xxxxxxxxx68e9976948a35e [options]
+   ```
 
-6. 回退到指定版本
+4. 回退到指定版本
 
-```bash
-$: git reset --hard commitId（通过git log可查看提交的commitId）
-```
+   ```bash
+   $: git reset --hard commitId（通过git log可查看提交的commitId）
+   ```
 
 **汇总**：
 
@@ -461,6 +461,20 @@ $: git config --local --list
 #  打开查看 Mac 中的 git config 文件
 $: open ~/.gitconfig
 ```
+
+### 查看 git log 提交信息
+
+利用 git log 统计特定时间内提交的代码信息量。
+
+```bash
+# 依据用户名 username
+$: git log --author="username" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }'
+
+# 依据时间跨度
+$: git log --since=2023-01-01 --until=2023-12-31 --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }'
+```
+
+俩者也可以结合。
 
 ## 开发流程
 
