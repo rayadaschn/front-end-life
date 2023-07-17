@@ -128,9 +128,27 @@ console.log(calculateBonus('S', 20000)) // 输出:80000
 console.log(calculateBonus('A', 10000)) // 输出:30000
 ```
 
+实际上在 JavaScript 这种将函数作为一等对象的语言里，策略模式已经融入到了语言本身 当中，我们经常用高阶函数来封装不同的行为，并且把它传递到另一个函数中。当我们对这些函数发出“调用”的消息时，不同的函数会返回不同的执行结果。将上述的策略模式略加修饰便更具隐匿性了：
+
+```js
+var S = function (salary) {
+  return salary * 4
+}
+var A = function (salary) {
+  return salary * 3
+}
+var B = function (salary) {
+  return salary * 2
+}
+var calculateBonus = function (func, salary) {
+  return func(salary)
+}
+calculateBonus(S, 10000)
+```
+
 ## 代理模式
 
-代理模式:
+代理模式是为一个对象提供一个代用品或占位符，以便控制对它的访问。
 
 ## 迭代模式
 
