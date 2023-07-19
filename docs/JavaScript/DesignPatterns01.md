@@ -150,13 +150,56 @@ calculateBonus(S, 10000)
 
 代理模式是为一个对象提供一个代用品或占位符，以便控制对它的访问。
 
+来简单实现一个虚拟代理实现图片预加载的实现：
+
+```js
+const myImage = (function () {
+  const imgNode = document.createElement('img')
+  document.body.appendChild(imgNode)
+  return {
+    setSrc: function (src) {
+      imgNode.src = src
+    },
+  }
+})()
+
+const proxyImage = (function () {
+  const img = new Image()
+  img.onload = function () {
+    myImage.setSrc(this.src)
+  }
+  return {
+    setSrc: function (src) {
+      myImage.setSrc('file://C:/Users/Desktop/loading.gif')
+      img.src = src
+    },
+  }
+})()
+
+proxyImage.setSrc(
+  'https://picx.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1440w.jpg'
+)
+```
+
+这段代码创建了两个立即执行函数（IIFE），myImage 和 proxyImage，并在页面上加载了一张图片。
+
+首先，myImage IIFE 创建了一个 imgNode 元素并将其附加到页面的 body 元素上。然后，它返回一个包含 setSrc 方法的对象。 setSrc 方法用于设置 imgNode 元素的 src 属性，以便加载指定的图像。
+
+接下来，proxyImage IIFE 创建了一个新的 Image 对象，并为其设置了一个 onload 事件处理程序。 **onload 事件处理程序需要在图片成功加载后才会执行**，这里会将图片的 src 属性设置为 myImage 的 setSrc 方法。proxyImage IIFE 返回一个包含 setSrc 方法的对象，该方法设置 img 对象的 src 属性，并将 myImage 的 setSrc 方法设置为一个本地的 loading.gif 图像的路径，以便在图像加载期间显示 loading 图像。
+
+最后，proxyImage 的 setSrc 方法被调用，并传入了一个图像 URL。这将触发 img 对象的 onload 事件处理程序，该处理程序将 myImage 对象的 setSrc 方法设置为新加载的图像 URL，并从本地路径加载 loading.gif 图像，以便在新图像加载期间显示 loading 图像。
+
+刚刚接触代理时，会觉得这个功能大可不必，不经过代理也可实现，但是这里运用到了单一职责思想。单一职责原则指的是，就一个类(通常也包括对象和函数等)而言，应该仅有一个引起它变 化的原因。如果一个对象承担了多项职责，就意味着这个对象将变得巨大，引起它变化的原因可 能会有多个。面向对象设计鼓励将行为分布到细粒度的对象之中，如果一个对象承担的职责过多， 等于把这些职责耦合到了一起，这种耦合会导致脆弱和低内聚的设计。当变化发生时，设计可能 会遭到意外的破坏。
+
+通俗的解释就是，如果后续不需要这个预加载占位，直接去掉代理即可，这个功能便去掉了不会对图片加载本身造成影响。
+
 ## 迭代模式
 
-迭代模式:
+迭代器模式是指提供一种方法顺序访问一个聚合对象中的各个元素，而又不需要暴露该对象的内部表示。实际上 js 已经实现了迭代模式。如 Array.prototype.froEach 便可迭代的顺序访问各个属性值。而且目前，绝大部分语言都内置了迭代器。
 
 ## 发布-订阅模式
 
-发布-订阅模式:
+发布-订阅模式又叫观察者模式，它定义对象间的一种一对多的依赖关系，当一个对象的状 态发生改变时，所有依赖于它的对象都将得到通知。在 JavaScript 开发中，我们一般用事件模型来替代传统的发布—订阅模式。
 
 ## 命令模式
 
