@@ -10,7 +10,7 @@ tag:
 sticky: false
 ---
 
-从这里开始学习设计模式。
+从这里开始学习设计模式。牢记一个规则：设计模式的主题总是把不变的事物和变化的事物分离开来。
 
 设计模式一共有 23 种，在此共记录在 JavaScript 开发中更 常见的 14 种设计模式。它们分别是：
 
@@ -201,9 +201,95 @@ proxyImage.setSrc(
 
 发布-订阅模式又叫观察者模式，它定义对象间的一种一对多的依赖关系，当一个对象的状 态发生改变时，所有依赖于它的对象都将得到通知。在 JavaScript 开发中，我们一般用事件模型来替代传统的发布—订阅模式。
 
+能够联想到的是 Vue2 中常用的事件总线 EventBus，确实也是基于此模式实现的。基于此，实现一个最小可行的发布-订阅：
+
+```js
+// 设置订阅功能
+const Event = {
+  clientList: [],
+  listen: function (key, fn) {
+    if (!this.clientList[key]) {
+      this.clientList[key] = []
+    }
+    this.clientList[key].push(fn) // 订阅的消息添加进缓存列表
+  },
+  trigger: function () {
+    let key = Array.prototype.shift.call(arguments),
+      fns = this.clientList[key]
+
+    if (!fns || fns.length === 0) {
+      return false
+    }
+
+    for (let i = 0; i < fns.length; i++) {
+      const fn = fns[i++]
+      fn.apply(this, arguments) // arguments 是 trigger 时附带的参数
+    }
+  },
+  remove: function (key, fn) {
+    const fns = this.clientList[key]
+
+    // 开始遍历取消订阅
+    if (!fns) return false // 1. key 没有被人订阅, 直接返回
+
+    if (!fn) {
+      // 若没有传入具体的回调函数，则取消 key 对应的所有订阅
+      fns && (fn.length = 0)
+    } else {
+      for (let i = fns.length - 1; i >= 0; i--) {
+        const fnItem = fns[i]
+        if (fnItem === fn) fns.splice(i, 1) // 删除订阅者的回调函数
+      }
+    }
+  },
+}
+
+// 安装订阅
+const installEvent = function (obj) {
+  for (const key in Event) {
+    obj[key] = Event[key]
+  }
+}
+
+// 订阅测试
+const salesOffices = {}
+installEvent(salesOffices)
+salesOffices.listen('squareMeter88', function (price) {
+  // 消息订阅 1
+  console.log('价格= ' + price)
+})
+salesOffices.listen('squareMeter100', function (price) {
+  // 消息订阅 2
+  console.log('价格= ' + price)
+})
+
+salesOffices.trigger('squareMeter88', 2000000) // 输出:2000000
+salesOffices.trigger('squareMeter100', 3000000) // 输出:3000000
+```
+
+发布—订阅模式的优点非常明显，一为时间上的解耦，二为对象之间的解耦。它的应用非常广泛，既可以用在异步编程中，也可以帮助我们完成更松耦合的代码编写。发布—订阅模式还可 以用来帮助实现一些别的设计模式，比如中介者模式。从架构上来看，无论是 MVC 还是 MVVM， 都少不了发布—订阅模式的参与，而且 JavaScript 本身也是一门基于事件驱动的语言。
+
+当然，发布—订阅模式也不是完全没有缺点。创建订阅者本身要消耗一定的时间和内存，而且当你订阅一个消息后，也许此消息最后都未发生，但这个订阅者会始终存在于内存中。另外，发布—订阅模式虽然可以弱化对象之间的联系，但如果过度使用的话，对象和对象之间的必要联系也将被深埋在背后，会导致程序难以跟踪维护和理解。特别是有多个发布者和订阅者嵌套到一起的时候，要跟踪一个 bug 不是件轻松的事情。
+
 ## 命令模式
 
-命令模式:
+命令模式（Command Pattern）是一种行为型设计模式，它将请求封装成对象，从而使得请求发起者和请求接收者解耦，并且可以方便地记录、撤销和重做请求操作。
+
+在命令模式中，客户端发起请求的对象称为请求者（Invoker），请求接收者称为接收者（Receiver），请求封装成的对象称为命令（Command）。命令对象中包含了请求的操作和相关的参数，以及执行该操作的方法。请求者通过调用命令对象的方法来发起请求，接收者通过执行命令对象的方法来响应请求。
+
+命令模式的核心思想是将请求封装成对象，从而将请求的发起者和接收者解耦。在使用命令模式时，可以将命令对象存储在队列中，实现命令的记录、撤销和重做等功能。此外，命令模式还可以与其他模式结合使用，例如备忘录模式、组合模式等。
+
+命令模式的优点包括：
+
+- 降低系统的耦合度，请求者和接收者之间解耦，可以方便地扩展和修改系统。
+- 可以对请求进行记录、撤销和重做等操作，提高系统的灵活性和可维护性。
+- 可以将请求封装成独立的对象，并且可以方便地传递和存储，提高系统的可重用性。
+
+命令模式的缺点包括：
+
+- 会增加系统的复杂性，需要定义大量的命令对象和接收者对象。
+- 如果命令对象过多，可能会导致系统的性能下降。
+- 命令模式中的请求者和接收者之间存在间接调用关系，可能会影响系统的响应速度。
 
 ## 组合模式
 
