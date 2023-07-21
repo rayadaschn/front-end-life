@@ -1,7 +1,7 @@
 ---
 title: 设计模式 01
 icon: javascript
-date: 2022-07-11
+date: 2023-07-11
 category:
   - javascript
 tag:
@@ -24,6 +24,7 @@ sticky: false
 - [发布-订阅模式](#发布-订阅模式)
 - [命令模式](#命令模式)
 - [组合模式](#组合模式)
+- [参考文献](#参考文献)
 
 ## 单例模式
 
@@ -279,6 +280,37 @@ salesOffices.trigger('squareMeter100', 3000000) // 输出:3000000
 
 命令模式的核心思想是将请求封装成对象，从而将请求的发起者和接收者解耦。在使用命令模式时，可以将命令对象存储在队列中，实现命令的记录、撤销和重做等功能。此外，命令模式还可以与其他模式结合使用，例如备忘录模式、组合模式等。
 
+命令模式的由来，其实是回调(callback)函数的一个面向对象的替代品。实际上 JavaScript 可以用高阶函数非常方便地实现命令模式。命令模式在 JavaScript 语言中是一种隐形的模式。
+
+```html
+<body>
+  <button id="button1">点击按钮 1</button>
+  <button id="button2">点击按钮 2</button>
+  <button id="button3">点击按钮 3</button>
+</body>
+<script>
+  let button1 = document.getElementById( 'button1' ),
+
+  let setCommand = function( button, func ){
+    button.onclick = function(){
+      func();
+    }
+  };
+  let MenuBar = {
+    refresh: function(){
+      console.log( '刷新菜单界面' );
+    }
+  };
+  let RefreshMenuBarCommand = function( receiver ){
+    return function(){
+      receiver.refresh();
+    }
+  };
+  let refreshMenuBarCommand = RefreshMenuBarCommand( MenuBar );
+  setCommand( button1, refreshMenuBarCommand );
+</script>
+```
+
 命令模式的优点包括：
 
 - 降低系统的耦合度，请求者和接收者之间解耦，可以方便地扩展和修改系统。
@@ -293,4 +325,18 @@ salesOffices.trigger('squareMeter100', 3000000) // 输出:3000000
 
 ## 组合模式
 
-组合模式:
+组合模式就是用小的子对象来构建更大的对象，而这些小的子对象本身也许是由更小的“孙对象”构成的。
+
+简单的描述就是搭积木，一个大的对象由数个小的对象组成。
+
+值得注意的地方：
+
+1. 组合模式不是父子关系，它们可以是并列的。
+2. 组合模式除了要求组合对象和叶对象拥有相同的接口之外，还有一个必要条件，就是对一组
+   叶对象的操作必须具有一致性。下面这个比喻非常恰当：
+   比如公司要给全体员工发放元旦的过节费 1000 块，这个场景可以运用组合模式，但如果公 司给今天过生日的员工发送一封生日祝福的邮件，组合模式在这里就没有用武之地了，除非先把 今天过生日的员工挑选出来。只有用一致的方式对待列表中的每个叶对象的时候，才适合使用组合模式。
+3. 双向映射关系，这主要是防止重复嵌套。若不是如此，可能并不适用组合模式。
+
+## 参考文献
+
+- 《JavaScript 设计模式与开发实践》
