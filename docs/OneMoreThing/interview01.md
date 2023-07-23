@@ -19,28 +19,13 @@ HTML 考察较少，内容不多。
 
 ### 如何理解 HTML 语义化？
 
-  <details>
-    <summer>
-
 1. 让人更易读懂，增加代码的可读性；
 2. 让搜索引擎更易读懂（SEO）。
 
-</summer>
-
-  </details>
-
 ### **块状元素**和**内联元素**有哪些？
 
-  <details>
-    <summer>
-
-      1. 块状元素：`display: block/table`，有 div、h1、h2、table、ul、ol、p 等。
-      2. 内联元素：`display: inline/inline-block`，有 span、img、input、button 等。
-
-
-    </summer>
-
-  </details>
+1. 块状元素：`display: block/table`，有 div、h1、h2、table、ul、ol、p 等。
+2. 内联元素：`display: inline/inline-block`，有 span、img、input、button 等。
 
 ## CSS 布局
 
@@ -214,6 +199,8 @@ offsetWidth = （内容宽度 + 内边距 + 边距），无外边距。
 :::
 
 ### flex 布局实现一个三点色子
+
+![色子三点](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202307232214664.png)
 
 flex 常见语法：
 
