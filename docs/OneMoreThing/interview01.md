@@ -13,16 +13,28 @@ sticky: false
 
 在此系列中开始梳理前端的面试体系内容。
 
+## 目录
+
+- [目录](#目录)
+- [HTML](#html)
+  - [如何理解 HTML 语义化？ ](#如何理解-html-语义化-)
+  - [块状元素和内联元素有哪些?](#块状元素和内联元素有哪些)
+- [CSS 布局](#css-布局)
+  - [盒模型的宽度计算](#盒模型的宽度计算)
+  - [BFC 的理解和应用 ](#bfc-的理解和应用-)
+  - [float 布局的问题 ](#float-布局的问题-)
+  - [flex 布局实现一个三点色子 ](#flex-布局实现一个三点色子-)
+
 ## HTML
 
 HTML 考察较少，内容不多。
 
-### 如何理解 HTML 语义化？
+### 如何理解 HTML 语义化？ <span id='1' />
 
 1. 让人更易读懂，增加代码的可读性；
 2. 让搜索引擎更易读懂（SEO）。
 
-### **块状元素**和**内联元素**有哪些？
+### 块状元素和内联元素有哪些?
 
 1. 块状元素：`display: block/table`，有 div、h1、h2、table、ul、ol、p 等。
 2. 内联元素：`display: inline/inline-block`，有 span、img、input、button 等。
@@ -35,7 +47,7 @@ offsetWidth = （内容宽度 + 内边距 + 边距），无外边距。
 
 实际上是看 `box-sizing`，默认为 `content-box`，可改为 `border-box`。
 
-### BFC 的理解和应用
+### BFC 的理解和应用 <span id='4' />
 
 全称是 Block format context, 块级格式化上下文。独立渲染一块区域，内部元素的渲染不会影响边界以外的元素。
 
@@ -56,11 +68,13 @@ offsetWidth = （内容宽度 + 内边距 + 边距），无外边距。
 }
 ```
 
-:::TiP
+::: tip
+
 原理: 后添加一个空值，且 display 为 table 类型触发 BFC，而后 clear 清除浮动影响。
+
 :::
 
-### float 布局的问题
+### float 布局的问题 <span id='5' />
 
 圣杯布局和双飞翼布局的目的：
 
@@ -192,13 +206,15 @@ offsetWidth = （内容宽度 + 内边距 + 边距），无外边距。
 </html>
 ```
 
-::: Tip
+::: tip
+
 双飞翼布局中，需要多用一个 div 盒子包裹主体内容，使其具有延展性。同时也用到了`margin` 负值将自身宽度给抵消了。
 
 同圣杯的区别，双飞翼将俩侧撑开是用的 margin，而圣杯是用 padding。
+
 :::
 
-### flex 布局实现一个三点色子
+### flex 布局实现一个三点色子 <span id='6' />
 
 ![色子三点](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202307232214664.png)
 
