@@ -21,6 +21,9 @@ sticky: false
 4. [BFC 的理解和应用](#4)
 5. [float 布局的问题](#5)
 6. [flex 布局实现一个三点色子](#6)
+7. [absolute 和 relative 定位问题](#7)
+8. [居中定位问题](#居中定位问题)
+9. [rem 是什么?](#9)
 
 ## HTML
 
@@ -58,7 +61,7 @@ offsetWidth = （内容宽度 + 内边距 + 边距），无外边距。
 常见应用是清除浮动。
 
 ```css
-.clearfix::after {
+.clearFix:after {
   content: '';
   display: table;
   clear: both;
@@ -272,3 +275,39 @@ flex 常见语法：
   </body>
 </html>
 ```
+
+### absolute 和 relative 定位问题 <span id='7' />
+
+- relative 依据自身定位
+- absolute 依据最近一层的定位元素定位，定位元素即 absolute、relative、fixed，若都没有则依据 body 进行定位。
+
+### 居中定位问题
+
+水平居中:
+
+- inline 元素: `text-align:center`
+- block 元素: `margin: auto`
+- absolute 元素: left: 50% + margin-left 负自身一半宽度
+
+垂直居中：
+
+- inline 元素：line-height 的值等于 heigh 值（实际上只设置 line-height 行高即可）；
+- absolute 元素： top：50% + margin-top 负自身一半高度；
+- absolute 元素：`transform(-50%, -50%)`;
+- absolute 元素：`top,left,bottom,right = 0` + `margin: auto`
+
+更多可查看在另外一篇的总结 [《多种方式实现居中》](../CSS/DifferentMethodsToAchieveCentering)
+
+### rem 是什么? <span id='9' />
+
+- px：绝对长度单位；
+- em：现对长度单位，现对于父元素；
+- rem：相对长度单位，相对于根元素 html，响应式布局。
+
+响应式布局的常见方案：media-query，根据不同的屏幕宽度设置根元素 font-size，而后用 rem，基于根元素的相对单位。
+
+网页的视口宽度:
+
+- 屏幕高度: `window.screen.height`
+- 网页视口高度: `window.innerHeight`
+- body 高度: `document.body.clientHeight`
