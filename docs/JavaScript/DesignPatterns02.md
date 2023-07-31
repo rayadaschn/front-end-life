@@ -1,7 +1,7 @@
 ---
 title: 设计模式 02
 icon: javascript
-date: 2022-07-11
+date: 2023-07-11
 category:
   - javascript
 tag:
@@ -350,8 +350,157 @@ Component 2 收到了消息：Hello from Component 3
 
 ## 状态模式
 
-状态模式:
+状态模式（State Pattern）: 允许一个对象在其内部状态改变时改变它的行为，对象看起来似乎修改了它的类。
+
+通俗理解就是用于在对象内部状态改变时改变其行为。在该模式中，对象的行为取决于其内部状态，并且可以在运行时更改状态。状态模式将状态封装在独立的类中，并将状态转换逻辑委托给这些类，以使得每个状态可以独立变化而不影响其他状态。
+
+在状态模式中，通常会定义一个状态接口或抽象类，其中包含了所有可能的状态所需实现的方法。然后，为每个具体的状态创建一个单独的实现类。在使用状态模式时，对象将包含对当前状态实例的引用，并且将委托给状态对象来处理其行为。
+
+通过将状态转换逻辑委托给状态类，状态模式可以使得代码更加灵活和可扩展。它可以减少条件语句和分支语句的使用，从而提高代码的可读性和可维护性。状态模式通常与其他设计模式（如策略模式和观察者模式）一起使用，以实现更复杂的行为。
+
+以下是一个使用 JavaScript 实现状态模式的简单例子，假设有一个电视机对象，它可以处于不同的状态，如开启、关闭、静音等。
+
+```javascript
+// 状态接口
+class TvState {
+  constructor(tv) {
+    this.tv = tv
+  }
+  // 所有状态需要实现的方法
+  turnOn() {}
+  turnOff() {}
+  mute() {}
+}
+// 开启状态
+class OnState extends TvState {
+  constructor(tv) {
+    super(tv)
+  }
+  turnOn() {
+    console.log('电视已经开启')
+  }
+  turnOff() {
+    console.log('电视已经关闭')
+    this.tv.setState(this.tv.offState)
+  }
+  mute() {
+    console.log('电视已经静音')
+    this.tv.setState(this.tv.muteState)
+  }
+}
+// 关闭状态
+class OffState extends TvState {
+  constructor(tv) {
+    super(tv)
+  }
+  turnOn() {
+    console.log('电视已经开启')
+    this.tv.setState(this.tv.onState)
+  }
+  turnOff() {
+    console.log('电视已经关闭')
+  }
+  mute() {
+    console.log('电视已经关闭，不能静音')
+  }
+}
+// 静音状态
+class MuteState extends TvState {
+  constructor(tv) {
+    super(tv)
+  }
+  turnOn() {
+    console.log('电视已经开启')
+    this.tv.setState(this.tv.onState)
+  }
+  turnOff() {
+    console.log('电视已经关闭')
+    this.tv.setState(this.tv.offState)
+  }
+  mute() {
+    console.log('电视已经取消静音')
+    this.tv.setState(this.tv.onState)
+  }
+}
+// 电视机类
+class Tv {
+  constructor() {
+    this.onState = new OnState(this)
+    this.offState = new OffState(this)
+    this.muteState = new MuteState(this)
+    this.state = this.offState
+  }
+  setState(state) {
+    this.state = state
+  }
+  turnOn() {
+    this.state.turnOn()
+  }
+  turnOff() {
+    this.state.turnOff()
+  }
+  mute() {
+    this.state.mute()
+  }
+}
+// 使用示例
+const tv = new Tv()
+tv.turnOn() // "电视已经开启"
+tv.mute() // "电视已经静音"
+tv.turnOff() // "电视已经关闭"
+tv.mute() // "电视已经关闭，不能静音"
+```
+
+在这个例子中，我们定义了一个 `TvState` 接口，其中包含了所有状态需要实现的方法。然后，我们为每个具体的状态（`OnState`、`OffState`、`MuteState`）创建了单独的实现类。在 `Tv` 类中，我们维护了对当前状态的引用，并将所有行为委托给当前状态对象来处理。使用状态模式，我们可以轻松地添加新的状态，而无需修改 `Tv` 类中的代码，从而使得代码更加灵活和可扩展。
 
 ## 适配器模式
 
-适配器模式:
+适配器模式的作用是解决两个软件实体间的接口不兼容的问题。使用适配器模式之后，原本由于接口不兼容而不能工作的两个软件实体可以一起工作。
+
+配适器模式在日常开发中其实很常见，如数据的冲洗，将后端返回的数据进行转化使其符合通用要求。
+
+总的来说，适配器模式主要用来解决两个已有接口之间不匹配的问题，它不考虑这些接口是怎样实现的，也不考虑它们将来可能会如何演化。适配器模式不需要改变已有的接口，就能够 使它们协同作用。
+
+装饰者模式和代理模式也不会改变原有对象的接口，但装饰者模式的作用是为了给对象增加功能。装饰者模式常常形成一条长的装饰链，而适配器模式通常只包装一次。代理模式是为了控制对对象的访问，通常也只包装一次。
+
+外观模式的作用倒是和适配器比较相似，有人把外观模式看成一组对象的适配器，但外观模式最显著的特点是定义了一个新的接口。
+
+适配器模式（Adapter Pattern）是一种结构型设计模式，它用于将一个类的接口转换成另一个客户端所期望的接口。适配器模式可以使得原本不兼容的接口协同工作。在适配器模式中，适配器类充当两个不兼容类之间的桥梁，将其中一个类的接口转换为另一个类所期望的接口。
+
+好的，以下是另一个使用 JavaScript 实现适配器模式的例子。假设我们有两个电子设备类，一个是美国的电子设备，另一个是中国的电子设备，它们采用不同的电源标准，即美国电子设备使用 110V 电源，而中国电子设备使用 220V 电源。我们需要一个适配器将美国电子设备的电源转换为中国电子设备所需的 220V 电源。
+
+```js
+// 美国电子设备类
+class USDevice {
+  constructor() {
+    this.power = 110
+  }
+  turnOn() {
+    console.log('美国电子设备已经开启')
+  }
+}
+// 中国电子设备接口
+class ChinaDevice {
+  constructor() {
+    this.power = 220
+  }
+  turnOn() {}
+}
+// 电源适配器类
+class PowerAdapter extends ChinaDevice {
+  constructor(usDevice) {
+    super()
+    this.usDevice = usDevice
+  }
+  turnOn() {
+    console.log('电源适配器正在将电源从110V转换为220V')
+    this.usDevice.turnOn()
+  }
+}
+// 使用示例
+const usDevice = new USDevice()
+const adapter = new PowerAdapter(usDevice)
+adapter.turnOn() // 输出 "电源适配器正在将电源从110V转换为220V" 和 "美国电子设备已经开启"
+```
+
+在这个例子中，我们定义了一个 `USDevice` 类和一个 `ChinaDevice` 接口，它们采用不同的电源标准。然后，我们为美国电子设备（`USDevice`）创建了单独的实现类。在 `PowerAdapter` 类中，我们实现了 `ChinaDevice` 接口，将美国电子设备的电源转换为中国电子设备所需的 220V 电源。使用适配器模式，我们可以让美国电子设备的实例像中国电子设备一样调用 `turnOn()` 方法。

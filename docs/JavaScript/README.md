@@ -34,9 +34,11 @@ category:
 - [MySql 基础](Node05.md)
 - [Nest、Nuxt 和 Next 的关系](Node06.md)
 
-## 自定义 Cli
+## 设计模式
 
-- [自定义 Cli 01 之 commander](cli01)
+- [设计模式 01](DesignPatterns01)
+- [设计模式 02](DesignPatterns02)
+- [自定义 Cli 之 commander](cli01)
 
 ## 其它
 

@@ -14,7 +14,7 @@ category:
 ## 前端面试题梳理
 
 - [HTML&CSS](interview01)
-- [JS 异步](interview02)
+- [JS 基础知识](interview02)
 
 ## Other
 

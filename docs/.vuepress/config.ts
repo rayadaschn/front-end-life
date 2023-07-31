@@ -45,7 +45,7 @@ export default defineUserConfig({
     }),
   ],
 
-  shouldPrefetch: true, // 预拉取
+  shouldPrefetch: false, // 预拉取
 
   // 打包优化
   bundler: viteBundler({
