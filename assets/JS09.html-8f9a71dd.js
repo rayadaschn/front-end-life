@@ -156,7 +156,7 @@ console<span class="token punctuation">.</span><span class="token function">log<
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
 
-  <span class="token comment">// catch 是 then 的语法糖 resolve 回调函数为 null</span>
+  <span class="token comment">// catch 是 then 的语法糖, resolve 回调函数为 null</span>
   <span class="token keyword">catch</span><span class="token punctuation">(</span>fn<span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> fn<span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
