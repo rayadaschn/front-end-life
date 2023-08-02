@@ -38,6 +38,7 @@ category:
 
 - [设计模式 01](DesignPatterns01)
 - [设计模式 02](DesignPatterns02)
+- [设计模式 03 实践总结](DesignPatterns03)
 - [自定义 Cli 之 commander](cli01)
 
 ## 其它
