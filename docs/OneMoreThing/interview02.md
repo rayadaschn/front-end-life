@@ -49,7 +49,7 @@ const obj1 = {
 
 function deepClone(obj) {
   if (typeof obj === 'object' || obj == null) {
-    const copyObj = obj instanceof Array ? [] : {} // 也可用 Array.isArray(obj)
+    const copyObj = obj instanceof Array ? [] : {} // 也可用 Array.isArray(obj)，或者 Object.prototype.toString.call(obj) === '[object, Array]'
     for (let key in obj) {
       // 保证 key 不是原型属性
       if (obj.hasOwnProperty(key)) {
@@ -72,9 +72,10 @@ function deepClone(obj) {
   const b = '100' - 10 // 90
   const c = true + '10' // 'true10'
   const d = true + 10 // '11'
+  const e = true - '10' // '-9'
   ```
 
-  加号会转换为字符串拼接, 减号会转换为数值减法, Boolean 类型则看拼接的类型。
+  加号会转换为字符串拼接; 减号两边都会转换为数值, 再进行减法; Boolean 类型则看拼接的类型。
 
 - "=="
 
@@ -88,3 +89,11 @@ function deepClone(obj) {
 
   > 除用 "== null" 判断 null 或 undefined 类型外, 其余一律用 '==='
   > 'val == null' 相当于 'val === null || val === undefined'，原因在于它们都会转换为 false。
+
+总结规律:
+
+1. 如果两个操作数的类型相同，那么它们将按照相等性规则进行比较，返回相应的布尔值。
+2. 如果一个操作数是 null，另一个操作数是 undefined，则它们相等。
+3. 如果一个操作数是**数字**，另一个操作数是字符串，JavaScript 会尝试将字符串转换为数字，然后进行比较。
+4. 如果一个操作数是**布尔值**，另一个操作数是非布尔值（除了 null 和 undefined），JavaScript 会尝试将布尔值转换为数字（true 转换为 1，false 转换为 0），然后进行比较。
+5. 如果一个操作数是**对象**，另一个操作数是原始类型（数字、字符串、布尔值），JavaScript 会尝试调用对象的 valueOf() 或 toString() 方法，将对象转换为原始类型的值，然后进行比较。

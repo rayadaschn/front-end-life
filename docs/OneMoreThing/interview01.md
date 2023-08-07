@@ -24,6 +24,7 @@ sticky: false
 7. [absolute 和 relative 定位问题](#7)
 8. [居中定位问题](#居中定位问题)
 9. [rem 是什么?](#9)
+10. [property 和 attribute 有什么区别](#10)
 
 ## HTML
 
@@ -311,3 +312,44 @@ flex 常见语法：
 - 屏幕高度: `window.screen.height`
 - 网页视口高度: `window.innerHeight`
 - body 高度: `document.body.clientHeight`
+
+### property 和 attribute 有什么区别 <span id='10' />
+
+在 HTML 中，"property"（属性）和"attribute"（特性）也是两个相关但不完全相同的概念。它们在 HTML 中的含义和用法略有不同。
+
+属性（Property）：
+属性是 DOM 元素对象的成员，可以通过 JavaScript 访问和操作。在 HTML 中，属性是元素在 DOM 中对应的 JavaScript 对象的属性。属性通常反映了元素的当前状态或值，可以读取和修改。
+
+例如，考虑以下 HTML 元素：
+
+```html
+<input type="text" id="myInput" value="Hello" />
+```
+
+在 JavaScript 中，我们可以通过 `id` 属性和 `value` 属性来访问和修改该元素的属性：
+
+```javascript
+const inputElement = document.getElementById('myInput')
+console.log(inputElement.value) // 输出 "Hello"
+inputElement.value = 'New Value' // 修改 value 属性的值
+```
+
+在这个例子中，`value` 是元素的属性，可以通过 JavaScript 对象的属性访问和修改。
+
+特性（Attribute）：
+特性是 HTML 元素在 HTML 标记中定义的附加信息，反映了元素的初始状态或设置。特性在 HTML 中以字符串形式表示，并包含在元素的标记中。特性可以影响元素的行为、样式、标识等。
+
+例如，在以下 HTML 元素中：
+
+```html
+<input type="text" id="myInput" value="Hello" />
+```
+
+`type`、`id` 和 `value` 都是元素的特性。这些特性提供了关于元素的附加信息，如输入框的类型、唯一标识符和初始值。
+
+需要注意的是，特性和属性之间并不总是一一对应。某些特性在 DOM 对象中没有相应的属性，而某些属性是通过特定的 DOM 接口提供的，而不是直接映射到 HTML 的特性。
+
+在一些情况下，特性和属性的值是同步的，当特性值发生变化时，属性值也会相应更新。但是，这种同步并非始终如此，特别是在使用 JavaScript 动态修改属性或特性时，它们之间的同步可能会有所不同。
+
+总结：
+在 HTML 中，Property 属性是 DOM 元素对象的属性，可以通过 JavaScript 访问和操作，而特性是元素在 HTML 标记中定义的附加信息，反映了元素的初始状态或设置。属性是 JavaScript 对象的一部分，特性是 HTML 标记的一部分。属性通常用于表示元素的当前状态，而特性用于提供元素的初始设置或附加信息。
