@@ -15,6 +15,7 @@ category:
 
 - [HTML&CSS](interview01)
 - [JS 基础知识](interview02)
+- [JS 手写 ajax](interview03)
 
 ## Other
 
