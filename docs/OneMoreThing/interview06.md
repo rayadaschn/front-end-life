@@ -1,0 +1,94 @@
+---
+title: Interview -- DOM 和 BOM
+date: 2023-08-10
+category:
+  - anonymous
+tag:
+  - note
+star: false
+# sticky: true
+sticky: false
+---
+
+总结一下常用的 DOM 和 BOM 操作。
+
+## DOM
+
+DOM 是指文档对象模型，常用的操作有获取元素、操作元素内容、创建和修改元素、事件处理和遍历查找。
+
+### 获取元素
+
+- getElementById(id)：根据元素的 id 获取元素;
+- getElementsByClassName(className)：根据元素的 Class 类名获取元素，需要注意的是这里是 Element**s**，类名是可以重复的得到的元素不止一个！
+- querySelector(selector)：根据 CSS 选择器获取元素，返回第一个匹配的元素;
+- querySelectorAll(selector)：根据 CSS 选择器获取一组元素，返回所有匹配的元素。
+
+### 操作元素内容
+
+- innerHTML: 获取或设置元素的 HTML 内容。
+- innerText 或 textContent: 获取或设置元素的文本内容。
+
+### 操作元素属性和样式
+
+- getAttribute(attributeName): 获取元素的属性值。
+- setAttribute(attributeName, value): 设置元素的属性值。
+- classList: 操作元素的类名，例如添加、删除、切换类名等。常见的 classList 方法包括：
+  - add(className): 添加指定的类名。
+  - remove(className): 移除指定的类名。
+  - toggle(className): 切换指定的类名，如果存在则移除，如果不存在则添加。
+  - contains(className): 检查元素是否包含指定的类名。
+- style: 操作元素的样式，同 classList 一样，例如设置元素的宽度、颜色等。
+
+### 创建和修改元素
+
+- createElement(tagName): 创建新的元素节点。
+- appendChild(node): 将节点添加为另一个节点的子节点。
+- removeChild(node): 从父节点中移除指定的子节点。
+- cloneNode(deep): 复制节点，其中 deep 参数表示是否同时复制子节点。
+
+### 事件处理
+
+- addEventListener(event, handler): 添加事件监听器。
+- removeEventListener(event, handler): 移除事件监听器。
+
+### 遍历和查找
+
+- parentNode: 获取元素的父节点。
+- childNodes: 获取元素的所有子节点。
+- nextSibling 和 previousSibling: 获取元素的下一个兄弟节点和上一个兄弟节点。
+- querySelector 和 querySelectorAll: 根据 CSS 选择器在元素的后代节点中查找匹配的元素。
+
+## BOM
+
+BOM 是指浏览器对象模，提供了一系列用于操作浏览器窗口和浏览器本身的对象和方法。
+
+### window 对象
+
+- window.open(url, name, features): 打开一个新窗口或标签页。
+- window.close(): 关闭当前窗口。
+- window.location: 获取或设置当前窗口的 URL。
+- window.alert(message): 弹出一个包含指定消息的警告框。
+- window.confirm(message): 弹出一个包含指定消息和确定/取消按钮的确认框。
+- window.prompt(message, defaultText): 弹出一个包含指定消息和输入框的提示框。
+- window.setTimeout(function, delay): 在指定的延迟时间后执行函数。
+- window.setInterval(function, interval): 每隔一定时间重复执行函数。
+
+### navigator 对象
+
+- navigator.userAgent: 获取浏览器的用户代理字符串。
+- navigator.language: 获取浏览器的语言设置。
+
+### screen 对象
+
+screen.width 和 screen.height: 获取屏幕的宽度和高度。
+screen.availWidth 和 screen.availHeight: 获取屏幕可用的宽度和高度。
+
+### history 对象
+
+- history.back(): 后退到上一页。
+- history.forward(): 前进到下一页。
+- history.go(number): 前进或后退指定数量的页面。
+
+### localStorage 和 sessionStorage
+
+使用 localStorage 和 sessionStorage 存储和获取数据，实现本地存储功能。都是通过 getItem 和 setItem 进行操作。
