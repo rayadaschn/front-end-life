@@ -15,9 +15,12 @@ category:
 
 - [HTML&CSS](interview01)
 - [JS 基础知识](interview02)
-- [JS 手写 ajax](interview03)
+- [JS ajax 相关问题](interview03)
 - [JS 手写 防抖节流](interview04)
 - [JS 前端安全和性能优化](interview05)
+- [DOM 和 BOM](interview06)
+- [http 总结](interview07)
+- [JS 进阶知识](interview08)
 
 ## Other
 
