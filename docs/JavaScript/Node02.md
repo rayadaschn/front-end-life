@@ -5,8 +5,6 @@ category:
   - javascript
 tag:
   - node
-
-
 ---
 
 # Node 服务器开发基础
@@ -70,15 +68,15 @@ const readStream = fs.createReadStream('example.txt', { encoding: 'utf8' })
 
 let formData = '' // 保存的最终完整数据
 // 监听读取到的数据
-readStream.on('data', chunk => {
+readStream.on('data', (chunk) => {
   console.log(chunk) // 会持续更新, 如需完整数据需要及时保存
-  formData += chunk;
-  
-  readStream.pause(); // 中途暂停读取
+  formData += chunk
+
+  readStream.pause() // 中途暂停读取
 
   setTimeout(() => {
-    readStream.resume(); // 恢复读取
-  }, 2000);
+    readStream.resume() // 恢复读取
+  }, 2000)
 })
 
 // 监听打开事件--事件开启
@@ -166,17 +164,13 @@ const { pipeline } = require('stream')
 const readStream = fs.createReadStream('input.txt')
 const writeStream = fs.createWriteStream('output.txt')
 
-pipeline(
-  readStream,
-  writeStream,
-  err => {
-    if (err) {
-      console.error('Pipeline failed', err)
-    } else {
-      console.log('Pipeline succeeded')
-    }
+pipeline(readStream, writeStream, (err) => {
+  if (err) {
+    console.error('Pipeline failed', err)
+  } else {
+    console.log('Pipeline succeeded')
   }
-)
+})
 ```
 
 在上面的例子中，我们使用 `fs.createReadStream()` 和 `fs.createWriteStream()` 方法创建了一个可读流和一个可写流。然后，我们使用 `pipeline()` 方法将这两个流连接起来，并定义一个回调函数以处理错误和成功完成的情况。
@@ -301,7 +295,6 @@ const server = http.createServer((req, res) => {
   }
 })
 
-
 // 2.开启server服务器
 server.listen(8000, () => {
   console.log('服务器开启成功~')
@@ -328,7 +321,6 @@ const server = http.createServer((req, res) => {
 
   res.end('请求结束')
 })
-
 
 // 2.开启server服务器
 server.listen(8000, () => {
@@ -367,12 +359,13 @@ const http = require('http')
 const server = http.createServer((req, res) => {
   let body = ''
   req.setEncoding('utf-8') // body 解析格式
-  
-  req.on('data', chunk => {
+
+  req.on('data', (chunk) => {
     body += chunk.toString()
   })
-  
-  req.on('end', () => { // 在请求主体结束后调用指定的回调函数。
+
+  req.on('end', () => {
+    // 在请求主体结束后调用指定的回调函数。
     console.log(body)
     res.end('Hello World\n')
   })
@@ -397,9 +390,9 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 着重说一下 `content-type`，作为请求携带的数据类型，它定义了解析数据的方式，如果不指定则默认客户端接收到的是字符串，客户端会按照自己默认的方式进行处理。
 
 - `application/x-www-form-urlencoded`:表示数据被编码成以 `'&'` 分隔的键 `-` 值对，同时以 `'='` 分隔键和值 ；
-- `application/json`:表示是一个json类型；
+- `application/json`:表示是一个 json 类型；
 - `text/plain`:表示是文本类型；
-- `application/xml`:表示是xml类型；
+- `application/xml`:表示是 xml 类型；
 - `multipart/form-data`:表示是上传文件；
 
 ### 响应对象
@@ -416,13 +409,13 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 
    ```js
    const http = require('http')
-   
+
    const server = http.createServer((req, res) => {
      res.writeHead(200, { 'Content-Type': 'text/plain' })
      res.write('Hello World\n')
      res.end()
    })
-   
+
    server.listen(3000, () => {
      console.log('Server running at http://localhost:3000/')
    })
@@ -434,14 +427,14 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 
    ```js
    const http = require('http')
-   
+
    const server = http.createServer((req, res) => {
      res.writeHead(200, { 'Content-Type': 'text/plain' })
      res.write('Hello ')
      res.write('World\n')
      res.end()
    })
-   
+
    server.listen(3000, () => {
      console.log('Server running at http://localhost:3000/')
    })
@@ -453,12 +446,12 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 
    ```js
    const http = require('http')
-   
+
    const server = http.createServer((req, res) => {
      res.writeHead(200, { 'Content-Type': 'text/plain' })
      res.end('Hello World\n')
    })
-   
+
    server.listen(3000, () => {
      console.log('Server running at http://localhost:3000/')
    })
@@ -468,69 +461,73 @@ HTTP 请求和响应中包含了一些元数据信息，这些信息被称为头
 
 ### 发送数据请求
 
-Axios 库可以在浏览器中使用，也可以在 Node 中使用。区别是在浏览器中，使用的是封装`xhr`；在Node中，使用的是`http`内置模块。没错，`http`不仅可以创建服务，还可以发起请求。
+Axios 库可以在浏览器中使用，也可以在 Node 中使用。区别是在浏览器中，使用的是封装`xhr`；在 Node 中，使用的是`http`内置模块。没错，`http`不仅可以创建服务，还可以发起请求。
 
 以下是使用 Axios 发送 HTTP 请求的示例：
 
 ```js
-const axios = require('axios');
+const axios = require('axios')
 
 // 发送 GET 请求
-axios.get('https://jsonplaceholder.typicode.com/posts')
-  .then(response => {
-    console.log(response.data);
+axios
+  .get('https://jsonplaceholder.typicode.com/posts')
+  .then((response) => {
+    console.log(response.data)
   })
-  .catch(error => {
-    console.error(error);
-  });
+  .catch((error) => {
+    console.error(error)
+  })
 
 // 发送 POST 请求
-axios.post('https://jsonplaceholder.typicode.com/posts', {
+axios
+  .post('https://jsonplaceholder.typicode.com/posts', {
     title: 'foo',
     body: 'bar',
-    userId: 1
+    userId: 1,
   })
-  .then(response => {
-    console.log(response.data);
+  .then((response) => {
+    console.log(response.data)
   })
-  .catch(error => {
-    console.error(error);
-  });
+  .catch((error) => {
+    console.error(error)
+  })
 ```
 
-上面的代码演示了如何使用 Axios 发送 GET 和 POST 请求，并处理响应数据。Axios 中的请求方法（例如 `get`、`post`）返回的是一个 Promise 对象，您可以使用 `then` 和 `catch` 方法来处理异步响应数据。
+上面的代码演示了如何使用 Axios 发送 GET 和 POST 请求，并处理响应数据。Axios 中的请求方法（例如 `get`、`post`）返回的是一个 Promise 对象，可以使用 `then` 和 `catch` 方法来处理异步响应数据。
 
 Axios 还提供了其他一些方便的功能，例如设置请求头、发送文件等。以下是一些常见的用法示例：
 
 ```js
 // 设置请求头
-axios.get('https://jsonplaceholder.typicode.com/posts', {
+axios
+  .get('https://jsonplaceholder.typicode.com/posts', {
     headers: {
-      'Authorization': 'Bearer token'
-    }
+      Authorization: 'Bearer token',
+    },
   })
-  .then(response => {
-    console.log(response.data);
+  .then((response) => {
+    console.log(response.data)
   })
-  .catch(error => {
-    console.error(error);
-  });
+  .catch((error) => {
+    console.error(error)
+  })
 
 // 发送 FormData 数据
-const formData = new FormData();
-formData.append('file', file);
+const formData = new FormData()
+formData.append('file', file)
 
-axios.post('https://example.com/upload', formData, {
+axios
+  .post('https://example.com/upload', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      'Content-Type': 'multipart/form-data',
+    },
   })
-  .then(response => {
-    console.log(response.data);
+  .then((response) => {
+    console.log(response.data)
   })
-  .catch(error => {
-    console.error(error);
-  });
+  .catch((error) => {
+    console.error(error)
+  })
 ```
 
 在使用 Axios 发送 HTTP 请求时，请确保了解其用法和准确性，并尽可能地考虑请求的正确性、安全性和可扩展性等方面的问题。同时，也要避免对服务器造成不必要的压力或安全问题，以确保应用程序具有足够的健壮性和可靠性。
@@ -538,7 +535,7 @@ axios.post('https://example.com/upload', formData, {
 ### 实现一个服务器接收用户上传图片的代码
 
 ```js
-const http = require("http");
+const http = require('http')
 const fs = require('fs')
 
 // 1.创建server服务器
@@ -546,16 +543,18 @@ const server = http.createServer((req, res) => {
   req.setEncoding('binary')
 
   // 获取 boundary
-  const boundary = req.headers['content-type'].split('; ')[1].replace('boundary=', '')
+  const boundary = req.headers['content-type']
+    .split('; ')[1]
+    .replace('boundary=', '')
   console.log(boundary)
 
   // 客户端传递的数据是表单数据(请求体)
   let formData = ''
-  req.on("data", (data) => {
+  req.on('data', (data) => {
     formData += data
-  });
+  })
 
-  req.on("end", () => {
+  req.on('end', () => {
     console.log(formData)
     // 1.截图从image/jpeg位置开始后面所有的数据
     const imgType = 'image/jpeg'
@@ -571,15 +570,15 @@ const server = http.createServer((req, res) => {
     // 4.将imageData的数据存储到文件中
     fs.writeFile('./bar.png', imageData, 'binary', () => {
       console.log('文件存储成功')
-      res.end("文件上传成功~");
+      res.end('文件上传成功~')
     })
-  });
-});
+  })
+})
 
 // 2.开启server服务器
 server.listen(8000, () => {
-  console.log("服务器开启成功~");
-});
+  console.log('服务器开启成功~')
+})
 ```
 
 ## Web 开发小工具

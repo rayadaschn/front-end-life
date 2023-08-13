@@ -118,7 +118,7 @@ divide(10, 0) // 输出：An error occurred: Infinity, Finally block executed.
    console.log(parameters) // 输出：{ name: "John", age: "30" }
    ```
 
-   此方法使用 `URLSearchParams` API，它提供了一组方便的方法来处理 URL 查询字符串。您可以通过迭代 `URLSearchParams` 的键值对来获取参数，并将其存储在对象中。
+   此方法使用 `URLSearchParams` API，它提供了一组方便的方法来处理 URL 查询字符串。可以通过迭代 `URLSearchParams` 的键值对来获取参数，并将其存储在对象中。
 
 3. 使用第三方库，例如 `query-string`：
 

@@ -43,12 +43,12 @@ CommonJS 是一种模块规范，用于在 JavaScript 环境中定义模块的�
 
 ```js
 // moduleA.js
-const add = (a, b) => a + b;
-module.exports = { add };
+const add = (a, b) => a + b
+module.exports = { add }
 
 // moduleB.js
-const { add } = require("./moduleA");
-console.log(add(1, 2)); // 输出 3
+const { add } = require('./moduleA')
+console.log(add(1, 2)) // 输出 3
 ```
 
 在上面的例子中，`moduleA.js` 中导出了一个名为 `add` 的函数，并将其赋值给 `module.exports` 对象。然后，在 `moduleB.js` 中，我们通过 `require` 函数引入了 `moduleA.js` 文件，并使用解构赋值语法来获取 `moduleA.js` 导出的 `add` 函数，然后调用了它。
@@ -72,24 +72,24 @@ import moduleA from './moduleA'
 ```js
 // CommonJS 动态导入方式
 function loadModule(filename) {
-  return require("./" + filename);
+  return require('./' + filename)
 }
 
 // ES6 模块静态导入方式
-const filename = "moduleA.js";
+const filename = 'moduleA.js'
 import(`./${filename}`).then((module) => {
   // 执行操作
-});
+})
 ```
 
 3. 默认导出：在 CommonJS 规范中，使用 `module.exports` 或 `exports` 对象来导出模块的公共部分；而在 ES6 模块系统中，则默认导出一个模块，可以通过 `export default` 语句来指定默认导出。
 
 ```js
 // CommonJS 导出方式
-module.exports = { add }; // 或者 exports.add = add
+module.exports = { add } // 或者 exports.add = add
 
 // ES6 模块默认导出
-export default { add };
+export default { add }
 ```
 
 需要注意的是，虽然 `import` 和 `export` 是 ES6 模块化规范中定义的关键字，但它们在许多现代浏览器和 Node.js 环境中已经得到了支持。但在一些旧的浏览器或 Node.js 版本中，可能需要使用打包工具（如 webpack、Browserify 等）来转换成 CommonJS 规范的代码。
@@ -102,48 +102,48 @@ fs 上有几个文件读取的 API 常用的有俩个：`fs.readFileSync`（同�
 
    ```js
    // 同步读取,获取返回值进行同步操作
-   const fs = require("fs");
-   const res = fs.readFileSync("./text.txt", {
-     encoding: "utf8",
-   });
-   console.log(res);
+   const fs = require('fs')
+   const res = fs.readFileSync('./text.txt', {
+     encoding: 'utf8',
+   })
+   console.log(res)
    ```
 
 2. 异步读取: 回调函数
 
    ```js
    // fs.readFile 第二个参数是回调函数
-   const fs = require("fs");
+   const fs = require('fs')
    fs.readFile(
-     "./text.txt",
+     './text.txt',
      {
-       encoding: "utf8",
+       encoding: 'utf8',
      },
      (err, data) => {
        if (err) {
-         console.log("读取文件错误:", err);
-         return;
+         console.log('读取文件错误:', err)
+         return
        }
-       console.log("读取文件结果:", data);
+       console.log('读取文件结果:', data)
      }
-   );
+   )
    ```
 
 3. 异步读取：Promise
 
    ```js
    // 通过链式调用的 Promise 操作
-   const fs = require("fs");
+   const fs = require('fs')
    fs.promises
-     .readFile("./text.txt", {
-       encoding: "utf-8",
+     .readFile('./text.txt', {
+       encoding: 'utf-8',
      })
      .then((res) => {
-       console.log("获取到结果:", res);
+       console.log('获取到结果:', res)
      })
      .catch((err) => {
-       console.log("发生了错误:", err);
-     });
+       console.log('发生了错误:', err)
+     })
    ```
 
 ### 文件描述符的使用
@@ -154,24 +154,24 @@ fs 上有几个文件读取的 API 常用的有俩个：`fs.readFileSync`（同�
 >
 > 为了简化用户的工作，Node.js 抽象出操作系统之间的特定差异，并为所有打开的文件分配一个数字型的文件描述符。
 
-当您打开一个文件时，操作系统会为该文件分配一个唯一的文件描述符。您可以使用这个文件描述符来读取、写入或关闭文件。在 Node.js 中，您可以使用 `fs.open` 函数来打开一个文件，并获取该文件的文件描述符。例如：
+当打开一个文件时，操作系统会为该文件分配一个唯一的文件描述符。可以使用这个文件描述符来读取、写入或关闭文件。在 Node.js 中，可以使用 `fs.open` 函数来打开一个文件，并获取该文件的文件描述符。例如：
 
 ```js
-const fs = require("fs");
+const fs = require('fs')
 
 // 打开文件，并获取文件描述符
-fs.open("file.txt", "r", (err, fd) => {
-  if (err) throw err;
+fs.open('file.txt', 'r', (err, fd) => {
+  if (err) throw err
 
-  console.log(fd); // 打印文件描述符
+  console.log(fd) // 打印文件描述符
   // 或使用文件描述符进行 I/O 操作
   // ...
 
   // 关闭文件
   fs.close(fd, (err) => {
-    if (err) throw err;
-  });
-});
+    if (err) throw err
+  })
+})
 ```
 
 在上面的例子中，我们使用 `fs.open` 函数打开了一个名为 `file.txt` 的文件，并获取了该文件的文件描述符 `fd`。接下来，我们可以使用 `fd` 来执行文件的 I/O 操作。最后，我们使用 `fs.close` 函数来关闭文件，释放文件描述符。
@@ -212,17 +212,17 @@ fs.writeFile(file, data[, options], callback)
 例如，以下代码在写入文件时使用了 `encoding` 和 `flag` 选项：
 
 ```js
-const fs = require("fs");
+const fs = require('fs')
 
 fs.writeFile(
-  "file.txt",
-  "Hello, world!",
-  { encoding: "utf8", flag: "a+" },
+  'file.txt',
+  'Hello, world!',
+  { encoding: 'utf8', flag: 'a+' },
   (err) => {
-    if (err) throw err;
-    console.log("Data written to file");
+    if (err) throw err
+    console.log('Data written to file')
   }
-);
+)
 ```
 
 在上面的例子中，我们将字符串 `'Hello, world!'` 写入名为 `file.txt` 的文件中，并使用了 `encoding` 选项设置编码格式为 `utf8`，并使用了 `flag` 选项设置标志为 `'a+'`（追加写入）。
@@ -233,115 +233,115 @@ fs.writeFile(
 
 1. 创建文件夹
 
-可以使用 `fs.mkdir` 函数来创建一个新的文件夹。该函数接受两个参数：要创建的文件夹路径以及一个回调函数。当创建操作完成或出错时，回调函数将被调用。例如：
+   可以使用 `fs.mkdir` 函数来创建一个新的文件夹。该函数接受两个参数：要创建的文件夹路径以及一个回调函数。当创建操作完成或出错时，回调函数将被调用。例如：
 
-```js
-const fs = require("fs");
+   ```js
+   const fs = require('fs')
 
-fs.mkdir("newDir", (err) => {
-  if (err) throw err;
-  console.log("Folder created");
-});
-```
+   fs.mkdir('newDir', (err) => {
+     if (err) throw err
+     console.log('Folder created')
+   })
+   ```
 
-在上面的例子中，我们使用 `fs.mkdir` 函数创建了一个名为 `newDir` 的文件夹。如果创建失败，则会抛出错误；否则，将输出 `'Folder created'`。
+   在上面的例子中，我们使用 `fs.mkdir` 函数创建了一个名为 `newDir` 的文件夹。如果创建失败，则会抛出错误；否则，将输出 `'Folder created'`。
 
 2. 读取文件夹
 
-可以使用 `fs.readdir` 函数来读取一个文件夹中的所有文件和子文件夹。该函数接受两个参数：要读取的文件夹路径以及一个回调函数。当读取操作完成或出错时，回调函数将被调用。例如：
+   可以使用 `fs.readdir` 函数来读取一个文件夹中的所有文件和子文件夹。该函数接受两个参数：要读取的文件夹路径以及一个回调函数。当读取操作完成或出错时，回调函数将被调用。例如：
 
-```js
-const fs = require("fs");
+   ```js
+   const fs = require('fs')
 
-fs.readdir("myDir", (err, files) => {
-  if (err) throw err;
-  console.log(files);
-});
-```
+   fs.readdir('myDir', (err, files) => {
+     if (err) throw err
+     console.log(files)
+   })
+   ```
 
-在上面的例子中，我们使用 `fs.readdir` 函数读取了名为 `myDir` 的文件夹中的所有文件和子文件夹，并将结果作为数组打印到控制台上。如果读取失败，则会抛出错误；否则，将输出文件和子文件夹的列表。
+   在上面的例子中，我们使用 `fs.readdir` 函数读取了名为 `myDir` 的文件夹中的所有文件和子文件夹，并将结果作为数组打印到控制台上。如果读取失败，则会抛出错误；否则，将输出文件和子文件夹的列表。
 
-需要注意的是，`fs.readdir` 函数**只会返回文件夹中的文件和子文件夹的名称，而不会返回它们的内容**。如果您需要读取一个文件夹中的文件内容，您需要分别打开每个文件并读取其内容。
+   需要注意的是，`fs.readdir` 函数**只会返回文件夹中的文件和子文件夹的名称，而不会返回它们的内容**。如果需要读取一个文件夹中的文件内容，需要分别打开每个文件并读取其内容。
 
-递归读取文件夹中所有的文件：
+   递归读取文件夹中所有的文件：
 
-```js
-const fs = require("fs");
+   ```js
+   const fs = require('fs')
 
-function readDirectory(path) {
-  fs.readdir(path, { withFileTypes: true }, (err, files) => {
-    files.forEach((item) => {
-      if (item.isDirectory()) {
-        readDirectory(`${path}/${item.name}`);
-      } else {
-        console.log("获取到文件:", item.name);
-      }
-    });
-  });
-}
+   function readDirectory(path) {
+     fs.readdir(path, { withFileTypes: true }, (err, files) => {
+       files.forEach((item) => {
+         if (item.isDirectory()) {
+           readDirectory(`${path}/${item.name}`)
+         } else {
+           console.log('获取到文件:', item.name)
+         }
+       })
+     })
+   }
 
-readDirectory("./myDir");
-```
+   readDirectory('./myDir')
+   ```
 
 3. 删除文件夹
 
-您可以使用 `fs.rmdir` 函数来删除一个文件夹。该函数接受两个参数：要删除的文件夹路径以及一个回调函数。当删除操作完成或出错时，回调函数将被调用。例如：
+   可以使用 `fs.rmdir` 函数来删除一个文件夹。该函数接受两个参数：要删除的文件夹路径以及一个回调函数。当删除操作完成或出错时，回调函数将被调用。例如：
 
-```js
-const fs = require("fs");
+   ```js
+   const fs = require('fs')
 
-fs.rmdir("oldDir", (err) => {
-  if (err) throw err;
-  console.log("Folder deleted");
-});
-```
+   fs.rmdir('oldDir', (err) => {
+     if (err) throw err
+     console.log('Folder deleted')
+   })
+   ```
 
-在上面的例子中，我们使用 `fs.rmdir` 函数删除了名为 `oldDir` 的文件夹。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
+   在上面的例子中，我们使用 `fs.rmdir` 函数删除了名为 `oldDir` 的文件夹。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
 
-需要注意的是，在 Node.js 的文件系统模块中，`fs.unlink` 函数用于删除一个文件，而 `fs.rmdir` 函数用于删除一个文件夹。这两个函数默认情况下不会递归删除。
+   需要注意的是，在 Node.js 的文件系统模块中，`fs.unlink` 函数用于删除一个文件，而 `fs.rmdir` 函数用于删除一个文件夹。这两个函数默认情况下不会递归删除。
 
-如果要删除一个文件夹及其子文件夹和文件，可以使用第三方库 `rimraf` 或 `del`，它们提供了递归删除文件夹的功能。
+   如果要删除一个文件夹及其子文件夹和文件，可以使用第三方库 `rimraf` 或 `del`，它们提供了递归删除文件夹的功能。
 
-例如，使用 `rimraf` 库来删除一个文件夹及其所有子文件夹和文件的示例代码如下：
+   例如，使用 `rimraf` 库来删除一个文件夹及其所有子文件夹和文件的示例代码如下：
 
-```js
-const rimraf = require("rimraf");
+   ```js
+   const rimraf = require('rimraf')
 
-rimraf("myDir", (err) => {
-  if (err) throw err;
-  console.log("Folder deleted");
-});
-```
+   rimraf('myDir', (err) => {
+     if (err) throw err
+     console.log('Folder deleted')
+   })
+   ```
 
-在上面的例子中，我们使用 `rimraf` 函数删除了名为 `myDir` 的文件夹及其所有子文件夹和文件。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
+   在上面的例子中，我们使用 `rimraf` 函数删除了名为 `myDir` 的文件夹及其所有子文件夹和文件。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
 
-此外，在执行删除操作时，请务必小心谨慎，确保不会意外删除或修改您不想修改的文件或文件夹，特别是在使用递归删除的情况下。
+   此外，在执行删除操作时，请务必小心谨慎，确保不会意外删除或修改不想修改的文件或文件夹，特别是在使用递归删除的情况下。
 
-3. 重命名文件夹
+4. 重命名文件夹
 
-可以使用 `fs.rename` 函数来重命名一个文件夹。该函数接受三个参数：旧的文件夹路径、新的文件夹路径以及一个回调函数。当重命名操作完成或出错时，回调函数将被调用。例如：
+   可以使用 `fs.rename` 函数来重命名一个文件夹。该函数接受三个参数：旧的文件夹路径、新的文件夹路径以及一个回调函数。当重命名操作完成或出错时，回调函数将被调用。例如：
 
-```js
-const fs = require("fs");
+   ```js
+   const fs = require('fs')
 
-// 对文件夹进行重命名
-// 需要加路径
-fs.rename("./oldDir", "./newDir", (err) => {
-  if (err) throw err;
-  console.log("Folder renamed");
-});
+   // 对文件夹进行重命名
+   // 需要加路径
+   fs.rename('./oldDir', './newDir', (err) => {
+     if (err) throw err
+     console.log('Folder renamed')
+   })
 
-// 对文件进行重命名
-// 重命名文件需要加后缀名!
-fs.rename("./oldFile.txt", "./newFile.txt", (err) => {
-  if (err) throw err;
-  console.log("File renamed");
-});
-```
+   // 对文件进行重命名
+   // 重命名文件需要加后缀名!
+   fs.rename('./oldFile.txt', './newFile.txt', (err) => {
+     if (err) throw err
+     console.log('File renamed')
+   })
+   ```
 
-在上面的例子中，我们使用 `fs.rename` 函数将名为 `oldDir` 的文件夹重命名为 `newDir`。如果重命名失败，则会抛出错误；否则，将输出 `'Folder renamed'`。
+   在上面的例子中，我们使用 `fs.rename` 函数将名为 `oldDir` 的文件夹重命名为 `newDir`。如果重命名失败，则会抛出错误；否则，将输出 `'Folder renamed'`。
 
-需要注意的是，在执行文件夹操作时，请务必小心谨慎，确保您不会意外删除或修改您不想修改的文件夹。
+需要注意的是，在执行文件夹操作时，请务必小心谨慎，确保不会意外删除或修改不想修改的文件夹。
 
 ## Events 模块
 
@@ -350,27 +350,27 @@ Node.js 中的 `events` 模块提供了一个简单的事件驱动框架，可�
 以下是一个简单的示例，演示如何使用 `events` 模块来创建并触发一个自定义事件：
 
 ```js
-const EventEmitter = require("events");
+const EventEmitter = require('events')
 
 class MyEmitter extends EventEmitter {}
 
 // 创建 EventEmitter 实例
-const myEmitter = new MyEmitter();
+const myEmitter = new MyEmitter()
 
 // 回调事件
 function handleFn() {
-  console.log("Hello, world!");
+  console.log('Hello, world!')
 }
 
 // 监听事件
-myEmitter.on("hello", handleFn);
+myEmitter.on('hello', handleFn)
 
 // 发射事件
-myEmitter.emit("hello"); // 打印 'Hello, world!'
+myEmitter.emit('hello') // 打印 'Hello, world!'
 
 // 取消事件监听
-myEmitter.off("hello", handleFn);
-myEmitter.emit("hello"); // 不再打印
+myEmitter.off('hello', handleFn)
+myEmitter.emit('hello') // 不再打印
 ```
 
 在上面的例子中，我们首先创建了一个名为 `MyEmitter` 的自定义事件类，该类继承自 `EventEmitter` 类。然后我们创建了一个 `myEmitter` 实例，并为其注册了一个名为 `'hello'` 的事件及其回调函数，当该事件被触发时，将输出 `'Hello, world!'`。而后取消事件监听，再发送事件时，不再输出。
@@ -378,11 +378,11 @@ myEmitter.emit("hello"); // 不再打印
 此外，也可以传递参数给事件回调函数，例如：
 
 ```js
-myEmitter.on("count", (count) => {
-  console.log(`Count: ${count}`);
-});
+myEmitter.on('count', (count) => {
+  console.log(`Count: ${count}`)
+})
 
-myEmitter.emit("count", 42);
+myEmitter.emit('count', 42)
 ```
 
 在上面的例子中，我们定义了一个名为 `'count'` 的事件，并将回调函数作为第二个参数传递给 `on` 方法。当该事件被触发时，它会将参数 `42` 传递给回调函数，并输出 `'Count: 42'`。
@@ -406,22 +406,22 @@ myEmitter.emit("count", 42);
 
 这是因为，`new Buffer()` 在创建一个新的 Buffer 实例时，默认情况下会将其内容初始化为零。然而，由于这种行为很容易导致安全漏洞和内存泄漏等问题，因此 Node.js 团队决定弃用这种方式，并引入了 `Buffer.from()` 和 `Buffer.alloc()` 方法来取代它。
 
-如果在旧版本的 Node.js 中使用了 `new Buffer()`，那么可能需要修改代码以避免在更新到新版本的 Node.js 后出现异常或警告。如果您要创建一个特定大小的 Buffer，请使用 `Buffer.alloc()` 方法（alloc 是分配的意思）。如果您要通过字符串或字节数组等数据创建一个 Buffer，请使用 `Buffer.from()` 方法。
+如果在旧版本的 Node.js 中使用了 `new Buffer()`，那么可能需要修改代码以避免在更新到新版本的 Node.js 后出现异常或警告。如果要创建一个特定大小的 Buffer，请使用 `Buffer.alloc()` 方法（alloc 是分配的意思）。如果要通过字符串或字节数组等数据创建一个 Buffer，请使用 `Buffer.from()` 方法。
 
 例如，以下代码演示了如何使用 `Buffer.from()` 方法创建并操作一个 Buffer：
 
 ```js
-const buf = Buffer.from("hello", "utf8");
+const buf = Buffer.from('hello', 'utf8')
 
-console.log(buf); // <Buffer 68 65 6c 6c 6f>
+console.log(buf) // <Buffer 68 65 6c 6c 6f>
 
-console.log(buf.toString("utf8")); // hello
+console.log(buf.toString('utf8')) // hello
 
-console.log(buf[0]); // 104
+console.log(buf[0]) // 104
 
-buf[1] = 111;
+buf[1] = 111
 
-console.log(buf.toString("utf8")); // hollo
+console.log(buf.toString('utf8')) // hollo
 ```
 
 在上面的例子中，我们使用 `Buffer.from` 函数创建了一个包含字符串 `'hello'` 的 Buffer。我们还使用 `console.log` 和 `toString` 方法打印了该 Buffer 的内容和转换为字符串后的内容。我们还通过访问 `buf` 数组索引来修改了 Buffer 中的一个字节，并输出了修改后的结果。
@@ -439,13 +439,13 @@ console.log(buf.toString("utf8")); // hollo
 例如，以下代码演示了如何使用 `Buffer.alloc()` 方法创建并操作一个 Buffer：
 
 ```js
-const buf = Buffer.alloc(5);
+const buf = Buffer.alloc(5)
 
-console.log(buf); // <Buffer 00 00 00 00 00>
+console.log(buf) // <Buffer 00 00 00 00 00>
 
-buf[1] = 0x61;
+buf[1] = 0x61
 
-console.log(buf); // <Buffer 00 61 00 00 00>
+console.log(buf) // <Buffer 00 61 00 00 00>
 ```
 
 在上面的例子中，我们使用 `Buffer.alloc()` 方法创建了一个包含五个字节的新的 Buffer，并将其所有字节初始化为零。我们还通过访问 `buf` 数组索引来修改了 Buffer 中的一个字节，并输出了修改后的结果。
@@ -466,7 +466,7 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 
 在 slab allocation 机制中，Node.js 会预先分配一些内存块（称为 "slab"），并将其缓存在内部的内存池中。当需要创建新的 `Buffer` 实例时，Node.js 会优先从该内存池中分配或复用已有的 slab，而不是向操作系统申请新的内存空间。这样可以避免频繁的内存分配和释放操作，提高了性能和效率。
 
-另外，在 Node.js 中，`Buffer` 对象本身是一个 JavaScript 对象，它包装了底层的 C++ Buffer 对象。因此，当您创建一个新的 `Buffer` 实例时，实际上是在 JavaScript 层面上创建了一个对象，而不是直接向操作系统申请内存空间。这个对象会引用底层的 C++ Buffer 对象，使得 JavaScript 层面可以方便地对二进制数据进行操作。由于这种间接的封装方式，也可以减少频繁向操作系统申请内存的开销。
+另外，在 Node.js 中，`Buffer` 对象本身是一个 JavaScript 对象，它包装了底层的 C++ Buffer 对象。因此，当创建一个新的 `Buffer` 实例时，实际上是在 JavaScript 层面上创建了一个对象，而不是直接向操作系统申请内存空间。这个对象会引用底层的 C++ Buffer 对象，使得 JavaScript 层面可以方便地对二进制数据进行操作。由于这种间接的封装方式，也可以减少频繁向操作系统申请内存的开销。
 
 需要注意的是，在极端情况下，如果创建了许多大型的 `Buffer` 实例，并且持有它们的引用，可能会导致内存泄漏等问题。因此，在使用 `Buffer` 时，建议注意内存的使用情况，并及时释放不再需要的对象。
 
@@ -490,33 +490,33 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 
    微任务：`new Promise().then(回调)`、`process.nextTick`、`MutationObserver(html5 新特性)` 等。
 
-   `process.nextTick`这个微任务较为特殊，在Node中进行介绍，在 Node11 后，它会优先于其它微任务先执行。
+   `process.nextTick`这个微任务较为特殊，在 Node 中进行介绍，在 Node11 后，它会优先于其它微任务先执行。
 
 2. 实际执行顺序：队列结构，先进先出。宏任务中包裹微任务，依次执行。
 
    ```js
-   console.log('Global1')  // 1
-   
-   Promise.resolve().then(()=>{
-     console.log('Promise1')  // 4
-     setTimeout(()=>{
-       console.log('setTimeout2')  // 7
-     },0)
+   console.log('Global1') // 1
+
+   Promise.resolve().then(() => {
+     console.log('Promise1') // 4
+     setTimeout(() => {
+       console.log('setTimeout2') // 7
+     }, 0)
    })
-   
-   console.log('Global2')  // 2
-   
-   setTimeout(()=>{
-     console.log('setTimeout1')  // 5
-     Promise.resolve().then(()=>{
-       console.log('Promise2')  // 6
+
+   console.log('Global2') // 2
+
+   setTimeout(() => {
+     console.log('setTimeout1') // 5
+     Promise.resolve().then(() => {
+       console.log('Promise2') // 6
      })
-   },0)
-   
-   console.log('Global3')  // 3
+   }, 0)
+
+   console.log('Global3') // 3
    ```
 
-   - 上述代码，首先执行 `script` 中的全体宏任务，所以依次打印 “Global1、Global2、Global3”。这其中会插入1个微任务`Promise.resolve().then()` 和一个新的宏任务 `setTimeout`。
+   - 上述代码，首先执行 `script` 中的全体宏任务，所以依次打印 “Global1、Global2、Global3”。这其中会插入 1 个微任务`Promise.resolve().then()` 和一个新的宏任务 `setTimeout`。
    - 执行微任务，打印“`Promise1`”，而后再插入一个宏任务 `setTimeout`。微任务执行结束，开始轮询新的宏任务。
    - 此时有俩个宏任务，依次执行，打印“`setTimeout1`”，再插入一个微任务 `Promise.resolve().then()`。
    - 有微任务，先执行队列中的微任务。打印“`Promise2`”。结束当前宏任务。
@@ -526,7 +526,7 @@ console.log(buf); // <Buffer 00 61 00 00 00>
 
    一句话总结，宏任务依次执行，当每一个宏任务中存在微任务，则先执行微任务队列中的所有任务。待宏任务中没有微任务了，则继续执行剩下的宏任务。
 
-**Node中的 Event Loop:**
+**Node 中的 Event Loop:**
 
 Node.js 的运行机制如下:
 
@@ -535,12 +535,12 @@ Node.js 的运行机制如下:
 - libuv 库负责 Node API 的执行。**它将不同的任务分配给不同的线程，形成一个 Event Loop（事件循环），以异步的方式将任务的执行结果返回给 V8 引擎。**
 - V8 引擎再将结果返回给用户。
 
- libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当队列为空或者执行的回调函数数量到达系统设定的阈值，就会进入下一阶段。
+libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当队列为空或者执行的回调函数数量到达系统设定的阈值，就会进入下一阶段。
 
 ![Node 事件循环](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304231358737.png)
 
 执行顺序为：
-**incoming外部输入数据** --> **轮询阶段(poll)** -->
+**incoming 外部输入数据** --> **轮询阶段(poll)** -->
 **检查阶段(check)** --> **关闭事件回调阶段(close callback)** -->
 **定时器检测阶段(timer)** --> **I/O 事件回调阶段(I/O callbacks)** --> **闲置阶段(idle, prepare)** -->
 **新的轮询阶段(new poll)**
@@ -586,27 +586,25 @@ Node.js 的运行机制如下:
 
 ```node
 setTimeout(() => {
+  console.log('timer1')
 
-  console.log("timer1");
+  Promise.resolve().then(function () {
+    console.log('promise1')
+  })
 
- Promise.resolve().then(function () {
-    console.log("promise1");
-  });
-  
   process.nextTick(() => {
-    console.log("nextTick");
+    console.log('nextTick')
     process.nextTick(() => {
-      console.log("nextTick");
+      console.log('nextTick')
       process.nextTick(() => {
-        console.log("nextTick");
+        console.log('nextTick')
         process.nextTick(() => {
-          console.log("nextTick");
-        });
-      });
-    });
-  });
-  
-}, 0);
+          console.log('nextTick')
+        })
+      })
+    })
+  })
+}, 0)
 
 // 打印: timer1 => nextTick => nextTick => nextTick => nextTick => promise1
 ```
@@ -618,19 +616,19 @@ console.log('start')
 
 setTimeout(() => {
   console.log('timer1')
-  Promise.resolve().then(function() {
+  Promise.resolve().then(function () {
     console.log('promise1')
   })
 }, 0)
 
 setTimeout(() => {
   console.log('timer2')
-  Promise.resolve().then(function() {
+  Promise.resolve().then(function () {
     console.log('promise2')
   })
 }, 0)
 
-Promise.resolve().then(function() {
+Promise.resolve().then(function () {
   console.log('promise3')
 })
 
@@ -643,35 +641,35 @@ console.log('end')
 
 - 先执行全体宏任务，打印“start、end”，期间对 `timer`事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 `Promise.resolve.then()` 微任务；
 - 切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；
-- Event Loop轮询，到 timer 阶段，事件队列中存在俩个setTImeout事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个`Promise.resolve.then()` 微任务；
+- Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个`Promise.resolve.then()` 微任务；
 - 执行微任务队列，打印“promise1、promise2”。轮询完毕。
 
 再看一个完整的事件循环：
 
 ```node
 setImmediate(() => {
-  console.log("setImmediate1");
+  console.log('setImmediate1')
 
   setTimeout(() => {
-    console.log("setTimeout1");
-  }, 0);
-});
+    console.log('setTimeout1')
+  }, 0)
+})
 
 setTimeout(() => {
-  console.log("setTimeout2");
-  
-  Promise.resolve().then(function() {
-    console.log('promise1');
+  console.log('setTimeout2')
+
+  Promise.resolve().then(function () {
+    console.log('promise1')
   })
 
   process.nextTick(() => {
-    console.log("nextTick1");
-  });
+    console.log('nextTick1')
+  })
 
   setImmediate(() => {
-    console.log("setImmediate2");
-  });
-}, 0);
+    console.log('setImmediate2')
+  })
+}, 0)
 
 // 情况 1: setImmediate1 => setTimeout2 => nextTick1 => promise1 => setImmediate2 => setTimeout1
 // 情况 2: setImmediate1 => setTimeout2 => nextTick1 => promise1 => setTimeout1 => setImmediate2
@@ -683,13 +681,13 @@ setTimeout(() => {
 - 首先执行整体宏任务，此代码中没有别的任务，便给 check 事件队列插入`setImmediate1`，同时`setTimeout2`这个异步事件开始执行，产生事件等待。此时还没有打印，而后进行 Event Loop 轮询；
 - 进入到 check 阶段，事件队列有任务，执行打印“setImmediate1”。执行异步函数`setTimeout1`，产生新的事件等待。可以理解为此时 timer 事件队列为【setTimeout2，setTimeout1】。
 - check 阶段执行完毕，查看微任务队列，没有微任务，进入到 timer 阶段。
-- 进入到 timer 阶段，由于事件队列先后顺序的问题，此时应 setTImeout2 先执行（等待时间相同，先插入队列）。打印“setTimeout2”；给微任务队列插入“promise1”；给 `nextTick`事件队列插入`nextTick1`；给 check 事件插入 setImmediate2事件；
+- 进入到 timer 阶段，由于事件队列先后顺序的问题，此时应 setTImeout2 先执行（等待时间相同，先插入队列）。打印“setTimeout2”；给微任务队列插入“promise1”；给 `nextTick`事件队列插入`nextTick1`；给 check 事件插入 setImmediate2 事件；
 - 此时，宏任务`setTImeout2`执行完毕，开始执行微任务。此时 nextTick 事件队列有任务，因此先执行，打印“nextTick1”；再看微任务队列，有任务内容，打印“promise1”；
 - 微任务执行完毕，**此时较为关键**，也是产生俩种结果的原因：
-  - 情况 1：timer 事件队列中的`setTimeout1`已经执行等待完毕，继续执行宏任务setTimeout1，打印`setTimeout1`。而后轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”。
-  - 情况 2：timer 事件队列中的`setTimeout1`还在等待阶段，轮询到新的 check 阶段，执行setImmediate2，打印“`setImmediate2`”；而后，再轮询到新的 timer 阶段，执行宏任务setTimeout1，打印`setTimeout1`。
+  - 情况 1：timer 事件队列中的`setTimeout1`已经执行等待完毕，继续执行宏任务 setTimeout1，打印`setTimeout1`。而后轮询到新的 check 阶段，执行 setImmediate2，打印“`setImmediate2`”。
+  - 情况 2：timer 事件队列中的`setTimeout1`还在等待阶段，轮询到新的 check 阶段，执行 setImmediate2，打印“`setImmediate2`”；而后，再轮询到新的 timer 阶段，执行宏任务 setTimeout1，打印`setTimeout1`。
 
 ## 参考文章
 
 - [Deep-into-node](https://github.com/yjhjstz/deep-into-node/blob/master/chapter1/chapter1-0.md)
-- [浏览器与Node的事件循环(Event Loop)有何区别?](https://www.cnblogs.com/fundebug/p/diffrences-of-browser-and-node-in-event-loop.html)
+- [浏览器与 Node 的事件循环(Event Loop)有何区别?](https://www.cnblogs.com/fundebug/p/diffrences-of-browser-and-node-in-event-loop.html)

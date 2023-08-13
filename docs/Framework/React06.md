@@ -23,13 +23,13 @@ React Hooks 是 React 16.8 新增的功能，它允许函数组件中使用状�
 
 ```jsx
 function HelloWorld(props) {
-  let message = "Hello World!";
+  let message = 'Hello World!'
   return (
     <div>
       <h2>文本内容: {message}</h2>
-      <button onClick={(e) => (message = "Hello React!")}>修改文本</button>
+      <button onClick={(e) => (message = 'Hello React!')}>修改文本</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -46,14 +46,14 @@ Hooks 的出现解决了这个问题。它们使得我们能够在不编写类�
 以下是错误的写法：
 
 ```js
-import { useState } from "react";
+import { useState } from 'react'
 
 function Foo() {
-  const [message] = useState("Hello World");
-  return message;
+  const [message] = useState('Hello World')
+  return message
 }
-const message = Foo();
-console.log("message", message);
+const message = Foo()
+console.log('message', message)
 ```
 
 则会报错，原因有二：自定义 Hook 的函数名需要以 `use`开头，如`useFoo`；必须在函数组件内使用。
@@ -65,20 +65,20 @@ console.log("message", message);
 正确用法：
 
 ```jsx
-import { memo, useState } from "react";
+import { memo, useState } from 'react'
 
 function useFoo() {
   // 自定义 Hook
-  const [message] = useState("Hello World");
-  return message;
+  const [message] = useState('Hello World')
+  return message
 }
 
 // 函数组件
 function CounterHook(props) {
-  const [counter, setCounter] = useState(0);
+  const [counter, setCounter] = useState(0)
 
-  const message = useFoo(); // 使用自定义 Hook
-  console.log("message", message);
+  const message = useFoo() // 使用自定义 Hook
+  console.log('message', message)
 
   return (
     <div>
@@ -87,10 +87,10 @@ function CounterHook(props) {
       <button onClick={(e) => setCounter(counter + 1)}>+1</button>
       <button onClick={(e) => setCounter(counter - 1)}>-1</button>
     </div>
-  );
+  )
 }
 
-export default memo(CounterHook);
+export default memo(CounterHook)
 ```
 
 ## useState
@@ -100,7 +100,7 @@ export default memo(CounterHook);
 useState Hook 用于在函数组件中添加状态。它返回一个数组，第一个元素是当前状态的值，第二个元素是更新状态的函数。
 
 ```jsx
-const [state, setState] = useState(initialState);
+const [state, setState] = useState(initialState)
 ```
 
 其中，**`state` 表示当前状态的值，`setState` 是更新状态的函数，`initialState` 是状态的初始值。**
@@ -114,18 +114,18 @@ const [state, setState] = useState(initialState);
 接下来，让我们看一个简单的例子，使用 useState Hook 来实现计数器的功能：
 
 ```jsx
-import { useState } from "react";
+import { useState } from 'react'
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   const handleIncrement = () => {
-    setCount(count + 1);
-  };
+    setCount(count + 1)
+  }
 
   const handleDecrement = () => {
-    setCount(count - 1);
-  };
+    setCount(count - 1)
+  }
 
   return (
     <div>
@@ -133,7 +133,7 @@ function Counter() {
       <button onClick={handleIncrement}>+</button>
       <button onClick={handleDecrement}>-</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -154,7 +154,7 @@ function Counter() {
 ```js
 useEffect(() => {
   // do something...
-}, [dependencies]);
+}, [dependencies])
 ```
 
 其中，**第一个参数是回调函数，称为 Effect**。它会在组件的每次渲染周期结束后执行一次。**第二个参数是可选的依赖列表(数组形式)，用于控制 Effect 的执行时机。只有依赖项变化时，Effect 才会重新运行**。
@@ -164,30 +164,30 @@ useEffect(() => {
 接下来，让我们看一个简单的例子，使用 useEffect Hook 来实现在组件挂载时和卸载时输出信息的功能：
 
 ```jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
 function Example() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   useEffect(() => {
     // 此处也常用语添加监听事件,但需要记得在卸载时取消监听
-    console.log("Component mounted!"); // 每次渲染周期结束后执行一次,相当于生命周期中的 componentDidMount
+    console.log('Component mounted!') // 每次渲染周期结束后执行一次,相当于生命周期中的 componentDidMount
     return () => {
       // 此处常用于取消监听, 同上面的添加监听相对应
-      console.log("Component unmounted!"); // 组件卸载时执行，相当于生命周期中的 componentWillUnmount
-    };
-  }, []);
+      console.log('Component unmounted!') // 组件卸载时执行，相当于生命周期中的 componentWillUnmount
+    }
+  }, [])
 
   const handleIncrement = () => {
-    setCount(count + 1);
-  };
+    setCount(count + 1)
+  }
 
   return (
     <div>
       <h1>{count}</h1>
       <button onClick={handleIncrement}>+</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -196,7 +196,7 @@ function Example() {
 需要注意的是，在 useEffect Hook 中我们返回了一个清理函数，这个函数会在组件卸载时执行。它可以用于清除副作用，例如取消订阅或清除定时器等。可以参考这个回调函数的定义：
 
 ```typescript
-type EffectCallback = () => void | (() => void | undefined);
+type EffectCallback = () => void | (() => void | undefined)
 ```
 
 最后，在组件的返回值中，我们渲染了当前的计数器值和一个按钮，并将更新状态的方法绑定在了对应的按钮上。
@@ -216,7 +216,7 @@ type EffectCallback = () => void | (() => void | undefined);
 以下是 useContext Hook 的基本语法：
 
 ```js
-const value = useContext(MyContext);
+const value = useContext(MyContext)
 ```
 
 其中，`MyContext` 是一个上下文对象，`value` 是上下文对象的当前值。
@@ -226,16 +226,16 @@ const value = useContext(MyContext);
 接下来，让我们看一个简单的例子，使用 useContext Hook 来实现主题色的切换功能：
 
 ```js
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from 'react'
 
-const ThemeContext = createContext(); // 一般放在其它的独立文件中
+const ThemeContext = createContext() // 一般放在其它的独立文件中
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState('light')
 
   const handleToggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light"); // 改变 theme, 此时给 ThemeContext 提供的 value 值也一同改变
-  };
+    setTheme(theme === 'light' ? 'dark' : 'light') // 改变 theme, 此时给 ThemeContext 提供的 value 值也一同改变
+  }
 
   return (
     // 将theme赋值进 ThemeContext
@@ -245,17 +245,17 @@ function App() {
         <Toolbar />
       </div>
     </ThemeContext.Provider>
-  );
+  )
 }
 
 function Toolbar() {
-  const themeValue = useContext(ThemeContext); // 获取 ThemeContext 提供的 theme
+  const themeValue = useContext(ThemeContext) // 获取 ThemeContext 提供的 theme
 
   return (
     <div>
       <h1>Current Theme: {themeValue}</h1>
     </div>
-  );
+  )
 }
 ```
 
@@ -274,7 +274,7 @@ function Toolbar() {
 以下是 useReducer Hook 的基本语法：
 
 ```jsx
-const [state, dispatch] = useReducer(reducer, initialState);
+const [state, dispatch] = useReducer(reducer, initialState)
 ```
 
 其中，`reducer` 是一个回调函数，用于根据不同的 action 更新状态，`initialState` 是状态的初始值，`state` 表示当前状态的值，`dispatch` 是更新状态的函数。
@@ -326,7 +326,7 @@ function Counter() {
 
 `Redux` 则适用于管理更大和复杂的状态，例如全局状态、异步请求等。它是一个单独的库，提供了强大的工具和扩展性来处理复杂的状态逻辑，并且可以与任何框架和库一起使用。
 
-总的来说，如果您的应用程序比较小和简单，可以考虑使用 useReducer 替代 Redux。但如果您的应用程序比较大和复杂，需要更好的可维护性和扩展性，则需要使用 Redux。
+总的来说，如果应用程序比较小和简单，可以考虑使用 useReducer 替代 Redux。但如果应用程序比较大和复杂，需要更好的可维护性和扩展性，则需要使用 Redux。
 
 ## useRef
 
@@ -335,7 +335,7 @@ useRef 返回一个**ref 对象**，返回的 **ref 对象** 在组件的整个�
 以下是 useRef Hook 的基本语法：
 
 ```jsx
-const ref = useRef(initialValue);
+const ref = useRef(initialValue)
 ```
 
 其中，`initialValue` 是 useRef Hook 的初始值，**`ref.current` 包含着最近一次赋值的值**。
@@ -347,19 +347,19 @@ const ref = useRef(initialValue);
 1. 使用 useRef Hook 来保存和访问组件的上一个状态：
 
 ```jsx
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from 'react'
 
 function Counter() {
-  const [count, setCount] = useState(0);
-  const prevCountRef = useRef(); // 初始定义 { current: undefined }
+  const [count, setCount] = useState(0)
+  const prevCountRef = useRef() // 初始定义 { current: undefined }
 
   useEffect(() => {
-    prevCountRef.current = count; // 赋值为 0
-  });
+    prevCountRef.current = count // 赋值为 0
+  })
 
   const handleIncrement = () => {
-    setCount(count + 1);
-  };
+    setCount(count + 1)
+  }
 
   return (
     <div>
@@ -367,7 +367,7 @@ function Counter() {
       <h2>Previous Count: {prevCountRef.current}</h2>
       <button onClick={handleIncrement}>+</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -380,17 +380,17 @@ function Counter() {
 2. 使用 useRef Hook 来保存和访问 DOM 元素的引用：
 
 ```jsx
-import { useRef, useEffect } from "react";
+import { useRef, useEffect } from 'react'
 
 function Input() {
-  const inputRef = useRef(null); // 初始定义 { current: null }, 后续被绑定到组件上, current 值为组件 DOM 节点
+  const inputRef = useRef(null) // 初始定义 { current: null }, 后续被绑定到组件上, current 值为组件 DOM 节点
 
   useEffect(() => {
-    inputRef.current.focus(); // 使得焦点聚集到 input 的输入框
-  }, []);
+    inputRef.current.focus() // 使得焦点聚集到 input 的输入框
+  }, [])
 
   function showInputValue() {
-    console.log("input 输入值为:", inputRef.current.value);
+    console.log('input 输入值为:', inputRef.current.value)
   }
 
   return (
@@ -399,7 +399,7 @@ function Input() {
       <input id="input" type="text" ref={inputRef} />
       <button onClick={showInputValue}>查看input 输入值</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -420,7 +420,7 @@ function Input() {
 ```jsx
 const memoizedCallback = useCallback(() => {
   // do something...
-}, [dependencies]);
+}, [dependencies])
 ```
 
 其中，`memoizedCallback` 是缓存后的回调函数，`dependencies` 是可选的依赖列表，用于控制回调函数的缓存时机。
@@ -430,21 +430,21 @@ const memoizedCallback = useCallback(() => {
 接下来，让我们看一个简单的例子，使用 useCallback Hook 来缓存一个更新状态的方法：
 
 ```jsx
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react'
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   const handleIncrement = useCallback(() => {
-    setCount(count + 1);
-  }, [count]);
+    setCount(count + 1)
+  }, [count])
 
   return (
     <div>
       <h1>{count}</h1>
       <button onClick={handleIncrement}>+</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -475,21 +475,21 @@ function Counter() {
 举一个案例：
 
 ```jsx
-import { useState } from "react";
+import { useState } from 'react'
 
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   const handleIncrement = () => {
-    setCount(count + 1);
-  };
+    setCount(count + 1)
+  }
 
   return (
     <div>
       <h1>{count}</h1>
       <button onClick={() => setTimeout(handleIncrement, 1000)}>+</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -505,19 +505,19 @@ function Counter() {
 
 ```jsx
 function Counter() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   const handleIncrement = () => {
     // setCount(count + 1); // 不用 count 原值进行更改
-    setCount((prevCount) => prevCount + 1); // 改用其它变量, 缓存上一个状态值
-  };
+    setCount((prevCount) => prevCount + 1) // 改用其它变量, 缓存上一个状态值
+  }
 
   return (
     <div>
       <h1>{count}</h1>
       <button onClick={() => setTimeout(handleIncrement, 1000)}>+</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -535,8 +535,8 @@ function Counter() {
 
 ```jsx
 const memoizedCallback = useCallback(() => {
-  console.log(count);
-}, [count]);
+  console.log(count)
+}, [count])
 ```
 
 如果 `count` 发生变化，`useCallback` 将会重新缓存回调函数，并在下一次组件渲染时使用最新的 `count` 值。
@@ -551,34 +551,34 @@ const memoizedCallback = useCallback(() => {
 
 ```jsx
 const memoizedCallback = useCallback(() => {
-  console.log(count); // 此时传入的 count 为其初始值
-}, []);
+  console.log(count) // 此时传入的 count 为其初始值
+}, [])
 
-memoizedCallback(); // count 初始值
+memoizedCallback() // count 初始值
 ```
 
 后期调用的 `memoizedCallback` 回调函数，其内部存储的 `count` 值将**永远是它的初始值**。这不是我们希望看到的。因此可以引入 `useRef`，`useRef` 返回的是一个对象，所以改变其内部的 `current`值，是可以被监听到的。
 
 ```jsx
 const App = memo(function () {
-  const [count, setCount] = useState(0);
-  const [message, setMessage] = useState("hello");
+  const [count, setCount] = useState(0)
+  const [message, setMessage] = useState('hello')
 
-  const countRef = useRef(); // 定义一个 Ref 对象
-  countRef.current = count; // 将对象内的 current 值赋值为 count
+  const countRef = useRef() // 定义一个 Ref 对象
+  countRef.current = count // 将对象内的 current 值赋值为 count
 
   const increment = useCallback(function foo() {
-    console.log("increment");
-    setCount(countRef.current + 1); // 通过 countRef.current 存储 counter 的值
-  }, []);
+    console.log('increment')
+    setCount(countRef.current + 1) // 通过 countRef.current 存储 counter 的值
+  }, [])
 
   return (
     <div>
       <h2>计数: {count}</h2>
       <button onClick={increment}>+1</button>
     </div>
-  );
-});
+  )
+})
 ```
 
 ## useMemo
@@ -592,26 +592,26 @@ const App = memo(function () {
 以下是一个简单的例子，展示了如何使用 `useMemo` 来优化组件渲染性能：
 
 ```jsx
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 
 function ExpensiveComponent(props) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
 
   const expensiveValue = useMemo(() => {
-    console.log("Calculating expensive value...");
-    let result = 0;
+    console.log('Calculating expensive value...')
+    let result = 0
     for (let i = 0; i < count * 10000000; i++) {
-      result += Math.random();
+      result += Math.random()
     }
-    return result;
-  }, [count]);
+    return result
+  }, [count])
 
   return (
     <div>
       <h1>Expensive Value: {expensiveValue}</h1>
       <button onClick={() => setCount(count + 1)}>Increment Count</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -632,15 +632,15 @@ function ExpensiveComponent(props) {
 例如，在以下代码中，我们可以通过 `useMemo` 缓存一个由 `props.firstname` 和 `props.lastname` 计算得到的值：
 
 ```jsx
-import { useMemo } from "react";
+import { useMemo } from 'react'
 
 function MyComponent(props) {
   const result = useMemo(() => {
-    console.log("Calculating result...");
-    return props.firstname + props.lastname;
-  }, [props.firstname, props.lastname]);
+    console.log('Calculating result...')
+    return props.firstname + props.lastname
+  }, [props.firstname, props.lastname])
 
-  return <div>Result: {result}</div>;
+  return <div>Result: {result}</div>
 }
 ```
 
@@ -649,14 +649,14 @@ function MyComponent(props) {
 例如，在以下代码中，我们可以通过 `useCallback` 缓存一个处理点击事件的回调函数：
 
 ```jsx
-import { useCallback } from "react";
+import { useCallback } from 'react'
 
 function MyComponent(props) {
   const handleClick = useCallback(() => {
-    console.log("Button clicked!");
-  }, []);
+    console.log('Button clicked!')
+  }, [])
 
-  return <button onClick={handleClick}>Click me</button>;
+  return <button onClick={handleClick}>Click me</button>
 }
 ```
 
@@ -669,7 +669,7 @@ function MyComponent(props) {
 `useImperativeHandle` 它允许我们在父组件中通过 Ref 访问子组件的特定方法或属性。这个 Hook 常常与 `forwardRef` 方法一起使用。
 
 ```jsx
-useImperativeHandle(ref, createHandle, [deps]);
+useImperativeHandle(ref, createHandle, [deps])
 ```
 
 1. `ref`：需要被赋值的`ref`对象。
@@ -681,21 +681,21 @@ useImperativeHandle(ref, createHandle, [deps]);
 以下是一个简单的例子，展示了如何使用 `useImperativeHandle` 在子组件中暴露一个名为 `focusInput` 的方法：
 
 ```jsx
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from 'react'
 
 const MyInput = forwardRef((props, ref) => {
-  const inputRef = useRef();
+  const inputRef = useRef()
 
   useImperativeHandle(ref, () => ({
     focusInput: () => {
-      inputRef.current.focus();
+      inputRef.current.focus()
     },
-  }));
+  }))
 
-  return <input type="text" ref={inputRef} />;
-});
+  return <input type="text" ref={inputRef} />
+})
 
-export default MyInput;
+export default MyInput
 ```
 
 在上面的代码中，我们首先使用 `useRef` Hook 创建了一个名为 `inputRef` 的 Ref 对象，用于保存输入框的 DOM 引用。
@@ -707,21 +707,21 @@ export default MyInput;
 在父组件中，我们可以通过 Ref 访问子组件中暴露的 `focusInput` 方法，并在需要时手动调用该方法，以将输入框聚焦：
 
 ```jsx
-import MyInput from "./MyInput";
+import MyInput from './MyInput'
 
 function ParentComponent() {
-  const inputRef = useRef();
+  const inputRef = useRef()
 
   const handleClick = () => {
-    inputRef.current.focusInput();
-  };
+    inputRef.current.focusInput()
+  }
 
   return (
     <div>
       <MyInput ref={inputRef} />
       <button onClick={handleClick}>Focus Input</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -738,17 +738,17 @@ function ParentComponent() {
 以下是一个简单的例子，展示了如何使用 `useLayoutEffect` 在组件渲染后立刻更新 DOM：
 
 ```jsx
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from 'react'
 
 function MyComponent() {
-  const containerRef = useRef();
+  const containerRef = useRef()
 
   useLayoutEffect(() => {
-    console.log("Updating DOM...");
-    containerRef.current.style.color = "red";
-  }, []);
+    console.log('Updating DOM...')
+    containerRef.current.style.color = 'red'
+  }, [])
 
-  return <div ref={containerRef}>Hello, World!</div>;
+  return <div ref={containerRef}>Hello, World!</div>
 }
 ```
 
@@ -764,29 +764,29 @@ function MyComponent() {
 
 自定义 Hook 是一种将复用逻辑封装为可重用函数的方式，以便在 React 组件中使用。自定义 Hook 本质上是一个函数，它可以使用任何 React Hook（如 `useState`、`useEffect`、`useContext` 等），并可以根据特定的需求返回数据或执行操作。
 
-自定义 Hook 的命名应该以 `use` 开头，这是为了告诉开发人员该函数是一个 Hook 并且可以与其他 Hook 一样使用。您还可以在自定义 Hook 中使用其他自定义 Hook，以构建更高层次的抽象。
+自定义 Hook 的命名应该以 `use` 开头，这是为了告诉开发人员该函数是一个 Hook 并且可以与其他 Hook 一样使用。还可以在自定义 Hook 中使用其他自定义 Hook，以构建更高层次的抽象。
 
 以下是一个简单的例子，展示了如何创建一个名为 `useWindowWidth` 的自定义 Hook，用于跟踪浏览器窗口的宽度：
 
 ```jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react'
 
 function useWindowWidth() {
-  const [width, setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(window.innerWidth)
 
   useEffect(() => {
     const handleResize = () => {
-      setWidth(window.innerWidth);
-    };
+      setWidth(window.innerWidth)
+    }
 
-    window.addEventListener("resize", handleResize); // 监听事件
+    window.addEventListener('resize', handleResize) // 监听事件
 
     return () => {
-      window.removeEventListener("resize", handleResize); // 注销事件
-    };
-  }, []);
+      window.removeEventListener('resize', handleResize) // 注销事件
+    }
+  }, [])
 
-  return width;
+  return width
 }
 ```
 
@@ -799,12 +799,12 @@ function useWindowWidth() {
 以下是一个示例，演示了如何在 React 组件中使用 `useWindowWidth` 自定义 Hook：
 
 ```jsx
-import { useWindowWidth } from "./useWindowWidth";
+import { useWindowWidth } from './useWindowWidth'
 
 function MyComponent() {
-  const width = useWindowWidth();
+  const width = useWindowWidth()
 
-  return <div>Window width is {width}px</div>;
+  return <div>Window width is {width}px</div>
 }
 ```
 

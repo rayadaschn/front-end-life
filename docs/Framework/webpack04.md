@@ -24,7 +24,7 @@ TerserPlugin 形式：
 
 ```js
 // webpack.config.js
-const TerserPlugin = require("terser-webpack-plugin");
+const TerserPlugin = require('terser-webpack-plugin')
 
 module.exports = {
   optimization: {
@@ -38,7 +38,7 @@ module.exports = {
       }),
     ],
   },
-};
+}
 ```
 
 或函数形式：
@@ -50,14 +50,14 @@ module.exports = {
     minimize: true,
     minimizer: [
       (compiler) => {
-        const TerserPlugin = require("terser-webpack-plugin");
+        const TerserPlugin = require('terser-webpack-plugin')
         new TerserPlugin({
           /* 你的配置 */
-        }).apply(compiler);
+        }).apply(compiler)
       },
     ],
   },
-};
+}
 ```
 
 一些重要的配置，详细配置可看[官方文档](https://terser.org/docs/cli-usage)：
@@ -87,14 +87,14 @@ module.exports = {
     minimize: true,
     minimizer: [
       (compiler) => {
-        const TerserPlugin = require("terser-webpack-plugin");
+        const TerserPlugin = require('terser-webpack-plugin')
         new TerserPlugin({
           /* 你的配置 */
-        }).apply(compiler);
+        }).apply(compiler)
       },
     ],
   },
-};
+}
 ```
 
 ## CSS 压缩
@@ -113,8 +113,8 @@ module.exports = {
 
    ```js
    // webpack.config.js
-   const TerserPlugin = require("terser-webpack-plugin");
-   const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+   const TerserPlugin = require('terser-webpack-plugin')
+   const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 
    module.exports = {
      optimization: {
@@ -130,7 +130,7 @@ module.exports = {
          }),
        ],
      },
-   };
+   }
    ```
 
 此外，在 CSS 中还可用 Tree Shaking 进行优化，有俩种方案：
@@ -187,15 +187,15 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: ["babel-loader"],
+        use: ['babel-loader'],
       },
     ],
   },
   // 只有 Lodash 中的某些方法会有副作用
   // 因此，我们可以使用数组来指定哪些文件或目录中的代码具有副作用
   // 注意：该配置仅在 mode 设置为 production 时生效
-  sideEffects: ["lodash/includes.js", "lodash/isEmpty.js"],
-};
+  sideEffects: ['lodash/includes.js', 'lodash/isEmpty.js'],
+}
 ```
 
 需要注意的是，`sideEffects` 的配置项仅在 Webpack 的 production 模式下才会生效。在 development 模式下，Webpack 默认会假设所有代码都具有副作用，并且不会进行 Tree Shaking。因此，默认情况下，开发模式下的打包结果更大，但构建速度更快。
@@ -213,28 +213,28 @@ $: npm install purgecss-webpack-plugin -D
 ```js
 // webpack.config.js
 
-const path = require("path");
-const glob = require("glob");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const PurgecssPlugin = require("purgecss-webpack-plugin");
+const path = require('path')
+const glob = require('glob')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const PurgecssPlugin = require('purgecss-webpack-plugin')
 
 const PATHS = {
-  src: path.join(__dirname, "src"),
-};
+  src: path.join(__dirname, 'src'),
+}
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: './src/index.js',
   output: {
-    filename: "bundle.js",
-    path: path.join(__dirname, "dist"),
+    filename: 'bundle.js',
+    path: path.join(__dirname, 'dist'),
   },
   optimization: {
     splitChunks: {
       cacheGroups: {
         styles: {
-          name: "styles",
+          name: 'styles',
           test: /\.css$/,
-          chunks: "all",
+          chunks: 'all',
           enforce: true,
         },
       },
@@ -244,19 +244,19 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[name].css",
+      filename: '[name].css',
     }),
     new PurgecssPlugin({
       paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true }),
     }),
   ],
-};
+}
 ```
 
 ## HTML 压缩
@@ -266,15 +266,15 @@ HTTP 压缩是一种内置在 服务器 和 客户端 之间的，以改进传�
 以下是一个示例 Webpack 配置，展示了如何在生产模式下使用 `html-webpack-plugin` 和 `html-minifier-terser` 插件对 HTML 文件进行压缩：
 
 ```js
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlMinimizerPlugin = require('html-minimizer-webpack-plugin')
 
 module.exports = {
   // ...
-  mode: "production",
+  mode: 'production',
   plugins: [
     new HtmlWebpackPlugin({
-      template: "path/to/template.html",
+      template: 'path/to/template.html',
       minify: {
         collapseWhitespace: true,
         removeComments: true,
@@ -286,7 +286,7 @@ module.exports = {
     }),
     new HtmlMinimizerPlugin(),
   ],
-};
+}
 ```
 
 在上述代码中，我们首先导入了 `html-webpack-plugin` 和 `html-minimizer-webpack-plugin` 模块，并将它们添加到 Webpack 配置文件的 `plugins` 数组中。
@@ -310,4 +310,4 @@ module.exports = {
 >
 > `CompressionPlugin` 用于在 Webpack 打包完成后对 JavaScript、CSS 和其他资源文件进行 gzip 压缩，并生成相应的 `.gz` 文件。这样可以减小浏览器下载这些文件的时间，并节省网络带宽和服务器资源。通常情况下，它会与 Web 服务器一起使用，并在客户端请求文件时自动返回相应的压缩文件。
 >
-> 需要注意的是，使用 `CompressionPlugin` 进行 gzip 压缩时需要确保 Web 服务器支持该压缩格式，并且在服务器配置中启用了相应的选项。例如，在 Apache 服务器上，您需要使用 `mod_deflate` 模块来启用 gzip 压缩。
+> 需要注意的是，使用 `CompressionPlugin` 进行 gzip 压缩时需要确保 Web 服务器支持该压缩格式，并且在服务器配置中启用了相应的选项。例如，在 Apache 服务器上，需要使用 `mod_deflate` 模块来启用 gzip 压缩。

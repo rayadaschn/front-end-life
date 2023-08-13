@@ -11,8 +11,6 @@ star: true
 sticky: false
 ---
 
-# Jenkins 持续集成
-
 ## Jenkins 安装
 
 Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.jenkins.io/zh/doc/tutorials/build-a-node-js-and-react-app-with-npm/) 介绍，其中多用到 Docker，可以看 Docker [官网安装介绍](https://vuepress.mirror.docker-practice.com/install/centos/#)。
@@ -23,7 +21,7 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
 
 具体流程如下：
 
-1. 将[最新的稳定 Jenkins WAR 包](https://updates.jenkins.io/download/war/) 下载到您计算机上的相应目录。
+1. 将[最新的稳定 Jenkins WAR 包](https://updates.jenkins.io/download/war/) 下载到计算机上的相应目录。
 
 2. 在下载的目录内打开一个终端/命令提示符窗口到。
 
@@ -77,7 +75,7 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
    $: sudo update-alternatives --config java
    ```
 
-   该命令会显示当前系统中安装的所有 Java 版本，并让您选择将哪个版本设置为默认版本。输入数字对应的序号并按回车键即可完成设置。
+   该命令会显示当前系统中安装的所有 Java 版本，并让选择将哪个版本设置为默认版本。输入数字对应的序号并按回车键即可完成设置。
 
    > 没有权限进行切换 Java 版本，但又要用别的 Java 版本该如何？
    >
@@ -120,16 +118,16 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
    >
    >   如果不使用 `&` 符号，则程序将在前台运行，并且控制台将一直占用，直到程序退出或通过键盘输入 `Ctrl+C` 中断进程。
 
-   键入上述指令后，会启动 Jenkins 并将其作为后台任务运行。此时，当您关闭终端或断开 SSH 连接时，Jenkins 仍将继续在后台运行。
+   键入上述指令后，会启动 Jenkins 并将其作为后台任务运行。此时，当关闭终端或断开 SSH 连接时，Jenkins 仍将继续在后台运行。
 
-2. **使用 screen 命令**：screen 命令可以创建一个虚拟窗口，并在其中运行命令或程序。您可以使用 screen 命令来在 Jenkins 调试控制台中运行 Jenkins，并在关闭 SSH 连接后继续在后台运行。例如，要在 Jenkins 调试控制台中运行 Jenkins 并在后台运行，请使用以下命令：
+2. **使用 screen 命令**：screen 命令可以创建一个虚拟窗口，并在其中运行命令或程序。可以使用 screen 命令来在 Jenkins 调试控制台中运行 Jenkins，并在关闭 SSH 连接后继续在后台运行。例如，要在 Jenkins 调试控制台中运行 Jenkins 并在后台运行，请使用以下命令：
 
    ```bash
    $: screen -S jenkins
    $: java -jar jenkins.war
    ```
 
-   这会创建一个名为 "jenkins" 的新 screen 会话，并在其中启动 Jenkins。此时，当您关闭 SSH 连接时，Jenkins 仍将继续在后台运行。
+   这会创建一个名为 "jenkins" 的新 screen 会话，并在其中启动 Jenkins。此时，当关闭 SSH 连接时，Jenkins 仍将继续在后台运行。
 
 ### 结束持久化
 
@@ -149,7 +147,7 @@ $: kill 12345
 $: ps aux | grep <your_process_name>
 ```
 
-其中，`<your_process_name>` 是您需要查找的进程名。该命令将列出所有匹配的进程，并显示其 PID（进程 ID）和其他详细信息。
+其中，`<your_process_name>` 是需要查找的进程名。该命令将列出所有匹配的进程，并显示其 PID（进程 ID）和其他详细信息。
 
 要关闭正在运行的 nohup 程序，可以使用以下方法之一：
 
@@ -159,7 +157,7 @@ $: ps aux | grep <your_process_name>
    $: kill 12345
    ```
 
-   如果您希望强制终止进程而不等待其自行关闭，请使用 `-9` 选项：
+   如果希望强制终止进程而不等待其自行关闭，请使用 `-9` 选项：
 
    ```bash
    $: kill -9 12345
@@ -171,13 +169,13 @@ $: ps aux | grep <your_process_name>
    $: pkill myprocess
    ```
 
-   如果您希望强制终止匹配的进程而不等待其自行关闭，请使用 `-9` 选项：
+   如果希望强制终止匹配的进程而不等待其自行关闭，请使用 `-9` 选项：
 
    ```bash
    $: pkill -9 myprocess
    ```
 
-需要注意的是，在使用以上命令时，请确保您已经正确标识了要关闭的进程，并且已经备份了任何重要的数据或配置文件。
+需要注意的是，在使用以上命令时，请确保已经正确标识了要关闭的进程，并且已经备份了任何重要的数据或配置文件。
 
 ## 参考文章
 
