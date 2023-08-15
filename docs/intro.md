@@ -219,12 +219,13 @@ star: true
 ## 部署/自动化
 
 - Nginx
+- husky
 - Jenkins
 - Github Action
 
 ## 服务端渲染 SSR
 
-- [ ] Nuxt (学习中 ing)
+- [x] Nuxt
 
 ## 性能优化
 
@@ -260,6 +261,7 @@ star: true
 
 - Chrome Dev Tools
 - debugger
+- adb logcat
 
 ## 其它
 
