@@ -18,6 +18,42 @@ sticky: false
 
 ## 基本使用
 
+- 指令和插值
+  - 插值、表达式
+  - 指令、动态属性
+  - v-html：会有 XSS 风险，会覆盖子组件
+- computed 和 watch
+  - computed 有缓存 data 不变则不会重新计算
+  - watch 的深度监听
+  - watch 监听引用类型，拿不到 oldValue
+- class 和 style
+- 条件渲染
+  - `v-if` 和 `v-else` 的用法, 可使用变量, 也可使用 `===` 表达式
+  - `v-if` 和 `v-show` 的区别
+  - `v-if` 和 `v-show` 的使用场景
+- 循环(列表)渲染
+  - 如何遍历对象? -- 也可使用 `v-for`
+  - key 的重要性，key 不能重复
+  - `v-for` 和 `v-if` 不能一起使用
+- 事件
+  - event 参数，自定义参数
+  - 事件修饰符
+    - 阻止单击事件继续传播: `<a @click.stop="doThis" >A</a>`
+    - 提交时间不再重载页面: `<a @click.submit.prevent="onSubmit" >B</a>`
+    - 修饰符可以串联: `<a @click.stop.prevent="doThat" >C</a>`
+    - 只有修饰符: `<a v-on:submit.prevent="doThat" >D</a>`
+  - 按键修饰符
+    - 即使 Alt 或 Shift 被一同按下也会触发: `<a @click.ctrl="onClick" >A</a>`
+    - 只有 Ctrl 被按下才会触发: `<a @click.ctrl.exact="onClick" >B</a>`
+    - 没有任何修饰符被按下时才会触发: `<a @click.exact="onClick" >C</a>`
+  - 事件如何绑定 -- `@click`
+- 表单
+- 组件
+  - 生命周期
+  - props(类型和默认值)
+  - v-on 和 $emit
+  - 自定义事件
+
 ## 框架原理
 
 ### 1. 什么是虚拟 DOM？
