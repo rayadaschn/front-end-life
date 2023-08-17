@@ -32,7 +32,7 @@ sticky: false
   - `v-if` 和 `v-show` 的区别
   - `v-if` 和 `v-show` 的使用场景
 - 循环(列表)渲染
-  - 如何遍历对象? -- 也可使用 `v-for`
+  - 如何遍历对象? -- `v-for`
   - key 的重要性，key 不能重复
   - `v-for` 和 `v-if` 不能一起使用
 - 事件
@@ -48,11 +48,77 @@ sticky: false
     - 没有任何修饰符被按下时才会触发: `<a @click.exact="onClick" >C</a>`
   - 事件如何绑定 -- `@click`
 - 表单
-- 组件
-  - 生命周期
-  - props(类型和默认值)
-  - v-on 和 $emit
-  - 自定义事件
+  - v-model
+  - 常见表单项 textarea,checkbox,radio,select
+  - 修饰符 v-model.lazy, v-model.number, v-model.trim
+
+## vue 组件使用
+
+- 组件间通信 : props 和 $emit
+- 自定义事件
+- 生命周期
+  - 单个: 挂载,更新,销毁
+  - 多个(父子组件):
+    - created(setup): 父 -> 子
+    - mounted(onMounted): 子 -> 父
+    - beforeUpdate(onBeforeUpdate): 父 -> 子
+    - updated(onUpdated): 子 -> 父
+    - beforeDestroy(onBeforeUnmount): 父 -> 子
+    - destroyed(onUnmounted): 子 -> 父
+- props(类型和默认值)
+- v-on
+
+## vue 的高级特性
+
+- 自定义 v-model
+- $nextTick
+  - Vue 是异步渲染;
+  - data 改变之后, DOM 不会立即渲染;
+  - $nextTick 会在 DOM 渲染之后执行，以获取最新的 DOM 节点。
+- slot 插槽: 父组件向子组件传递内容
+  - 作用域插槽 `v-slot="{ item }"` : 父组件向子组件传递内容
+  - 具名插槽 `v-slot:xxx`: 父组件向子组件传递内容，并指定插槽的名字
+- keep-alive
+  - 场景: 缓存组件;频繁切换,不需要重复渲染的组件;vue 性能优化。
+  - 同 `v-show` 的区别: `keep-alive` 是在 vue 框架层级进行的 JS 对象渲染; `v-show`是 CSS display 控制显示和隐藏
+- mixin: 多个组件有相同逻辑,抽离出来。vue3 中已被 composition API 所代替。
+- 动态、异步组件
+
+  - 动态组件: `<component :is='componentName'>`
+  - 异步组件: - 考点: `import()`函数和按需异步加载
+
+    ```js
+    import { defineAsyncComponent } from 'vue'
+    // simple usage
+    const LoginPopup = defineAsyncComponent(() =>
+      import('./components/LoginPopup.vue')
+    )
+    ```
+
+## 全局数据管理 vuex
+
+Vue3 中已被 pinia 所代替。
+
+![vuex](https://vuex.vuejs.org/vuex.png)
+
+- state
+- getters
+- action
+- mutation
+- 在 vue 中使用:
+  - dispatch
+  - commit
+  - mapState
+  - mapGetters
+  - mapActions
+  - mapMutations
+
+## vue-router
+
+- 路由模式(hash、H5 history)
+- 路由配置（动态路由、懒加载）
+- 路由守卫（全局守卫、路由独享守卫、组件内守卫）
+- 路由组件传参（query、params）
 
 ## 框架原理
 
