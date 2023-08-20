@@ -118,13 +118,132 @@ Vue3 中已被 pinia 所代替。
 - 路由模式(hash、H5 history)
 - 路由配置（动态路由、懒加载）
 - 路由守卫（全局守卫、路由独享守卫、组件内守卫）
-- 路由组件传参（query、params）
+- 路由组件传参（query(url 显式)、params(url 不显示)）
 
 ## 框架原理
 
+主要考察点：
+
+- 组件化
+- 响应式
+- vdom 和 diff
+- 模版编译
+- 渲染过程
+- 前端路由
+
+### 组件化
+
+- 组件化: 把页面拆分成多个可复用的组件
+- 组件化优势: 提高开发效率、代码复用、简化调试
+
+### 响应式
+
+- 数据驱动视图: 数据改变, 视图随之改变，即 MVVM（model view viewModel）。
+- vue2 中用的 Object.defineProperty，vue3 中用了 Proxy。
+
+```js
+// vue2 中 Object.defineProperty 的基本用法
+
+const data = {}
+const name = '张三'
+
+Object.defineProperty(data, 'name', {
+  get() {
+    console.log('get')
+    return name
+  },
+  set(newValue) {
+    console.log('set')
+    name = newValue
+  },
+})
+
+// 测试
+data.name = '李四' // set
+console.log(data.name) // get
+```
+
+```js
+// vue2 中深度绑定实现
+
+function updateView() {
+  console.log('updateView')
+}
+
+let num = 0
+function defineReactive(data, key, value) {
+  // 深度监听
+  observe(value)
+
+  // 核心 API
+  Object.defineProperty(data, key, {
+    get() {
+      console.log('get')
+      return value
+    },
+    set(newValue) {
+      if (newValue !== value) {
+        observe(newValue)
+        value = newValue
+        console.log('set')
+
+        // 触发更新视图
+        updateView()
+      }
+    },
+  })
+}
+
+// 监听对象属性
+
+function observe(data) {
+  if (typeof data !== 'object' || data === null) {
+    return
+  }
+
+  // 递归子属性
+  Object.keys(data).forEach((key) => {
+    defineReactive(data, key, data[key])
+  })
+}
+
+// 测试
+
+const data = {
+  name: '张三',
+  age: 18,
+  info: {
+    sex: '男',
+  },
+  numbers: [1, 2, 3],
+}
+
+observe(data)
+
+data.name = '李四' // set
+console.log(data.name) // get
+data.x = 'new param' // 新增属性
+delete data.name // 删除属性
+data.info.sex = '女' // 深度监听,修改属性
+```
+
+可以看出，Object.defineProperty 的缺点很明显:
+
+- 深度监听，需要递归到底，一次性计算量大；
+- 无法监听新增属性/删除属性(`Vue.set`/`Vue.delete`)
+- 无法监听数组, 需要做特殊处理。
+
+### vdom 和 diff
+
+- 虚拟 DOM（Virtual DOM）: 把真实 DOM 中的 DOM 节点用 JavaScript 对象来表示，从而实现跨平台和跨浏览器。
+- virtual dom 使用 JS 模拟 DOM 结构，把 DOM 结构转换成 JavaScript 对象，然后通过 diff 算法比较新旧虚拟 DOM 的差异，最终把差异更新到真实 DOM 中。
+- diff 算法: 计算出最小的差异, 从而实现最小化更新。
+
+可参考资源库: [snabbdom](https://github.com/snabbdom/snabbdom)
+
 ### 1. 什么是虚拟 DOM？
 
-虚拟 DOM（Virtual DOM）是一种模拟真实 DOM 的技术，它把浏览器页面渲染时需要进行的 DOM 操作模拟成 JavaScript 对象，这样就可以在运行时更高效地更新 DOM。虚拟 DOM 的优点是可以在较短的时间内虚拟地表示真实 DOM，并且可以方便地实现跨平台和跨浏览器。
+虚拟 DOM 是一种模拟真实 DOM 的技术，它把浏览器页面渲染时需要进行的 DOM 操作模拟成 JavaScript 对象，这样就可以在运行时更高效地更新 DOM。虚拟 DOM 的优点是可以在较短的时间内虚拟地表示真实 DOM，并且可以方便地实现跨平台和跨浏览器。
 
 ### 2. v-show 和 v-if 有什么区别？
 
