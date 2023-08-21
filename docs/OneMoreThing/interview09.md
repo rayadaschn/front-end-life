@@ -241,11 +241,11 @@ data.info.sex = '女' // 深度监听,修改属性
 
 可参考资源库: [snabbdom](https://github.com/snabbdom/snabbdom)
 
-### 1. 什么是虚拟 DOM？
+### 什么是虚拟 DOM？
 
 虚拟 DOM 是一种模拟真实 DOM 的技术，它把浏览器页面渲染时需要进行的 DOM 操作模拟成 JavaScript 对象，这样就可以在运行时更高效地更新 DOM。虚拟 DOM 的优点是可以在较短的时间内虚拟地表示真实 DOM，并且可以方便地实现跨平台和跨浏览器。
 
-### 2. v-show 和 v-if 有什么区别？
+### v-show 和 v-if 有什么区别？
 
 v-show 指令是通过设置元素的 display 属性来控制元素是否显示，而 v-if 指令是通过控制元素在文档中的存在性来控制元素的显示和隐藏。
 
@@ -253,13 +253,15 @@ v-show 指令在初始渲染时就会创建元素，而 v-if 指令在条件第�
 
 v-show 指令在条件改变时，并不会去操作 DOM，而 v-if 指令在条件改变时，会根据条件的改变去操作 DOM。
 
-### 3. v-for 和 v-if 一起使用有什么问题？
+### v-for 和 v-if 一起使用有什么问题？
 
 v-for 指令和 v-if 指令不能同时使用，因为 v-for 指令会遍历数组或对象，而 v-if 指令会从初始渲染时就创建元素，因此 v-for 指令和 v-if 指令不能同时使用。
 
-### 4. 为什么 v-for 循环的 key 需要唯一？
+### 为什么 v-for 循环的 key 需要唯一？
 
 key 属性是 v-for 指令的参数，它用于指定当前元素的 key，key 必须是唯一的，这样 Vue 才能识别元素，从而高效地更新 DOM。
+
+原理是在 diff 算法中通过 tag 和 key 来判断，是否是 sameNode，以减少渲染次数，提升渲染性能。
 
 当使用 v-for 指令时，如果不提供 key 属性，可能会导致性能问题。key 属性用于确保 Vue.js 能够正确地更新 DOM，特别是当列表项的顺序发生变化时。key 属性应该是一个唯一的值，用于标识每个列表项。
 
@@ -271,6 +273,116 @@ key 属性是 v-for 指令的参数，它用于指定当前元素的 key，key �
 
 ### vue 组件如何通讯
 
+- 父子组件 `props` 和 `$emit`;
+- eventBus，自定义事件 `event.$on`、`event.$off`和`event.$emit`;
+- vuex/pinia，共享状态管理;
+
 ### 描述组件渲染和更新的过程
 
-### 双向数据绑定 v-model 的实现原理
+一个组件渲染到页面 ≥,修改 data 触发更新(数据驱动视图)，其背后的原理是什么？需要掌握哪些要点？
+
+要点：
+
+- 响应式：监听 data 属性 getter 和 setter
+- 模版编译：模版到 render 函数，再到 vnode
+- vdom：patch（elem， vnode）和 patch（vnode，newVnode）
+
+1. 初次渲染过程:
+   - 解析模版为 render 函数(在开发环境已完成, vue-loader)
+   - 触发响应式，监听 data 属性 getter 和 setter
+   - 执行 render 函数，得到 vnode，patch(elem, vnode)
+2. 更新过程:
+   - 修改 data，触发 setter（此前在 getter 中已被监听）
+   - 重新执行 render 函数，得到新的 vnode，patch(vnode, newVnode)
+
+### 为什么组件的 data 必须是一个函数？
+
+- 组件是可复用的 Vue 实例，且可以有多个实例，如果 data 是一个对象，那么这些实例共用一个 data，就会造成一个修改 data，会影响到其他实例。
+- 如果是组件，组件的 data 选项必须是一个函数，因此每次创建该组件实例的时候，data 都会被重新计算。
+
+### ajax 请求应该放在哪个生命周期中？
+
+- 组件创建完成之后的 mounted 中，此时 data 已经完成初始化，可以进行 ajax 请求；
+- JS 是单线程，ajax 异步获取数据；
+- 放在 mounted 之前没有作用，只会让逻辑变得更加混乱。
+
+### 什么时候用 keep-alive？
+
+- 缓存组件，不需要重复渲染
+- 如多个静态 tab 页的切换
+- 优化性能
+
+### vue 常见的性能优化方式
+
+- 合理使用 `v-show` 和 `v-if`;
+- 合理使用 computed;
+- 合理使用 `keep-alive`;
+- 合理使用异步组件；
+- `v-for` 加 key，以避免和 `v-if` 同时使用;
+- 自定义事件、DOM 事件及时销毁；
+- data 层级不要太深；
+- 前端通用的性能优化，如图片懒加载。
+
+### 网页 url 组成部分
+
+举例：`http://127.0.0.1:8881/home.html?a=100&b=200#/second/other`
+
+- `location.protocol`：协议 'http:'
+- `location.hostname`：主机名 '127.0.0.1'
+- `location.host`：主机名 '127.0.0.1:8881'
+- `location.port`：端口 '8881'
+- `location.pathname`：路径 '/home.html'
+- `location.search`：参数 '?a=100&b=200'
+- `location.hash`：锚点 '#/second/other'
+
+### hash 跳转
+
+hash 的特定:
+
+- hash 变化会触发网页跳转，即浏览器的前进、后退
+- hash 变化不会刷新页面，SPA 必需的特点
+- hash 不会提交到 server 端
+
+hash 变化的情况:
+
+- JS 修改 URL: `location.href = '#/user'`
+- 手动修改 URL 的 hash 部分
+- 浏览器的前进和后退
+
+### H5 history 跳转
+
+history 跳转的特点:
+
+- 用 url 规范的路由，但跳转不会刷新页面
+- `history.pushState()`、`window.onpopstate` 和 `history.replaceState()` 改变 URL，但不会触发跳转
+- H5 history 需要后端支持
+
+hash 和 H5 history 的比较选择:
+
+- to B 的系统推荐用 hash，简单易用，对 url 规范不敏感；
+- to C 的系统可以考虑用 H5 history，但需要服务端支持；
+- 能用简单的就不用复杂的，考虑成本和收益。
+
+## vue3 部分
+
+- createApp
+- emits 属性
+- 多事件处理
+- Fragment
+- 溢出 sync 改为 `v-model` 参数
+- 异步组件的引用方式
+- 移除 filter
+- Teleport
+- Suspense
+- Composition API
+  - ref、toRef、toRefs
+  - reactive、shallowReactive、shallowRef
+  - computed
+  - watch 和 watchEffect
+  - 生命周期钩子函数
+
+### vue3 比 vue2 有什么优势?
+
+- 性能提升，打包大小更小，初次渲染更快，更新渲染更快，内存使用减少;
+- 更好的 ts 支持;
+- 更好的代码组织，更好的逻辑抽离；
