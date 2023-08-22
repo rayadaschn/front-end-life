@@ -1,6 +1,6 @@
 ---
 title: Interview -- vue 相关面试题
-date: 2023-08-11
+date: 2023-08-20
 category:
   - anonymous
 tag:
@@ -386,3 +386,69 @@ hash 和 H5 history 的比较选择:
 - 性能提升，打包大小更小，初次渲染更快，更新渲染更快，内存使用减少;
 - 更好的 ts 支持;
 - 更好的代码组织，更好的逻辑抽离；
+
+### Vue3 生命周期
+
+- 破坏性的变更:
+
+  - beforeDestroy 改名为 beforeUnmount
+  - destroyed 改名为 unmounted
+
+- 其它沿用 Vue2 的生命周期，但添加前缀 `on`;
+  - beforeCreate -> onBeforeCreate
+  - created -> onCreated
+  - beforeMount -> onBeforeMount
+  - mounted -> onMounted
+  - beforeUpdate -> onBeforeUpdate
+  - updated -> onUpdated
+  - beforeUnmount -> onBeforeUnmount
+  - unmounted -> onUnmounted
+- setup 代替了 beforeCreate 和 created;
+
+整合代码:
+
+```vue
+<script>
+import {
+  onBeforeMount,
+  onMounted,
+  onBeforeUpdate,
+  onUpdated,
+  onBeforeUnmount,
+  onUnmounted,
+} from 'vue'
+
+export default {
+  name: 'App',
+  components: {
+    HelloWorld,
+  },
+  data() {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+    }
+  },
+  setup() {
+    // composition API
+    // 在 setup() 内部使用生命周期钩子
+    console.log('setup')
+    onBeforeMount(() => {})
+    onMounted(() => {})
+    onBeforeUpdate(() => {})
+    onUpdated(() => {})
+    onBeforeUnmount(() => {})
+    onUnmounted(() => {})
+  },
+
+  // 兼容早期 Options API
+  beforeCreate() {},
+  created() {},
+  beforeMount() {},
+  mounted() {},
+  beforeUpdate() {},
+  updated() {},
+  beforeUnmount() {},
+  unmounted() {},
+}
+</script>
+```
