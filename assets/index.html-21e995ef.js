@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-801db588","path":"/tag/typescript/","title":"typescript 标签","lang":"zh-CN","frontmatter":{"title":"typescript 标签","feed":false,"sitemap":false,"blog":{"type":"category","name":"typescript","key":"tag"},"layout":"BlogCategory"},"headers":[],"git":{},"readingTime":{"minutes":0,"words":0},"filePathRelative":null,"excerpt":""}');export{t as data};
