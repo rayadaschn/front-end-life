@@ -452,3 +452,9 @@ export default {
 }
 </script>
 ```
+
+### Composition API 有什么好处?
+
+- 更好的代码组织
+- 更好的逻辑复用
+- 更好的类型推导
