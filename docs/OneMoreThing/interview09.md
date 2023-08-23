@@ -1,6 +1,6 @@
 ---
 title: Interview -- vue 相关面试题
-date: 2023-08-20
+date: 2023-08-23
 category:
   - anonymous
 tag:
@@ -458,3 +458,154 @@ export default {
 - 更好的代码组织
 - 更好的逻辑复用
 - 更好的类型推导
+
+### 如何理解 ref、toRef 和 toRefs
+
+#### ref
+
+- 生成值类型的响应式数据
+- 可用于模版和 reactive
+- 通过 `.value` 修改值
+- 使用技巧命名统一加后缀 `Ref`，如`const nameRef = ref('张三')`
+- ref 还可以获取 DOM 元素，路径同 Vue2 一样：
+
+  ```vue
+  <template>
+    <div ref="elemRef">被获取的 DOM 元素</div>
+  </template>
+  <script>
+  import { ref } from 'vue'
+  export default {
+    name: 'RefDom',
+    setup() {
+      // 此处的 "elemRef" 为Dom 中 ref 的赋值项
+      const elemRef = ref(null)
+      onMounted(() => {
+        console.log('ref 获取的元素为:', elemRef.value)
+      })
+
+      return {
+        elemRef,
+      }
+    },
+  }
+  </script>
+  ```
+
+#### toRef
+
+- 针对一个响应式对象(`reactive` 封装)的 `prop`，创建一个 `ref`，具有响应式；
+- 两者保持引用关系
+
+即对 reactive 对象的保持响应式的“解耦”：
+
+```js
+const state = reactive({
+  name: '张三',
+  age: 18,
+})
+
+const ageRef = toRef(state, 'age')
+
+setTimeout(() => {
+  state.age = 20 // ageRef 会同时响应
+}, 1000)
+```
+
+#### toRefs
+
+- 将响应式对象(`reactive` 封装)全部转换为普通对象;
+- 但是普通对象的每个 `prop` 都是对应 `ref`;
+- 俩者保持引用关系;
+
+```js
+const state = reactive({
+  name: '张三',
+  age: 18,
+})
+
+const stateRefs = toRefs(state)
+
+const { age: ageRef, name: nameRef } = stateRefs
+
+setTimeout(() => {
+  state.age = 20 // ageRef 会同时响应
+}, 1000)
+```
+
+俩个较好的应用:
+
+1. 合成函数返回响应式对象
+
+   ```js
+   function useFeature() {
+     const state = reactive({
+       x: 1,
+       y: 2,
+     })
+   }
+   // ......
+   // 返回时转换为 ref
+   return toRefs(state)
+   ```
+
+2. 可以在不失去响应式的情况下破坏结构
+
+   ```js
+   export default {
+     setup() {
+       const { x, y } = useFeature()
+
+       return {
+         x,
+         y,
+       }
+     },
+   }
+   ```
+
+总结:
+
+- 用 reactive 做对象的响应式,用 ref 做值类型的响应式;
+- setup 中返回 `toRefs(state)`, 或者 `toRef(state, 'xxx')`
+- ref 的变量命名都用"Ref"做后缀
+- 合成函数返回响应式对象时，使用 toRefs
+
+### 为什么需要 ref?
+
+- 返回值类型，会丢失响应式。如在 setup、computed、合成函数等中，都有可能返回值类型。
+- Vue 如不定义 ref，用户将自造 ref，反而混乱。
+
+### 为什么需要 `.value`?
+
+- ref 是一个对象（不丢失响应式），`value` 存储值；
+- 通过 `.value` 属性的 `get` 和 `set` 实现响应式;
+- 用于`模版`、`reactive` 时，不需要 `.value`，其它情况需要。
+
+```js
+// 简单理解 computed 返回一个 ref 值的逻辑
+
+// -------- computed 应用 -----------
+const state = reactive({
+  name: '张三',
+  age: 18,
+})
+const age = computed(() => {
+  return state.age + 1
+})
+
+// -------- computed 实现原理 -----------
+function computed(getter) {
+  const ref = { value: null }
+  watchEffect(() => {
+    ref.value = getter()
+  })
+  return ref
+}
+```
+
+### 为什么需要 `toRef` 和 `toRefs`
+
+- 初衷：不丢失响应式的情况下，把对象数据**分解**或**扩散**；
+- 前提：针对的是响应式对象（reactive 封装过的）**非普通对象**；
+- 目的是：**不创造**响应式，而是**延续响应式**。
