@@ -33,6 +33,7 @@ category:
 - [Webpack 配置分离](webpack05)
 - [Webpack 使用总结](webpack06)
 - [Vite 使用总结](vite01)
+- [Vite 插件](vite02)
 
 ## 服务端渲染 SSR
 

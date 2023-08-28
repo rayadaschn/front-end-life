@@ -1,15 +1,11 @@
 ---
-title: 自定义 Cli
+title: 自定义 Cli 01 之 commander
 icon: nodeJS
 category:
   - javascript
 tag:
   - node
-
-
 ---
-
-# 自定义 Cli 01 之 commander
 
 问题：当我们在用脚手架时，究竟发生了什么？当我们在 terminal 中键入 `create-react-app project-name` 时，究竟发生了什么？
 
@@ -32,7 +28,7 @@ tag:
 }
 ```
 
- `huy-cli`命令行指向了`"./lib/index.js"`，因此我们再创建一下这个文件。
+`huy-cli`命令行指向了`"./lib/index.js"`，因此我们再创建一下这个文件。
 
 ```js
 // ./lib/index.js
@@ -85,7 +81,7 @@ npm install -D commander
 在 JavaScript 文件中引入 `commander` 模块：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 ```
 
 3. 配置命令和选项
@@ -100,8 +96,8 @@ program
   .option('-d, --debug', 'output extra debugging')
   .command('start [name]', 'start server')
   .action((name, options) => {
-    console.log(`Starting server ${name} on port ${options.port}`);
-  });
+    console.log(`Starting server ${name} on port ${options.port}`)
+  })
 ```
 
 其中，`.version()` 方法用于指定程序的版本号，`.option()` 方法用于定义选项，`.command()` 方法用于定义命令，`.action()` 方法用于指定命令执行的动作。
@@ -111,7 +107,7 @@ program
 使用 `program.parse()` 方法解析命令行参数：
 
 ```javascript
-program.parse(process.argv);
+program.parse(process.argv)
 ```
 
 5. 运行命令行工具
@@ -135,16 +131,16 @@ node my-program.js start my-server --port 8080 --env production --debug
 例如，在以下代码中，我们使用 `program` 定义了一个名为 `my-tool` 的主命令：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .version('1.0.0')
   .description('My command line tool')
   .action(() => {
-    console.log('My command line tool');
-  });
+    console.log('My command line tool')
+  })
 
-program.parse(process.argv);
+program.parse(process.argv)
 ```
 
 其中，`.version()` 方法用于指定命令行工具的版本号，`.description()` 方法用于指定命令行工具的描述信息，`.action()` 方法用于指定主命令被执行时的回调函数。
@@ -158,7 +154,7 @@ program.parse(process.argv);
 使用 `program.version()` 方法来定义程序的版本号：
 
 ```javascript
-program.version('1.0.0');
+program.version('1.0.0')
 ```
 
 2. 解析命令行参数并查看版本
@@ -166,10 +162,10 @@ program.version('1.0.0');
 在代码中调用 `.parse()` 方法解析命令行参数，当用户在命令行中输入 `-V` 或 `--version` 时，会自动输出程序的版本号：
 
 ```javascript
-program.parse(process.argv);
+program.parse(process.argv)
 
 if (program.version) {
-  console.log(program.version);
+  console.log(program.version)
 }
 ```
 
@@ -178,13 +174,13 @@ if (program.version) {
 ```javascript
 #!/usr/bin/env node
 
-const { program } = require('commander');
+const { program } = require('commander')
 
-program.version('1.0.0');
-program.parse(process.argv);
+program.version('1.0.0')
+program.parse(process.argv)
 
 if (program.version) {
-  console.log(program.version);
+  console.log(program.version)
 }
 ```
 
@@ -211,12 +207,12 @@ node my-program.js --version
 例如，在以下代码中，`.option()` 方法定义了三个选项：`-p, --port <number>`、`-e, --env <name>` 和 `-d, --debug`：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .option('-p, --port <number>', 'set server port', parseInt)
   .option('-e, --env <name>', 'set environment name')
-  .option('-d, --debug', 'output extra debugging');
+  .option('-d, --debug', 'output extra debugging')
 ```
 
 其中，`<number>` 表示该选项要求输入一个数字类型的值，并使用 `parseInt` 方法将其转换成整数类型；`<name>` 表示该选项要求输入一个字符串类型的值；`-d, --debug` 表示该选项是一个布尔型选项，不需要输入值。
@@ -224,15 +220,15 @@ program
 在程序运行时，可以通过 `program.opts()` 方法获取所有选项的值。例如，在以下代码中，`.opts()` 方法获取了 `-p` 和 `-e` 选项的值，并打印到控制台上：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .option('-p, --port <number>', 'set server port', parseInt)
-  .option('-e, --env <name>', 'set environment name');
+  .option('-e, --env <name>', 'set environment name')
 
-program.parse(process.argv);
+program.parse(process.argv)
 
-console.log(program.opts());
+console.log(program.opts())
 ```
 
 在终端中执行以下命令会输出选项的值：
@@ -260,15 +256,15 @@ node my-program.js -p 8080 --env production
 例如，在以下代码中，`.command()` 方法定义了一个名为 `start` 的子命令：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .command('start <name> [otherArgs...]')
   .description('start server')
   .action((name, args) => {
-    console.log(`Starting server ${name}...`);
+    console.log(`Starting server ${name}...`)
     console.log(`Araay: ${args}`)
-  });
+  })
 ```
 
 其中，`<name>` 表示该子命令需要输入一个参数，这个参数的值会被传递给 `.action()` 中的回调函数。`[otherArgs...]` 表示非必要的其它参数，以空格划分，最后输出 `args` 数组形式。
@@ -276,16 +272,16 @@ program
 在程序运行时，可以通过 `program.parse()` 方法解析命令行参数，并根据不同的命令执行不同的操作。例如，在以下代码中，如果用户输入了 `start` 子命令，则会执行 `.action()` 中的回调函数：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .command('start <name>')
   .description('start server')
   .action((name) => {
-    console.log(`Starting server ${name}...`);
-  });
+    console.log(`Starting server ${name}...`)
+  })
 
-program.parse(process.argv);
+program.parse(process.argv)
 ```
 
 在终端中执行以下命令可以启动子命令：
@@ -307,23 +303,23 @@ Starting server my-server...
 在 `commander` 中，可以使用多个 `.command()` 方法来定义不同的子命令。例如，在以下代码中，我们定义了两个名为 `start` 和 `stop` 的子命令：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .command('start <name>')
   .description('start server')
   .action((name) => {
-    console.log(`Starting server ${name}...`);
-  });
+    console.log(`Starting server ${name}...`)
+  })
 
 program
   .command('stop <name>')
   .description('stop server')
   .action((name) => {
-    console.log(`Stopping server ${name}...`);
-  });
+    console.log(`Stopping server ${name}...`)
+  })
 
-program.parse(process.argv);
+program.parse(process.argv)
 ```
 
 其中，`.command('start <name>')` 定义了一个名为 `start` 的子命令，并指定了一个命令参数 `<name>`；`.command('stop <name>')` 定义了一个名为 `stop` 的子命令，并指定了一个命令参数 `<name>`。
@@ -359,16 +355,16 @@ Stopping server my-server...
 例如，在以下代码中，我们使用 `.action()` 方法指定了一个回调函数，该回调函数会在 `start` 子命令被执行时被调用，并输出一条日志信息：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .command('start <name>')
   .description('start server')
   .action((name) => {
-    console.log(`Starting server ${name}...`);
-  });
+    console.log(`Starting server ${name}...`)
+  })
 
-program.parse(process.argv);
+program.parse(process.argv)
 ```
 
 在终端中执行以下命令可以启动子命令：
@@ -388,16 +384,16 @@ Starting server my-server...
 除了在子命令中使用外，`.action()` 方法也可以在主命令中使用，用于指定主命令被执行时的回调函数。例如，在以下代码中，我们使用 `.action()` 方法指定了一个回调函数，该回调函数会在主命令被执行时被调用，并输出一条日志信息：
 
 ```javascript
-const { program } = require('commander');
+const { program } = require('commander')
 
 program
   .version('1.0.0')
   .description('My command line tool')
   .action(() => {
-    console.log('My command line tool');
-  });
+    console.log('My command line tool')
+  })
 
-program.parse(process.argv);
+program.parse(process.argv)
 ```
 
 在终端中执行以下命令可以执行主命令：
