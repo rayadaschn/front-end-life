@@ -609,3 +609,149 @@ function computed(getter) {
 - 初衷：不丢失响应式的情况下，把对象数据**分解**或**扩散**；
 - 前提：针对的是响应式对象（reactive 封装过的）**非普通对象**；
 - 目的是：**不创造**响应式，而是**延续响应式**。
+
+### 如何理解 `v-model`? 同 vue2 中的 `.sync`
+
+`v-model` 的作用是实现表单元素和 Vue 实例数据之间的双向绑定。在 Vue2 中`.sync`是实现这种父子组件之间双向数据绑定的语法糖，现在由`v-model`代替。
+
+```vue
+<template>
+  <div>Vue3 中如下使用</div>
+  <input type="text" v-model="message" />
+
+  <div>实质是如下的语法糖:</div>
+  <input type="text" :value="message" @input="message = $event.target.value" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      message: '',
+    }
+  },
+}
+</script>
+```
+
+同理还有 v-model/emits 父子组件的通信。
+
+1. 在父组件中，通过 v-model 向子组件传值；
+2. 在子组件中通过自身设定的 emits 向父组件**通知**数据更新。
+
+```vue
+<!-- 1. Father.vue 向子组件传值 -->
+<template>
+  <Child v-model:username="userInfo.name" />
+</template>
+```
+
+```vue
+<!-- 2. Child.vue 向父组件通知数据更新 -->
+<script>
+export default defineComponent({
+  props: {
+    username: String,
+  },
+  // 请注意这里是固定的 "update:" 的前缀
+  emits: ['update:username'],
+})
+</script>
+```
+
+由上可知，这里的 v-model 的语法糖实质为：
+
+```vue
+<!-- Father.vue 向子组件传值 -->
+<template>
+  <!-- v-model 语法糖 -->
+  <Child v-model:username="userInfo.name" />
+
+  <!-- v-model 语法糖实质 -->
+  <Child :username="userInfo.name" @update:username="userInfo.name = $event" />
+</template>
+```
+
+### watch 和 watchEffect 的区别是什么?
+
+- 俩者都可以监听 data 属性变化
+- watch 需要明确监听哪个属性
+- watchEffect 会根据函数内的变量属性，自动监听变化
+
+```js
+const numberRef = ref(100)
+watch(
+  numberRef, // 第一个参数为确定监听的属性
+  (newVal, oldVal) => {
+    // 第二个为回调函数
+    console.log('numberRef 变化了', oldVal, newVal)
+  },
+  {
+    Immediate: true,
+  }
+)
+
+watchEffect(() => {
+  // 初始化时, 一定会触发
+  console.log('会依据回调函数内的变量变化, 而重新执行')
+  console.log('numberRef:', numberRef)
+})
+```
+
+### vue3 中 setup 如何获取组件实例
+
+- 在 setup 和其他 Composition API 中没有 this;
+- 可通过 getCurrentInstance 获取当前实例;
+- 若使用 Options API 可照常使用 this。
+
+```js
+import { onMounted, getCurrentInstance } from 'vue'
+
+export default {
+  name: 'GetInstance',
+  data() {
+    return {
+      x: 10,
+      y: 20,
+    }
+  },
+  setup() {
+    console.log('this:', this)
+
+    onMounted(() => {
+      console.log('this in onMounted:', this) // undefined
+      console.log('Instance 中的属性', instance.data.x) // 要在 Mounted 生命周期后再获取
+    })
+
+    const instance = getCurrentInstance()
+    console.log('instance', instance)
+  },
+}
+```
+
+### Vue3 为什么比 Vue2 快?
+
+- Proxy 响应式
+- PatchFlag
+  - 编译模版时, 动态节点做标记
+  - 标记, 分为不同的类型, 如 TEXT PROPS
+  - diff 算法中, 可区分静态节点, 以及不同类型的动态节点
+- hoistStatic
+  - 将静态节点的定义, 提升到父作用域, 缓存起来
+  - 多个相邻的静态节点, 会被合并起来
+  - 典型的拿空间换时间的优化策略
+- cacheHandle
+  - 缓存事件
+- tree-shaking
+
+### Vite 为什么会快?
+
+- 开发环境使用 ES6 Module，无需打包因此非常快；
+- 生产环境使用 rollup， 并不会快很多。
+
+### Composition API 和 React Hook 对比
+
+- Composition 的 setup 只会调用一次，而 React 的 Hook 函数会被被多次调用；
+- 前者无需 useMemo useCallback，因为 setup 只会调用一次；
+- 前者无需咕噜调用顺序，而后者需要保证 hooks 的顺序一致；
+- 但是 reactive 和 ref 比后者的 useState 要更难理解。
