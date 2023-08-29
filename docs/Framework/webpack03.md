@@ -37,25 +37,25 @@ Webpack 中常见的代码分离有三种：
 ```js
 // webpack.config.js
 
-const path = require("path");
+const path = require('path')
 
 // ....
 const config = {
   entry: {
     index: {
-      import: "./src/index.js",
+      import: './src/index.js',
     },
     main: {
-      import: "./src/math.js",
+      import: './src/math.js',
     },
   },
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name]-bundle.js",
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name]-bundle.js',
     clean: true,
   },
   // ....
-};
+}
 ```
 
 在上述配置中，我们定义了俩个包的入口，并设置了导出包的配置。其中，导出配置中，我们设置文件名为：`filename: "[name]-bundle.js"` ，这里的 name 实际上是 placeholder 占位符，默认为文件名，但也可以自定义，后续介绍（给 webpack 增加魔法注释）。
@@ -102,7 +102,8 @@ optimization: {
 - `cacheGroups`：用于对拆分的包就行分组，比如一个 lodash 在拆分之后，并不会立即打包，而是会等到有没有其他符合规则的包一起来打包。
   - `test` 属性：匹配符合规则的包；
   - `name` 属性：拆分包的 name 属性；
-  - `filename` 属性： 拆分包的名称，可以自己使用 placeholder 属性。
+  - `filename` 属性：拆分包的入口文件名称，可以自己使用 placeholder 属性。
+  - `chunkFilename`属性：使用代码分割（code splitting）和动态导入（dynamic import）时生成的文件的名称。当使用 Webpack 的代码分割功能时，它会将代码拆分成多个块（chunks），每个块对应一个输出文件。
 
 ```js
 // webpack.config.js
@@ -169,15 +170,15 @@ optimization: {
 关键字 import 可以像调用函数一样来动态的导入模块。以这种方式调用，将返回一个 `promise`。
 
 ```js
-import("/modules/my-module.js").then((module) => {
+import('/modules/my-module.js').then((module) => {
   // Do something with the module.
-});
+})
 ```
 
 这种使用方式也支持 `await` 关键字。
 
 ```js
-let module = await import("/modules/my-module.js");
+let module = await import('/modules/my-module.js')
 ```
 
 在 webpack 中，动态导入的文件通常是一定会打包成独立的文件的，所以它的命名一般在 `output.chunkFilename` 中命名:
@@ -199,11 +200,11 @@ output: {
 >
 > ```js
 > btn1.onclick = function () {
->   import(/* webpackChunkName: "about" */ "./router/about").then((res) => {
->     res.about();
->     res.default();
->   });
-> };
+>   import(/* webpackChunkName: "about" */ './router/about').then((res) => {
+>     res.about()
+>     res.default()
+>   })
+> }
 > ```
 >
 > `/* webpackChunkName: "about" */` 便是魔法注释。
@@ -219,8 +220,8 @@ output: {
 import(
   /* webpackChunkName: "component" */
   /* webpackPreload: true */
-  "./component"
-);
+  './component'
+)
 ```
 
 与 prefetch 指令相比，preload 指令有许多不同之处：
@@ -231,49 +232,52 @@ import(
 
 ## OneMoreThing
 
-在我们给打包的文件进行命名的时候，会使用 placeholder ，placeholder 中有几个属性比较相似：
+在我们给打包的文件进行命名的时候，会使用 placeholder ，placeholder 中有几个属性比较相似，它们的区别在于生成哈希的范围不同：
 
-- hash、chunkhash、contenthash
+- hash：整个项目每次改动都会变化
+- chunkhash：根据入口文件范围内的代码块（chunk）的内容生成的哈希值。只要这个入口文件及其依赖的代码内容发生变化，其对应的 chunkhash 就会发生变化。
+- contenthash：只和文件内容有关，文件内容不变，它的 contenthash 不变。
 - hash 本身是通过 MD4 的散列函数处理后，生成一个 128 位的 hash 值（ 32 个十六进制）。
 
 hash 值的生成和整个项目有关系：
 
-比如我们现在有两个入口`index.js`和`main.js`，它们分别会输出到不同的 bundle 文件中，并且在文件名称中我们有使用 hash ； 这个时候，如果修改了 index.js 文件中的内容，那么 hash 会发生变化；那就意味着两个文件的名称都会发生变化。
+比如我们现在有两个入口`index.js`和`main.js`，它们分别会输出到不同的`bundle`文件中，并且在文件名称中我们有使用`hash`。这个时候，如果修改了 index.js 文件中的内容，那么`hash`会发生变化。那就意味着两个文件的名称都会发生变化。
 
-chunkhash 可以有效的解决上面的问题，它会根据不同的入口进行借来解析来生成 hash 值：比如我们修改了`index.js`，那么`main.js`的`chunkhash`是不会发生改变的;
+`chunkhash`可以有效的解决上面的问题，它会根据**不同的入口**进行借来解析来生成`hash`值：比如我们修改了`index.js`，那么`main.js`的`chunkhash`是**不会**发生改变的;
 
-contenthash 表示生成的文件 hash 名称，只和内容有关系:
-比如我们的 `index.js`，引入了一个 `style.css`，`style.css` 有被抽取到一个独立的 css 文件中；这个 css 文件在命名时，如果我们使用的是`chunkhash`；那么当 `index.js` 文件的内容发生变化时，css 文件的命名也会发生变化；这个时候我们可以使用 `contenthash` 。
+`contenthash`表示生成的文件 hash 名称，只和该文件的内容有关系:
+
+比如我们的 `index.js`，引入了一个 `style.css`，`style.css` 有被抽取到一个独立的 css 文件中。这个 css 文件在命名时，如果我们使用的是`chunkhash`，那么当 `index.js` 文件的内容发生变化时，css 文件的命名也会发生变化；这个时候我们可以使用 `contenthash` 。
 
 ```js
 // webpack.config.js
-const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require('path')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
-  mode: "development",
+  mode: 'development',
   entry: {
-    index: "./src/index.js",
-    main: "./src/main.js",
+    index: './src/index.js',
+    main: './src/main.js',
   },
   output: {
     clean: true,
-    path: path.resolve(__dirname, "./build"),
-    filename: "[name]_[contenthash]_bundle.js",
-    chunkFilename: "[contenthash]_chunk.js",
+    path: path.resolve(__dirname, './build'),
+    filename: '[name]_[contenthash]_bundle.js',
+    chunkFilename: '[contenthash]_chunk.js',
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "[contenthash]_[name].css",
+      filename: '[contenthash]_[name].css',
     }),
   ],
-};
+}
 ```
