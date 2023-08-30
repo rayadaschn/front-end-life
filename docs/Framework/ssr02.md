@@ -1,6 +1,6 @@
 ---
 title: Nuxt 之项目创建
-icon: nuxt
+icon: vue
 date: 2023-06-08
 
 category:

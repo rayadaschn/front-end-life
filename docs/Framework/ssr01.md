@@ -1,6 +1,6 @@
 ---
 title: 服务端渲染 SSR 概述
-icon: nuxt
+icon: vue
 date: 2023-05-11
 
 category:

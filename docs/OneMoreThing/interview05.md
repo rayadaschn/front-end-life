@@ -1,5 +1,6 @@
 ---
 title: Interview -- 前端安全和性能优化
+icon: note
 date: 2023-08-10
 category:
   - anonymous

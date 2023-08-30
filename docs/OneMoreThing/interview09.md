@@ -1,5 +1,6 @@
 ---
 title: Interview -- vue 相关面试题
+icon: note
 date: 2023-08-23
 category:
   - anonymous

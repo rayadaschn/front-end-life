@@ -1,5 +1,6 @@
 ---
 title: Interview -- DOM 和 BOM
+icon: note
 date: 2023-08-10
 category:
   - anonymous
