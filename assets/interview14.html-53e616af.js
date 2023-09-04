@@ -1,4 +1,4 @@
-import{_ as n,X as s,Y as a,$ as e}from"./framework-97fa2d96.js";const t={},p=e,o=s,c=a,l=p(`<p>总述算法的一些常见考题。</p><h2 id="判断一个字符串是否括号匹配" tabindex="-1"><a class="header-anchor" href="#判断一个字符串是否括号匹配" aria-hidden="true">#</a> 判断一个字符串是否括号匹配</h2><ul><li>一个字符串 s 可能包含 <code>{}()[]</code> 三种括号;</li><li>判断 s 是否是括号匹配的;</li><li>如<code>(a{b}c)</code>匹配，而<code>{a(b</code>或<code>{a(b}c)</code>就不匹配。</li></ul><div class="language-typescript line-numbers-mode" data-ext="ts"><pre class="language-typescript"><code><span class="token comment">/**
+import{_ as n,X as s,Y as a,$ as e}from"./framework-97fa2d96.js";const t={},p=e,o=s,c=a,l=p(`<blockquote><p>总述算法的一些常见考题。</p></blockquote><h2 id="判断一个字符串是否括号匹配" tabindex="-1"><a class="header-anchor" href="#判断一个字符串是否括号匹配" aria-hidden="true">#</a> 判断一个字符串是否括号匹配</h2><ul><li>一个字符串 s 可能包含 <code>{}()[]</code> 三种括号;</li><li>判断 s 是否是括号匹配的;</li><li>如<code>(a{b}c)</code>匹配，而<code>{a(b</code>或<code>{a(b}c)</code>就不匹配。</li></ul><div class="language-typescript line-numbers-mode" data-ext="ts"><pre class="language-typescript"><code><span class="token comment">/**
  * @description 括号匹配
  * @param str str
  */</span>
