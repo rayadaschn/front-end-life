@@ -204,20 +204,20 @@ console<span class="token punctuation">.</span><span class="token function">log<
 
 console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">&#39;Global3&#39;</span><span class="token punctuation">)</span> <span class="token comment">// 3</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul><li>上述代码，首先执行 <code>script</code> 中的全体宏任务，所以依次打印 “Global1、Global2、Global3”。这其中会插入 1 个微任务<code>Promise.resolve().then()</code> 和一个新的宏任务 <code>setTimeout</code>。</li><li>执行微任务，打印“<code>Promise1</code>”，而后再插入一个宏任务 <code>setTimeout</code>。微任务执行结束，开始轮询新的宏任务。</li><li>此时有俩个宏任务，依次执行，打印“<code>setTimeout1</code>”，再插入一个微任务 <code>Promise.resolve().then()</code>。</li><li>有微任务，先执行队列中的微任务。打印“<code>Promise2</code>”。结束当前宏任务。</li><li>执行剩下的宏任务，打印“<code>Promise2</code>”。</li></ul><p>因此最终的执行顺序是：“Global1、Global2、Global3、Promise1、setTimeout1、Promise2、setTimeout2”。</p><p>一句话总结，宏任务依次执行，当每一个宏任务中存在微任务，则先执行微任务队列中的所有任务。待宏任务中没有微任务了，则继续执行剩下的宏任务。</p></li></ol><p><strong>Node 中的 Event Loop:</strong></p><p>Node.js 的运行机制如下:</p><ul><li>V8 引擎解析 JavaScript 脚本。</li><li>解析后的代码，调用 Node API。</li><li>libuv 库负责 Node API 的执行。<strong>它将不同的任务分配给不同的线程，形成一个 Event Loop（事件循环），以异步的方式将任务的执行结果返回给 V8 引擎。</strong></li><li>V8 引擎再将结果返回给用户。</li></ul><p>libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复运行。每当进入某一个阶段的时候，都会从对应的回调队列中取出函数去执行。当队列为空或者执行的回调函数数量到达系统设定的阈值，就会进入下一阶段。</p><figure><img src="https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202304231358737.png" alt="Node 事件循环" tabindex="0" loading="lazy"><figcaption>Node 事件循环</figcaption></figure><p>执行顺序为： <strong>incoming 外部输入数据</strong> --&gt; <strong>轮询阶段(poll)</strong> --&gt; <strong>检查阶段(check)</strong> --&gt; <strong>关闭事件回调阶段(close callback)</strong> --&gt; <strong>定时器检测阶段(timer)</strong> --&gt; <strong>I/O 事件回调阶段(I/O callbacks)</strong> --&gt; <strong>闲置阶段(idle, prepare)</strong> --&gt; <strong>新的轮询阶段(new poll)</strong></p><ul><li>timers 阶段：这个阶段执行 timer（<strong>setTimeout</strong>、<strong>setInterval</strong>）的回调</li><li>I/O callbacks 阶段：处理一些上一轮循环中的少数未执行的 I/O 回调</li><li>idle, prepare 阶段：仅 node 内部使用</li><li>poll 阶段：获取新的 I/O 事件, 适当的条件下 node 将阻塞在这里</li><li>check 阶段：执行 <strong><code>setImmediate()</code></strong> 的回调</li><li>close callbacks 阶段：执行 socket 的 close 事件回调</li></ul><p>从上面可以看出，值得注意的阶段是 <code>timer</code>、<code>poll</code>和 <code>check</code>三个阶段。</p><ul><li><p><code>timer</code> 阶段会执行 setTImeout 和 setInterval 的回调，并且这由 poll 阶段所控制的。<strong>但区别于浏览器，这里的定时器所指定的时间并不精确，它只能是尽快执行。</strong> 简单理解：在浏览器中的定时器是不同的宏任务，会按照创建顺序依次执行，而 Node 是尽快执行。</p></li><li><p><code>poll</code>阶段，会做很多事：</p><ol><li>回到 <code>timer</code>阶段，执行 timer 的回调；</li><li>执行 <code>I/O</code> 的回调。</li></ol><p>并且在进入该阶段时如果没有设定了 timer 的话，会发生以下两件事情</p><ul><li>如果 poll 队列不为空，会遍历回调队列并同步执行，直到队列为空或者达到系统限制</li><li>如果 poll 队列为空时，会有两件事发生 <ul><li><strong>如果有 setImmediate 回调需要执行，poll 阶段会停止并且进入到 check 阶段执行回调</strong></li><li>如果没有 setImmediate 回调需要执行，会等待回调被加入到队列中并立即执行回调，这里同样会有个超时时间设置防止一直等待下去</li></ul></li></ul><p>当然设定了 timer 的话且 poll 队列为空，则会判断是否有 timer 超时，如果有的话会回到 timer 阶段执行回调。</p></li><li><p><code>check</code> 阶段，<code>setImmediate()</code>的回调会被加入 check 队列中，从 event loop 的阶段图可以知道，check 阶段的执行顺序在 poll 阶段之后。</p></li></ul><blockquote><p>与浏览器的宏任务微任务共用一个队列结构不同的地方在于，现在的异步宏任务分成了多个阶段，<strong>每个阶段都对应着一个事件队列！</strong></p><p>每当 Event Loop 执行当某个阶段时，便会执行对应的事件队列中的事件，并以此执行。</p><p>当该阶段的事件队列执行完毕，才会进入下一个阶段。</p><p>需要注意的是，<strong><code>Event Loop</code>每次切换一个事件执行队列时，便会查看微任务的队列，然后再切换到下一个队列中去。</strong></p><p>可以想象成，浏览器中，只有一个宏任务队列，每次新加的宏任务，会依次执行；而在 Node 中有多个宏任务队列，需要轮询进行执行。</p></blockquote><p>知道了不同阶段有对应着不同的事件队列，就能理解 <strong>process.nextTick</strong> 了，它是在切换不同事件阶段的时候进行执行，并且这个函数其实是独立于 Event Loop 之外的，它有一个自己的队列，当每个阶段完成后，如果存在 nextTick 队列，就会清空队列中的所有回调函数，并且<strong>优先于其他 微任务 执行</strong>。这不同于<strong>setImmediate</strong>，<strong>setImmediate</strong> 只在 check 阶段执行，即 Event Loop 循环一次后，才执行一次。</p><div class="language-node line-numbers-mode" data-ext="node"><pre class="language-node"><code>setTimeout(() =&gt; {
-  console.log(&#39;timer1&#39;)
+  console.log(&#39;timer1&#39;) // 1
 
   Promise.resolve().then(function () {
-    console.log(&#39;promise1&#39;)
+    console.log(&#39;promise1&#39;) // 6
   })
 
   process.nextTick(() =&gt; {
-    console.log(&#39;nextTick&#39;)
+    console.log(&#39;nextTick&#39;) // 2
     process.nextTick(() =&gt; {
-      console.log(&#39;nextTick&#39;)
+      console.log(&#39;nextTick&#39;) // 3
       process.nextTick(() =&gt; {
-        console.log(&#39;nextTick&#39;)
+        console.log(&#39;nextTick&#39;) // 4
         process.nextTick(() =&gt; {
-          console.log(&#39;nextTick&#39;)
+          console.log(&#39;nextTick&#39;) // 5
         })
       })
     })
@@ -225,27 +225,27 @@ console<span class="token punctuation">.</span><span class="token function">log<
 }, 0)
 
 // 打印: timer1 =&gt; nextTick =&gt; nextTick =&gt; nextTick =&gt; nextTick =&gt; promise1
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>先看一个简单的事件循环：</p><div class="language-node line-numbers-mode" data-ext="node"><pre class="language-node"><code>console.log(&#39;start&#39;)
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>先看一个简单的事件循环：</p><div class="language-node line-numbers-mode" data-ext="node"><pre class="language-node"><code>console.log(&#39;start&#39;) // 1
 
 setTimeout(() =&gt; {
-  console.log(&#39;timer1&#39;)
+  console.log(&#39;timer1&#39;) // 4
   Promise.resolve().then(function () {
-    console.log(&#39;promise1&#39;)
+    console.log(&#39;promise1&#39;) // 6
   })
 }, 0)
 
 setTimeout(() =&gt; {
-  console.log(&#39;timer2&#39;)
+  console.log(&#39;timer2&#39;) // 5
   Promise.resolve().then(function () {
-    console.log(&#39;promise2&#39;)
+    console.log(&#39;promise2&#39;) // 7
   })
 }, 0)
 
 Promise.resolve().then(function () {
-  console.log(&#39;promise3&#39;)
+  console.log(&#39;promise3&#39;) // 3
 })
 
-console.log(&#39;end&#39;)
+console.log(&#39;end&#39;) // 2
 
 // start =&gt; end =&gt; promise3 =&gt; timer1 =&gt; timer2 =&gt; promise1 =&gt; promise2
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>思路非常清晰：</p><ul><li>先执行全体宏任务，打印“start、end”，期间对 <code>timer</code>事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 <code>Promise.resolve.then()</code> 微任务；</li><li>切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；</li><li>Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个<code>Promise.resolve.then()</code> 微任务；</li><li>执行微任务队列，打印“promise1、promise2”。轮询完毕。</li></ul><p>再看一个完整的事件循环：</p><div class="language-node line-numbers-mode" data-ext="node"><pre class="language-node"><code>setImmediate(() =&gt; {
