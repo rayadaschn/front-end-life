@@ -230,12 +230,12 @@ console<span class="token punctuation">.</span><span class="token function">log<
 setTimeout(() =&gt; {
   console.log(&#39;timer1&#39;) // 4
   Promise.resolve().then(function () {
-    console.log(&#39;promise1&#39;) // 6
+    console.log(&#39;promise1&#39;) // 5
   })
 }, 0)
 
 setTimeout(() =&gt; {
-  console.log(&#39;timer2&#39;) // 5
+  console.log(&#39;timer2&#39;) // 6
   Promise.resolve().then(function () {
     console.log(&#39;promise2&#39;) // 7
   })
@@ -248,7 +248,7 @@ Promise.resolve().then(function () {
 console.log(&#39;end&#39;) // 2
 
 // start =&gt; end =&gt; promise3 =&gt; timer1 =&gt; timer2 =&gt; promise1 =&gt; promise2
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>思路非常清晰：</p><ul><li>先执行全体宏任务，打印“start、end”，期间对 <code>timer</code>事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 <code>Promise.resolve.then()</code> 微任务；</li><li>切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；</li><li>Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个<code>Promise.resolve.then()</code> 微任务；</li><li>执行微任务队列，打印“promise1、promise2”。轮询完毕。</li></ul><p>再看一个完整的事件循环：</p><div class="language-node line-numbers-mode" data-ext="node"><pre class="language-node"><code>setImmediate(() =&gt; {
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>思路非常清晰：</p><ul><li>先执行全体宏任务，打印“start、end”，期间对 <code>timer</code>事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 <code>Promise.resolve.then()</code> 微任务；</li><li>切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；</li><li>Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1”，插入<code>Promise.resolve.then()</code> 微任务；</li><li>执行微任务队列，打印“promise1”。</li><li>执行宏任务，打印“timer2”，插入微任务。执行微任务，打印“timer2”。轮询完毕。</li></ul><p>再看一个完整的事件循环：</p><div class="language-node line-numbers-mode" data-ext="node"><pre class="language-node"><code>setImmediate(() =&gt; {
   console.log(&#39;setImmediate1&#39;)
 
   setTimeout(() =&gt; {
