@@ -617,12 +617,12 @@ console.log('start') // 1
 setTimeout(() => {
   console.log('timer1') // 4
   Promise.resolve().then(function () {
-    console.log('promise1') // 6
+    console.log('promise1') // 5
   })
 }, 0)
 
 setTimeout(() => {
-  console.log('timer2') // 5
+  console.log('timer2') // 6
   Promise.resolve().then(function () {
     console.log('promise2') // 7
   })
@@ -641,8 +641,9 @@ console.log('end') // 2
 
 - 先执行全体宏任务，打印“start、end”，期间对 `timer`事件队列插入俩个 setTImeout 宏任务，再在当前宏任务中插入一个 `Promise.resolve.then()` 微任务；
 - 切换事件队列，但是当前微任务存在事件，因此执行微任务，打印“promise3”；
-- Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1、timer2”，并再此期间插入俩个`Promise.resolve.then()` 微任务；
-- 执行微任务队列，打印“promise1、promise2”。轮询完毕。
+- Event Loop 轮询，到 timer 阶段，事件队列中存在俩个 setTImeout 事件，依次执行。打印“timer1”，插入`Promise.resolve.then()` 微任务；
+- 执行微任务队列，打印“promise1”。
+- 执行宏任务，打印“timer2”，插入微任务。执行微任务，打印“timer2”。轮询完毕。
 
 再看一个完整的事件循环：
 
