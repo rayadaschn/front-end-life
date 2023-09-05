@@ -586,20 +586,20 @@ libuv 引擎中的事件循环分为 6 个阶段，它们会按照顺序反复�
 
 ```node
 setTimeout(() => {
-  console.log('timer1')
+  console.log('timer1') // 1
 
   Promise.resolve().then(function () {
-    console.log('promise1')
+    console.log('promise1') // 6
   })
 
   process.nextTick(() => {
-    console.log('nextTick')
+    console.log('nextTick') // 2
     process.nextTick(() => {
-      console.log('nextTick')
+      console.log('nextTick') // 3
       process.nextTick(() => {
-        console.log('nextTick')
+        console.log('nextTick') // 4
         process.nextTick(() => {
-          console.log('nextTick')
+          console.log('nextTick') // 5
         })
       })
     })
@@ -612,27 +612,27 @@ setTimeout(() => {
 先看一个简单的事件循环：
 
 ```node
-console.log('start')
+console.log('start') // 1
 
 setTimeout(() => {
-  console.log('timer1')
+  console.log('timer1') // 4
   Promise.resolve().then(function () {
-    console.log('promise1')
+    console.log('promise1') // 6
   })
 }, 0)
 
 setTimeout(() => {
-  console.log('timer2')
+  console.log('timer2') // 5
   Promise.resolve().then(function () {
-    console.log('promise2')
+    console.log('promise2') // 7
   })
 }, 0)
 
 Promise.resolve().then(function () {
-  console.log('promise3')
+  console.log('promise3') // 3
 })
 
-console.log('end')
+console.log('end') // 2
 
 // start => end => promise3 => timer1 => timer2 => promise1 => promise2
 ```
