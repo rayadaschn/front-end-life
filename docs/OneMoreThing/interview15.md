@@ -157,6 +157,212 @@ sticky: false
 
 - 浏览器和 node.js 的 event loop 流程基本相同;
 - node.js 宏任务和微任务分类型，有优先级。
-- 推荐使用 `setImmediate` 代替 `process.nextTick`
+- 推荐使用 `setImmediate` 代替 `process.nextTick` 看
 
 具体可看[《node 基础》](../JavaScript/Node01.md)
+
+## 查漏补缺
+
+### 【历史问题】如何解决移动端 300ms 的延迟？
+
+> 背景: 触摸屏 double tap to zoom
+
+初始解决方案: fastClick 库
+
+- 监听 `touchend` 事件(`touchstart` 和 `touchend` 会优先 click 触发)
+- 使用自定义 DOM 事件模拟一个 click 事件
+- 把默认的 click 是啊金(300ms 之后触发) 静止掉
+
+现代浏览器的改进:
+
+在 `meta` 中加入 `content="width=device-width"` 更改默认视口宽度。禁用了浏览器默认的双击缩放行为，但用户仍然可以通过双指缩放操作来缩放页面。
+
+还可以在 meta 中加入 `user-scalable=no` 禁用用户对页面进行缩放，从而减少延迟。
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+  </head>
+</html>
+```
+
+### token 和 cookie 的区别
+
+- cookie 是 HTTP 规范;会默认被浏览器存储;有跨域限制;需要配合 session 使用;
+- token 无标准;默认没有跨域限制; 以 JWT 自定义传递；并且需要自己存储；
+
+> 现代浏览器禁止第三方 js 库设置 cookie
+
+JSON Web Token（JWT）是一种用于在网络应用之间传递认证和授权信息的**开放标准**。JWT 的基本流程：
+
+1. 身份验证：用户提供其凭据（如用户名和密码）进行身份验证。
+
+2. 服务端生成 Token：服务器验证用户的凭据，并生成一个 JWT。JWT 由三个部分组成：头部（Header）、载荷（Payload）和签名（Signature）。
+
+   - 头部（Header）：包含指定算法（如 HMAC SHA256 或 RSA）用于签名验证的信息。
+   - 载荷（Payload）：包含关于用户或其他数据的声明（Claims），如用户 ID、角色等。
+   - 签名（Signature）：使用服务器密钥或私钥对头部和载荷进行签名，以确保 JWT 的完整性和真实性。
+
+3. 返回 Token：服务器将生成的 JWT 返回给客户端（通常是通过 HTTP 响应的方式）。
+
+4. 存储 Token：客户端通常将 JWT 存储在本地，例如使用浏览器的本地存储（如 localStorage）或会话存储（如 sessionStorage）。
+
+5. 发送 Token：客户端在后续的请求中将 JWT 作为身份验证凭据发送到服务器。通常，JWT 被添加到请求的授权头部（Authorization Header）中，使用 Bearer 方案。
+
+6. 验证和解析 Token：服务器接收到带有 JWT 的请求后，使用相同的算法和密钥来验证 JWT 的签名，并解析其中的信息。
+
+7. 授权访问：服务器根据 JWT 的有效性和包含的声明进行授权判断，决定是否允许用户访问请求的资源。
+
+JWT 的优势在于它是无状态的，因为所有必要的信息都包含在 JWT 中，服务器不需要在后端存储会话信息。这使得 JWT 成为分布式系统和基于微服务架构的身份验证和授权解决方案的有力选项。
+
+### HTTP 协议 和 1.0、1.1 和 2.0 有什么区别?
+
+HTTP 1.0 是最基础的 HTTP 协议，支持基本的 GET、POST 方法；
+
+HTTP 1.1 增加缓存策略 cache-control E-tag; 支持长连接 `Connection: keep-alive`，一次 TCP 连接多次请求；支持断点续传，状态码 206；支持新的 PUT DELETE 等，可用于 Restful API。
+
+HTTP 2.0 可压缩 header,减少体积; 多路复用, 一次 TCP 连接中可以多个 HTTP 并行请求；服务端推送。
+
+### 什么是 HTTPS 中间人攻击？如何预防？
+
+> HTTP 是明文传输，实际问的是 HTTPS 加密过程。
+
+### script 标签中 defer 和 async 有什么区别?
+
+- 无属性时，HTML 会暂停解析，下载 JS 文件，并执行 JS 代码；再继续解析 HTML。
+- defer：HTML 会继续解析，并行下载 JS，HTML 解析完成后再执行 JS。
+- async：HTML 继续解析，并行下载 JS，下载完成立刻执行 JS 代码，再解析 HTML。
+
+### prefetch 和 dns-prefetch 有什么区别？
+
+- preload 资源在当前页面使用，会优先加载；
+- prefetch 资源会在未来的页面使用，所以在空闲时加载。
+
+```html
+<head>
+  <!-- 普通引用 -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- preload -->
+  <link rel="preload" href="style.css" as="style" />
+
+  <!-- prefetch -->
+  <link rel="preftch" href="other.js" as="script" />
+</head>
+```
+
+- dns-prefetch 实际上是 DNS 预查询;
+- preconnect 是 DNS 预连接。
+
+```html
+<head>
+  <!-- dns-preftch -->
+  <link rel="dns-preftch" href="https://fonts.xxx.com" />
+
+  <!-- preconnect -->
+  <link rel="preconnect" href="https://fonts.xxx.com" />
+</head>
+```
+
+> **href 和 src 有什么区别?**
+>
+> 1. 用途：
+>
+> - href：href 属性用于指定链接的目标地址，通常用于`<a>`（锚点）标签，用于创建超链接，将用户导航到其他网页或资源。
+> - src：src 属性用于指定外部资源（如图片、脚本、样式表等）的来源，通常用于 `<img>`、`<script>`、`<link>` 等标签，用于引入外部资源。
+>
+> 2. 加载方式：
+>
+> - href：href 指定的目标地址会被浏览器解析为一个新的文档，浏览器会重新加载并显示该文档的内容。
+> - src：src 指定的资源会被浏览器请求并加载到当前文档中，例如图片会被显示，脚本会被执行。
+>
+> 3. 影响文档解析：
+>
+> - href：href 属性不会影响当前文档的解析过程，浏览器会继续解析当前文档，并在遇到 `<a>` 标签时处理链接。
+> - src：src 属性会影响当前文档的解析过程，浏览器会在遇到包含 src 属性的标签时暂停文档解析，先加载并执行资源，然后再继续解析文档。
+>
+> 4. 标签使用：
+>
+> - href：常见的标签使用 href 属性，如 `<a>`、`<link>`（用于引入样式表）。
+> - src：常见的标签使用 src 属性，如 `<img>`（用于引入图片）、`<script>`（用于引入脚本）。
+
+### 前端攻击有哪些?该如何预防?
+
+- XSS(Cross Site Script) 跨脚本攻击;
+- 手段：黑客将 JS 代码插入到网页内容中，渲染时执行 JS 代码。
+- 预防：特殊字符替换（前端或后端处理）
+
+- DDOS(Distribute denial-of-service) 分布式拒绝服务
+- 手段: 分布式的、大规模的流量访问，使服务器瘫痪；
+- 预防：需要硬件层预防（如阿里云 WAF）
+
+### HTTP 和 WebSocket 有什么区别?
+
+WebSocket 支持端对端通讯
+
+- 先发起一个 HTTP 请求
+- 成功后再升级到 WebSocket 协议，再通讯。
+
+俩者区别:
+
+- WebSocket 协议名是`ws://`，可双端发起请求；
+- WebSocket 没有跨域限制；
+- 通过 send 和 onmessage 通信（HTTP 通过 req 和 res）
+
+简单实现一个 WebSocket:
+
+```js
+/**
+ * 服务端端代码
+ */
+
+const WebSocket = require('ws')
+const WebSocketServer = WebSocket.Server
+
+const wsServer = new WebSocketServer({ port: 3000 }) // 确立端口号
+
+wsServer.on('connection', (ws) => {
+  console.info('connection')
+
+  ws.on('message', (msg) => {
+    console.info('收到消息:', msg.toString())
+
+    // 服务端向客户端发送消息
+    setTimeout(() => {
+      ws.send('服务端已经收到了信息:', msg.toString())
+    }, 2000)
+  })
+})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket 客户端</title>
+  </head>
+  <body>
+    <p>WebSocket 客户端代码</p>
+
+    <script>
+      const ws = new WebSocket('ws://127.0.0.1:3000')
+
+      ws.onopen = () => {
+        console.info('opened~')
+        ws.send('客户端建立连接')
+      }
+
+      ws.onmessage = (event) => {
+        console.info('收到了信息:', event.data)
+      }
+    </script>
+  </body>
+</html>
+```
