@@ -366,3 +366,114 @@ wsServer.on('connection', (ws) => {
   </body>
 </html>
 ```
+
+### 从输入 url 到页面渲染的完整过程
+
+#### 网络请求
+
+- DNS 查询(得到 IP), 建立 TCP 连接(三次握手)；
+- 浏览器发起 HTTP 请求；
+- 收到请求响应，得到 HTML 源代码。
+
+得到 HTML 源代码后，还会继续请求静态资源：
+
+- 解析 HTML 过程中，遇到静态资源还会继续发起网络请求；
+- JS、CSS、图片和视频等。
+
+主要静态资源可能会有缓存，此时不必发起网络请求。
+
+#### 解析
+
+解析： 字符串 -> 结构化数据的过程
+
+- HTML 构建 DOM 树
+- CSS 构建 CSSOM 树(style tree)
+- 俩者结合，形成 render tree
+
+> 优化解析:
+>
+> - css 放在 `<head></head>` 中，不要异步加载 CSS；
+> - JS 放在 `<body></body>` 最下面(或合理使用 defer async)
+> - `<img>`提前定义 width 和 height。
+
+#### 渲染
+
+渲染： Render Tree 绘制到页面
+
+- 计算各个 DOM 的尺寸、定位，最后绘制到页面；
+- 遇到 JS 可能会执行（参考 defer async）；
+- 异步 CSS、图片加载，可能会触发重新渲染。
+
+### 重绘和重排的区别?
+
+重绘（repaint）: 是指元素外观改变，如**颜色**、**背景色**，但是元素的**尺寸**、**定位**不变，不会影响到其他元素的位置。
+
+重排（reflow）：是指重新计算尺寸和布局，可能会影响其他元素的位置。如元素的高度增加，可能会使相邻元素位置下移。
+
+区别：重排播重绘要影响更大，消耗也更大，因此要避免无意义的重排。
+
+减少重排的方法：
+
+- 集中修改样式，或直接切换 css class；
+- 修改之前先设置 `display: none`，脱离文档流；
+- 使用 BFC 特性，不影响其它元素的位置；
+- 频繁触发的使用节流和防抖；
+- 使用 createDocumentFragment 批量操作 DOM；
+- 优化动画，使用 CSS3 和 requestAnimationFrame。
+
+### 网页多标签 tab 通讯
+
+1. 使用 WebSocket：无跨域限制，但需要服务端支持，成本高。
+2. 使用 LocalStorage 通讯：直接解决**同域**的 tab 页面通讯。
+
+   ```js
+   window.addEventListener('storage', (event) => {
+     console.log('key:', event.key)
+     console.log('value:', event.newValue)
+   })
+   ```
+
+3. SharedWorker 通讯：SharedWorker 是 WebWorker 的一种。WebWorker 可开启进程执行 JS，但不能操作 DOM；SharedWorker 可单独开启一个进程，用于**同域页面**通讯。
+
+### 网页和 iframe 如何通信?
+
+使用 PostMessage 进行网页和 iframe 通信。 注意跨域的限制和判断(域名的合法性)。
+
+在父窗口（父网页）中：
+
+```js
+// 获取 iframe 元素
+var iframe = document.getElementById('myIframe')
+
+// 发送消息给 iframe
+function sendMessageToIframe() {
+  var message = 'Hello from parent window!'
+  iframe.contentWindow.postMessage(message, '*') // '*' 表示允许跨域通信
+}
+
+// 监听来自 iframe 的消息
+window.addEventListener('message', function (event) {
+  if (event.source === iframe.contentWindow) {
+    var receivedMessage = event.data
+    console.log('Received message from iframe:', receivedMessage)
+  }
+})
+```
+
+在 iframe 中：
+
+```js
+// 发送消息给父窗口
+function sendMessageToParent() {
+  var message = 'Hello from iframe!'
+  parent.postMessage(message, '*') // '*' 表示允许跨域通信
+}
+
+// 监听来自父窗口的消息
+window.addEventListener('message', function (event) {
+  if (event.source === parent) {
+    var receivedMessage = event.data
+    console.log('Received message from parent window:', receivedMessage)
+  }
+})
+```

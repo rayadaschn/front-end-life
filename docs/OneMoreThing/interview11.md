@@ -1,5 +1,5 @@
 ---
-title: Interview -- 框架综合应用
+title: Interview -- 综合应用
 icon: note
 date: 2022-08-12
 category:
@@ -11,6 +11,10 @@ star: false
 sticky: false
 ---
 
-## 基于 React 设计一个 todolist(组件结构, redux state 数据结构)
+## H5 页面如何进行首屏优化?
 
-## 基于 Vue 设计一个购物车(组件结构, vue state 数据结构)
+- 使用 SSR 优化，`Nuxt.js`(Vue) 和 `Next.js`(React)
+- App 预获取
+- 针对列表页进行分页，默认只展示第一页内容，上滑加载更多
+- 图片懒加载 lazyLoad，注意图片尽量设置好尺寸；
+- 路由懒加载
