@@ -105,16 +105,17 @@ function deepClone(obj) {
   null == undefined // true
   ```
 
-  > 除用 "== null" 判断 null 或 undefined 类型外, 其余一律用 '==='
-  > 'val == null' 相当于 'val === null || val === undefined'，原因在于它们都会转换为 false。
+  > 除用 `== null` 判断 `null` 或 `undefined` 类型外, 其余一律用 `===`
+  >
+  > `val == null` 相当于 `val === null || val === undefined`，原因在于 `null` 和 `undefined` 在隐式转换时都会转换为 `false`。
 
 总结规律:
 
 1. 如果两个操作数的类型相同，那么它们将按照相等性规则进行比较，返回相应的布尔值。
-2. 如果一个操作数是 null，另一个操作数是 undefined，则它们相等。
+2. 如果一个操作数是 `null`，另一个操作数是 `undefined`，则它们相等。
 3. 如果一个操作数是**数字**，另一个操作数是字符串，JavaScript 会尝试将字符串转换为数字，然后进行比较。
-4. 如果一个操作数是**布尔值**，另一个操作数是非布尔值（除了 null 和 undefined），JavaScript 会尝试将布尔值转换为数字（true 转换为 1，false 转换为 0），然后进行比较。
-5. 如果一个操作数是**对象**，另一个操作数是原始类型（数字、字符串、布尔值），JavaScript 会尝试调用对象的 valueOf() 或 toString() 方法，将对象转换为原始类型的值，然后进行比较。
+4. 如果一个操作数是**布尔值**，另一个操作数是非布尔值（除了 `null` 和 `undefined`），JavaScript 会尝试将布尔值转换为数字（`true` 转换为 1，`false` 转换为 0），然后进行比较。
+5. 如果一个操作数是**对象**，另一个操作数是原始类型（数字、字符串、布尔值），JavaScript 会尝试调用对象的 `valueOf()` 或 `toString()` 方法，将对象转换为原始类型的值，然后进行比较。
 
 强制类型转换（显式类型转换）：
 
@@ -130,7 +131,7 @@ function deepClone(obj) {
    console.log(boolStr) // 输出 "true"
    ```
 
-2. 数值转换：使用 `Number()` 函数将其他类型的值转换为数值，此外还有 parseInt 和 parseFloat（parseInt 和 parseFloat 的第二个参数为要转换成的进制）。
+2. 数值转换：使用 `Number()` 函数将其他类型的值转换为数值，此外还有 `parseInt` 和 `parseFloat`（`parseInt` 和 `parseFloat` 的第二个参数为要转换成的进制）。
 
    ```javascript
    let str = '456'

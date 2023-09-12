@@ -127,7 +127,7 @@ console.log(myInstanceof([], Object))
 console.log(myInstanceof('', Object))
 ```
 
-## 手写 bing 函数
+## 手写 bind 函数
 
 核心要点:
 
