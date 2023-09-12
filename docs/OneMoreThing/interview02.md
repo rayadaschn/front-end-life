@@ -53,7 +53,7 @@ const obj1 = {
 }
 
 function deepClone(obj) {
-  if (typeof obj === 'object' || obj == null) {
+  if (typeof obj === 'object' && obj !== null) {
     const copyObj = obj instanceof Array ? [] : {} // 也可用 Array.isArray(obj)，或者 Object.prototype.toString.call(obj) === '[object, Array]'
     for (let key in obj) {
       // 保证 key 不是原型属性
@@ -74,14 +74,14 @@ function deepClone(obj) {
 
 - if 判断
 
-  if 其实判断的是 truly 变量和 falsely 变量。
+  `if` 其实判断的是 `truly` 变量和 `falsely` 变量。
 
   > 假设有一个变量为 a：
   >
   > - 若 `!!a === true` 则表示为 truly 变量
   > - 若 `!!a === false` 则表示为 falsely 变量
 
-  falsely 变量有 6 个：0、false、''（空字符串）、null、undefined 和 NaN，其余全部是 truly 变量
+  `falsely` 变量有 6 个：`0`、`false`、`''`（空字符串）、`null`、`undefined` 和 `NaN`，**其余全部是 `truly` 变量**。
 
 - `+-`字符串拼接
 
