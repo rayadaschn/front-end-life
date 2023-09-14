@@ -1,7 +1,7 @@
 ---
 title: Interview -- 综合应用
 icon: note
-date: 2022-08-12
+date: 2023-08-12
 category:
   - anonymous
 tag:
@@ -249,4 +249,79 @@ function fn(this: any, a: any, b: any, c: any) {
 
 // @ts-ignore
 fn.customCall({ x: 100 }, [10, 20, 30])
+```
+
+## 遍历数组，生成 tree node
+
+```js
+const arr = [
+  { id: 1, name: 'A', parentId: 0 },
+  { id: 2, name: 'A', parentId: 1 },
+  { id: 3, name: 'A', parentId: 2 },
+  { id: 4, name: 'A', parentId: 3 },
+  { id: 5, name: 'A', parentId: 4 },
+  { id: 6, name: 'A', parentId: 5 },
+]
+```
+
+思路：
+
+1. 遍历数组
+2. 每个元素，生成 tree node
+3. 找到 parentNode，并加入它的 children。
+
+```ts
+/**
+ * 数组转树结构
+ */
+
+interface IArrayItem {
+  id: number
+  name: string
+  parentId: number
+}
+
+interface ITreeNode {
+  id: number
+  name: string
+  children?: ITreeNode[]
+}
+
+function convert(arr: IArrayItem[]): ITreeNode | null {
+  // 用于 id 和 treeNode 的映射
+  const idToTreeNode: Map<number, ITreeNode> = new Map()
+
+  let root = null
+  arr.forEach((item) => {
+    const { id, name, parentId } = item
+
+    // 定义 tree node 并加入 map
+    const treeNode: ITreeNode = { id, name }
+    idToTreeNode.set(id, treeNode)
+
+    // 找到 parentNode 并加入它们的 children
+    const parentNode = idToTreeNode.get(parentId)
+    if (parentNode) {
+      if (parentNode.children == null) parentNode.children = []
+      parentNode.children.push(treeNode)
+    }
+
+    // 找到根节点
+    if (parentId === 0) root = treeNode
+  })
+
+  return root
+}
+
+const arr = [
+  { id: 1, name: 'A', parentId: 0 },
+  { id: 2, name: 'A', parentId: 1 },
+  { id: 3, name: 'A', parentId: 2 },
+  { id: 4, name: 'A', parentId: 3 },
+  { id: 5, name: 'A', parentId: 4 },
+  { id: 6, name: 'A', parentId: 5 },
+]
+
+const tree = convert(arr)
+console.info(tree)
 ```
