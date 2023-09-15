@@ -9,8 +9,6 @@ tag:
 sticky: false
 ---
 
-# React 基础语法
-
 > 今天开始学习 Reac 系列，先从最基本的语法入手。
 >
 > 本文的 React18 为基础学习（和早期版本略有不同），参考文档为[官方文档](https://react.dev/learn)。
@@ -67,7 +65,7 @@ sticky: false
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
     <script type="text/babel">
-      ReactDOM.render(<h2>Hello World</h2>, document.querySelector("#root"));
+      ReactDOM.render(<h2>Hello World</h2>, document.querySelector('#root'))
     </script>
   </body>
 </html>
@@ -87,13 +85,13 @@ sticky: false
 ```html
 <div id="root"></div>
 <script type="text/babel">
-  const root = ReactDOM.createRoot(document.querySelector("#root"));
+  const root = ReactDOM.createRoot(document.querySelector('#root'))
   root.render(
     <div>
       <h2>Hello World</h2>
       <button>按钮</button>
     </div>
-  );
+  )
 </script>
 ```
 
@@ -109,17 +107,17 @@ sticky: false
   class App extends React.Component {
     // 组件数据
     constructor() {
-      super();
+      super()
       this.state = {
-        message: "World",
-      };
+        message: 'World',
+      }
     }
 
     // 组件方法
     btnClick() {
       this.setState({
-        message: "React",
-      });
+        message: 'React',
+      })
     }
 
     // 渲染内容
@@ -129,12 +127,12 @@ sticky: false
           <h2>Hello {this.state.message}</h2>
           <button onClick={this.btnClick.bind(this)}>修改文本</button>
         </div>
-      );
+      )
     }
   }
 
-  const root = ReactDOM.createRoot(document.querySelector("#root"));
-  root.render(<App />);
+  const root = ReactDOM.createRoot(document.querySelector('#root'))
+  root.render(<App />)
 </script>
 ```
 
@@ -198,7 +196,7 @@ jsx 用大括号包裹变量。
 >
 > ```jsx
 > {
->   !!Data && <Home infoData={Data} />;
+>   !!Data && <Home infoData={Data} />
 > }
 > ```
 >
@@ -206,7 +204,7 @@ jsx 用大括号包裹变量。
 >
 > ```js
 > function isEmptyObj(obj) {
->   return !!Object.keys(obj).length;
+>   return !!Object.keys(obj).length
 > }
 > ```
 
@@ -261,35 +259,35 @@ jsx 用大括号包裹变量。
 ```jsx
 class App extends React.Component {
   // class fields
-  name = "App";
+  name = 'App'
 
   constructor() {
-    super();
+    super()
     this.state = {
-      message: "Hello World",
+      message: 'Hello World',
       counter: 100,
-    };
+    }
 
-    this.btn1Click = this.btn1Click.bind(this);
+    this.btn1Click = this.btn1Click.bind(this)
   }
 
   btn1Click() {
-    console.log("btn1Click", this);
-    this.setState({ counter: this.state.counter + 1 });
+    console.log('btn1Click', this)
+    this.setState({ counter: this.state.counter + 1 })
   }
 
   btn2Click = () => {
-    console.log("btn2Click", this);
-    this.setState({ counter: 1000 });
-  };
+    console.log('btn2Click', this)
+    this.setState({ counter: 1000 })
+  }
 
   btn3Click() {
-    console.log("btn3Click", this);
-    this.setState({ counter: 9999 });
+    console.log('btn3Click', this)
+    this.setState({ counter: 9999 })
   }
 
   render() {
-    const { message } = this.state;
+    const { message } = this.state
 
     return (
       <div>
@@ -300,13 +298,13 @@ class App extends React.Component {
         <button onClick={this.btn2Click}>按钮2</button>
 
         {/* 3.this绑定方式三: 直接传入一个箭头函数(重要) */}
-        <button onClick={() => console.log("btn3Click")}>按钮3</button>
+        <button onClick={() => console.log('btn3Click')}>按钮3</button>
 
         <button onClick={() => this.btn3Click()}>按钮3</button>
 
         <h2>当前计数: {this.state.counter}</h2>
       </div>
-    );
+    )
   }
 }
 ```
@@ -318,25 +316,25 @@ class App extends React.Component {
 ```jsx
 class App extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
-      message: "Hello World",
+      message: 'Hello World',
 
       isReady: false,
 
       friend: undefined,
-    };
+    }
   }
 
   render() {
-    const { isReady, friend } = this.state;
+    const { isReady, friend } = this.state
 
     // 1.条件判断方式一: 使用if进行条件判断
-    let showElement = null;
+    let showElement = null
     if (isReady) {
-      showElement = <h2>准备开始比赛吧</h2>;
+      showElement = <h2>准备开始比赛吧</h2>
     } else {
-      showElement = <h1>请提前做好准备!</h1>;
+      showElement = <h1>请提前做好准备!</h1>
     }
 
     return (
@@ -349,9 +347,9 @@ class App extends React.Component {
 
         {/* 3.方式三: &&逻辑与运算 */}
         {/* 场景: 当某一个值, 有可能为undefined时, 使用&&进行条件判断 */}
-        <div>{friend && <div>{friend.name + " " + friend.desc}</div>}</div>
+        <div>{friend && <div>{friend.name + ' ' + friend.desc}</div>}</div>
       </div>
-    );
+    )
   }
 }
 ```
@@ -361,19 +359,19 @@ class App extends React.Component {
 ```jsx
 class App extends React.Component {
   constructor() {
-    super();
+    super()
     this.state = {
-      message: "Hello World",
+      message: 'Hello World',
       isShow: true,
-    };
+    }
   }
 
   changeShow() {
-    this.setState({ isShow: !this.state.isShow });
+    this.setState({ isShow: !this.state.isShow })
   }
 
   render() {
-    const { message, isShow } = this.state;
+    const { message, isShow } = this.state
 
     return (
       <div>
@@ -381,9 +379,9 @@ class App extends React.Component {
         {isShow && <h2>{message}</h2>}
 
         {/* v-show的效果 */}
-        <h2 style={{ display: isShow ? "block" : "none" }}>哈哈哈哈</h2>
+        <h2 style={{ display: isShow ? 'block' : 'none' }}>哈哈哈哈</h2>
       </div>
-    );
+    )
   }
 }
 ```

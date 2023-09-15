@@ -13,10 +13,7 @@ date: 2023-09-14
 ```ts
 class TreeNode<T> {
   value: T
-  LeafA?: TreeNode<T> | null = null
-  LeafB?: TreeNode<T> | null = null
-  LeafC?: TreeNode<T> | null = null
-  LeafD?: TreeNode<T> | null = null
+  LeafNode?: Array<TreeNode>
 
   constructor(value: T) {
     this.value = value
