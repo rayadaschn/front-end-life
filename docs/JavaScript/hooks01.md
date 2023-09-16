@@ -33,7 +33,7 @@ sticky: false
 
 ```vue
 <template>
-  <div>
+  <a-layout>
     <h1>拖拉拽弹框</h1>
 
     <div
@@ -63,7 +63,7 @@ sticky: false
         <ArrowsAltOutlined />
       </div>
     </div>
-  </div>
+  </a-layout>
 </template>
 
 <script setup lang="ts">
@@ -332,33 +332,19 @@ const handleResizeMouseMove = (e: MouseEvent | TouchEvent) => {
   let height =
     startHeight +
     ((e instanceof MouseEvent ? e.clientY : e.touches[0].clientY) - startY)
-  let handleX =
-    resizeHandle.x +
-    ((e instanceof MouseEvent ? e.clientX : e.touches[0].clientX) - startX)
-  let handleY =
-    resizeHandle.y +
-    ((e instanceof MouseEvent ? e.clientY : e.touches[0].clientY) - startY)
 
   // 检查窗体是否超出视宽
-  if (handleX + resizeHandleRef.value.offsetWidth > window.innerWidth) {
-    handleX = window.innerWidth - resizeHandleRef.value.offsetWidth
-  }
   if (elementRef.value.offsetLeft + width > window.innerWidth) {
     width = window.innerWidth - elementRef.value.offsetLeft
   }
 
   // 检查窗体是否超出视高
-  if (handleY + resizeHandleRef.value.offsetHeight > window.innerHeight) {
-    handleY = window.innerHeight - resizeHandleRef.value.offsetHeight
-  }
   if (elementRef.value.offsetTop + height > window.innerHeight) {
     height = window.innerHeight - elementRef.value.offsetTop
   }
 
   elementRef.value.style.width = `${width}px`
   elementRef.value.style.height = `${height}px`
-  resizeHandleRef.value.style.left = `${handleX}px`
-  resizeHandleRef.value.style.top = `${handleY}px`
 
   // 保存当前窗口大小, 后边下次窗口打开复原
   if (options?.onResize) {
@@ -535,33 +521,19 @@ export function useResizeAndDrag(
     let height =
       startHeight +
       ((e instanceof MouseEvent ? e.clientY : e.touches[0].clientY) - startY)
-    let handleX =
-      resizeHandle.x +
-      ((e instanceof MouseEvent ? e.clientX : e.touches[0].clientX) - startX)
-    let handleY =
-      resizeHandle.y +
-      ((e instanceof MouseEvent ? e.clientY : e.touches[0].clientY) - startY)
 
     // 检查窗体是否超出视宽
-    if (handleX + resizeHandleRef.value.offsetWidth > window.innerWidth) {
-      handleX = window.innerWidth - resizeHandleRef.value.offsetWidth
-    }
     if (elementRef.value.offsetLeft + width > window.innerWidth) {
       width = window.innerWidth - elementRef.value.offsetLeft
     }
 
     // 检查窗体是否超出视高
-    if (handleY + resizeHandleRef.value.offsetHeight > window.innerHeight) {
-      handleY = window.innerHeight - resizeHandleRef.value.offsetHeight
-    }
     if (elementRef.value.offsetTop + height > window.innerHeight) {
       height = window.innerHeight - elementRef.value.offsetTop
     }
 
     elementRef.value.style.width = `${width}px`
     elementRef.value.style.height = `${height}px`
-    resizeHandleRef.value.style.left = `${handleX}px`
-    resizeHandleRef.value.style.top = `${handleY}px`
 
     // 保存当前窗口大小, 后边下次窗口打开复原
     if (options?.onResize) {
