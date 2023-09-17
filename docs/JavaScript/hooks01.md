@@ -10,13 +10,15 @@ tag:
 sticky: false
 ---
 
-手写一个具备拖拉拽多功能的弹窗：
+一个具备拖拉拽多功能的弹窗具备以下功能：
 
 - 能够拖动弹窗位置；
 - 能够放大缩小弹窗；
 - 能够实现弹窗的最小化和还原最大化。
 
 ![拖拉拽弹窗](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202309161721690.png)
+
+最终实现可以直接点击查看[实现代码](#最终代码)，下面是基本实现的思路。
 
 ## 绘制基本弹框
 
@@ -452,9 +454,12 @@ onBeforeUnmount(() => {
 })
 ```
 
+## 最终代码
+
 此处附上 Hooks 的完整代码:
 
 ```ts
+// useResize.ts
 import { onMounted, onBeforeUnmount, type Ref, watch } from 'vue'
 
 interface ResizeHandle {
@@ -721,3 +726,162 @@ export function useResizeAndDrag(
 ```
 
 在最后，暴露了俩个事件 `handleResizeMouseDown` 和 `handleDragMouseDown` 为 Hooks 的返回便于定制化更改窗体大小和位置。
+
+组件封装:
+
+```vue
+<template>
+  <a-layout>
+    <div
+      ref="el"
+      class="box"
+      :class="{ 'unset-size': !state.expanded }"
+      @wheel.capture.stop
+    >
+      <div class="container">
+        <div class="action-bar">
+          <div ref="dragHandle" class="icon" style="cursor: grab">
+            <DragOutlined />
+          </div>
+          <div
+            class="icon"
+            style="cursor: pointer"
+            @click="state.expanded = !state.expanded"
+          >
+            <FullscreenExitOutlined v-if="state.expanded" />
+            <FullscreenOutlined v-else />
+          </div>
+        </div>
+        <div v-if="state.expanded" class="gen-info">{{ text }}</div>
+      </div>
+
+      <div v-if="state.expanded" ref="resizeHandle" class="mouse-sensor">
+        <ArrowsAltOutlined />
+      </div>
+    </div>
+  </a-layout>
+</template>
+
+<script setup lang="ts">
+import { useResizeAndDrag } from './useResize'
+
+const el = ref<HTMLElement>()
+const dragHandle = ref<HTMLElement>()
+const resizeHandle = ref<HTMLElement>()
+const state = ref({
+  left: 50,
+  top: 100,
+  width: 250,
+  height: 200,
+  expanded: true,
+})
+useResizeAndDrag(el, resizeHandle, dragHandle, {
+  ...state.value,
+  onDrag: debounce(function (left: number, top: number) {
+    state.value = {
+      ...state.value,
+      left,
+      top,
+    }
+  }, 300),
+  onResize: debounce(function (width: number, height: number) {
+    state.value = {
+      ...state.value,
+      width,
+      height,
+    }
+  }, 300),
+})
+const text = `Axios is a promise-based HTTP Client for node.js and the browser. It is isomorphic (= it can run in the browser and nodejs with the same codebase). On the server-side it uses the native node.js http module, while on the client (browser) it uses XMLHttpRequests.
+
+Features
+
+- Make XMLHttpRequests from the browser
+- Make http requests from node.js
+- Supports the Promise API
+- Intercept request and response
+- Transform request and response data
+- Cancel requests
+- Timeouts
+- Query parameters serialization with support for nested entries
+
+- Automatic request body serialization to:
+    a. JSON (application/json)
+    b. Multipart / FormData (multipart/form-data)
+    c. URL encoded form (application/x-www-form-urlencoded)
+
+- Posting HTML forms as JSON
+- Automatic JSON data handling in response
+- Progress capturing for browsers and node.js with extra info (speed rate, remaining time)
+- Setting bandwidth limits for node.js
+- Compatible with spec-compliant FormData and Blob (including node.js)
+- Client side support for protecting against XSRF`
+</script>
+
+<style scoped lang="less">
+.box {
+  position: fixed;
+  z-index: 9;
+  background: #42b983;
+  padding: 8px 16px;
+  box-shadow: 0px 0px 4px 4px;
+  border-radius: 4px;
+
+  &.unset-size {
+    width: unset !important;
+    height: unset !important;
+  }
+
+  .container {
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+  }
+
+  .action-bar {
+    display: flex;
+    align-items: center;
+    user-select: none;
+
+    .icon {
+      font-size: 24px;
+      padding: 2px 4px;
+      border-radius: 4px;
+
+      &:hover {
+        background: #374151;
+      }
+    }
+
+    & > * {
+      flex-wrap: wrap;
+
+      &:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .gen-info {
+    padding-top: 4px;
+    word-break: break-all;
+    white-space: pre-line;
+    overflow: auto;
+  }
+
+  .mouse-sensor {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transform: rotate(90deg);
+    cursor: se-resize;
+    z-index: 1;
+    border-radius: 2px;
+
+    font-size: 18px;
+    padding: 2px;
+  }
+}
+</style>
+```

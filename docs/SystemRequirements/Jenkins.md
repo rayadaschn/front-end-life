@@ -27,7 +27,7 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
 
 3. 运行命令 `java -jar jenkins.war`
 
-   - **第一次运行，会返回一个初始密码！！！** 需要妥善保管，待会要用，若是丢失了则需要去一下地址查看：
+   - **第一次运行，会返回一个初始密码！！！** 需要妥善保管，待会要用，若是丢失了则需要去查看一下地址：
 
      ```bash
      # 不同安装路径可能不用
@@ -104,7 +104,7 @@ Jenkins 安装有很多方案，具体可以查看 Jenkins [官网](https://www.
 
 在使用 Jenkins 时，如果希望在关闭浏览器后仍然保持 Jenkins 后台运行，则可以使用以下方法：
 
-1. **使用 nohup 命令（no hang up，不要挂断电话）**：nohup 命令可以使进程忽略 SIGHUP 信号（即挂起信号），从而使其在终端关闭后继续在后台运行。例如，要在后台运行 Jenkins 并忽略 SIGHUP 信号，请使用以下命令：
+1. **使用 nohup 命令（no hang up，不要挂断电话）**：`nohup` 命令可以使进程忽略 SIGHUP 信号（即挂起信号），从而使其在终端关闭后继续在后台运行。例如，要在后台运行 Jenkins 并忽略 SIGHUP 信号，请使用以下命令：
 
    ```bash
    $: nohup java -jar jenkins.war > ./jenkins.log &
