@@ -344,7 +344,7 @@ const ref = useRef(initialValue)
 
 接下来，让我们看两个常用场景的简单例子，使用 useRef Hook 来保存和访问组件的上一个状态和 DOM 元素的引用。
 
-1. 使用 useRef Hook 来保存和访问组件的上一个状态：
+1. 使用 useRef Hook 来保存和访问组件的上一个状态，常用语解决闭包陷阱（异步不更新 state 值，依旧保留当时的值）：
 
 ```jsx
 import { useState, useRef, useEffect } from 'react'
@@ -355,10 +355,17 @@ function Counter() {
 
   useEffect(() => {
     prevCountRef.current = count // 赋值为 0
-  })
+  }, [count])
 
   const handleIncrement = () => {
     setCount(count + 1)
+  }
+
+  const alertFn = () => {
+    setTimeout(() => {
+      // alert(count) // count 值类型, 不更新
+      alert(prevCountRef.current) // ref 引用类型
+    }, 3000)
   }
 
   return (
@@ -366,6 +373,7 @@ function Counter() {
       <h1>Current Count: {count}</h1>
       <h2>Previous Count: {prevCountRef.current}</h2>
       <button onClick={handleIncrement}>+</button>
+      <button onClick={alertFn}>异步更新</button>
     </div>
   )
 }
@@ -811,3 +819,7 @@ function MyComponent() {
 在上面的代码中，我们定义了一个名为 `MyComponent` 的 React 组件，并调用了 `useWindowWidth` 自定义 Hook 来获取当前浏览器窗口的宽度。
 
 然后，在渲染结果中，我们将该值显示为字符串模板，以便用户可以看到当前窗口的宽度。
+
+## 第三方 Hooks
+
+国内流行的是 [aHooks](https://ahooks.js.org/zh-CN)由阿里巴巴开源，国外较为流行的是[react-use](https://github.com/streamich/react-use)

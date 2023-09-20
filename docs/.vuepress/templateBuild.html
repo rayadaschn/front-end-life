@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ lang }}" data-theme="light">
   <head>
+    <link rel="icon" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <!--vuepress-ssr-head-->
@@ -10,7 +11,7 @@
         --bg-color: #fff;
       }
 
-      html[data-theme="dark"] {
+      html[data-theme='dark'] {
         --bg-color: #1d2025;
       }
 
@@ -20,20 +21,20 @@
       }
     </style>
     <script>
-      const userMode = localStorage.getItem("vuepress-theme-hope-scheme");
+      const userMode = localStorage.getItem('vuepress-theme-hope-scheme')
       const systemDarkMode =
         window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (userMode === "dark" || (userMode !== "light" && systemDarkMode)) {
-        document.querySelector("html").setAttribute("data-theme", "dark");
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      if (userMode === 'dark' || (userMode !== 'light' && systemDarkMode)) {
+        document.querySelector('html').setAttribute('data-theme', 'dark')
       }
     </script>
     <!--vuepress-ssr-styles-->
     <!--vuepress-ssr-resources-->
     <script>
-      (function () {
-        console.log("你好呀~ 欢迎来到我的前端娱乐场~");
-      })();
+      ;(function () {
+        console.log('你好呀~ 欢迎来到我的前端娱乐场~')
+      })()
     </script>
   </head>
   <body>
