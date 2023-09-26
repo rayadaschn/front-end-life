@@ -13,6 +13,7 @@ category:
 - [为 MacOS 设置终端代理](system04.md)
 - [使用 PicGo+GitHub 图床](system05)
 - [Linux 操作记录](LinuxServerConfigurationRecord.md)
+- [使用 VScode 连接远程服务器并免密登录](system05)
 
 ## Git
 
