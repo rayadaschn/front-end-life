@@ -74,20 +74,20 @@ History API 主要包括以下几个方法：
 
 ```js
 // 添加新的状态到历史记录中
-history.pushState({ page: 1 }, "Page 1", "/page1");
+history.pushState({ page: 1 }, 'Page 1', '/page1')
 
 // 监听 popstate 事件，当用户点击浏览器的后退或前进按钮时触发
-window.addEventListener("popstate", function (event) {
+window.addEventListener('popstate', function (event) {
   // 获取最近的历史记录并更新页面内容
-  var state = event.state;
+  var state = event.state
   if (state && state.page === 1) {
-    document.title = "Page 1";
-    showPage1Content();
+    document.title = 'Page 1'
+    showPage1Content()
   } else if (state && state.page === 2) {
-    document.title = "Page 2";
-    showPage2Content();
+    document.title = 'Page 2'
+    showPage2Content()
   }
-});
+})
 ```
 
 在这个例子中，我们使用 `pushState` 方法将一个新状态（包含一个 page 属性）添加到浏览器历史记录中，并同时更新了页面的 URL 和标题。然后，在 `popstate` 事件监听器中，我们获取最近的状态并根据需要更新页面内容。
@@ -110,24 +110,22 @@ React-router 提供了一些基础组件：BrowserRouter 和 HashRouter 等。�
 
 ```jsx
 // History 模式
-import { BrowserRouter } from "react-router-dom";
-
-<React.StrictMode>
+import { BrowserRouter } from 'react-router-dom'
+;<React.StrictMode>
   <BrowserRouter>
     <App />
   </BrowserRouter>
-</React.StrictMode>;
+</React.StrictMode>
 ```
 
 ```jsx
 // Hash 模式
-import { HashRouter } from "react-router-dom";
-
-<React.StrictMode>
+import { HashRouter } from 'react-router-dom'
+;<React.StrictMode>
   <HashRouter>
     <App />
   </HashRouter>
-</React.StrictMode>;
+</React.StrictMode>
 ```
 
 ### 路由映射配置
@@ -135,10 +133,10 @@ import { HashRouter } from "react-router-dom";
 定义完路由模式后，可以设置路由的映射关系。React Router 6 中的路由映射配置并不像 React Router 5 中那样使用 `<Route>` 组件，而是通过 `<Routes>` 和 `<Route>` 组件配合使用来实现。以下是一个示例：
 
 ```jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./Home";
-import About from "./About";
-import Contact from "./Contact";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Home from './Home'
+import About from './About'
+import Contact from './Contact'
 
 function App() {
   return (
@@ -149,13 +147,13 @@ function App() {
         <Route path="/contact" element={<Contact />} />
       </Routes>
     </Router>
-  );
+  )
 }
 ```
 
 在上述代码中，我们首先导入了需要使用的组件（包括 `BrowserRouter`、`Routes` 和 `Route`），然后在应用中定义了三个路由规则。其中，`element` 属性指定了对应的组件，`path` 属性指定了路由路径。
 
-需要注意的是，**在 React Router 6 中，`exact` 属性已经不再被支持了。相反，精准匹配现在是默认的行为。**也就是说，如果路径与路由定义完全匹配，则只有该路由将被匹配到。
+需要注意的是，在 React Router 6 中，`exact` 属性已经不再被支持了。相反，精准匹配现在是默认的行为。也就是说，如果路径与路由定义完全匹配，则只有该路由将被匹配到。
 
 路由路径是匹配一个（或一部分）URL 的 [一个字符串模式](https://react-guide.github.io/react-router-cn/docs/guides/basics/docs/Glossary.md#routepattern)。大部分的路由路径都可以直接按照字面量理解，除了以下几个特殊的符号：
 
@@ -178,7 +176,7 @@ function App() {
 以下是一个使用 `Link` 和 `NavLink` 组件的示例：
 
 ```jsx
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink } from 'react-router-dom'
 
 function Header() {
   return (
@@ -199,7 +197,7 @@ function Header() {
         </li>
       </ul>
     </nav>
-  );
+  )
 }
 ```
 
@@ -210,17 +208,17 @@ function Header() {
 以下是一个使用 `Navigate` 组件的示例：
 
 ```jsx
-import { Navigate } from "react-router-dom";
+import { Navigate } from 'react-router-dom'
 
 function LoginPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   function handleLogin() {
-    setIsLoggedIn(true);
+    setIsLoggedIn(true)
   }
 
   if (isLoggedIn) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard" />
   }
 
   return (
@@ -228,7 +226,7 @@ function LoginPage() {
       <h1>Login Page</h1>
       <button onClick={handleLogin}>Log In</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -254,9 +252,9 @@ import {
   Routes,
   Route,
   Outlet,
-} from "react-router-dom";
-import Home from "./Home";
-import Products from "./Products";
+} from 'react-router-dom'
+import Home from './Home'
+import Products from './Products'
 
 function App() {
   return (
@@ -270,7 +268,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
-  );
+  )
 }
 
 function Products() {
@@ -279,7 +277,7 @@ function Products() {
       <h1>Products</h1>
       <Outlet />
     </div>
-  );
+  )
 }
 ```
 
@@ -298,14 +296,14 @@ Router 6 版本之后，代码类 API 都迁移到了 hooks 写法去了（可�
 以下是一个使用 `useNavigate` Hook 的示例：
 
 ```js
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
 function LoginPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   function handleLogin() {
     // 登录成功后进行页面导航
-    navigate("/dashboard");
+    navigate('/dashboard')
   }
 
   return (
@@ -313,7 +311,7 @@ function LoginPage() {
       <h1>Login Page</h1>
       <button onClick={handleLogin}>Log In</button>
     </div>
-  );
+  )
 }
 ```
 
@@ -333,8 +331,8 @@ function LoginPage() {
 在 React Router 6 中，可以使用冒号 `:` 来定义动态路由。例如：
 
 ```jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ProductDetail from "./ProductDetail";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import ProductDetail from './ProductDetail'
 
 function App() {
   return (
@@ -344,7 +342,7 @@ function App() {
         <Route path="/products/:productId" element={<ProductDetail />} />
       </Routes>
     </Router>
-  );
+  )
 }
 ```
 
@@ -359,10 +357,10 @@ function App() {
 以下是一个示例：
 
 ```jsx
-import { useParams } from "react-router-dom";
+import { useParams } from 'react-router-dom'
 
 function ProductDetail() {
-  const { productId } = useParams();
+  const { productId } = useParams()
 
   // 根据 productId 获取对应的产品详情信息
 
@@ -371,7 +369,7 @@ function ProductDetail() {
       <h1>Product Detail - {productId}</h1>
       {/* 渲染产品详情信息 */}
     </div>
-  );
+  )
 }
 ```
 
@@ -389,26 +387,26 @@ function ProductDetail() {
 
 ```jsx
 // routes.jsx
-import Home from "./Home";
-import About from "./About";
-import Contact from "./Contact";
-import Products from "./Products";
-import ProductList from "./ProductList";
-import ProductDetail from "./ProductDetail";
+import Home from './Home'
+import About from './About'
+import Contact from './Contact'
+import Products from './Products'
+import ProductList from './ProductList'
+import ProductDetail from './ProductDetail'
 
 export const routes = [
-  { path: "/", element: <Home /> },
-  { path: "/about", element: <About /> },
-  { path: "/contact", element: <Contact /> },
+  { path: '/', element: <Home /> },
+  { path: '/about', element: <About /> },
+  { path: '/contact', element: <Contact /> },
   {
-    path: "/products/*",
+    path: '/products/*',
     element: <Products />,
     children: [
-      { path: "/", element: <ProductList /> },
-      { path: ":productId", element: <ProductDetail /> },
+      { path: '/', element: <ProductList /> },
+      { path: ':productId', element: <ProductDetail /> },
     ],
   },
-];
+]
 ```
 
 在上述代码中，我们定义了所有的路由规则，并将它们保存在一个称为 `routes` 的数组中。其中，每个元素都代表一个路由规则，包括 `path`、`element` 和 `children` 三个属性。
@@ -417,8 +415,8 @@ export const routes = [
 
 ```jsx
 // App:
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { routes } from "./routes";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { routes } from './routes'
 
 function App() {
   return (
@@ -434,7 +432,7 @@ function App() {
         ))}
       </Routes>
     </Router>
-  );
+  )
 }
 ```
 
@@ -451,11 +449,11 @@ import {
   Routes,
   Route,
   useRoutes,
-} from "react-router-dom";
-import { routes } from "./routes";
+} from 'react-router-dom'
+import { routes } from './routes'
 
 function App() {
-  return <div className="counter">{useRoutes(routes)}</div>;
+  return <div className="counter">{useRoutes(routes)}</div>
 }
 ```
 
@@ -464,11 +462,11 @@ function App() {
 React Router 6 支持路由的懒加载，可以大幅度减小应用程序的初始加载时间，提高应用程序的性能。
 
 ```jsx
-import { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
-const Home = lazy(() => import("./Home"));
-const About = lazy(() => import("./About"));
+const Home = lazy(() => import('./Home'))
+const About = lazy(() => import('./About'))
 
 function App() {
   return (
@@ -480,7 +478,7 @@ function App() {
         </Routes>
       </Suspense>
     </Router>
-  );
+  )
 }
 ```
 
@@ -493,7 +491,7 @@ function App() {
 ```jsx
 // Home.jsx:
 export default function Home() {
-  return <h1>Home</h1>;
+  return <h1>Home</h1>
 }
 ```
 
