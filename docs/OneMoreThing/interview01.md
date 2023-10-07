@@ -151,6 +151,12 @@ offsetWidth = （内容宽度 + 内边距 + 边距），无外边距。
 
 圣杯布局中，right 只用到了 `margin-right: -150px` 将自身宽度给抵消了。因此依据浮动的原理，不占据位置直接上浮。
 
+- margin 属性的百分比值是相对于父元素的宽度（width）来计算的。
+- 左侧布局说明:
+
+  - `width: 200px; margin-left: -100%;` 使得左元素覆盖到中间元素的左侧开头;
+  - `position: relative; right: 200px;` 使元素向左移动自身宽度距离（亦可 `left: -200xp;`）。
+
 :::
 
 ```html
