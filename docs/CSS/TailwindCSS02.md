@@ -57,6 +57,8 @@ tag:
 
 ## Display 常用布局
 
+除 `display: none` 为 `hidden` 外，其余基本为取值本身。
+
 | Class              | Properties                   |
 | :----------------- | :--------------------------- |
 | **block**          | **display: block;**          |

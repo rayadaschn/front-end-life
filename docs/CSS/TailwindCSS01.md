@@ -198,8 +198,11 @@ module.exports = {
 
 其它：
 
-- First-child 的前缀为 `first:`，以仅当元素是父元素的第一个子元素时才应用功能类。
-- Last-child 的前缀为 `last:`，以仅当元素是父元素的最后一个子元素时才应用功能类。
+- 选择**第一个元素**：使用 **first** 类：`<div class="first:bg-blue-500">第一个元素</div>`
+- 选择**最后一个元素**：使用 **last** 类：`<div class="last:bg-red-500">最后一个元素</div>`
+- 选用**奇数**元素的前缀为 `odd:` ：`<div class="odd:bg-green-500">奇数元素</div>`
+- 选用**偶数**元素的前缀为 `even:` ：`<div class="even:bg-green-500">奇数元素</div>`
+- 选择第 n 个元素：使用 nth-child(n) 类，其中 n 是你想选择的元素的序号。例如，选择第三个元素：`<div class="nth-child(3):bg-purple-500">第三个元素</div>`
 
 ## 为自定义功能类生成变体
 
