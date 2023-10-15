@@ -10,6 +10,8 @@ tag:
 sticky: false
 ---
 
+给 Vite Proxy 代理添加响应头。
+
 vite 的 proxy 代理同 webpack 类型，在 `server.proxy` 下进行:
 
 类型为： `Record<string, string | ProxyOptions>`，意思是期望接收一个 { key: options } 对象。任何请求路径以 key 值开头的请求将被代理到对应的目标。如果 key 值以 `^` 开头，将被识别为 RegExp。`configure` 选项可用于访问 proxy 实例。
