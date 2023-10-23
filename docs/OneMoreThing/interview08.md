@@ -181,3 +181,57 @@ Map 和 Object 是两种不同的数据结构，它们在功能和使用上有�
 5. 应用场景：`WeakMap` 和 `WeakSet` 主要用于需要在存储对象的同时不影响垃圾回收过程的场景。它们常被用于实现对象私有数据或缓存等功能。
 
 总结起来，`WeakMap` 和 `WeakSet` 是一种特殊类型的集合，其中的键和值是弱引用的，不会阻止相关对象被垃圾回收。它们主要适用于需要存储对象集合的场景，并且希望对象的生命周期不受集合的影响。
+
+## for-in 遍历对象的可枚举性
+
+问以下输出什么?
+
+```js
+const obj = {
+  a: 1,
+  b: 2,
+}
+
+Object.prototype.c = 3
+
+for (let i in obj) {
+  console.log('i:', i)
+}
+```
+
+答案输出:
+
+```bash
+i: a
+i: b
+i: c
+```
+
+原因在于:
+
+```js
+const objDesc = Object.getOwnPropertyDescriptor(Object.prototype, 'c')
+console.log(objDesc)
+// {value: 3, writable: true, enumerable: true, configurable: true}
+
+const toStringDesc = Object.getOwnPropertyDescriptor(
+  Object.prototype,
+  'toString'
+)
+// {writable: true, enumerable: false, configurable: true, value: ƒ}
+```
+
+可以看到直接定义的 enumerable 不同，直接定义的原型属性是可枚举的。
+
+如何解决：
+
+```js
+Object.defineProperty(Object.prototype, 'c', {
+  value: 3,
+  writable: true,
+  enumerable: false,
+  configurable: true,
+})
+```
+
+在定义时，手动将 enumerable 改为 false 不可枚举。
