@@ -23,17 +23,17 @@ sticky: false
 
 ```js
 function sum(a, b) {
-  return a + b;
+  return a + b
 }
 ```
 
 这个函数只是将输入的两个数字相加，它没有副作用，也不会修改任何外部变量或状态。每次调用 `sum` 函数时，给定相同的参数，它总是返回相同的结果。这就使得它成为一个纯函数。
 
 ```js
-let total = 0;
+let total = 0
 function addToTotal(num) {
-  total += num;
-  return total;
+  total += num
+  return total
 }
 ```
 
@@ -100,10 +100,10 @@ Redux 的三大原则是：
 
    ```js
    // index.js
-   import { createStore } from "redux";
-   import { reducer } from "./reducers";
+   import { createStore } from 'redux'
+   import { reducer } from './reducers'
 
-   export const store = createStore(reducer);
+   export const store = createStore(reducer)
    ```
 
 3. 创建 reducer 函数：一个 reducer 函数是一个纯函数，它接收旧状态和一个 action，然后返回一个新状态。
@@ -112,22 +112,22 @@ Redux 的三大原则是：
    // reducer.js
    // 创建初始数据
    const initialState = {
-     name: "Redux",
+     name: 'Redux',
      count: 0,
-   };
+   }
 
    // 参数一: store中目前保存的state
    // 参数二: 本次需要更新的action(dispatch传入的action), 本质上是一个对象
    // 返回值: 它的返回值会作为store之后存储的state
    export function reducer(state = initialState, action) {
      switch (action.type) {
-       case "INCREMENT":
-         return { ...state, count: state.count + action.num }; // 为了数据单一性,此处的 state 需要进行结构
-       case "DECREMENT":
-         return { ...state, count: state.count - action.num };
+       case 'INCREMENT':
+         return { ...state, count: state.count + action.num } // 为了数据单一性,此处的 state 需要进行结构
+       case 'DECREMENT':
+         return { ...state, count: state.count - action.num }
        default:
          // 没有新数据更新, 那么返回之前的state
-         return state;
+         return state
      }
    }
    ```
@@ -136,36 +136,36 @@ Redux 的三大原则是：
 
    ```js
    // actionCreators.js 储存 action
-   export const incrementAction = (num) => ({ type: "INCREMENT", num });
-   export const decrementAction = (num) => ({ type: "DECREMENT", num });
+   export const incrementAction = (num) => ({ type: 'INCREMENT', num })
+   export const decrementAction = (num) => ({ type: 'DECREMENT', num })
    ```
 
 5. 发送 action：要更新状态，需要通过 `store.dispatch` 方法发送一个 action。
 
    ```js
    // 修改 store 中的数据
-   import { store } from "./index";
-   import { incrementAction, decrementAction } from "actionCreators.js";
+   import { store } from './index'
+   import { incrementAction, decrementAction } from 'actionCreators.js'
 
-   store.dispatch(incrementAction(10)); // 真正执行改变的操作
-   store.dispatch(decrementAction(20));
+   store.dispatch(incrementAction(10)) // 真正执行改变的操作
+   store.dispatch(decrementAction(20))
    ```
 
 6. 订阅状态变化：通过 `store.subscribe` 方法订阅 store 中状态的变化。
 
    ```js
-   import { store } from "./index";
+   import { store } from './index'
    store.subscribe(() => {
      // 数据变化,自动执行该函数
-     console.log(store.getState());
-   });
+     console.log(store.getState())
+   })
    ```
 
 7. 使用 store 中的数据，通过 `store.getState()`。
 
    ```js
-   import { store } from "./index";
-   console.log(store.getState());
+   import { store } from './index'
+   console.log(store.getState())
    ```
 
 ### 在组件中使用 Redux
@@ -174,40 +174,40 @@ Redux 的三大原则是：
 从上述流程中，可以知道想要获取动态变化的 `store` 中的数据，需要借助 `store.subscribe` 订阅方法。通常这一步是在生命周期 `componentDidMount` 的中进行订阅绑定。而后正常使用：
 
 ```jsx
-import store from "../store";
-import { addNumberAction } from "../store/actionCreators";
+import store from '../store'
+import { addNumberAction } from '../store/actionCreators'
 
 export class App extends PureComponent {
   constructor() {
-    super();
+    super()
     // 获取 store 中的数据
     this.state = {
       counter: store.getState().counter,
-    };
+    }
   }
 
   componentDidMount() {
     // 订阅数据, 实时监听数据变化
     store.subscribe(() => {
-      const state = store.getState();
-      this.setState({ counter: state.counter });
-    });
+      const state = store.getState()
+      this.setState({ counter: state.counter })
+    })
   }
 
   addNumber(num) {
     // 更新数据变化
-    store.dispatch(addNumberAction(num));
+    store.dispatch(addNumberAction(num))
   }
 
   render() {
-    const { counter } = this.state; // 解构获取 counter 数据
+    const { counter } = this.state // 解构获取 counter 数据
 
     return (
       <div>
         <h2>展示 App 中的 Counter: {counter}</h2>
         <button onClick={(e) => this.addNumber(1)}>+1</button>
       </div>
-    );
+    )
   }
 }
 ```
@@ -224,8 +224,8 @@ export class App extends PureComponent {
   const mapStateToProps = (state) => {
     return {
       count: state.count,
-    };
-  };
+    }
+  }
   ```
 
   上述代码中，`mapStateToProps` 函数返回了一个对象，该对象的 `count` 属性表示 Redux store 中的 `count` 属性，它会被映射到组件的 props 中。
@@ -235,10 +235,10 @@ export class App extends PureComponent {
   ```js
   const mapDispatchToProps = (dispatch) => {
     return {
-      increment: () => dispatch({ type: "INCREMENT" }),
-      decrement: () => dispatch({ type: "DECREMENT" }),
-    };
-  };
+      increment: () => dispatch({ type: 'INCREMENT' }),
+      decrement: () => dispatch({ type: 'DECREMENT' }),
+    }
+  }
   ```
 
   上述代码中，`mapDispatchToProps` 函数返回了一个对象，该对象的 `increment` 和 `decrement` 属性分别表示了两个分发 action 的函数，它们会被映射到组件的 props 中。
@@ -246,22 +246,22 @@ export class App extends PureComponent {
 最后，我们可以使用 `connect` 函数将 `mapStateToProps` 和 `mapDispatchToProps` 函数与 React 组件进行连接，从而实现数据和方法的传递。例如：
 
 ```jsx
-import { connect } from "react-redux";
+import { connect } from 'react-redux'
 
 export class App extends PureComponent {
   calcNumber(num, isAdd) {
     // 处理更新 counter
     if (isAdd) {
-      console.log("加", num);
-      this.props.increment(num);
+      console.log('加', num)
+      this.props.increment(num)
     } else {
-      console.log("减", num);
-      this.props.decrement(num);
+      console.log('减', num)
+      this.props.decrement(num)
     }
   }
 
   render() {
-    const { counter } = this.props; // 从 this.props 中取出 store 中的数据
+    const { counter } = this.props // 从 this.props 中取出 store 中的数据
 
     return (
       <div>
@@ -271,38 +271,38 @@ export class App extends PureComponent {
           <button onClick={(e) => this.calcNumber(8, false)}>-8</button>
         </div>
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state) => {
   return {
     count: state.count,
-  };
-};
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    increment: () => dispatch({ type: "INCREMENT" }),
-    decrement: () => dispatch({ type: "DECREMENT" }),
-  };
-};
+    increment: () => dispatch({ type: 'INCREMENT' }),
+    decrement: () => dispatch({ type: 'DECREMENT' }),
+  }
+}
 
 // 通过 connect 将 mapStateToProps 和 mapDispatchToProps 俩个高阶函数映射到 App 组件的 props 中
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App)
 ```
 
 此外，`connect`方法生成容器组件以后，需要让容器组件拿到`state`对象，才能生成 UI 组件的参数。React-Redux 提供`Provider`组件，可以让容器组件拿到`state`。
 
 ```jsx
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
-import { StoreContext } from "./hoc";
-import App from "./App";
-import store from "./store";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { Provider } from 'react-redux'
+import { StoreContext } from './hoc'
+import App from './App'
+import store from './store'
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   // <React.StrictMode>
   <Provider store={store}>
@@ -311,7 +311,7 @@ root.render(
     </StoreContext.Provider>
   </Provider>
   // </React.StrictMode>
-);
+)
 ```
 
 上面代码中，`Provider`在根组件外面包了一层，这样一来，`App`的所有子组件就默认都可以拿到`state`了。
@@ -341,16 +341,16 @@ root.render(
 
 ```js
 const addTodoAction = {
-  type: "ADD_TODO",
+  type: 'ADD_TODO',
   payload: {
     id: 1,
-    text: "Buy milk",
+    text: 'Buy milk',
     completed: false,
   },
-};
+}
 
 // dispatch the action
-store.dispatch(addTodoAction);
+store.dispatch(addTodoAction)
 ```
 
 这个 action 描述了一个添加待办事项的操作，它的 type 是 'ADD_TODO'，payload 是要添加的待办事项的具体内容。
@@ -368,10 +368,10 @@ store.dispatch(addTodoAction);
 - 将 `enhance` 函数作为第二个参数传入到 `createStore` 中；
 
   ```js
-  import { createStore, applyMiddleware } from "redux";
+  import { createStore, applyMiddleware } from 'redux'
 
-  const enhancer = applyMiddleware(thunkMiddleware);
-  const store = createStore(reducer, enhancer);
+  const enhancer = applyMiddleware(thunkMiddleware)
+  const store = createStore(reducer, enhancer)
   ```
 
 - 定义返回一个函数的 `action`，**注意：这里不再是返回一个对象，而是返回一个函数，函数的入参为 `dispatch`，并且该函数会在 `dispatch`之后被执行**。
@@ -381,31 +381,31 @@ store.dispatch(addTodoAction);
   function fetchTodos() {
     return function (dispatch) {
       // dispatch the initial action to indicate that we're starting the request
-      dispatch({ type: "FETCH_TODOS_REQUEST" });
-  
+      dispatch({ type: 'FETCH_TODOS_REQUEST' })
+
       // make the actual API request
       return api
         .fetchTodos()
         .then((response) => {
           // dispatch a success action with the received data
-          dispatch({ type: "FETCH_TODOS_SUCCESS", payload: response.data });
+          dispatch({ type: 'FETCH_TODOS_SUCCESS', payload: response.data })
         })
         .catch((error) => {
           // dispatch a failure action with the error message
-          dispatch({ type: "FETCH_TODOS_FAILURE", payload: error.message });
-        });
-    };
+          dispatch({ type: 'FETCH_TODOS_FAILURE', payload: error.message })
+        })
+    }
   }
   ```
 
 下面是一个使用 `redux-thunk` 处理异步操作的完整示例代码：
 
 ```js
-import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import reducer from "./reducer.js";
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import reducer from './reducer.js'
 
-const store = createStore(reducer, applyMiddleware(thunk));
+const store = createStore(reducer, applyMiddleware(thunk))
 ```
 
 ```js
@@ -414,22 +414,22 @@ const initialState = {
   isLoading: false,
   data: null,
   error: null,
-};
+}
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case "FETCHING_DATA":
-      return { ...state, isLoading: true };
-    case "FETCHING_DATA_SUCCESS":
-      return { ...state, isLoading: false, data: action.payload };
-    case "FETCHING_DATA_FAILURE":
-      return { ...state, isLoading: false, error: action.payload };
+    case 'FETCHING_DATA':
+      return { ...state, isLoading: true }
+    case 'FETCHING_DATA_SUCCESS':
+      return { ...state, isLoading: false, data: action.payload }
+    case 'FETCHING_DATA_FAILURE':
+      return { ...state, isLoading: false, error: action.payload }
     default:
-      return state;
+      return state
   }
-};
+}
 
-export default reducer;
+export default reducer
 ```
 
 在上述代码中，`applyMiddleware` 是 Redux 提供的一个函数，用于将中间件应用于 Redux store。
@@ -442,17 +442,17 @@ export default reducer;
 // actions.js
 export const getData = () => {
   return (dispatch, getState) => {
-    dispatch({ type: "FETCHING_DATA" });
-    fetch("https://api.example.com/data")
+    dispatch({ type: 'FETCHING_DATA' })
+    fetch('https://api.example.com/data')
       .then((response) => response.json())
       .then((data) => {
-        dispatch({ type: "FETCHING_DATA_SUCCESS", payload: data });
+        dispatch({ type: 'FETCHING_DATA_SUCCESS', payload: data })
       })
       .catch((error) => {
-        dispatch({ type: "FETCHING_DATA_FAILURE", payload: error });
-      });
-  };
-};
+        dispatch({ type: 'FETCHING_DATA_FAILURE', payload: error })
+      })
+  }
+}
 ```
 
 在上面的代码中，`getData` 是一个 action 创建函数，它返回一个函数而不是一个简单的对象。在返回的函数中，我们可以进行异步操作，例如发送请求和处理响应。在请求成功或失败后，我们可以使用 `dispatch` 发送新的 action 来更新状态。在 `reducer` 中，我们可以根据不同的 action 类型来更新状态，例如在请求数据时更新 `isLoading` 状态，在请求成功时更新 `data` 状态，在请求失败时更新 `error` 状态。
@@ -474,7 +474,7 @@ function todosReducer(state = [], action) {
   // 处理 todos 状态的更新
 }
 
-function visibilityFilterReducer(state = "SHOW_ALL", action) {
+function visibilityFilterReducer(state = 'SHOW_ALL', action) {
   // 处理 visibilityFilter 状态的更新
 }
 ```
@@ -482,14 +482,14 @@ function visibilityFilterReducer(state = "SHOW_ALL", action) {
 我们可以使用 `combineReducers` 将这两个 reducer 合并为一个：
 
 ```js
-import { combineReducers } from "redux";
+import { combineReducers } from 'redux'
 
 const rootReducer = combineReducers({
   todos: todosReducer,
   visibilityFilter: visibilityFilterReducer,
-});
+})
 
-export default rootReducer;
+export default rootReducer
 ```
 
 这样，`rootReducer` 就可以处理 `todos` 和 `visibilityFilter` 两个状态的更新了。
@@ -504,20 +504,20 @@ Redux 为开发者提供了一个 Redux DevTools 的浏览器插件，它可以�
 2. 在应用程序中安装 Redux DevTools 的相关中间件。Redux DevTools 提供了多个中间件，包括 `redux-devtools-extension`、`redux-logger`、`redux-thunk` 等。使用 `redux-devtools-extension` 中间件可以自动连接 Redux DevTools 插件。安装: `npm install redux-devtools-extension`（ 查看更多 [Redux-devtool-extension 的相关设置](https://github.com/zalmoxisus/redux-devtools-extension) ）
 
 ```js
-import { createStore, applyMiddleware } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
-import thunk from "redux-thunk";
-import rootReducer from "./reducers";
+import { createStore, applyMiddleware } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import thunk from 'redux-thunk'
+import rootReducer from './reducers'
 
-let store;
+let store
 // Redux DevTools 调试工具只在开发环境才使用
-if (process.env.NODE_ENV === "development") {
-  store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)));
+if (process.env.NODE_ENV === 'development') {
+  store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)))
 } else {
-  store = createStore(rootReducer, applyMiddleware(thunk));
+  store = createStore(rootReducer, applyMiddleware(thunk))
 }
 
-export default store;
+export default store
 ```
 
 3. 打开浏览器，进入开发者工具。在浏览器中打开应用程序，然后按下 F12 键，进入开发者工具。
@@ -548,10 +548,10 @@ export default store;
 createSlice 的主要作用是将 reducer 和 action creator 组合在一起，生成一个对象，对象中包含了定义 reducer 所需要的所有内容。下面是一个使用 `createSlice` 创建 reducer 的示例：
 
 ```jsx
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 const counterSlice = createSlice({
-  name: "counter",
+  name: 'counter',
   initialState: 0,
   reducers: {
     increment: (state) => state + 1,
@@ -559,11 +559,11 @@ const counterSlice = createSlice({
     incrementByAmount: (state, action) => state + action.payload,
     incrementByAmount2: (state, { payload }) => state + payload, // 直接对 payload 进行解构
   },
-});
+})
 
 // 直接导出 action
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
-export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不是 contentSlice
+export const { increment, decrement, incrementByAmount } = counterSlice.actions
+export default counterSlice.reducer // 注意这里导出的是 Reducer 而不是 contentSlice
 ```
 
 上面代码中，我们通过 `createSlice` 创建了一个名为 `counter` 的 reducer，并定义了它的初始状态为 `0`。同时，我们还定义了三个 action：`increment`、`decrement` 和 `incrementByAmount`。这三个 action 分别对应的 reducer 中的逻辑是，对状态进行加一、减一和加上指定值。
@@ -572,7 +572,7 @@ export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不�
 
 - `name` 用于定义 reducer 的名称（在之后的 redux-devtool 中会显示对应的名词）；
 - `initialState` 用于定义 reducer 的初始状态（第一次初始化时的值）；
-- `reducers` 是一个对象，用于定义所有的 action 和对应的 reducer 函数，这些函数类似于 redux 原来 reducer 中的一个 case 判断语句，函数的参数有俩个： `state` 和 调用这个 `action` 时传递过来的 action 参数。
+- `reducers` 是一个对象，用于定义所有的 action 和对应的 reducer 函数，这些函数类似于 redux 原来 reducer 中的一个 case 判断语句，函数的参数有俩个： `state` 和调用这个 `action` 时传递过来的 action 参数。
 
 同时，在上面的代码中，我们使用了一个简洁的写法，将 action 和 reducer 函数组合在一起定义。**通过 `createSlice` 生成的对象，我们可以直接将这些 action 导出，然后在组件中使用它们，无需再手动编写 action creator 和 reducer。**
 
@@ -588,12 +588,12 @@ export default counterSlice.reducer; // 注意这里导出的是 Reducer 而不�
 
 ```js
 // userSlice.js
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from '@reduxjs/toolkit'
 
-const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  return response.json();
-});
+const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users')
+  return response.json()
+})
 ```
 
 在这个例子中，我们定义了一个名为 `fetchUsers` 的异步 action creator，它对应的 action type 是 `users/fetchUsers`。在异步函数中，我们使用 `fetch` 方法获取用户列表，并在请求成功时将结果以 JSON 格式返回。
@@ -601,16 +601,16 @@ const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
 在使用时，我们可以像普通的 action creator 一样将它 dispatch 到 Redux Store 中：
 
 ```jsx
-import { useDispatch } from "react-redux";
-import { fetchUsers } from "./userSlice";
+import { useDispatch } from 'react-redux'
+import { fetchUsers } from './userSlice'
 
 const UserList = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
+    dispatch(fetchUsers())
+  }, [dispatch])
   // ...
-};
+}
 ```
 
 在这个例子中，我们在组件中使用 `fetchUsers` 异步 action creator，将其 dispatch 到 Redux Store 中，从而触发异步请求的执行。
@@ -620,55 +620,55 @@ const UserList = () => {
 在使用 `createAsyncThunk` 时，我们可以通过指定 `payloadCreator` 选项，自定义异步函数返回的数据结构。此外，`createAsyncThunk` 还支持其他一些配置选项，如 `condition`、`dispatchConditionMet`、`getPendingMeta` 等。以下是一个完整的示例:
 
 ```js
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchUserById } from "../api/userAPI";
+import { createAsyncThunk } from '@reduxjs/toolkit'
+import { fetchUserById } from '../api/userAPI'
 
 export const getUserById = createAsyncThunk(
-  "user/fetchByIdStatus",
+  'user/fetchByIdStatus',
   async (userId, thunkAPI) => {
     // 处理异步操作
     // 1. 可以发送异步的网络请求等, 获取数据
-    const response = await fetchUserById(userId);
+    const response = await fetchUserById(userId)
 
     // 2. 取出数据, 并且可以在此处直接 dispatch 操作(也可以不做)
-    dispatch(changeUserById(response.data.id));
+    dispatch(changeUserById(response.data.id))
 
     // 3. 返回结果, 那么action状态会变成fulfilled状态
-    return response.data; // 返回数据
+    return response.data // 返回数据
   }
-);
+)
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState: {
     user: null,
-    status: "idle",
+    status: 'idle',
     error: null,
   },
   reducers: {
     changeUserById(state, { payload }) {
-      state.user = payload; // payload 为此前发送的 id
+      state.user = payload // payload 为此前发送的 id
     },
   },
   // 在 extraReducers 中，我们根据不同的状态来更新 Redux store 中的 state。
   extraReducers: (builder) => {
     builder
       .addCase(getUserById.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading'
       })
       .addCase(getUserById.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.user = action.payload;
+        state.status = 'succeeded'
+        state.user = action.payload
       })
       .addCase(getUserById.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.error.message;
-      });
+        state.status = 'failed'
+        state.error = action.error.message
+      })
   },
-});
+})
 
-export const { changeUserById } = userSlice.actions; // 此处是从 action 中导出 reducers 操作
-export default userSlice.reducer;
+export const { changeUserById } = userSlice.actions // 此处是从 action 中导出 reducers 操作
+export default userSlice.reducer
 ```
 
 在上述代码中，`extraReducers` 是 `createSlice` API 的一个选项，可以用来添加额外的 reducer。通常情况下，我们在 `createSlice` 中只定义与当前 slice 相关的 reducer，但在某些情况下，我们可能需要在当前 slice 中添加其他的 reducer，比如在处理另一个 slice 的 action 时，我们需要在当前 slice 中修改一些 state。
@@ -690,14 +690,14 @@ configureStore 是 Redux Toolkit 提供的一个函数，用于简化 Redux 应�
 使用 configureStore，可以快速创建一个包含了 Redux DevTools 和一些常见中间件的 Redux store。下面是一个简单的示例：
 
 ```js
-import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "./reducers";
+import { configureStore } from '@reduxjs/toolkit'
+import rootReducer from './reducers'
 
 const store = configureStore({
   reducer: rootReducer,
-});
+})
 
-export default store;
+export default store
 ```
 
 在上面的示例中，我们使用 configureStore 创建了一个 store，并将 rootReducer 作为 reducer 传递给 configureStore。这里的 rootReducer 是一个包含多个 reducer 的对象，可以通过 combineReducers 函数来合并。
@@ -705,16 +705,16 @@ export default store;
 configureStore 还可以接受其他参数，例如 middleware、preloadedState 和 enhancers。例如，如果你想添加一个 redux-thunk 中间件，可以这样做：
 
 ```js
-import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
-import rootReducer from "./reducers";
-import thunkMiddleware from "redux-thunk";
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import rootReducer from './reducers'
+import thunkMiddleware from 'redux-thunk'
 
 const store = configureStore({
   reducer: rootReducer,
   middleware: [...getDefaultMiddleware(), thunkMiddleware],
-});
+})
 
-export default store;
+export default store
 ```
 
 > `getDefaultMiddleware` 函数返回的是一个中间件数组，这个数组里面包含了一些 Redux 默认提供的中间件。这些中间件包括了 `thunk`、`immutableCheck`、`serializableCheck` 等等。
@@ -730,10 +730,10 @@ export default store;
 在 `store/index.js` 中利用 `configureStore` 创建 `store` :
 
 ```js
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore } from '@reduxjs/toolkit'
 
-import counterReducer from "./counter";
-import homeReducer from "./home";
+import counterReducer from './counter'
+import homeReducer from './home'
 
 const store = configureStore({
   reducer: {
@@ -741,85 +741,85 @@ const store = configureStore({
     counter: counterReducer,
     home: homeReducer,
   },
-});
+})
 
-export default store;
+export default store
 ```
 
 上述代码中，导入了俩个数据，现在来创建一下它们：
 
 ```js
 // counter.js 同步处理数据
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 const counterSlice = createSlice({
-  name: "counter",
+  name: 'counter',
   initialState: {
     counter: 955,
   },
   reducers: {
     addNumber(state, { payload }) {
-      state.counter = state.counter + payload;
+      state.counter = state.counter + payload
     },
     subNumber(state, { payload }) {
-      state.counter = state.counter - payload;
+      state.counter = state.counter - payload
     },
   },
-});
+})
 
-export const { addNumber, subNumber } = counterSlice.actions;
-export default counterSlice.reducer;
+export const { addNumber, subNumber } = counterSlice.actions
+export default counterSlice.reducer
 ```
 
 上述代码中利用 `createSlice` 创建了一个 Redux reducer，并导出我们需要的 `addNumber` 和 `subNumber` 俩个 render。再来实现一个异步的 reducer :
 
 ```js
 // ./home.js 异步处理数据
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import axios from 'axios'
 
 // 定义一个异步请求数据的 createAsyncThunk
 export const fetchHomeMultidataAction = createAsyncThunk(
-  "fetch/homemultidata",
+  'fetch/homemultidata',
   async (extraInfo, { dispatch, getState }) => {
     // extraInfo 为调用 fetchHomeMultidataAction(someData) 传递过来的 someData
-    console.log("extraInfo:", extraInfo, dispatch, getState);
+    console.log('extraInfo:', extraInfo, dispatch, getState)
     // 1.发送网络请求, 获取数据
-    const res = await axios.get("xxxxxxxxxx");
+    const res = await axios.get('xxxxxxxxxx')
     // 2.返回结果, 那么action状态会变成fulfilled状态
-    return res.data;
+    return res.data
   }
-);
+)
 
 // 定义上述 Thunk 的 reducer
 const homeSlice = createSlice({
-  name: "home",
+  name: 'home',
   initialState: {
     banners: [], // 定义初始值
   },
   reducers: {
     // 也可以定义其它同步 reducer
     changeBanners(state, { payload }) {
-      state.banners = payload; // 同步 reducer 给其它指令调用
+      state.banners = payload // 同步 reducer 给其它指令调用
     },
   },
   extraReducers: (builder) => {
     // createAsyncThunk 异步请求的三种状态
     builder
       .addCase(fetchHomeMultidataAction.pending, (state, action) => {
-        console.log("fetchHomeMultidataAction pending");
+        console.log('fetchHomeMultidataAction pending')
       })
       .addCase(fetchHomeMultidataAction.fulfilled, (state, { payload }) => {
-        state.banners = payload.data.banner;
+        state.banners = payload.data.banner
       })
       .addCase(fetchHomeMultidataAction.rejected, (state, action) => {
-        console.log("fetchHomeMultidataAction rejected");
-      });
+        console.log('fetchHomeMultidataAction rejected')
+      })
   },
-});
+})
 
-export const { changeBanners, changeRecommends } = homeSlice.actions;
-export default homeSlice.reducer;
+export const { changeBanners } = homeSlice.actions
+export default homeSlice.reducer
 ```
 
 上面我们定义了一个异步的 reducer，通过`createAsyncThunk`创建了 `fetchHomeMultidataAction` 异步请求数据函数，实际上，可以直接在其内部接收到异步数据后就发出同步 `dispatch` 指令，这样子就和 `Vuex` 很像了。也可以直接返回数据，此时若成功请求到了数据，则调用下方由 `createSlice` 创建的 reducer，状态为 `fetchHomeMultidataAction.fulfilled` ；失败则为 `fetchHomeMultidataAction.rejected` 。
@@ -828,67 +828,67 @@ export default homeSlice.reducer;
 
 ```jsx
 // Home.jsx
-import React, { PureComponent } from "react";
-import { connect } from "react-redux";
-import { addNumber } from "../store/features/counter";
-import { fetchHomeMultidataAction } from "../store/features/home";
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { addNumber } from '../store/features/counter'
+import { fetchHomeMultidataAction } from '../store/features/home'
 
 export class Home extends PureComponent {
   componentDidMount() {
-    this.props.fetchHomeMultidata();
+    this.props.fetchHomeMultidata()
   }
 
   addNumber(num) {
-    this.props.addNumber(num);
+    this.props.addNumber(num)
   }
 
   render() {
-    const { counter } = this.props;
+    const { counter } = this.props
 
     return (
       <div>
         <h2>Home Counter: {counter}</h2>
         <button onClick={(e) => this.addNumber(5)}>+5</button>
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state) => {
-  console.log("state", state);
-  return { counter: state.counter.counter };
-};
+  console.log('state', state)
+  return { counter: state.counter.counter }
+}
 
 const mapDispatchToProps = (dispatch) => ({
   addNumber(num) {
-    dispatch(addNumber(num));
+    dispatch(addNumber(num))
   },
   fetchHomeMultidata() {
     // 异步请求数据
-    const extraInfo = { someData: "someData" };
-    dispatch(fetchHomeMultidataAction(extraInfo)); // extraInfo 可传可不传
+    const extraInfo = { someData: 'someData' }
+    dispatch(fetchHomeMultidataAction(extraInfo)) // extraInfo 可传可不传
   },
-});
+})
 
 // 将 state 中的数据通过 connect 传入到组件的 props 属性中
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home)
 ```
 
 上述代码用了 `connect` 将 `mapStateToProps` 等传入组件的 `props` 中，为了让组件拿到 state 对象，需要在外层（本文直接在根组件 App 外层追加）利用 `Provider` 组件进行包裹。此时容器内的组件均可拿到 `state`。
 
 ```jsx
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { Provider } from "react-redux";
-import App from "./App";
-import store from "./store";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { Provider } from 'react-redux'
+import App from './App'
+import store from './store'
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <Provider store={store}>
     <App />
   </Provider>
-);
+)
 ```
 
 ## Redux 之 Hooks
@@ -912,23 +912,23 @@ const result: any = useSelector(selector: Function, equalityFn?: Function)
 例如，下面的代码演示了如何在 React 组件中使用 `useSelector` 选择 Redux store 中的计数器状态：
 
 ```jsx
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux'
 
 function Counter() {
   // state 参数为整个 Redux store 中的状态
-  const count = useSelector((state) => state.counter.count);
+  const count = useSelector((state) => state.counter.count)
 
   return (
     <div>
       <h1>Count: {count}</h1>
     </div>
-  );
+  )
 }
 ```
 
 在这个例子中，`useSelector` 接受一个回调函数，该回调函数返回 Redux store 中的 `counter` 属性，其中包含计数器的状态值 `count`。组件会订阅这个特定的状态属性，并在状态发生变化时自动更新。
 
-利用 `useSelector` 解决了 `connect` 中 `mapStateToProps` 为组件传入数据的场景，但是还有一个位组件传入 `mapDispatchToProps` 函数为组件提供 `dispatch` 分发的场景，还没解决。因此，就要用到接下来的 `useDispatch` Hook 了。
+利用 `useSelector` 解决了 `connect` 中 `mapStateToProps` 为组件传入数据的场景，但是`mapDispatchToProps` 函数还有一个用途是组件传入 为组件提供 `dispatch` 分发的场景，还没解决。因此，就要用到接下来的 `useDispatch` Hook 了。
 
 ### useDispatch
 
@@ -937,7 +937,7 @@ function Counter() {
 在使用 `useDispatch` 之前，需要在组件中导入 `useDispatch`：
 
 ```jsx
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux'
 ```
 
 然后，可以在组件中调用 `useDispatch` 获取一个 `dispatch` 函数，这个函数可以用于派发 Redux action。
@@ -945,17 +945,17 @@ import { useDispatch } from "react-redux";
 例如，下面是一个简单的示例，展示了如何在 React 组件中使用 `useDispatch`：
 
 ```jsx
-import { useDispatch } from "react-redux";
-import { incrementCounter } from "./actions";
+import { useDispatch } from 'react-redux'
+import { incrementCounter } from './actions'
 
 function CounterButton() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const handleClick = () => {
-    dispatch(incrementCounter());
-  };
+    dispatch(incrementCounter())
+  }
 
-  return <button onClick={handleClick}>Increment</button>;
+  return <button onClick={handleClick}>Increment</button>
 }
 ```
 
@@ -963,33 +963,35 @@ function CounterButton() {
 
 需要注意的是，使用 `useDispatch` 时，需要确保当前组件处于一个已经连接了 Redux store 的 React 组件中。如果你的组件没有被包裹在 `Provider` 中，或者没有调用 `connect` 方法连接 Redux store，那么在使用 `useDispatch` 时会抛出错误。
 
-优化，此外在 React 的 Hook 使用里面，介绍了一个 `useCallBack` Hook，`useCallback` 会返回一个 memoized（记忆化）的函数，只有当其依赖项发生变化时才会重新创建。俩者合并起来常用于性能优化，避免子组件由于回调引用变更而导致的不必要渲染：
+### 优化
+
+在 React 的 Hook 使用里面，介绍了一个 `useCallBack` Hook，`useCallback` 会返回一个 memoized（记忆化）的函数，只有当其依赖项发生变化时才会重新创建。俩者合并起来常用于性能优化，避免子组件由于回调引用变更而导致的不必要渲染：
 
 ```jsx
-import { useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { incrementCounter } from "./actions";
+import { useCallback } from 'react'
+import { useDispatch } from 'react-redux'
+import { incrementCounter } from './actions'
 
 function CounterButton() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const handleClick = useCallback(() => {
-    dispatch(incrementCounter());
-  }, [dispatch]);
+    dispatch(incrementCounter())
+  }, [dispatch])
 
-  return <button onClick={handleClick}>Increment</button>;
+  return <button onClick={handleClick}>Increment</button>
 }
 ```
 
-在这个例子中，我们使用了 `useCallback` 缓存了 `handleClick` 函数，只有 `dispatch` 发生变化时才会重新创建。这样可以避免每次组件重新渲染时，都会创建一个新的函数。
+在这个例子中，我们使用了 `useCallback` 缓存了 `handleClick` 函数，只有 `dispatch` 发生变化时才会重新创建。这样可以避免每次组件重新渲染时，都会重新创建一个新的函数。
 
 需要注意的是，使用 `useCallback` 时，需要确保其依赖项是正确的。在这个例子中，我们传递了 `[dispatch]` 作为依赖项，这是因为我们需要确保 `handleClick` 函数中使用的 `dispatch` 始终是最新的。
 
 当然也可以用 `useEffect` 这个 Hook 进行优化，如发送首次数据请求：
 
 ```jsx
-const dispatch = useDispatch();
+const dispatch = useDispatch()
 useEffect(() => {
-  dispatch(fetchDataAction());
-}, [dispatch]);
+  dispatch(fetchDataAction())
+}, [dispatch])
 ```
