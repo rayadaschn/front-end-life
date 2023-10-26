@@ -9,12 +9,37 @@ tag:
 ---
 
 > 在接触 Tailwind 的刚开始，并没有感受到它的好处，反而觉得这是一种非常繁琐的事情。入门了几次都以失败告终，非常不适应。但是这一次，终于有一点小感悟了，遂记录下来。
+> Tailwindcss 系列可见[《CSS 备忘录》](./README)
 
 利用 Tailwind 去构建 CSS 的一些实在的好处：
 
 - **无需再为给类命名而浪费时间**。觉得这个真的非常棒，这对于统一一代码规范非常友好，不用再纠结这个项目是 BEM(Block-Element-Modifier)的规范，而下一个项目是 SMACSS (Scalable and Modular Architecture for CSS)，因为想在全都是 Atomic CSS，全为 inline-style。
 - CSS 的代码不再增加。因为所有的 CSS 都是可复用的，所以在大部分情况下都无需再写新的 CSS 样式了。
 - 改写样式更加安全。在以往的项目中，CSS 样式可能是全局的，所以一旦更改可能会对其它 HTML 造成破坏，从一部分情况上看，是降低了用户心智。
+
+**PS：**最近感觉 unocss 好像更香一点。因为有 Attributify Mode 可以将大量的 css 样式进行归类，看起来更加方便，不用转浏览器了。
+
+```vue
+<!-- Tailwindcss CSS -->
+<button
+  class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono font-light py-2 px-4 rounded border-2 border-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600"
+>
+  Button
+</button>
+
+<!-- UnoCSS with Attributify Mode -->
+<button
+  bg="blue-400 hover:blue-500 dark:blue-500 dark:hover:blue-600'
+  text="sm white"
+  font="mono light"
+  p="y-2 X-4"
+  border="2 rounded blue-200"
+>
+  Button
+</button>
+```
+
+举个例子：`text-sm text-white`可以合并写成`text="sm white"`，以抽取共同的前缀。具体使用可见 [Unocss](https://unocss.dev/presets/attributify) 的介绍。唯一不足的就是在 React + TS 中可能兼容性不佳，推荐在 Vue 中使用。
 
 ## 安装和初始化配置
 
@@ -28,13 +53,13 @@ tag:
 
 2. 初始化 Tailwind CSS
 
-   初始化生成 `tailwind.config.js` 和 `postcss.config.js` 文件
+   初始化生成`tailwind.config.js`和`postcss.config.js`文件
 
    ```bash
    $: npx tailwindcss init -p
    ```
 
-   生成最小化的 `tailwind.config.js` 和 配置好 `tailwindcss` ​ 和 `​autoprefixer` 的 `postcss.config.js`。
+   生成最小化的`tailwind.config.js`和配置好`tailwindcss`和`​autoprefixer`的`postcss.config.js`。
 
    ```js
    // tailwind.config.js

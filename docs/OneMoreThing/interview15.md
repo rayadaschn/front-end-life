@@ -1,5 +1,5 @@
 ---
-title: Interview -- 查漏补缺
+title: 查漏补缺
 icon: note
 date: 2023-09-04
 category:
@@ -11,7 +11,7 @@ star: false
 sticky: false
 ---
 
-## 基础题
+记录一些经常忘记的概念。
 
 ### 请描述 TCP 三次握手和四次挥手
 
