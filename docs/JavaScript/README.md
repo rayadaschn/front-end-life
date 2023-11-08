@@ -10,20 +10,17 @@ category:
 ## JavaScript 碎碎念
 
 - [彻底理解 this 指向](JS01.md)
-
 - [原型-原型链-new 的二三事](JS02.md)
-
 - [异步小案例](JS03.md)
-
 - [前端代码埋点实现](JS04.md)
-
 - [在 JS 中优雅地实现继承](JS05.md)
-
 - [令人困惑的闭包](JS06.md)
-
 - [关于 JS 对象的二三事](JS07.md)
-
 - [利用 JS 打印 a-z](JS08)
+- [简单手写 Promise](JS09)
+- [简单手写 lazyMan](JS10)
+- [简单手写 curry 柯里化](JS11)
+- [简单手写 EventBus](JS12)
 
 ## 从零开始 Node 学习之路
 
