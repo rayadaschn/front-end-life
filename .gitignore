@@ -8,6 +8,8 @@ cache
 .env.local
 .env.*.local
 
+.history
+
 # Log files
 npm-debug.log*
 yarn-debug.log*
