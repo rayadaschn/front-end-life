@@ -101,3 +101,29 @@ Host 127.0.0.1
   User ubuntu
   IdentityFile ~/.ssh/id_rsa_ubuntu
 ```
+
+## 用 scp 传输文件
+
+除了图形化文件传输外，偶尔我们还是需要用指令进行文件传输，这时，就要用到 ssh 提供的客户端程序 scp(secure copy) 了。它是用来在两台主机之间加密传送文件（即复制文件）。**相当于`cp`命令加上`SSH`命令。**它的底层是 SSH 协议，默认端口是 22，相当于先使用 ssh 命令登录远程主机，然后再执行拷贝操作。
+
+scp 的语法类似 cp 的语法。
+
+```bash
+$: scp source destination
+```
+
+上面命令中，source 是文件当前的位置，destination 是文件所要复制到的位置。它们都可以包含用户名和主机名。
+
+```bash
+$: scp user@host:foo.txt bar.txt
+```
+
+上面命令将远程主机（user@host）用户主目录下的 foo.txt，复制为本机当前目录的 bar.txt。可以看到，主机与文件之间要使用冒号**（:）**分隔。
+
+scp 会先用 SSH 登录到远程主机，然后在加密连接之中复制文件。客户端发起连接后，会提示用户输入密码，这部分是跟 SSH 的用法一致的。
+
+> 注意，如果所要复制的文件，在目标位置已经存在同名文件，scp 会在没有警告的情况下覆盖同名文件。
+
+## 参考文章
+
+- [《SSH 密钥登录》](https://wangdoc.com/ssh/key)

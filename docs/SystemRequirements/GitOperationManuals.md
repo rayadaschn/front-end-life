@@ -10,6 +10,8 @@ sticky: false
 star: true
 ---
 
+> 记录一些常用的 Git 命令，旨在一文弄懂所有常用的 Git 指令。
+
 ## 新建项目操作
 
 1. 克隆项目到本地：`git clone xxxxx` ；
@@ -157,6 +159,8 @@ $: git push
 $: git push --all
 ```
 
+#### 解决冲突
+
 中途会有问题，如多人协作时，可能在你拉取后，别人已经推送了代码。此时，我们要用到一些高级操作，如 `rebase` 变基。有几种方案:
 
 假设此时，他人已经 push 相关代码到远程端了。
@@ -193,8 +197,6 @@ $: git push --all
    $: git push
    ```
 
-若你和同事的分支不同，此时并不是用 `git pull` 同步代码， 而是用
-
 个人使用，已经写完代码了，用方案 1 推送；还未写完，则用方案 2 临时贮藏。
 
 ### 版本回退
@@ -202,19 +204,26 @@ $: git push --all
 > 版本回退需注意 `git revert` 和 `git reset` 的区别
 
 - `git revert`
-  **git revert** 撤销某次操作，此次**操作之前和之后的 commit 和 history 都会保留**，并且把这次撤销作为一次最新的提交。git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
 
-1. 当代码已经 commit 但没有 push 时，可使用如下命令操作：
-   `git revert HEAD //撤销倒数第一次提交`
-   `git revert HEAD^ //撤销倒数第二次提交`
-   `git-revert HEAD~2 //撤销倒数第三次提交`
-   `git revert commit //（比如：fa042ce57ebbxxxxxxxxxxx2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进`
-2. 当代码已经 commit 并 push 时，可使用如下命令：
-   `git revert HEAD~1 //代码回退到前一个版本`
+  **git revert** ：是撤销某次操作，此次**操作之前和之后的 commit 和 history 都会保留**，并且把这次撤销作为一次最新的提交。git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
 
-当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。**这相当于增加了一次新的提交并且版本库中有记录。**
+  1. 当代码已经 commit 但没有 push 时，可使用如下命令操作：
 
-- **`git reset` 推荐！！！**
+     `git revert HEAD //撤销倒数第一次提交`
+
+     `git revert HEAD^ //撤销倒数第二次提交`
+
+     `git-revert HEAD~2 //撤销倒数第三次提交`
+
+     `git revert commit //（比如：fsxxxxff）撤销指定的版本，撤销也会作为一次提交进`
+
+  2. 当代码已经 commit 并 push 时，可使用如下命令：
+
+     `git revert HEAD~1 //代码回退到前一个版本`
+
+  当回退有冲突时，需手动合并冲突并进行修改，再 commit 和 push。**这相当于增加了一次新的提交并且版本库中有记录。**
+
+- **`git reset` 不可逆回退！！！**
 
   **git reset** 是撤销某次提交，但是**此次之后的修改都会被退回到暂存区**。除了默认的 mixed 模式，还有 soft 和 hard 模式。
 
@@ -226,41 +235,44 @@ $: git push --all
   >
   > **--mixed**：【默认参数】**不删除**工作空间改动代码，**撤销 commit**，**撤销`git add .`**
   >
-  > 简单的讲，正常提交是： `git add .` --> `git commit`
+  > 简单的讲，正常提交顺序是： `git add .` --> `git commit`
   >
-  > 对应的回退版本是: `git reset --soft` --> `git reset --mixed`
+  > 对应上面的回退顺序是: `git reset --soft` --> `git reset --mixed`
   >
   > - 撤销 `commit` ： `git reset --soft HEAD^`
   > - 撤销 `commit` 且 撤销贮藏 `add .` ： `git reset HEAD^`
   > - 撤销全部提交且删除改动代码（慎重）： `git reset --hard HEAD^`
 
-1. 如果我们的有两次 commit 但是没有 push 代码
+  总是若是记不清楚 soft 软回退和 hard 硬回退的区别，就无脑选择默认的 mixed 混合回退就好了，此命令也最常用。下面看几个实际情况：
 
-   ```bash
-   $: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
-   ```
+  1. 如果我们的有两次 commit 但是没有 push 代码
 
-2. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
+     ```bash
+     $: git reset HEAD~1      //撤销前一次 commit，所有代码回到 Working Copy
+     ```
 
-   ```bash
-   $: git reset --hard HEAD~2   //本地的Wroking Copy回退到2个版本之前。
-   $: git push origin <banchName> --force  // --force 为强制覆盖远程分支
-   // 但更建议使用 `--force-with-lease`,确保不会覆盖他人的代码
-   ```
+  2. 假如我们有几次代码修改，并且都**已经 push 到了版本库**中。
 
-   > 注意！当我们使用强制指令时，若在远程的该分支中有他人的贡献，`--force` 是会覆盖掉他人的代码的，所以为了保险起见，应当用 `--force-with-lease` 。
+     ```bash
+     $: git reset --hard HEAD~2   //本地的Wroking Copy回退到2个版本之前。
+     $: git push origin <banchName> --force  // --force 为强制覆盖远程分支
 
-3. 只回退某个指定文件到指定版本
+     // 但更建议使用 “--force-with-lease”，确保不会覆盖他人的代码！！！
+     ```
 
-   ```bash
-   $: git reset a4e21523xxxxxxxxx68e9976948a35e [options]
-   ```
+     > 注意！当我们使用强制指令时，若在远程的该分支中有他人的贡献，`--force` 是会覆盖掉他人的代码的，所以为了保险起见，应当用 `--force-with-lease` 。
 
-4. 回退到指定版本
+  3. 只回退某个指定文件到指定版本
 
-   ```bash
-   $: git reset --hard commitId（通过git log可查看提交的commitId）
-   ```
+     ```bash
+     $: git reset a4xxxxa35e [options]
+     ```
+
+  4. 回退到指定版本
+
+     ```bash
+     $: git reset --hard commitId（通过git log可查看提交的commitId）
+     ```
 
 **汇总**：
 
@@ -440,7 +452,7 @@ $: git config --global http.https://github.com.proxy socks5://127.0.0.1:7890
 - `git config`：Git 命令行工具的配置命令。
 - `--global`：表示该配置是全局性质的，会应用在你的所有代码仓库中。
 - `http.https://github.com.proxy` ：作为配置项名称，它表示对应的是使用 HTTPS 协议访问 GitHub 并需要进行代理配置。
-- `socks5://127.0.0.1:7891`：代理服务器的地址和端口号。其中，socks5 表示使用 SOCKS5 协议进行代理，`127.0.0.1` 指的是代理服务器的 IP 地址或主机名，7891 则是端口号(Clashx 中 socks5 默认端口)。你需要根据自己实际的代理情况进行相应的修改，并保证对应的代理能够正常工作。
+- `socks5://127.0.0.1:7891`：代理服务器的地址和端口号。其中，socks5 表示使用 SOCKS5 协议进行代理，`127.0.0.1` 指的是代理服务器的 IP 地址或主机名，7891 则是端口号(Clashx 中 socks5 的默认端口为 7891)。可根据工作中的实际代理情况进行相应的修改，并保证对应的代理能够正常工作。
 
 取消代理：
 
@@ -472,6 +484,8 @@ $: git log --author="username" --pretty=tformat: --numstat | awk '{ add += $1; s
 
 # 依据时间跨度
 $: git log --since=2023-01-01 --until=2023-12-31 --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }'
+
+# 输出结果: added lines: xxx, removed lines: xxx, total lines: xxx
 ```
 
 俩者也可以结合。
