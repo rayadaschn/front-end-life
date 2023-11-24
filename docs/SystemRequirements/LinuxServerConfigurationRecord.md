@@ -37,9 +37,9 @@ sticky: false
 
    可选参数如:
 
-   1. **-f** : 强制删除, 无提示。 `rm -f /removeDir`
+   1. **-f** : 强制（force）。表示强制删除, 无提示。 `rm -f /removeDir`
 
-   2. **-r** : 递归删除文件夹，有提示，需输入 y 同意 。 `rm -r /removeDir`
+   2. **-r** : 递归（recursive）。表示递归删除文件夹，有提示，需输入 y 同意 。 `rm -r /removeDir`
 
       ```shell
       rm  -rf  /tmp/*  # 删除tmp下所有内容
@@ -61,80 +61,86 @@ sticky: false
    ```
 
    - 移动复制文件操作
+
      1. 复制 `cp [options] source dest`
 
-   ```shell
-   # -f 为覆盖已存在的文件而不提示; -r 为递归复制目标文件夹
-   $: cp test.txt test.txt.bak  # 拷贝单个文件
+        ```shell
+        # -f 为覆盖已存在的文件而不提示; -r 为递归复制目标文件夹
+        $: cp test.txt test.txt.bak  # 拷贝单个文件
 
-   $: cp –r test/ newtest
-   # 将当前目录 test/ 下的所有文件复制到新目录 newtest 下
-   ```
+        $: cp –r test/ newtest
+        # 将当前目录 test/ 下的所有文件复制到新目录 newtest 下
+        ```
 
-   2. 移动和重命名 mv
+     2. 移动和重命名 mv
 
-   ```shell
-   $: mv ./test.txt  ../   # 把当前目录下的test.txt移动到上一级目录去
+        ```shell
+        $: mv ./test.txt  ../   # 把当前目录下的test.txt移动到上一级目录去
 
-   $: mv name.txt  newName.txt    # 将“name.txt”重命名为 newName.txt”
-   ```
+        $: mv name.txt  newName.txt    # 将“name.txt”重命名为 newName.txt”
+        ```
 
-   - 重定向符号 > 和 >>
+        - 重定向符号 > 和 >>
 
-   ```shell
-   >  # 重定向输出覆盖符，覆盖写
-   >> # 重定向追加输出符，追加写入
+        ```shell
+        >  # 重定向输出覆盖符，覆盖写
+        >> # 重定向追加输出符，追加写入
 
-   $: echo "覆盖写入txt文件的内容" > test.txt
-   $: echo "追加写入txt文件的内容" > test.txt
-   # echo 是通用 shell 指令,用于字符串的输出, 写在其它指令为显示命令执行结果
-   ```
+        $: echo "覆盖写入txt文件的内容" > test.txt
+        $: echo "追加写入txt文件的内容" > test.txt
+        # echo 是通用 shell 指令,用于字符串的输出, 写在其它指令为显示命令执行结果
+        ```
 
    - 查
 
      1. 首先看用户信息的一些操作:
 
-     ```shell
-     [root@localhost ~]# [指令]
-     $: whoami    # 查看用户名,当前为 root
-     $: hostname  # 查看主机名,当前为 localhost
-     $: pwd       # 查看当前所在文件目录(绝对路径),当前为 ~
-     # 指令前的 "#" 为用户权限提示符: "#" 为root用户; "$" 为普通用户
-     ```
+        ```shell
+        [root@localhost ~]# [指令]
+        $: whoami    # 查看用户名,当前为 root
+        $: hostname  # 查看主机名,当前为 localhost
+        $: pwd       # 查看当前所在文件目录(绝对路径),当前为 ~
+        # 指令前的 "#" 为用户权限提示符: "#" 为root用户; "$" 为普通用户
+        ```
 
      2. 查看文件夹内容 ls (list)
 
-     ```shell
-     $: ls -l     # 查看文件详细信息, 可用 ll 代替
-     $: ll
+        ```shell
+        $: ls -l     # 查看文件详细信息, 可用 ll 代替
+        $: ll # ll 是 ls -l 的简写，它提供了更详细的文件和目录信息。
+              # ll 显示更多的列，包括文件类型和权限、链接数、所有者、所属组、文件大小、修改日期等。
 
-     # -a 可查看隐藏文件, 即以 "."开头的文件
-     ```
+          # -a 可查看隐藏文件, 即以 "."开头的文件
+        ```
 
      3. 查看文件内容
 
-     ```shell
-     cat [文件名]
-     $: cat -n [文件名]    # 显示行号
+        ```shell
+        cat [文件名]
+        $: cat -n [文件名]    # 显示行号
 
-     $: head -5 file.txt  # 显示文件的头5行
-     $: tail -5 file.txt  # 显示文件的后5行
-     ```
+        $: head -5 file.txt  # 显示文件的头5行
+        $: tail -5 file.txt  # 显示文件的后5行
+        $: tail -f file.txt  # -f: 该选项表示 "follow"，即实时跟踪文件的变化。
+        ```
 
      4. 查找 find
 
-     ```shell
-     find [查找位置] -name [查找文件名称]
-     $: find / -name "*.txt"  # 在根目录开始查找 ".txt"结尾的文件, "*"为通配符
-     ```
+        ```shell
+        find [查找位置] -name [查找文件名称]
+        $: find / -name "*.txt"  # 在根目录开始查找 ".txt"结尾的文件, "*"为通配符
+        ```
 
 2. 添加用户权限(读写权限)
 
-```shell
-sudo chmod -R 777 /usr/share/nginx/html
-```
+   ```shell
+   sudo chmod -R 777 /usr/share/nginx/html
+   ```
 
-说明: `chomd` 是改变权限的命令，`-R` 是递归遍历子目录的意思，`777` : 第一个 **7** 表示文件所属者的权限，第二个 **7** 表示所属者所在组的权限，第三个 **7** 表示其它用户的权限。（7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。
+   说明: `chomd` 是改变权限的命令。
+
+   - `-R` 是递归遍历子目录的意思；
+   - `777` : 第一个 **7** 表示文件所属者的权限，第二个 **7** 表示所属者所在组的权限，第三个 **7** 表示其它用户的权限。（ 7=4+1+1，4： 执行时设置用户 ID、2：执行时设置用户组 ID、1：设置粘着位），最后为添加权限目录。
 
 ## Linux 目录划分
 
