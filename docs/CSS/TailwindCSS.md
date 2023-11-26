@@ -13,6 +13,12 @@ sticky: true
 
 章节系列共分为 7 个小节，每小节开头介绍使用规律，再介绍具体使用方法，各自小节独立可依照需求进行查阅。
 
+:::tip
+
+Unocss 兼容 Tailwind，因此仅需学习 Tailwind 的用法即可。
+
+:::
+
 1. [Tailwind 安装及配置](./TailwindCSS01)
 2. [Tailwind 布局](./TailwindCSS02)
 3. [Tailwind 间距和尺寸](./TailwindCSS03)
@@ -20,12 +26,6 @@ sticky: true
 5. [Tailwind 背景](./TailwindCSS05)
 6. [Tailwind 边框](./TailwindCSS06)
 7. [Tailwind Transitions & Animation](./TailwindCSS07)
-
-:::tip
-
-Unocss 同兼容 Tailwind，因此仅需学习 Tailwind 的用法即可。
-
-:::
 
 ## Tailwind 的优势
 
