@@ -8,8 +8,6 @@ tag:
   - CSS
 ---
 
-详细介绍可参考[官网-排版](https://tailwindcss.com/docs/font-family)
-
 ## 基本规律
 
 在 Tailwind CSS 中，类名以"font"开头的用于控制字体相关属性的规则如下：
@@ -22,17 +20,25 @@ tag:
 
 - 斜体（Italic）：可以使用类名格式为“`italic`”来应用斜体样式，正常则是“`not-italic`”。
 
-- 字母间距（Letter Spacing）：可以使用类名格式为"`tracking-<value>`"来设置指定的字母间距。例如，"`tracking-wide`"表示较大的字母间距。
+- 字母间距（Letter Spacing，在一些设计和排版工具中也会用术语 tracking 表示，是的它除了追踪也有间距的含义）：因此使用类名格式为"`tracking-<value>`"来设置指定的字母间距。例如，"`tracking-wide`"表示较大的字母间距。
 
-- 行高（Line Height）：可以使用类名格式为"`leading-<value>`"来设置指定的行高。例如，"`leading-normal`"表示正常的行高。
+- 行高（Line Height，印刷术语是 leading，具体原因见下文 👇🏻）：因此使用类名格式为"`leading-<value>`"来设置指定的行高。例如，"`leading-normal`"表示正常的行高。
 
 - 文本对齐（Text align）：可以使用类名格式为“`text-<name>`”来设置文本对齐方向。例如，“`text-center`”表示文本居中，也就是 `text-align: center;`。
 
 - 文本颜色（Text Color）：可以使用类名格式为“`text-<colorName>`”来设置文本颜色，colorName 一般为“颜色名-颜色深度”。也有常用的颜色，无需设置色深，例如，"`text-black`" 表示黑色，也就是`color: rgb(0 0 0);`。
 
+- 文本溢出，用 `text-{ellipsis|clip}`；
+
+- 文本垂直对齐(Vertical Align)，通用公式为 `align-{value}`；
+
+- Whitespace 空格，通用公式为 `whitespace-{normal|nowrap|pre}` 等。
+
+更多介绍可参考[官网-排版](https://tailwindcss.com/docs/font-family)
+
 ## Font Size 字体大小
 
-字体大小不光包含 font-size，还有 line-height。
+字体大小（font size）的概念不仅仅包括字体大小本身（即 font-size 属性），还包括与之关联的行高（line height）。`line-height: 1.5;` 表示行高为字体大小的 1.5 倍。
 
 - 相对尺寸值：Tailwind CSS 使用相对于根元素（`<html>`）的字体大小的相对单位 "rem" 来定义字体大小。可以使用类名格式为 "`text-<size>`" 来设置不同的字体大小。常见的相对尺寸值包括：
 
@@ -101,6 +107,10 @@ tag:
 ```
 
 ## Line Height 行高
+
+> 历史上，印刷业使用铅字排版，字母是用铅制成的，而为了在两行文字之间留出足够的空间，通常需要在行的底部添加一些额外的铅(lead)。这个额外的空间被称为 "leading"，因此，"leading" 表示的是两行文字底部之间的空隙，也就是行高。
+
+用法同字母间距一样，这里仅做展示。
 
 | Class           | Properties                       |
 | --------------- | -------------------------------- |
@@ -171,11 +181,13 @@ Tailwind 的颜色有非常多，官方给开发人员提供了一些默认颜�
 
 文本溢出类名较少。
 
-| Class         | Properties                                                      |
-| ------------- | --------------------------------------------------------------- |
-| truncate      | overflow: hidden; text-overflow: ellipsis; white-space: nowrap; |
-| text-ellipsis | text-overflow: ellipsis;                                        |
-| text-clip     | text-overflow: clip;                                            |
+| Class         | Properties               |
+| ------------- | ------------------------ |
+| truncate      | overflow: hidden;        |
+|               | text-overflow: ellipsis; |
+|               | white-space: nowrap;     |
+| text-ellipsis | text-overflow: ellipsis; |
+| text-clip     | text-overflow: clip;     |
 
 Tailwind 非常贴心的为开发者提供了 truncate(截断)，表示文本溢出用省略号表示。
 

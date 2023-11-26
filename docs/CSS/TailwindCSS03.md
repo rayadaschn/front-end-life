@@ -8,7 +8,15 @@ tag:
   - CSS
 ---
 
-详细介绍可参考[官网-间距](https://tailwindcss.com/docs/customizing-spacing)
+## 总结规律
+
+- 默认尺寸的是 `1rem = 4px`，所以具体尺寸可以将数字乘以 4 为实际尺寸大小；
+- 间距的通用公式：`{p|m|width|height|max-w|min-h|gap|inset|space}-[number]`，若是负间距则在类名前加负号。`p` 和 `m` 为 padding 和 margin 的缩写；
+- 间距方向 x 表示水平，y 表示垂直方向，s 表示 start，e 表示 end，t 表示 top，b 表示 bottom，使用公式如：`p{x|y|t|r|b|l|s|e}-[number]`；
+- 数值，可用分数表示百分比，另有特殊字符如 full 表示 100%，screen 表示屏幕视口因此有通用公式：`w-{2/5|full|screen|min|max}`等；
+- 任意值可以用中括号`[]`书写属性值如 `p-[5px]` 表示间距为 5px。
+
+> 关于间距的详细介绍亦可参考[官网-间距](https://tailwindcss.com/docs/customizing-spacing)
 
 ## 默认配置
 
@@ -51,7 +59,7 @@ module.exports = {
 
 ## 基本规律
 
-tailwind 在间距上还是有一定的规律的，默认情况下，间距比例由 padding、 margin、 width、 height、 maxHeight、 gap、 inset、 space 和 translate 核心插件继承。
+tailwind 在间距上还是有一定的规律的，默认情况下，间距比例由 padding、 margin、 width、 height、 maxHeight、 gap、 inset、 space 类名和 translate 核心插件继承。
 
 > 同样的，若为负值，则在类名前添加负号如：`-mx-1` 表示：`margin-left: -0.25rem; margin-right: -0.25rem;`
 

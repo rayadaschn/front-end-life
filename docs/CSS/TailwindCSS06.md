@@ -8,7 +8,9 @@ tag:
   - CSS
 ---
 
-一些常见的"border"类名规律：
+## 基本规律
+
+关于常见的"border"类名规律：
 
 - 边框粗细（Border Width）：可以使用类名格式为"`border-<width>`"来设置边框的粗细。例如，"`border`"表示默认宽度的边框，"`border-2`"表示 2 个像素宽度的边框。
 

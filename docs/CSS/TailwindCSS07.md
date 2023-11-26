@@ -10,7 +10,7 @@ tag:
 
 在 Tailwind CSS 中，"transitions"和"animation"类名规律用于控制元素的过渡效果和动画效果。
 
-一些相关的类名规律：
+## 基本规律
 
 - 过渡（Transitions）：可以使用类名格式为"`transition-<property>`"来指定需要添加过渡效果的属性。例如，"transition-opacity"表示当元素的透明度发生变化时应用过渡效果。
 

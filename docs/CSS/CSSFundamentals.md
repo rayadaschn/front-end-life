@@ -61,7 +61,7 @@ tag:
 
 - **内联盒子(inline boxes)**：**每个行内元素会生成一个行内框**，行内框是一个浏览器渲染模型中的一个概念，无法显示出来。内联盒子不会让内容成块显示，而是排成一行。
 
-    如：外部包含 inline 水平的标签(span、a、em、strong 等)，则属于内联盒子。如果是个光秃秃的文字，则属于匿名内联盒子。行内框默认等于内容区域，除非设置了 padding。
+  如：外部包含 inline 水平的标签(span、a、em、strong 等)，则属于内联盒子。如果是个光秃秃的文字，则属于匿名内联盒子。行内框默认等于内容区域，除非设置了 padding。
 
 - **行框盒子(line boxes)：** **每一行就是一个行框盒子，每个行框盒子又是由一个一个内联盒子组成**。行框盒子是浏览器渲染模式中的一个概念，无法显示出来。行框高度等于本行中所有行内框高度的最大值。**当有多行内容时，每一行都有自己的行框**。
 
@@ -435,7 +435,7 @@ tag:
   text-indent: -999em; /* 隐藏文字 */
 }
 .icon:before {
-  content: "\3000"; /* 图标里面有文字,此处为空格 */
+  content: '\3000'; /* 图标里面有文字,此处为空格 */
 }
 ```
 
@@ -464,7 +464,7 @@ tag:
 
 /* 借助伪元素创建了一个和外部容器一样高的,宽度为0的 inline-bolck 元素。类似于“幽灵空白节点” */
 .container:after {
-  content: "";
+  content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle; /* inline-bolck 元素，中心点垂直居中 */
@@ -670,7 +670,7 @@ CSS3 中新的层叠顺序规则：
 ```css
 /* 实践方法 */
 html {
-  font-family: -apple-system, BlinkMacSystemFont, "Microsoft YaHei";
+  font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei';
 }
 ```
 
@@ -700,3 +700,7 @@ html {
 ### background-color
 
 `background` 无论是单背景图还是多背景图，背景色一定是在最底下的位置。
+
+## 参考文献
+
+- 《CSS 世界》

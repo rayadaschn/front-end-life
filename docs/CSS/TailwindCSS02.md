@@ -8,10 +8,31 @@ tag:
   - CSS
 ---
 
-> 本文梳理记录一些 Tailwind 常用的布局书写方式，以作查漏补缺。
+# Tailwind 布局
+
+> 本节梳理记录一些 Tailwind 常用的布局书写方式。
+>
 > 内容较多，无需一次性全部记忆，但要有所印象。
 
+## 总结规律
+
+- `box-sizing` 盒子模型：盒子模型以 `box` 开头表示盒子模型，而后跟随盒子模型的边界，如`box-border`表示以 border 为边界的盒子模型，对应`box-sizing: border-box;`;
+- `display` 布局：除 `display: none` 的类名为 `hidden` 外，其余类名基本为 display 的取值本身。
+- `float` 浮动：直接用 `-` 将 float 和取值进行连接即可，如 `float-left` 类名表示 `float: left;`。
+- `position` 定位：position 的取值本身；
+- 定位位置：通用公式为 `{top|right|bottom|left|inset}-{number}`，若是负值，减号在类名前面；
+- visibility 可见性：取值本身，直接写 `visible` 或 `invisible`；
+- `z-index` 层叠顺序：通用公式为`z-{indexNumber}`，若为负则负号在前；
+- `flex` 弹性盒子：
+  - 整体方向和是否换行，通用公式为 `flex-{direction|wrap}`；
+  - content 的整体对齐方向布局，通用公式为 `{justify|content}-{value}` 分别表示 `justify-content` 水平方向整体布局和 `align-content` 垂直方向整体布局;
+  - items 的单行沿容器垂直对齐方向，通用公式为 `item-{value}`；
+  - align 的单个子项沿容器的垂直对齐方向，通用公式为 `align-{value}`；
+  - flex 弹性缩放属性，通用公式为 `flex-{initial|0|none|1|auto}`；
+
 ## 容器
+
+容器同上一小节中介绍的断点是一样的，这里同布局的内容更贴切，因此再做总结。
 
 | Class     | Breakpoint   | Properties         |
 | :-------- | :----------- | :----------------- |
@@ -22,8 +43,8 @@ tag:
 |           | xl (1280px)  | max-width: 1280px; |
 |           | 2xl (1536px) | max-width: 1536px; |
 
-- 容器居中：mx-auto
-- 添加水平内边距：px-{size}
+- 容器居中：`mx-auto`
+- 添加水平内边距：`px-{size}`
 - 响应式变体，如只在某个断点上表现出差异：
 
   ```html
@@ -46,9 +67,9 @@ tag:
   }
   ```
 
-## Box Sizing
+## Box Sizing 盒子模型
 
-设置盒子类型会和原生有一点不同，由 box 开头：
+设置盒子类型会和原生有一点不同，由 box 开头表示盒子模型，而后跟随盒子模型的边界，如`box-border`表示以 border 为边界的盒子模型：
 
 | Class       | Properties               |
 | :---------- | :----------------------- |
@@ -83,9 +104,9 @@ tag:
 | list-item          | display: list-item;          |
 | **hidden**         | **display: none;**           |
 
-## 浮动
+## float 浮动
 
-浮动在现代布局中用的较少了，但是也有其存在的必要。浮动较为好记，直接用 `-` 进行连接即可。
+浮动在现代布局中用的较少了，但是也有其存在的必要。浮动较为好记，直接用 `-` 对 float 的取值进行连接即可。
 
 | Class       | Properties    |
 | :---------- | :------------ |
@@ -161,7 +182,7 @@ Position 定位非常便捷，直接书写 potion 的值即可：
 
 3. **flex-flow** 属性是 **flex-direction** 和 flex-wrap 的缩写。
 
-- 在 Tailwind 中 flex 控制子项的方向 flex-direction 变化较大，直接省略了 direction 转而拼接值；此外 column 也采用缩写 col：
+- 在 Tailwind 中 flex 控制子项的方向 flex-direction 变化较大，直接省略了 direction 转而拼接值；此外 column 也采用缩写 col。通用公式为`flex-{direction}`：
 
   | Class            | Properties                      |
   | :--------------- | :------------------------------ |
@@ -170,7 +191,7 @@ Position 定位非常便捷，直接书写 potion 的值即可：
   | flex-col         | flex-direction: column;         |
   | flex-col-reverse | flex-direction: column-reverse; |
 
-- 控制整体是否换行 flex-wrap 同 direction 一样是略去 wrap 关键词直接拼接值：
+- 控制整体是否换行 flex-wrap 同 direction 一样是略去 wrap 关键词直接拼接值。通用公式为`flex-{wrap}`：
 
   | Class             | Properties               |
   | :---------------- | :----------------------- |
@@ -241,7 +262,7 @@ Position 定位非常便捷，直接书写 potion 的值即可：
   | content-around  | align-content: space-around;  |
   | content-evenly  | align-content: space-evenly;  |
 
-- align-items 用于 flex 和 grid 各单行沿容器整体布局的垂直对齐方向：
+- align-items 用于 flex 和 grid 各单行沿容器整体布局的垂直对齐方向，通用公式为 `item-{value}`；：
 
   | Class          | Properties               |
   | :------------- | :----------------------- |
@@ -251,7 +272,7 @@ Position 定位非常便捷，直接书写 potion 的值即可：
   | items-baseline | align-items: baseline;   |
   | items-stretch  | align-items: stretch;    |
 
-- align-self 用于 flex 和 grid 单个子项沿容器的垂直对齐方向：
+- align-self 用于 flex 和 grid 单个子项沿容器的垂直对齐方向，通用公式为 `align-{value}`：
 
   | Class         | Properties              |
   | :------------ | :---------------------- |
@@ -264,33 +285,34 @@ Position 定位非常便捷，直接书写 potion 的值即可：
 
 ### flex 属性
 
-flex 属性是 flex-grow、flex-shrink 和 flex-basis 这 3 个属性的缩写。
+flex 属性是 flex-grow、flex-shrink 和 flex-basis 这 3 个缩放属性的缩写。
 
-`flex:auto` 等同于 `flex: 1 1 auto` , 作用为 **flex** 子项自动填满剩余空间或自动收缩;
+- `flex:initial` 等同于 `flex: 0 1 auto;`，作用为 flex 初始值；
+- `flex:0` 等同于 `flex: 0 1 0%;`，元素尺寸会收缩但不会扩展，作用为元素尺寸表现为最小内容宽度；
+- **`flex:none`** 等同于 `flex:0 0 auto;` , 作用为 **flex** 子项没有弹性, 设置为固定尺寸元素(无需设置**width**属性)，元素最终尺寸通常表现为最大内容宽度。
+- **`flex:1`** 等同于 `flex: 1 1 0%;`，作用为 **flex** 子项自动填满剩余空间或自动收缩，**在容器尺寸不足时会优先最小化内容的尺寸**；
+- `flex:auto` 等同于 `flex: 1 1 auto;`， 作用为 **flex** 子项自动填满剩余空间或自动收缩，**在容器尺寸不足时会优先最大化内容尺寸**;
 
-`flex:none` 等同于 `flex:0 0 auto` , 作用为 **flex** 子项没有弹性, 涉河固定尺寸元素(无需设置**width**属性)。
+完整属性缩写介绍对照表，具体使用可见 [《弹性布局 Flex》](FlexboxLayoutTechniques)。
 
-### flex-grow
+| Class        | abbreviation   | Properties      |
+| :----------- | :------------- | :-------------- |
+| flex-initial | flex: initial; | flex: 0 1 auto; |
+| flex-0       | flex: 0;       | flex: 0 1 0%;   |
+| flex-none    | flex: none;    | flex: 0 0 auto; |
+| flex-1       | flex: 1;       | flex: 1 1 0%;   |
+| flex-auto    | flex: auto;    | flex: 1 1 auto; |
+
+### flex-grow 扩展属性
 
 | Class       | Properties    |
 | :---------- | :------------ |
 | flex-grow-0 | flex-grow: 0; |
 | flex-grow   | flex-grow: 1; |
 
-### flex-shrink
+### flex-shrink 收缩属性
 
 | Class         | Properties      |
 | :------------ | :-------------- |
 | flex-shrink-0 | flex-shrink: 0; |
 | flex-shrink   | flex-shrink: 1; |
-
-### 属性缩写
-
-属性缩写介绍，可见 [《弹性布局 Flex》](FlexboxLayoutTechniques)。
-
-| Class        | abbreviation   | Properties      |
-| :----------- | :------------- | :-------------- |
-| flex-1       | flex: 1;       | flex: 1 1 0%;   |
-| flex-auto    | flex: auto;    | flex: 1 1 auto; |
-| flex-initial | flex: initial; | flex: 1 1 auto; |
-| flex-none    | flex: none;    | flex: none;     |

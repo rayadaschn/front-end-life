@@ -8,6 +8,8 @@ tag:
   - CSS
 ---
 
+## 基本规律
+
 常见的"background"类名规律：
 
 - 背景颜色（Background Color）：可以使用类名格式为"`bg-<colorName>`"来设置元素的背景颜色。例如，"`bg-red-500`"表示应用红色系列的背景颜色。

@@ -1,5 +1,5 @@
 ---
-title: Tailwind 01 安装及入门
+title: Tailwind 01 安装及配置
 date: 2023-06-21
 icon: style
 category:
@@ -8,42 +8,17 @@ tag:
   - CSS
 ---
 
-> 在接触 Tailwind 的刚开始，并没有感受到它的好处，反而觉得这是一种非常繁琐的事情。入门了几次都以失败告终，非常不适应。但是这一次，终于有一点小感悟了，遂记录下来。
-> Tailwindcss 系列可见[《CSS 备忘录》](./README)
+# Tailwind 01 安装及配置
 
-利用 Tailwind 去构建 CSS 的一些实在的好处：
+> 该小结并无使用总结，主要介绍 Tailwind 的安装配置。
 
-- **无需再为给类命名而浪费时间**。觉得这个真的非常棒，这对于统一一代码规范非常友好，不用再纠结这个项目是 BEM(Block-Element-Modifier)的规范，而下一个项目是 SMACSS (Scalable and Modular Architecture for CSS)。Tailwind 用的是 Atomic CSS，全为 inline-style，暂时理解为行内 CSS。
-- CSS 的代码不再增加。因为所有的 CSS 都是可复用的，所以在大部分情况下都无需再写新的 CSS 样式了。
-- 改写样式更加安全。在以往的项目中，CSS 样式可能是全局的，所以一旦更改可能会对其它 HTML 造成破坏，从一部分情况上看，是降低了用户心智。
+:::tip
 
-**PS** ：最近感觉 unocss 好像更香一点。因为有 Attributify Mode 可以将大量的 css 样式进行归类，看起来更加方便，不用转浏览器了。
+本系列统一采用 PostCSS 的形式，其它的形式可以参考[官网](https://tailwindcss.com/docs/installation/framework-guides)。
 
-```vue
-<!-- Tailwindcss CSS -->
-<button
-  class="bg-blue-400 hover:bg-blue-500 text-sm text-white font-mono font-light py-2 px-4 rounded border-2 border-blue-200 dark:bg-blue-500 dark:hover:bg-blue-600"
->
-  Button
-</button>
+:::
 
-<!-- UnoCSS with Attributify Mode -->
-<button
-  bg="blue-400 hover:blue-500 dark:blue-500 dark:hover:blue-600'
-  text="sm white"
-  font="mono light"
-  p="y-2 X-4"
-  border="2 rounded blue-200"
->
-  Button
-</button>
-```
-
-举个例子：`text-sm text-white`可以合并写成`text="sm white"`，以抽取共同的前缀。具体使用可见 [Unocss](https://unocss.dev/presets/attributify) 的介绍。唯一不足的就是在 React + TS 中可能兼容性不佳，推荐在 Vue 中使用。
-
-## 安装和初始化配置
-
-这里采用 PostCSS 的形式，其它的形式可以参考[官网](https://tailwindcss.com/docs/installation/framework-guides)。
+## 安装
 
 1. 通过 npm 安装 Tailwind：
 
@@ -73,7 +48,7 @@ tag:
    }
    ```
 
-3. 对 tailwind.config.js 文件进行配置，如 content 哪些文件需要用 Tailwind。
+3. 对`tailwind.config.js`文件进行配置，如`content`属性是配置哪些文件需要用 Tailwind。
 
    ```js
    // tailwind.config.js
@@ -89,7 +64,7 @@ tag:
 
 4. 两种引入项目的方式:
 
-   - 通用配置: 在 CSS 中引入 Tailwind。创建 ​./src/index.css​ 文件 并使用 ​@tailwind​ 指令来包含 Tailwind 的 ​base​、 ​components ​ 和 ​utilities ​ 样式，来替换掉原来的文件内容。
+   - 通用配置: 在 CSS 中引入 Tailwind。创建 `​./src/index.css`​ 文件 并使用 `​@tailwind`​ 指令来包含 Tailwind 的 `​base`​、 `​components` ​ 和 `​utilities` ​ 样式，来替换掉原来的文件内容。
 
    ```css
    /* ./src/index.css */
@@ -136,7 +111,7 @@ tag:
 
 为了更好的开发体验，还需为编辑器安装相应的插件。
 
-VScode 中是 [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
+VScode 中是 [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)。
 
 ## 响应式设计
 
@@ -206,7 +181,7 @@ module.exports = {
 - Disabled 的前缀为 `disabled:`
 - ...
 
-悬停父元素时，子元素做出响应：给父元素添加 `group` 类，并为族元素的功能添加 `group-hover:` 前缀。
+若是**悬停父元素时，子元素需要做出响应**，则应当给父元素添加 `group` 类，同时为族元素的功能添加 `group-hover:` 前缀。
 
 ```html
 <div
@@ -219,15 +194,15 @@ module.exports = {
 </div>
 ```
 
-同样的，focus 同 hover 一样，给父元素添加 `group` 类，并为族元素的功能添加 `group-focus:` 前缀。
+同样的，`focus` 同 `hover` 一样，给父元素添加 `group` 类，并为族元素的功能添加 `group-focus:` 前缀。
 
-其它：
+其它规则：
 
 - 选择**第一个元素**：使用 **first** 类：`<div class="first:bg-blue-500">第一个元素</div>`
 - 选择**最后一个元素**：使用 **last** 类：`<div class="last:bg-red-500">最后一个元素</div>`
 - 选用**奇数**元素的前缀为 `odd:` ：`<div class="odd:bg-green-500">奇数元素</div>`
-- 选用**偶数**元素的前缀为 `even:` ：`<div class="even:bg-green-500">奇数元素</div>`
-- 选择第 n 个元素：使用 nth-child(n) 类，其中 n 是你想选择的元素的序号。例如，选择第三个元素：`<div class="nth-child(3):bg-purple-500">第三个元素</div>`
+- 选用**偶数**元素的前缀为 `even:` ：`<div class="even:bg-green-500">偶数元素</div>`
+- 选择第 **n** 个元素：使用 `nth-child(n)` 类，其中 **n** 是你想选择的元素的序号。例如，选择第三个元素：`<div class="nth-child(3):bg-purple-500">选择第三个元素</div>`
 
 ## 为自定义功能类生成变体
 
@@ -236,22 +211,22 @@ module.exports = {
 ```css
 /* Input: */
 @variants group-hover, hover, focus {
-  .banana {
+  .customName {
     color: yellow;
   }
 }
 
 /* Output: */
-.banana {
+.customName {
   color: yellow;
 }
-.group:hover .group-hover\:banana {
+.group:hover .group-hover\:customName {
   color: yellow;
 }
-.hover\:banana:hover {
+.hover\:customName:hover {
   color: yellow;
 }
-.focus\:banana:focus {
+.focus\:customName:focus {
   color: yellow;
 }
 ```
