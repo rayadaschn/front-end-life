@@ -4,7 +4,7 @@ date: 2023-02-30
 
 index: false
 icon: note
-star: true
+star: false
 ---
 
 ## 前端技术学习记录
