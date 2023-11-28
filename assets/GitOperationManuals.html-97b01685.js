@@ -235,22 +235,21 @@ $: <span class="token function">git</span> log <span class="token parameter vari
   - 用于说明 <span class="token variable"><span class="token variable">\`</span>commit<span class="token variable">\`</span></span> 的类别，只允许使用下面10个标识。
     - feat：新功能（feature）【会出现在 CHANGELOG 中】
     - fix：修补bug          【会出现在 CHANGELOG 中】
-    - docs：文档（documentation）
-    - style：格式（不影响代码运行的变动）
-    - refactor：重构（即不是新增功能，也不是修改bug的代码变动）
+    - docs：文档修改（documentation）
+    - style：代码格式修改，不影响代码含义的更改（空格、格式、缺少分号等）
+    - refactor：代码重构（即不是新增功能，也不是修改bug的代码变动）
     - perf：性能优化
-    - test：增加测试
-    - chore：构建过程或辅助工具的变动
+    - test：测试用例增加/修改
+    - chore：对构建过程或辅助工具和库的更改，例如文档生成
     - revert：回退
-    - build：打包
 - scope<span class="token punctuation">(</span>可选<span class="token punctuation">)</span>
   - 用于说明 <span class="token variable"><span class="token variable">\`</span>commit<span class="token variable">\`</span></span> 影响的范围，比如Button组件、store、首页、路由等等，视项目不同而不同。
 - subject<span class="token punctuation">(</span>可选<span class="token punctuation">))</span>
   - 是 <span class="token variable"><span class="token variable">\`</span>commit<span class="token variable">\`</span></span> 目的的简短描述，不超过50个字符。
-    - 以动词开头，使用第一人称现在时，比如change，而不是changed或changes
+    - 以动词开头，使用第一人称现在时，比如 change，而不是 changed 或 changes
     - 第一个字母小写
     - 结尾不加句号（.）
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="body" tabindex="-1"><a class="header-anchor" href="#body" aria-hidden="true">#</a> Body</h3><p><strong>Body</strong> 为此次提交的详细描述，可多行显示。</p><ul><li>使用第一人称现在时，比如使用<code>change</code>而不是<code>changed</code>或<code>changes</code>。</li><li>应该说明代码变动的动机，以及与以前行为的对比。</li></ul><h3 id="footer" tabindex="-1"><a class="header-anchor" href="#footer" aria-hidden="true">#</a> Footer</h3><p><strong>Footer</strong> 仅在 <strong>不兼容变动</strong> 和 <strong>关闭 issue</strong> 时 使用：</p><ul><li><p>不兼容变动</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code>BREAKING CHANGE: isolate scope bindings definition has changed.
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="body" tabindex="-1"><a class="header-anchor" href="#body" aria-hidden="true">#</a> Body</h3><p><strong>Body</strong> 为此次提交的详细描述，可多行显示。</p><ul><li>使用第一人称现在时，比如使用<code>change</code>而不是<code>changed</code>或<code>changes</code>。</li><li>应该说明代码变动的动机，以及与以前行为的对比。</li></ul><h3 id="footer" tabindex="-1"><a class="header-anchor" href="#footer" aria-hidden="true">#</a> Footer</h3><p><strong>Footer</strong> 仅在 <strong>不兼容变动</strong> 和 <strong>关闭 issue</strong> 时 使用：</p><ul><li><p>不兼容变动</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code>BREAKING CHANGE: isolate scope bindings definition has changed.
  xxxxx
  Before： xxxx
  After： xxxx
