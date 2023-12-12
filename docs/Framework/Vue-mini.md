@@ -24,17 +24,19 @@ sticky: false
    - **示例：** 常见的命令式编程语言包括 C、C++、Java。例如，下面是一个简单的命令式编程的示例，计算阶乘的函数：
 
    ```js
-   // 计算阶乘的命令式函数
-
-     function factorial(n) {
-     let result = 1;
+   /**
+    * @description: 计算阶乘的命令式函数
+    * @return {number} result
+    */
+   function factorial(n) {
+     let result = 1
      for (let i = 1; i <= n; ++i) {
-     result \*= i;
+       result *= i
      }
-     return result;
-     }
+     return result
+   }
 
-     console.log(factorial(5)); // 输出: 120
+   console.log(factorial(5)) // 输出: 120
    ```
 
 2. **声明式（Declarative）**：
@@ -164,3 +166,7 @@ const proxy = new Proxy(obj, {
 
 console.log(proxy.fullName) // JohnHuy
 ```
+
+`Reflect.get` 的第三个参数是 `receiver`，即最初被调用的对象。在这里，`receiver` 是代理对象 `proxy`。
+
+所以，当访问 `proxy.fullName` 时，get 拦截器被触发，`Reflect.get` 被调用，而 this 在 `Reflect.get` 内部指向了 `receiver`，即代理对象 `proxy`。从而能够触发三次回调。
