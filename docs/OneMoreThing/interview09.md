@@ -758,5 +758,5 @@ export default {
 
 - Composition 的 setup 只会调用一次，而 React 的 Hook 函数会被被多次调用；
 - 前者无需 useMemo useCallback，因为 setup 只会调用一次；
-- 前者无需咕噜调用顺序，而后者需要保证 hooks 的顺序一致；
+- 前者无需考虑调用顺序，而后者需要保证 hooks 的顺序一致；
 - 但是 reactive 和 ref 比后者的 useState 要更难理解。
