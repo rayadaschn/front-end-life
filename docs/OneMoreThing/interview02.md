@@ -26,9 +26,18 @@ sticky: false
 
 ### 值类型和引用类型
 
-值类型： Number、String、Boolean、Symbol、undefined
+值类型（5 种）： Number、String、Boolean、Symbol、undefined
 
-引用类型：Object、Array、Null(特殊引用类型、指针指向空地址)、Function(特殊引用类型,但不存储数据,所以没有"拷贝、复制函数"的说法)
+引用类型（4 种）：Object、Array、Null(特殊引用类型、指针指向空地址)、Function(特殊引用类型,但不存储数据,所以没有"拷贝、复制函数"的说法)
+
+TS 中的数据类型，继承了 js 的类型，但是在这之上又做了一层扩展：
+
+- 基本类型（小写 8 种）：boolean、string、number、symbol、bigInt、undefined、 null、object
+- 复杂类型由上面组合而成：
+  - js 中值类型的包装对象（除 Symbol 和 BingInt 不能作为构造函数使用）：`Boolean()`、`String()`、`Number()`；
+  - 其它类型：`Array<T>`（数组类型一致）、tuple 元组 `[T]`（在括号内定义类型）、 `Function` 函数类型('Function'不推荐直接使用会报错) `(...args: any[]) => void`
+  - ts 中也有值类型：单个值，如 `const x = 'ts'` x 的类型为 'ts';
+  - 扩展类型：any、unknown、never、void
 
 ### typeof 运算符 <span id='2' />
 

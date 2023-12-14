@@ -286,7 +286,7 @@ import('module').then((module) => {
 
 ## babel-runtime 和 babel-polyfill 的区别是什么?
 
--`@babel/runtime`：它是一个运行时工具库，主要用于解决编译过程中产生的重复代码问题。它包含了一组公共的辅助函数，用于替代转换过程中重复的代码片段，从而减小生成的代码体积。
+- `@babel/runtime`：它是一个运行时工具库，主要用于解决编译过程中产生的重复代码问题。它包含了一组公共的辅助函数，用于替代转换过程中重复的代码片段，从而减小生成的代码体积。
 
 - `@babel/polyfill`：它是一个用于在旧版浏览器中支持新的 JavaScript 特性和 API 的 polyfill 库。它会根据目标环境和配置自动引入所需的 polyfill，以填充浏览器缺失的功能和 API。
 
