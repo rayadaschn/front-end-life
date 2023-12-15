@@ -165,20 +165,20 @@ Promise.resolve()
     console.log(3)
   })
   .then(() => {
-    console.log(4)
-  })
-  .then(() => {
     console.log(5)
   })
   .then(() => {
     console.log(6)
+  })
+  .then(() => {
+    console.log(7)
   })
 ```
 
 输出结果为:
 
 ```log
-0 1 2 3 4 5 6
+0 1 2 3 4 5 6 7
 ```
 
 梳理问题关键：
