@@ -1,20 +1,20 @@
-import { hopeTheme } from "vuepress-theme-hope";
-import { Navbar } from "./navbar/index.js";
+import { hopeTheme } from 'vuepress-theme-hope'
+import { Navbar } from './navbar/index.js'
 
 export default hopeTheme({
   author: {
-    name: "Huy",
-    url: "https://github.com/rayadaschn",
+    name: 'Huy',
+    url: 'https://github.com/rayadaschn',
   },
 
-  iconAssets: "iconfont",
-  logo: "logo.png",
+  iconAssets: 'iconfont',
+  logo: 'logo.png',
 
-  sidebar: "structure", // 自动生成侧边栏
+  sidebar: 'structure', // 自动生成侧边栏
 
   // 项目仓库地址
-  repo: "https://github.com/rayadaschn",
-  docsDir: "docs/", // 文档所属文件夹，默认为仓库根目录
+  repo: 'https://github.com/rayadaschn',
+  docsDir: 'docs/', // 文档所属文件夹，默认为仓库根目录
 
   //页面元数据：贡献者，最后修改时间，编辑链接
   contributors: false,
@@ -23,28 +23,28 @@ export default hopeTheme({
 
   // 主题颜色
   themeColor: {
-    blue: "#2196f3",
-    red: "#f26d6d",
-    green: "#3eaf7c",
-    orange: "#fb9b5f",
+    blue: '#2196f3',
+    red: '#f26d6d',
+    green: '#3eaf7c',
+    orange: '#fb9b5f',
   },
-  darkmode: "toggle", // 主题模式手动切换
+  darkmode: 'toggle', // 主题模式手动切换
   fullscreen: true,
 
   blog: {
-    intro: "/intro.html",
+    intro: '/intro.html',
     medias: {
-      GitHub: "https://github.com/rayadaschn",
+      GitHub: 'https://github.com/rayadaschn',
     },
   },
 
   editLinkPattern:
-    "https://github.com/rayadaschn/front-end-life/tree/sourcecode/:path",
+    'https://github.com/rayadaschn/front-end-life/tree/sourcecode/:path',
 
   locales: {
-    "/": {
+    '/': {
       navbar: Navbar,
-      navbarAutoHide: "mobile",
+      navbarAutoHide: 'mobile',
 
       footer:
         '本站原创内容基于 <a class="underline" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> 共享, 转载请注明出处。',
@@ -52,11 +52,11 @@ export default hopeTheme({
       displayFooter: true,
 
       blog: {
-        description: "自先沉稳 而后爱人",
+        description: '但行好事 莫问前程',
       },
 
       metaLocales: {
-        editLink: "帮助博主改进此页面ヾ(=･ω･=)o",
+        editLink: '帮助博主改进此页面ヾ(=･ω･=)o',
       },
     },
   },
@@ -71,11 +71,11 @@ export default hopeTheme({
     //评论配置
     comment: {
       // Giscus 备用配置
-      provider: "Giscus",
-      repo: "rockbenben/LearnData",
-      repoId: "R_kgDOHdfk6Q",
-      category: "Comments",
-      categoryId: "DIC_kwDOHdfk6c4CQYNn",
+      provider: 'Giscus',
+      repo: 'rockbenben/LearnData',
+      repoId: 'R_kgDOHdfk6Q',
+      category: 'Comments',
+      categoryId: 'DIC_kwDOHdfk6c4CQYNn',
     },
 
     // Disable features you don’t want here
@@ -97,21 +97,21 @@ export default hopeTheme({
       mark: true,
       mermaid: true,
       playground: {
-        presets: ["ts", "vue"],
+        presets: ['ts', 'vue'],
       },
       presentation: {
-        plugins: ["highlight", "math", "search", "notes", "zoom"],
+        plugins: ['highlight', 'math', 'search', 'notes', 'zoom'],
       },
       stylize: [
         {
-          matcher: "Recommended",
+          matcher: 'Recommended',
           replacer: ({ tag }) => {
-            if (tag === "em")
+            if (tag === 'em')
               return {
-                tag: "Badge",
-                attrs: { type: "tip" },
-                content: "Recommended",
-              };
+                tag: 'Badge',
+                attrs: { type: 'tip' },
+                content: 'Recommended',
+              }
           },
         },
       ],
@@ -122,4 +122,4 @@ export default hopeTheme({
       vuePlayground: true,
     },
   },
-});
+})
