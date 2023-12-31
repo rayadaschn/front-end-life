@@ -13,6 +13,7 @@ category:
 - [Vue3 中的全局注册](Vue/Vue02.md)
 - [Vue3 中的懒加载](Vue/Vue03.md)
 - [Vue3 中的动态路由懒加载实例](Vue/Vue04.md)
+- [Vue 中 History 路由和 Hash 路由的实现基本原理](Vue/Vue05.md)
 
 ## React 学习之路
 

@@ -1,4 +1,4 @@
-# 个人博客 / Huy's Blog
+# 前端转码记录 / Huy's Blog
 
 [![Author: Huy](https://img.shields.io/badge/Author-huy-yellow)](https://github.com/rayadaschn)
 ![GitHub last commit](https://img.shields.io/github/last-commit/rayadaschn/front-end-life)

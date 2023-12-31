@@ -8,8 +8,6 @@ tag:
   - three.js
 ---
 
-# PBR 材质纹理
-
 PBR (Physically Based Rendering) 是一种基于物理的渲染模型，它使用物理上的参数来描述材质的特性，如反射率、折射率、散射等。
 
 1. PBR 是基于物理渲染的着色模型，PBR 着色模型分为材质和灯光俩个属性；

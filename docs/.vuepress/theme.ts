@@ -69,14 +69,14 @@ export default hopeTheme({
     blog: true,
 
     //评论配置
-    comment: {
-      // Giscus 备用配置
-      provider: 'Giscus',
-      repo: 'rockbenben/LearnData',
-      repoId: 'R_kgDOHdfk6Q',
-      category: 'Comments',
-      categoryId: 'DIC_kwDOHdfk6c4CQYNn',
-    },
+    // comment: {
+    //   // Giscus 备用配置
+    //   provider: 'Giscus',
+    //   repo: 'rayadaschn/front-end-life',
+    //   repoId: '',
+    //   category: 'Comments',
+    //   categoryId: '',
+    // },
 
     // Disable features you don’t want here
     mdEnhance: {
