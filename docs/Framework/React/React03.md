@@ -21,16 +21,16 @@ sticky: false
 定义一个高阶组件:
 
 ```jsx
-import React, { PureComponent } from "react";
+import React, { PureComponent } from 'react'
 
 function hoc(Cpn) {
   // 定义类组件
   class NewCpn extends PureComponent {
     render() {
-      return <Cpn name="Bob" />;
+      return <Cpn name="Bob" />
     }
   }
-  return NewCpn;
+  return NewCpn
 }
 ```
 
@@ -46,14 +46,14 @@ function hoc(Cpn) {
 **属性代理**（Props Proxy）：输出一个组件，它基于被包裹组件进行 **功能增强**。
 
 ```jsx
-import React from "react";
+import React from 'react'
 
 const HighOrderComponent = (WrappedComponent) =>
   class extends Component {
     render() {
-      return <WrapperdComponent {...this.props} />;
+      return <WrapperdComponent {...this.props} />
     }
-  };
+  }
 ```
 
 这里的高阶组件中采用了匿名类通过 `render` 方法返回传入的 React 组件（WrappedComponent）。通过高阶组件传递 `props`，这种方式即为 **属性代理**。
@@ -70,11 +70,11 @@ const HighOrderComponent = (WrappedComponent) =>
   function loginAuth(Page) {
     return (props) => {
       if (props.isLogin) {
-        return <Page />;
+        return <Page />
       } else {
-        return <LoginPage />;
+        return <LoginPage />
       }
-    };
+    }
   }
   ```
 
@@ -86,19 +86,19 @@ const HighOrderComponent = (WrappedComponent) =>
   function logRenderTime(WrapperCpn) {
     return class extends PureComponent {
       UNSAFE_componentWillMount() {
-        this.begin = Date.now();
+        this.begin = Date.now()
       }
 
       componentDidMount() {
-        this.end = Date.now();
-        const interval = this.end - this.begin;
-        console.log(`${WrapperCpn.name}渲染使用时间:${interval}ms`);
+        this.end = Date.now()
+        const interval = this.end - this.begin
+        console.log(`${WrapperCpn.name}渲染使用时间:${interval}ms`)
       }
 
       render() {
-        return <WrapperCpn {...this.props} />;
+        return <WrapperCpn {...this.props} />
       }
-    };
+    }
   }
   ```
 
@@ -118,8 +118,8 @@ const Home = forwardRef(function (props, ref) {
       <h2 ref={ref}>Home</h2>
       <button>按钮</button>
     </div>
-  );
-});
+  )
+})
 ```
 
 ### fragment 语法
@@ -222,15 +222,15 @@ CSSTransition 是基于**Transition**组件构建的，在执行过程中有三�
 ```jsx
 export class App extends PureComponent {
   constructor(props) {
-    super();
+    super()
 
     this.state = {
       isShow: true,
-    };
+    }
   }
 
   render() {
-    const { isShow } = this.state;
+    const { isShow } = this.state
     return (
       <div>
         <HelloWorld />
@@ -241,7 +241,7 @@ export class App extends PureComponent {
           <div>动画渲染内容</div>
         </CSSTransition>
       </div>
-    );
+    )
   }
 }
 ```
@@ -310,29 +310,29 @@ export class App extends PureComponent {
 ```jsx
 export class App extends PureComponent {
   constructor() {
-    super();
+    super()
     this.state = {
       isLogin: true,
-    };
+    }
   }
 
   render() {
-    const { isLogin } = this.state;
+    const { isLogin } = this.state
     return (
       <div>
         <SwitchTransition mode="out-in">
           <CSSTransition
-            key={isLogin ? "exit" : "login"}
+            key={isLogin ? 'exit' : 'login'}
             classNames="login"
             timeout={1000}
           >
             <button onClick={(e) => this.setState({ isLogin: !isLogin })}>
-              {isLogin ? "退出" : "登录"}
+              {isLogin ? '退出' : '登录'}
             </button>
           </CSSTransition>
         </SwitchTransition>
       </div>
-    );
+    )
   }
 }
 ```
@@ -344,28 +344,28 @@ export class App extends PureComponent {
 下面是一个简单的例子，展示如何在一个列表中添加或删除元素时使用 TransitionGroup：
 
 ```jsx
-import React from "react";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
+import React from 'react'
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
 
 class MyList extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      items: ["apple", "banana", "orange"],
-    };
+      items: ['apple', 'banana', 'orange'],
+    }
   }
 
   addItem() {
-    const newItem = prompt("Enter a new item:");
+    const newItem = prompt('Enter a new item:')
     this.setState((state) => ({
       items: [...state.items, newItem],
-    }));
+    }))
   }
 
   removeItem(index) {
     this.setState((state) => ({
       items: state.items.filter((item, i) => i !== index),
-    }));
+    }))
   }
 
   render() {
@@ -384,7 +384,7 @@ class MyList extends React.Component {
           </TransitionGroup>
         </ul>
       </div>
-    );
+    )
   }
 }
 ```
@@ -405,28 +405,28 @@ class MyList extends React.Component {
 ```jsx
 export class App extends PureComponent {
   constructor() {
-    super();
+    super()
     this.state = {
       titleSize: 30,
-    };
+    }
   }
 
   addTitleSize() {
-    this.setState({ titleSize: this.state.titleSize + 2 });
+    this.setState({ titleSize: this.state.titleSize + 2 })
   }
 
   render() {
-    const { titleSize } = this.state;
+    const { titleSize } = this.state
 
     return (
       <div>
         <button onClick={(e) => this.addTitleSize()}>增加titleSize</button>
-        <h2 style={{ color: "red", fontSize: `${titleSize}px` }}>
+        <h2 style={{ color: 'red', fontSize: `${titleSize}px` }}>
           红色, 动态变化字号大小
         </h2>
-        <p style={{ color: "blue", fontSize: "20px" }}>蓝色, 固定字号大小</p>
+        <p style={{ color: 'blue', fontSize: '20px' }}>蓝色, 固定字号大小</p>
       </div>
-    );
+    )
   }
 }
 ```
@@ -469,7 +469,7 @@ React 的脚手架已经内置了`css modules`的配置：
 ```
 
 ```jsx
-import appStyle from "./App.module.css";
+import appStyle from './App.module.css'
 
 export class App extends PureComponent {
   render() {
@@ -478,7 +478,7 @@ export class App extends PureComponent {
         <h2 className={appStyle.title}>修饰内容</h2>
         <p className={appStyle.content}>修饰内容</p>
       </div>
-    );
+    )
   }
 }
 ```
@@ -501,24 +501,24 @@ export class App extends PureComponent {
 
 ```js
 function myTag(strings, ...values) {
-  console.log(strings); // ["Hello, ", "!"]
-  console.log(values); // ["world"]
-  return "Something else"; // 该函数必须返回一个字符串
+  console.log(strings) // ["Hello, ", "!"]
+  console.log(values) // ["world"]
+  return 'Something else' // 该函数必须返回一个字符串
 }
 
-const myString = myTag`Hello, ${"world"}!`;
-console.log(myString); // "Something else"
+const myString = myTag`Hello, ${'world'}!`
+console.log(myString) // "Something else"
 ```
 
 在此示例中，`myTag`函数作为模板字符串的标签。模板字符串被解析为一个字符串数组 `strings` 和一个值数组 `values`，它们分别包含模板字符串的文本段和表达式值。值得注意的是，**字符串数组是以模版字符串中的变量名进行切割的**。
 
 ```js
 function myTag(strings, ...values) {
-  console.log(strings); // ['', '', '', '!'] 注意,这里是如何切割字符串的
-  console.log(values); // ['A', 'B', 'world']
-  return "Something else"; // 该函数必须返回一个字符串
+  console.log(strings) // ['', '', '', '!'] 注意,这里是如何切割字符串的
+  console.log(values) // ['A', 'B', 'world']
+  return 'Something else' // 该函数必须返回一个字符串
 }
-const myString = myTag`${"A"}${"B"}${"world"}!`;
+const myString = myTag`${'A'}${'B'}${'world'}!`
 ```
 
 通过这种高级语法，`styled-components`通过调用函数，最终创建出一个组件出来。这个组件会被自动添加上一个不重复的 class，`styled-components`会给该 class 添加相关的样式。另外，它也支持类似于 CSS 预处理器一样的样式嵌套，支持直接子代选择器或后代选择器，并且直接编写样式；可以通过`&`连接符获取当前元素。
@@ -527,18 +527,18 @@ const myString = myTag`${"A"}${"B"}${"world"}!`;
 
 ```js
 // 文件名: style.js
-import styled from "styled-components";
+import styled from 'styled-components'
 // 模板字符串的标签形式进行函数调用
 export const AppWrapper = styled.div`
   .footer {
     border: 1px solid orange;
   }
-`;
+`
 ```
 
 ```jsx
 // 文件名: App.jsx 进行使用
-import { AppWrapper } from "./style";
+import { AppWrapper } from './style'
 export class App extends PureComponent {
   render() {
     return (
@@ -548,7 +548,7 @@ export class App extends PureComponent {
           <p>版权声明</p>
         </div>
       </AppWrapper>
-    );
+    )
   }
 }
 ```
@@ -558,12 +558,12 @@ export class App extends PureComponent {
 此外，还以将子元素单独抽取到一个样式组件，这样可以接受外部传入的`props`，还可以通过`attrs`给标签模板字符串中提供的属性，从一个单独的文件中引入变量。
 
 ```js
-import styled from "styled-components";
-const largeSize = "18px";
+import styled from 'styled-components'
+const largeSize = '18px'
 
 // 此处为链式调用
 export const AppWrapper = styled.div.attrs((props) => ({
-  tColor: props.color || "blue",
+  tColor: props.color || 'blue',
 }))`
   border: 1px solid red;
 
@@ -579,31 +579,31 @@ export const AppWrapper = styled.div.attrs((props) => ({
   .content {
     font-size: ${largeSize}px;
   }
-`;
+`
 ```
 
 ```jsx
 export class App extends PureComponent {
   constructor() {
-    super();
+    super()
 
     this.state = {
       size: 30,
-      color: "yellow",
-    };
+      color: 'yellow',
+    }
   }
 
   render() {
-    const { color } = this.state;
+    const { color } = this.state
     return (
       <AppWrapper color={color}>
         <h2 className="title">我是标题</h2>
         <p className="content">我是内容</p>
-        <button onClick={(e) => this.setState({ color: "skyblue" })}>
+        <button onClick={(e) => this.setState({ color: 'skyblue' })}>
           修改颜色
         </button>
       </AppWrapper>
-    );
+    )
   }
 }
 ```
@@ -634,6 +634,6 @@ React 在 `JSX` 给了我们开发者足够多的灵活性，你可以像编写 
 `classNames` 则是一个帮助你动态生成 CSS 类名称的工具库，它可以相对方便地处理一些复杂的类名组合。可以通过 `npm` 安装：`npm install classnames`
 
 ```jsx
-classNames("foo", "bar"); // 'foo bar'
-classNames("foo", { bar: true }); // 'foo bar'
+classNames('foo', 'bar') // 'foo bar'
+classNames('foo', { bar: true }) // 'foo bar'
 ```

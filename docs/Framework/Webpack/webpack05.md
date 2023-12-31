@@ -45,25 +45,25 @@ sticky: false
 ```js
 // webpack.config.js
 
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
-const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const WorkboxWebpackPlugin = require('workbox-webpack-plugin')
+const HtmlMinimizerPlugin = require('html-minimizer-webpack-plugin')
 
-const isProduction = process.env.NODE_ENV == "production";
+const isProduction = process.env.NODE_ENV == 'production'
 
-console.log("node 环境: ", process.env);
+console.log('node 环境: ', process.env)
 
 const config = {
   // ...
-};
+}
 
 module.exports = (envParams) => {
-  console.log("webpack 自定义的环境变量 env: ", envParams);
+  console.log('webpack 自定义的环境变量 env: ', envParams)
 
   // 其它设置 ....
-  return config;
-};
+  return config
+}
 ```
 
 上面可以看到，`module.exports` 可以写成一个函数形式，此时 `webpack.config.js` 便可以接收相应的参数 **envParams** 。
@@ -119,9 +119,9 @@ webpack 自定义的环境变量 env:  { WEBPACK_WATCH: true, production: true, 
 
 ```js
 // webpack.config.js
-const { merge } = require("webpack-merge");
-const devConfig = require("./dev.config");
-const prodConfig = require("./prod.config");
+const { merge } = require('webpack-merge')
+const devConfig = require('./dev.config')
+const prodConfig = require('./prod.config')
 
 /**
  * 抽取开发和生产环境的配置文件
@@ -133,20 +133,20 @@ const prodConfig = require("./prod.config");
 const getCommonConfig = (isProduction) => {
   return {
     // 此对象为 commonConfig 公共配置
-    entry: "./src/main.js",
+    entry: './src/main.js',
     output: {
       // ...
     },
     // ...
-  };
-};
+  }
+}
 
 // webpack 导出一个函数
 module.exports = function (env) {
-  const isProduction = env.production; // 返回值为 Boolean
-  let mergeConfig = isProduction ? prodConfig : devConfig;
-  return merge(getCommonConfig(isProduction), mergeConfig);
-};
+  const isProduction = env.production // 返回值为 Boolean
+  let mergeConfig = isProduction ? prodConfig : devConfig
+  return merge(getCommonConfig(isProduction), mergeConfig)
+}
 ```
 
 依据 merge 函数，合并本地 `getCommonConfig()` 配置和不同环境下的特殊配置。

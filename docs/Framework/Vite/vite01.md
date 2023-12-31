@@ -50,8 +50,8 @@ $: npm install -D postcss postcss-preset-env
 ```js
 // postcss.config.js
 module.exports = {
-  plugins: [require("postcss-preset-env")],
-};
+  plugins: [require('postcss-preset-env')],
+}
 ```
 
 ### 打包项目

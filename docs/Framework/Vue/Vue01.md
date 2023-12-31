@@ -49,28 +49,28 @@ export default defineComponent({
 由于没有了`setup()` 函数，所以也就没有了给 `setup()` 函数传参的入口了。不过 `Vue3` 也为此提供了新的 `API` 解决方案。我们先来回顾一下原先`setup`函数中的参数。
 
 ```js
-import { toRefs, toRef } from "vue";
+import { toRefs, toRef } from 'vue'
 
 export default {
   setup(props, context) {
     // 将 `props` 转为一个其中全是 ref 的对象，然后解构
-    const { title } = toRefs(props);
+    const { title } = toRefs(props)
     // `title` 是一个追踪着 `props.title` 的 ref
-    console.log(title.value);
+    console.log(title.value)
 
     // 透传 Attributes（非响应式的对象，等价于 $attrs）
-    console.log(context.attrs);
+    console.log(context.attrs)
 
     // 触发事件（函数，等价于 $emit）
-    console.log(context.emit);
+    console.log(context.emit)
 
     // 插槽（非响应式的对象，等价于 $slots）
-    console.log(context.slots);
+    console.log(context.slots)
 
     // 暴露公共属性（函数）
-    console.log(context.expose);
+    console.log(context.expose)
   },
-};
+}
 ```
 
 即共有俩个参数，`props` (由父组件传递下来的数据)和 `context` (组件的执行上下文)。
@@ -90,12 +90,12 @@ export default {
 module.exports = {
   // 全局 globals 说明
   globals: {
-    defineProps: "readonly",
-    defineEmits: "readonly",
-    defineExpose: "readonly",
-    withDefaults: "readonly",
+    defineProps: 'readonly',
+    defineEmits: 'readonly',
+    defineExpose: 'readonly',
+    withDefaults: 'readonly',
   },
-};
+}
 ```
 
 ## 3. 省力的改变
@@ -111,10 +111,10 @@ module.exports = {
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue'
 
 // 导入子组件
-import Child from "@cp/Child.vue";
+import Child from '@cp/Child.vue'
 
 export default defineComponent({
   // 需要启用子组件作为模板
@@ -126,7 +126,7 @@ export default defineComponent({
   setup() {
     // ...
   },
-});
+})
 </script>
 ```
 
@@ -137,7 +137,7 @@ export default defineComponent({
 </template>
 
 <script setup lang="ts">
-import Child from "@cp/Child.vue";
+import Child from '@cp/Child.vue'
 </script>
 ```
 
@@ -155,8 +155,8 @@ import Child from "@cp/Child.vue";
   <Child title="用户信息" :index="007" :uid="userInfo.id" />
 </template>
 <script>
-import { defineComponent } from "vue";
-import Child from "@cp/Child.vue";
+import { defineComponent } from 'vue'
+import Child from '@cp/Child.vue'
 
 interface Member {
   id: number;
@@ -169,12 +169,12 @@ export default defineComponent({
   setup() {
     const userInfo: Member = {
       id: 955,
-    };
+    }
     return {
       userInfo, // return 给template使用
-    };
+    }
   },
-});
+})
 </script>
 ```
 
@@ -224,14 +224,14 @@ export default defineComponent({
    A. 只需在 `template` 中使用，则只需简单定义（无需像 `setup` 函数一样 return 噢，没有`setup` 函数了）
 
    ```js
-   defineProps(["name", "userInfo", "tags"]);
+   defineProps(['name', 'userInfo', 'tags'])
    ```
 
    B. `defineProps` 会返回一个对象，该对象包含`string[]` 入参的`props` 对象。
 
    ```js
-   const props = defineProps(["name", "userInfo", "tags"]);
-   console.log(props.name);
+   const props = defineProps(['name', 'userInfo', 'tags'])
+   console.log(props.name)
    ```
 
 2. 使用对象作为入参，可对 `props` 类型进行约束：
@@ -243,7 +243,7 @@ export default defineComponent({
      name: String,
      userInfo: Object, // 构造函数校验 大写
      tags: Array,
-   });
+   })
    ```
 
    B. 进行校验:
@@ -253,11 +253,11 @@ export default defineComponent({
      name: {
        type: String, // 类型
        required: false, // 是否必传
-       default: "Petter", // 默认值
+       default: 'Petter', // 默认值
      },
      userInfo: Object, // 构造函数校验 大写
      tags: Array,
-   });
+   })
    ```
 
    C. 使用**类型注解检查** `props` :
@@ -304,27 +304,27 @@ export default defineComponent({
   // emits: ['update-age'], // 数组形式写法
   emits: {
     // 对象形式写法 进行校验
-    "update-age": (age: number) => {
+    'update-age': (age: number) => {
       // 写一些条件拦截，记得返回false
       if (age < 18) {
-        console.log("未成年人不允许参与");
-        return false; // 返回 false 进行拦截
+        console.log('未成年人不允许参与')
+        return false // 返回 false 进行拦截
       }
 
       // 通过则返回true
-      return true;
+      return true
     },
 
     // 一些无需校验的，设置为null即可
-    "update-name": null,
+    'update-name': null,
   },
   setup(props, { emit }) {
     // 在第二个 context 上下文中， 这里没有 s
     setTimeout(() => {
-      emit("update-age", 22); // 更新事件发送
-    }, 2000);
+      emit('update-age', 22) // 更新事件发送
+    }, 2000)
   },
-});
+})
 ```
 
 都说到这了，再补充描述一下便捷省力的 `v-model / emits` 配合吧:
@@ -345,13 +345,13 @@ export default defineComponent({
     userName: String,
     uid: Number,
   },
-  emits: ["update:userName", "update:uid"], // 定义子组件发生事件名称
+  emits: ['update:userName', 'update:uid'], // 定义子组件发生事件名称
   setup(props, { emit }) {
     setTimeout(() => {
-      emit("update:userName", "Tom"); // 更新事件发送
-    }, 2000);
+      emit('update:userName', 'Tom') // 更新事件发送
+    }, 2000)
   },
-});
+})
 </script>
 ```
 
@@ -359,10 +359,10 @@ export default defineComponent({
 
 ```js
 // 获取 emit
-const emits = defineEmits(["chang-name"]); // 定义完后返回一个 emits 供子组件调用发送
+const emits = defineEmits(['chang-name']) // 定义完后返回一个 emits 供子组件调用发送
 
 // 调用 emit
-emits("chang-name", "Tom");
+emits('chang-name', 'Tom')
 ```
 
 而在定义约束规范上，同之前一样。
@@ -373,13 +373,13 @@ emits("chang-name", "Tom");
 
 ```js
 // 导入 useAttrs 组件
-import { useAttrs } from "vue";
+import { useAttrs } from 'vue'
 
 // 获取 attrs
-const attrs = useAttrs();
+const attrs = useAttrs()
 
 // attrs是个对象，和 props 一样，需要通过 key 来得到对应的单个 attr
-console.log(attrs.msg);
+console.log(attrs.msg)
 ```
 
 ### 3.5 slots 插槽的接收变化
@@ -405,20 +405,20 @@ console.log(attrs.msg);
 </template>
 
 <script setup lang="ts">
-import ChildTSX from "@cp/context/Child.tsx";
+import ChildTSX from '@cp/context/Child.tsx'
 </script>
 ```
 
 ```vue
 <!-- 子组件通过 useSlots 来获取父组件传进来的 slots 数据进行渲染 -->
 <script>
-import { useSlots } from "vue";
+import { useSlots } from 'vue'
 // 获取插槽数据
-const slots = useSlots();
+const slots = useSlots()
 
 // 使用插槽数据
-console.log(slots.default); // 默认插槽
-console.log(slots.msg); // 命名插槽
+console.log(slots.default) // 默认插槽
+console.log(slots.msg) // 命名插槽
 </script>
 ```
 
@@ -466,18 +466,18 @@ export default defineComponent({
 ```vue
 <script setup lang="ts">
 // 定义一个想提供给父组件拿到的数据
-const msg: string = "Hello World!";
+const msg: string = 'Hello World!'
 
 // 定义一个想提供给父组件拿到的方法函数
 function foo() {
-  console.log(msg);
+  console.log(msg)
 }
 
 // 显示暴露的数据，才可以在父组件拿到
 defineExpose({
   msg,
   foo,
-});
+})
 </script>
 ```
 
@@ -487,19 +487,19 @@ defineExpose({
 
 ```vue
 <script lang="ts">
-import { defineComponent, withAsyncContext } from "vue";
+import { defineComponent, withAsyncContext } from 'vue'
 
 export default defineComponent({
   async setup() {
     const post = await withAsyncContext(
       fetch(`/api/post/1`).then((r) => r.json())
-    );
+    )
 
     return {
       post,
-    };
+    }
   },
-});
+})
 </script>
 ```
 
@@ -507,7 +507,7 @@ export default defineComponent({
 
 ```vue
 <script setup lang="ts">
-const post = await fetch(`/api/post/1`).then((r) => r.json());
+const post = await fetch(`/api/post/1`).then((r) => r.json())
 </script>
 ```
 
@@ -523,15 +523,15 @@ Vue3 还是提供了很好用的自定义指令的，可以自定义一些特定
 // 1. 对象式写法的 TS 类型
 // ...
 export declare interface ObjectDirective<T = any, V = any> {
-  created?: DirectiveHook<T, null, V>;
-  beforeMount?: DirectiveHook<T, null, V>;
-  mounted?: DirectiveHook<T, null, V>;
-  beforeUpdate?: DirectiveHook<T, VNode<any, T>, V>;
-  updated?: DirectiveHook<T, VNode<any, T>, V>;
-  beforeUnmount?: DirectiveHook<T, null, V>;
-  unmounted?: DirectiveHook<T, null, V>;
-  getSSRProps?: SSRDirectiveHook;
-  deep?: boolean;
+  created?: DirectiveHook<T, null, V>
+  beforeMount?: DirectiveHook<T, null, V>
+  mounted?: DirectiveHook<T, null, V>
+  beforeUpdate?: DirectiveHook<T, VNode<any, T>, V>
+  updated?: DirectiveHook<T, VNode<any, T>, V>
+  beforeUnmount?: DirectiveHook<T, null, V>
+  unmounted?: DirectiveHook<T, null, V>
+  getSSRProps?: SSRDirectiveHook
+  deep?: boolean
 }
 // ...
 ```
@@ -545,7 +545,7 @@ export declare type FunctionDirective<T = any, V = any> = DirectiveHook<
   T,
   any,
   V
->;
+>
 // ...
 ```
 
@@ -565,7 +565,7 @@ export declare type DirectiveHook<
   binding: DirectiveBinding<V>,
   vnode: VNode<any, T>,
   prevVNode: Prev
-) => void;
+) => void
 // ...
 ```
 
@@ -580,7 +580,7 @@ const myDirective = {
     // ...
   },
   // 其他钩子...
-};
+}
 ```
 
 这四个参数的定义如下：
@@ -597,12 +597,12 @@ const myDirective = {
 ```typescript
 // ...
 export declare interface DirectiveBinding<V = any> {
-  instance: ComponentPublicInstance | null;
-  value: V;
-  oldValue: V | null;
-  arg?: string;
-  modifiers: DirectiveModifiers;
-  dir: ObjectDirective<any, V>;
+  instance: ComponentPublicInstance | null
+  value: V
+  oldValue: V | null
+  arg?: string
+  modifiers: DirectiveModifiers
+  dir: ObjectDirective<any, V>
 }
 // ...
 ```
@@ -636,7 +636,7 @@ export declare interface DirectiveBinding<V = any> {
    </template>
 
    <script lang="ts">
-   import { defineComponent, ref } from "vue";
+   import { defineComponent, ref } from 'vue'
 
    export default defineComponent({
      // 自定义指令全在这里编写，和 setup 同级别
@@ -646,18 +646,18 @@ export declare interface DirectiveBinding<V = any> {
          // 钩子函数, 仅展示 mounted
          mounted(el, binding) {
            el.style.backgroundColor =
-             typeof binding.value === "string" ? binding.value : "unset";
+             typeof binding.value === 'string' ? binding.value : 'unset'
          },
        },
      },
      setup() {
-       const msg = ref<string>("Hello World!");
+       const msg = ref<string>('Hello World!')
 
        return {
          msg,
-       };
+       }
      },
-   });
+   })
    </script>
    ```
 
@@ -668,10 +668,10 @@ export declare interface DirectiveBinding<V = any> {
      directives: {
        highlight(el, binding) {
          el.style.backgroundColor =
-           typeof binding.value === "string" ? binding.value : "unset";
+           typeof binding.value === 'string' ? binding.value : 'unset'
        },
      },
-   });
+   })
    ```
 
 2. 全局注册使用
@@ -688,19 +688,19 @@ export declare interface DirectiveBinding<V = any> {
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive } from 'vue'
 
 export default defineComponent({
   directives: {
     foo: {
       beforeUpdate(el, binding) {
-        console.log("beforeUpdate", binding);
+        console.log('beforeUpdate', binding)
       },
       updated(el, binding) {
-        console.log("updated", binding);
+        console.log('updated', binding)
       },
       mounted(el, binding) {
-        console.log("mounted", binding);
+        console.log('mounted', binding)
       },
       // 需要设置为 true ，如果是 false 则不会触发
       deep: true,
@@ -712,19 +712,19 @@ export default defineComponent({
       bar: {
         baz: 1,
       },
-    });
+    })
 
     // 2s 后修改其中一个值，会触发 beforeUpdate 和 updated
     setTimeout(() => {
-      foo.bar.baz = 2;
-      console.log(foo);
-    }, 2000);
+      foo.bar.baz = 2
+      console.log(foo)
+    }, 2000)
 
     return {
       foo,
-    };
+    }
   },
-});
+})
 </script>
 ```
 
@@ -738,7 +738,7 @@ const vMyDirective = {
   beforeMount: (el) => {
     // 在元素上做些操作
   },
-};
+}
 </script>
 <template>
   <h1 v-my-directive>This is a Heading</h1>
@@ -749,7 +749,7 @@ const vMyDirective = {
 
 ```vue
 <script setup>
-import { myDirective as vMyDirective } from "./MyDirective.ts";
+import { myDirective as vMyDirective } from './MyDirective.ts'
 </script>
 ```
 

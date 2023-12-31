@@ -1,5 +1,5 @@
 ---
-title: vite proxy 代理
+title: Proxy 代理添加响应头
 icon: build
 date: 2023-09-23
 

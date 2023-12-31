@@ -19,11 +19,11 @@ sticky: false
 // main.ts
 
 // if you're using CDN, please remove this line.
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-const app = createApp(App);
+const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component);
+  app.component(key, component)
 }
 ```
 
@@ -46,10 +46,10 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue'
 
 // 导入子组件
-import Child from "@cp/Child.vue";
+import Child from '@cp/Child.vue'
 
 export default defineComponent({
   // 挂载组件模版
@@ -61,7 +61,7 @@ export default defineComponent({
   setup() {
     // ...
   },
-});
+})
 </script>
 ```
 
@@ -69,15 +69,15 @@ export default defineComponent({
 
 ```vue
 <script lang="ts">
-import { defineComponent } from "vue";
-import md5 from "md5"; // 导入即是挂载
+import { defineComponent } from 'vue'
+import md5 from 'md5' // 导入即是挂载
 
 export default defineComponent({
   setup() {
     // 使用
-    const md5Msg: string = md5("message");
+    const md5Msg: string = md5('message')
   },
-});
+})
 </script>
 ```
 
@@ -89,22 +89,22 @@ export default defineComponent({
 
 ```ts
 // main.ts
-import { createApp } from "vue";
-import ElementPlus from "element-plus";
-import "element-plus/dist/index.css";
-import App from "./App.vue";
+import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import App from './App.vue'
 
-const app = createApp(App);
+const app = createApp(App)
 
-app.use(ElementPlus); // 挂载
-app.mount("#app");
+app.use(ElementPlus) // 挂载
+app.mount('#app')
 ```
 
 我们知道，`createApp` 会返回创建的一个实例应用 `app`，而这个实例上便有 `use` 方法用于挂载全局插件。来看看官方介绍:
 
 ```ts
 interface App {
-  use(plugin: Plugin, ...options: any[]): this;
+  use(plugin: Plugin, ...options: any[]): this
 }
 ```
 
@@ -145,7 +145,7 @@ export default {
   install: (app, options) => {
     // 逻辑代码...
   },
-};
+}
 ```
 
 俩种形式都有两个相同的入参`app`和 `options` :
@@ -163,31 +163,31 @@ export default {
 
 ```ts
 // ./global/register-icons.ts
-import type { App } from "vue"; // 导入 App 类型
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+import type { App } from 'vue' // 导入 App 类型
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 // 执行的函数, 此处不传 options
 function registerIcons(app: App<Element>) {
   for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-    app.component(key, component);
+    app.component(key, component)
   }
 }
 
-export default registerIcons;
+export default registerIcons
 ```
 
 然后在 `main.ts` 中应用就行了。
 
 ```ts
 // main.ts
-import { createApp } from "vue";
-import App from "./App.vue";
-import registerIcons from "./global/register-icons";
+import { createApp } from 'vue'
+import App from './App.vue'
+import registerIcons from './global/register-icons'
 
-const app = createApp(App);
-app.use(registerIcons); // 注册全局 Element-icons
+const app = createApp(App)
+app.use(registerIcons) // 注册全局 Element-icons
 
-app.mount("#app");
+app.mount('#app')
 ```
 
 也许你这里会有困惑，为什么在挂载时直接 `app.use(registerIcons)` 就可以了，我们并没有给它传递参数 `app` 呀。
@@ -200,8 +200,8 @@ export declare interface App<HostElement = any> {
   use<Options extends unknown[]>(
     plugin: Plugin_2<Options>,
     ...options: Options
-  ): this;
-  use<Options>(plugin: Plugin_2<Options>, options: Options): this;
+  ): this
+  use<Options>(plugin: Plugin_2<Options>, options: Options): this
   // ...
 }
 ```
@@ -211,16 +211,16 @@ export declare interface App<HostElement = any> {
 ```ts
 declare type Plugin_2<Options = any[]> =
   | (PluginInstallFunction<Options> & {
-      install?: PluginInstallFunction<Options>;
+      install?: PluginInstallFunction<Options>
     })
   | {
-      install: PluginInstallFunction<Options>;
-    };
-export { Plugin_2 as Plugin };
+      install: PluginInstallFunction<Options>
+    }
+export { Plugin_2 as Plugin }
 
 declare type PluginInstallFunction<Options> = Options extends unknown[]
   ? (app: App, ...options: Options) => any
-  : (app: App, options: Options) => any;
+  : (app: App, options: Options) => any
 ```
 
 我们可以看到，`Plugin_2` 内部会检测是否有 `install` 方法，该方法最终指向 `PluginInstallFunction` 方法，而最终的 `PluginInstallFunction`内部就有用到 `app` 。
@@ -233,15 +233,15 @@ declare type PluginInstallFunction<Options> = Options extends unknown[]
 
 ```ts
 // src/plugins/directive.ts
-import type { App } from "vue";
+import type { App } from 'vue'
 
 // 插件选项的类型
 interface Options {
   // 文本高亮选项
   highlight?: {
     // 默认背景色
-    backgroundColor: string;
-  };
+    backgroundColor: string
+  }
 }
 
 /**
@@ -256,22 +256,22 @@ export default {
      * @tips 指令传入的值需要是合法的 CSS 颜色名称或者 Hex 值
      * @example <div v-highlight="`cyan`" />
      */
-    app.directive("highlight", (el, binding) => {
+    app.directive('highlight', (el, binding) => {
       // 获取默认颜色
-      let defaultColor = "unset";
+      let defaultColor = 'unset'
       if (
-        Object.prototype.toString.call(options) === "[object Object]" &&
+        Object.prototype.toString.call(options) === '[object Object]' &&
         options?.highlight?.backgroundColor
       ) {
-        defaultColor = options.highlight.backgroundColor;
+        defaultColor = options.highlight.backgroundColor
       }
 
       // 设置背景色
       el.style.backgroundColor =
-        typeof binding.value === "string" ? binding.value : defaultColor;
-    });
+        typeof binding.value === 'string' ? binding.value : defaultColor
+    })
   },
-};
+}
 ```
 
 这里我们定义了一个文本高亮的插件，并且给高亮指令一个可选的颜色值。
@@ -280,18 +280,18 @@ export default {
 
 ```ts
 // src/main.ts
-import { createApp } from "vue";
-import App from "@/App.vue";
-import directive from "@/plugins/directive"; // 导入插件
+import { createApp } from 'vue'
+import App from '@/App.vue'
+import directive from '@/plugins/directive' // 导入插件
 
 createApp(App)
   // 自定义插件
   .use(directive, {
     highlight: {
-      backgroundColor: "#ddd",
+      backgroundColor: '#ddd',
     },
   })
-  .mount("#app");
+  .mount('#app')
 ```
 
 在 Vue 组件中使用:
