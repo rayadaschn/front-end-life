@@ -25,6 +25,7 @@ category:
 - [React 相关面试题](./interview/10)
 - [框架综合应用](./interview/11)
 - [webpack 相关应用](./interview/12)
+- [算法总结](./interview/17)
 
 ## Other
 
