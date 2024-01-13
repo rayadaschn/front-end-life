@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-79b11f5e","path":"/OneMoreThing/interview/","title":"Interview","lang":"zh-CN","frontmatter":{"title":"Interview","article":false,"feed":false,"sitemap":false},"headers":[],"git":{},"readingTime":{"minutes":0,"words":1},"filePathRelative":null,"excerpt":""}');export{e as data};
