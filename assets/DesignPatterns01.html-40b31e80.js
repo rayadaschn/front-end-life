@@ -126,7 +126,7 @@ proxyImage<span class="token punctuation">.</span><span class="token function">s
 
     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>fn<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token comment">// 若没有传入具体的回调函数，则取消 key 对应的所有订阅</span>
-      fns <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>fn<span class="token punctuation">.</span>length <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+      fns <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>fns<span class="token punctuation">.</span>length <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">)</span>
     <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
       <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> fns<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">const</span> fnItem <span class="token operator">=</span> fns<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
