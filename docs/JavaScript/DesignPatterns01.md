@@ -235,7 +235,7 @@ const Event = {
 
     if (!fn) {
       // 若没有传入具体的回调函数，则取消 key 对应的所有订阅
-      fns && (fn.length = 0)
+      fns && (fns.length = 0)
     } else {
       for (let i = fns.length - 1; i >= 0; i--) {
         const fnItem = fns[i]
