@@ -9,8 +9,6 @@ tag:
 sticky: false
 ---
 
-# React 之 Hooks
-
 React Hooks 是 React 16.8 新增的功能，它允许函数组件中使用状态和其他 React 特性。Hooks 可以帮助我们更轻松地编写可复用、独立和易于测试的组件，并且可以避免类组件中常见的代码冗余和样板代码。
 
 先看看，在过去的 Class 组件中所存在的问题：
@@ -145,6 +143,8 @@ function Counter() {
 
 除了定义状态，还需要解决函数组件中的生命周期问题，`useEffect` 这个 Effect Hook 便是用来干这个的。
 
+> 在 react 哲学中，所有的副作用都要在 useEffect 中完成。
+
 先来回顾一下一个名词：副作用。像网络请求、手动更新 DOM、一些事件的监听等都是 React 更新 DOM 的一些副作用(**Side Effects**)。因此，对于完成这些功能的 Hook 被称之为 Effect Hook。
 
 `useEffect` 可以告诉 React 需要在渲染后执行某些操作，它用于在函数组件中添加副作用，例如订阅数据、设置定时器等。**它接受一个回调函数，并在组件渲染时调用**。
@@ -158,6 +158,10 @@ useEffect(() => {
 ```
 
 其中，**第一个参数是回调函数，称为 Effect**。它会在组件的每次渲染周期结束后执行一次。**第二个参数是可选的依赖列表(数组形式)，用于控制 Effect 的执行时机。只有依赖项变化时，Effect 才会重新运行**。
+
+> 若第二个参数是 undefined => 任何状态改变时, 都会重新执行回调;
+>
+> 若第二个参数不是一个数组 => 报警告错误。
 
 使用 useEffect Hook 可以帮助我们避免使用 class 组件和生命周期方法来管理副作用，并且让函数组件和类组件的副作用管理方式保持一致。
 
@@ -271,13 +275,15 @@ function Toolbar() {
 
 很多人看到 `useReducer` 的第一反应应该是 `redux` 的某个替代品，其实并不是。`useReducer` 仅仅是 `useState` 的一种替代方案，它用于在函数组件中管理复杂的状态逻辑。它接受一个回调函数和一个初始值，并返回当前状态和更新状态的函数。
 
+简单理解: useReducer 就是收集所有操作某一个数据的「方案」；dispatch 就是派发器，依据传入的不同操作类型，去调用不同的逻辑。
+
 以下是 useReducer Hook 的基本语法：
 
 ```jsx
 const [state, dispatch] = useReducer(reducer, initialState)
 ```
 
-其中，`reducer` 是一个回调函数，用于根据不同的 action 更新状态，`initialState` 是状态的初始值，`state` 表示当前状态的值，`dispatch` 是更新状态的函数。
+其中，`reducer` 是一个回调函数，用于根据不同的 action 更新状态，`initialState` 是状态的初始值，`state` 表示当前状态的值，`dispatch` 是更新状态的派发器函数。
 
 使用 useReducer Hook 可以帮助我们避免使用 `class` 组件和 `this.setState()` 方法来管理复杂的状态逻辑，并且让函数组件和类组件的状态管理方式保持一致。
 
