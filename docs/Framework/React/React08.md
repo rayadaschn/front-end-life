@@ -120,3 +120,136 @@ async function render() {
   root.render(<App />)
 }
 ```
+
+## 手写 useReducer
+
+useReducer 的作用是在函数组件中使用 Reducer 模式来管理 state。实现逻辑是派发器思想，即该 hook 返回的第二个参数，即一个函数，该函数用于向 Reducer 发送 action。Reducer 是一个纯函数，它接收当前的 state 和 action，根据 action 的类型返回新的 state。
+
+> 派发器思想的核心在于，你可以在你的组件中定义一个函数，然后通过派发器将这个函数传递给 Reducer，Reducer 在处理 action 时会调用这个函数，这样就可以在组件中触发一些副作用。
+>
+> 这个函数通常被称为 action creator，它返回一个 action 对象，这个对象至少包含一个 type 字段用于描述 action 的类型。
+
+具体使用可以参考 [《React 之 Hooks》](./React06)，下面来实现一下这个 Hooks 方法。
+
+由于上文实现了 useState，所以 useReducer 很容易就能实现。
+
+```jsx
+export function useReducer(reducer, initialState) {
+  const [state, setState] = useState(initialState)
+
+  const dispatch = (action) => {
+    const newState = reducer(state, action)
+    setState(newState)
+  }
+
+  return [state, dispatch]
+}
+```
+
+代码非常简单，实际上就是复现派发器的逻辑，返回一个定义值（或对象）和一个函数，用于处理定义量变更逻辑。
+
+```jsx
+const effectDepArr = []
+const clearCallbacks = []
+let effectIndex = 0
+
+export function useEffect(callback, deps) {
+  if (typeof callback !== 'function') {
+    throw new TypeError('callback must be a function')
+  }
+
+  if (deps !== undefined && !Array.isArray(deps)) {
+    throw new TypeError('Dependence must be an array')
+  }
+
+  const curIndex = effectIndex++
+  const lastDeps = effectDepArr[curIndex]
+  const isChanged =
+    !lastDeps || // 首次渲染
+    !deps || // 是否有依赖
+    deps.some((dep, i) => dep !== lastDeps[i]) // 综合比较, 依赖是否改变
+
+  if (isChanged) {
+    effectDepArr[curIndex] = deps
+
+    // 只实现改变渲染时, 清除副作用函数, 未实现组件卸载时,清除副作用回调
+    const clearCallback = clearCallbacks[curIndex]
+
+    if (clearCallback) clearCallback()
+    clearCallbacks[curIndex] = callback() // 存储清除副作用函数, 并同时执行回调函数
+  }
+}
+
+// 更新渲染函数
+async function render() {
+  stateIndex = 0 // 重新渲染后, index 重置, 合理利用闭包
+  effectIndex = 0 // 重新渲染后, 也要重新副作用函数的 index
+  const App = (await import('./App')).default
+  root.render(<App />)
+}
+```
+
+## 手写 memo 函数
+
+memo 函数不是 Hook，但是是为了后面 useMemo 做铺垫，因此也实现一下。
+
+memo 函数的作用和 Vue 中 computed 计算属性一样，目的在于优化性能。
+
+首先定义一个 PureComponent 纯函数组件：
+
+```jsx
+const { Component } = React
+
+export default class PureComponent extends Component {
+  // 重新定义是否需要重新渲染的钩子函数
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      !shallowEqual(this.props, nextProps) ||
+      !shallowEqual(this.state, nextState)
+    )
+  }
+}
+
+/** 浅比较 */
+function shallowEqual(o1, o2) {
+  // 组件不能调用 render 函数
+  if (o1 === o2) return true
+
+  if (
+    typeof o1 !== 'object' ||
+    o1 === null ||
+    typeof o2 !== 'object' ||
+    o2 === null
+  ) {
+    return false
+  }
+
+  const k1 = Object.keys(o1)
+  const k2 = Object.keys(o2)
+
+  if (k1.length !== k2.length) return false
+
+  // 检测键
+  for (const k of k1) {
+    if (!o2.hasOwnProperty(k) || o1[k] !== o2[k]) {
+      return false
+    }
+  }
+
+  return true
+}
+```
+
+最后实现:
+
+```jsx
+export function memo(FC) {
+  // 匿名类的定义，它继承自 PureComponent，并覆盖了 render 方法。
+  return class extends PureComponent {
+    render() {
+      // 调用原始的函数组件 FC，并将 props 传递给它
+      return FC(this.props)
+    }
+  }
+}
+```
