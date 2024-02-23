@@ -9,7 +9,7 @@ tag:
 sticky: false
 ---
 
-Hooks 的好处很多，为了加强对 Hooks 的理解，手动实现一遍 React 的一些 Hooks 方法，便是再好不过的了。
+Hooks 的好处很多，为了加强对 Hooks 的理解，手动实现一遍 React 的一些 Hooks 方法，便是再好不过的了。该文项目的源代码在 [react-hooks](https://github.com/rayadaschn/react-hooks.git) 中。
 
 本文中，我们统一规定 初始 `App.jsx` 如下：
 
@@ -251,5 +251,133 @@ export function memo(FC) {
       return FC(this.props)
     }
   }
+}
+```
+
+## 手写 useMemo
+
+有时候 memo 函数是不能将所有情况都给涵盖进去的，比如下面这个子组件接收到的是一个对象，因此函数每次执行时都会产生一个新的对象赋值给子组件，此时子组件依旧会重新渲染。
+
+```jsx
+const Child = memo((props) => {
+  console.log('Child 子组件开始渲染')
+  const { childData } = props
+
+  return (
+    <div>
+      <h1>Child's count2: {childData.count2}</h1>
+    </div>
+  )
+})
+
+// 父组件使用
+const childData = {count2}
+// 直接赋值
+<ChildSecond childData={childData} />
+```
+
+具体实现，同前面一致，利用闭包进行实现：
+
+```jsx
+const memoArr = []
+let memoIndex = 0
+export function useMemo(cb, depArr) {
+  const setNewMemo = (cb, depArr) => {
+    const memo = cb() // 比 useCallback 多一个执行函数结果
+    memoArr[memoIndex++] = [memo, depArr]
+    return memo
+  }
+
+  // 查看是否已有该依赖
+  if (memoArr[memoIndex]) {
+    const [_memo, _depArr] = memoArr[memoIndex]
+    // 查看依赖是否发生变化
+    const isFullSame = depArr.every((dep, index) => dep === _depArr[index])
+    // 若相同直接返回原先结果, 否则重新计算
+    if (isFullSame) {
+      memoIndex++
+      return _memo
+    } else {
+      return setNewMemo(cb, depArr)
+    }
+  } else {
+    return setNewMemo(cb, depArr)
+  }
+}
+```
+
+当然需要在每次 render 函数中，将 index 进行重置。
+
+```jsx
+async function render() {
+  stateIndex = 0 // 重新渲染后, index 重置, 合理利用闭包
+  effectIndex = 0 // 重新渲染后, index 重置
+  memoIndex = 0
+  const App = (await import('./App')).default
+  root.render(<App />)
+}
+```
+
+## 手写 useCallback
+
+useCallback 和 useMemo 非常相似，但是它是旨在缓存一个函数，若是子组件使用了这个函数，useCallback 可以对这个函数进行缓存。
+
+```jsx
+const Child = memo((props) => {
+  console.log('Child 子组件开始渲染')
+  const { childData, cbSetCount2 } = props
+
+  return (
+    <div>
+      <h1>Child's count2: {childData.count2}</h1>
+      <button onClick={cbSetCount2}>+</button>
+    </div>
+  )
+})
+
+// 父组件使用 该函数
+const cbSetCount2 = () => {
+  setCount2((count) => count + 1)
+}
+// 直接赋值
+;<ChildSecond childData={childData} cbSetCount2={cbSetCount2} />
+```
+
+简单实现，useCallback 和 useMemo 非常像, 简单实现也是一样的, 只不过在使用上, useMemo 是函数运行结果, 而 useCallback 缓存的是该函数本身
+
+```jsx
+const callbackArr = []
+let callbackIndex = 0
+export function useCallback(cb, depArr) {
+  const setNewArr = (cb, depArr) => {
+    callbackArr[callbackIndex++] = [cb, depArr]
+    return cb
+  }
+
+  if (callbackArr[callbackIndex]) {
+    const [_cb, _depArr] = callbackArr[callbackIndex]
+    const isFullSame = depArr.every((dep, index) => dep === _depArr[index])
+    if (isFullSame) {
+      callbackIndex++
+      return _cb
+    } else {
+      return setNewArr(cb, depArr)
+    }
+  } else {
+    setNewArr(cb, depArr)
+  }
+}
+```
+
+同理需要在每次 render 函数中，将 index 进行重置。
+
+```jsx
+async function render() {
+  stateIndex = 0 // 重新渲染后, index 重置, 合理利用闭包
+  effectIndex = 0 // 重新渲染后, index 重置
+  memoIndex = 0
+  callbackIndex = 0
+  const App = (await import('./App')).default
+  root.render(<App />)
 }
 ```
