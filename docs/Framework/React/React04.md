@@ -10,8 +10,6 @@ star: true
 sticky: false
 ---
 
-# React 之数据管理 Redux
-
 ## JavaScript 中的纯函数
 
 在 JavaScript 中，纯函数是指具有以下两个特性的函数：
@@ -316,6 +314,8 @@ root.render(
 
 上面代码中，`Provider`在根组件外面包了一层，这样一来，`App`的所有子组件就默认都可以拿到`state`了。
 
+> StoreContext 是其它高阶函数的 context
+
 **redux 代码优化**:
 
 1. 将派发的 action 生成过程放到一个`actionCreators`函数中；
@@ -365,7 +365,7 @@ store.dispatch(addTodoAction)
 
 - 在创建 store 时传入应用了 `middleware` 的 `enhance`函数；
 
-- 将 `enhance` 函数作为第二个参数传入到 `createStore` 中；
+- 将 `enhance` 函数(应用 redux-thunk 的中间件)作为第二个参数传入到 `createStore` 中；
 
   ```js
   import { createStore, applyMiddleware } from 'redux'
@@ -373,6 +373,8 @@ store.dispatch(addTodoAction)
   const enhancer = applyMiddleware(thunkMiddleware)
   const store = createStore(reducer, enhancer)
   ```
+
+  > 在上述代码中，`applyMiddleware` 是 Redux 提供的一个函数，用于将中间件应用于 Redux store。
 
 - 定义返回一个函数的 `action`，**注意：这里不再是返回一个对象，而是返回一个函数，函数的入参为 `dispatch`，并且该函数会在 `dispatch`之后被执行**。
 
@@ -431,8 +433,6 @@ const reducer = (state = initialState, action) => {
 
 export default reducer
 ```
-
-在上述代码中，`applyMiddleware` 是 Redux 提供的一个函数，用于将中间件应用于 Redux store。
 
 在 Redux 中，中间件是一个函数，它可以在 action 被发起之后，到达 reducer 之前执行一些自定义的逻辑。中间件可以用来处理异步操作、日志记录、错误处理等任务。
 
