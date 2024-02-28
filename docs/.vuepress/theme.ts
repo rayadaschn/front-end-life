@@ -52,7 +52,7 @@ export default hopeTheme({
       displayFooter: true,
 
       blog: {
-        description: '但行好事 莫问前程',
+        description: '功不唐捐 日拱一卒',
       },
 
       metaLocales: {

@@ -5,7 +5,7 @@ icon: home
 title: 主页
 heroImage: /Huy.png
 bgImage: https://file.mo7.cc/api/public/bz # 链接地址 自动获取 必应 每日地址
-heroText: '但行好事 莫问前程'
+heroText: '功不唐捐 日拱一卒'
 tagline: Just Do It
 heroFullScreen: true
 
