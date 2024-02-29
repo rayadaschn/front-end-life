@@ -9,6 +9,14 @@ tag:
 sticky: false
 ---
 
+在 Vuex 中是基于 Flux 架构进行设计的，它的核心思想是单向数据流，即数据只能从 Store 向外传递到组件，组件不能直接修改 Store 中的数据，只能通过提交 Mutations 来修改。
+
+即: view --> dispatch --> action --> mutation --> state --> view
+
+并且 Vuex 使用一个全局的 Store 来存储应用的状态，所有组件都共享这个 Store。由此会产生较多的 modules。
+
+而 pinia 则是将整个 store 体系进行 "拍平"。Pinia 不是使用一个全局的 Store，而是允许创建多个 Store，每个 Store 都可以独立管理自己的状态。
+
 ## 前置基础知识
 
 Vue3 中有俩个不常用的 API : `effect` 和 `effectScope`, 它们是用来处理副作用的函数。有点类似于 React 中的 `useEffect`。
