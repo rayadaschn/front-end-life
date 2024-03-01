@@ -1,5 +1,5 @@
 ---
-title: 手写 pinia
+title: 手写 Pinia
 icon: vue
 date: 2024-02-29
 category:
