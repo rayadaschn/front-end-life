@@ -71,3 +71,384 @@ scope.run(() => {
 // 处理掉当前作用域内的所有 effect
 scope.stop()
 ```
+
+## 梳理 pinia 简单用法
+
+1. 第一步用 createPinia 创建注册 pinia 插件:
+
+   ```js
+   import { createApp } from 'vue'
+   import App from './App.vue'
+
+   import { createPinia } from './store/pinia'
+   const pinia = createPinia() // 创建 pinia
+
+   const app = createApp(App)
+   app.use(pinia) // 注册挂载 pinia
+   app.mount('#app')
+   ```
+
+2. 第二步用 defineStore 创建 store。但是这里 pinia 有俩种创建方式，一种是 options 风格， 一种是 setup 风格。
+
+   ```js
+   // options 风格 store/todolist1.js
+   import { defineStore } from './pinia'
+
+   export default defineStore('todolist1', {
+     state: () => {
+       return {
+         todoList: [],
+       }
+     },
+     getters: {
+       count() {
+         return this.todoList.length
+       },
+     },
+     actions: {
+       addTodo(todo) {
+         this.todoList.unshift(todo)
+       },
+       toggleTodo(id) {
+         this.todoList = this.todoList.map((todo) => {
+           if (todo.id === id) {
+             todo.completed = !todo.completed
+           }
+           return todo
+         })
+       },
+       removeTodo(id) {
+         this.todoList = this.todoList.filter((todo) => todo.id !== id)
+       },
+     },
+   })
+   ```
+
+   ```js
+   // setup 函数风格 store/todolist2.js
+   import { defineStore } from './pinia'
+
+   import { computed, ref } from 'vue'
+
+   export default defineStore('todolist2', () => {
+     const todoList = ref([])
+     const count = computed(() => todoList.value.length)
+
+     function addTodo(todo) {
+       todoList.value.unshift(todo)
+     }
+     function toggleTodo(id) {
+       todoList.value = todoList.value.map((todo) => {
+         if (todo.id === id) {
+           todo.completed = !todo.completed
+         }
+         return todo
+       })
+     }
+     function removeTodo(id) {
+       todoList.value = todoList.value.filter((todo) => todo.id !== id)
+     }
+
+     return {
+       count,
+       todoList,
+       addTodo,
+       toggleTodo,
+       removeTodo,
+     }
+   })
+   ```
+
+   由此出，defineStore 需要处理兼容俩种创建情况。
+
+3. 组件使用
+
+   ```vue
+   <template>
+     <div>
+       <div>
+         <input type="text" v-model="todoText" />
+         <button @click="addTodo">ADD</button>
+         <p>共{{ store.count }}条</p>
+       </div>
+
+       <ul>
+         <li v-for="todo of store.todoList" :key="todo.id">
+           <input
+             type="checkbox"
+             :checked="todo.completed"
+             @click="store.toggleTodo(todo.id)"
+           />
+           <span
+             :style="{ textDecoration: todo.completed ? 'line-through' : '' }"
+             >{{ todo.content }}</span
+           >
+           <button @click="store.removeTodo(todo.id)">REMOVE</button>
+         </li>
+       </ul>
+     </div>
+   </template>
+
+   <script setup>
+   import { ref } from 'vue'
+   import useTodoListStore from '../../store/todolist1'
+   // import useTodoListStore from "../../store/todolist2"; // setup 风格
+
+   const store = useTodoListStore()
+
+   const todoText = ref('')
+   const addTodo = () => {
+     if (!todoText.value.length) return
+
+     const todo = {
+       id: new Date().getTime(),
+       content: todoText.value,
+       completed: false,
+     }
+
+     store.addTodo(todo)
+     todoText.value = ''
+   }
+   </script>
+   ```
+
+上面是 pinia 的简单使用过程。
+
+## 实际手写
+
+由使用过程可以看出，基本上需要自定义的基础 api 是 createPinia 和 defineStore 俩个。
+
+### 手写 createPinia
+
+通过观察源码, 可以看出 createPinia 实际上是返回了一个对象: 分别是 `store`、`scope`、`state`、`install`。
+
+1. `store`: 这是一个用来**存储状态的对象**，它是通过 createStore 函数创建的。一个应用通常会有多个 store 对象，store 对象中包含了 state、actions、getters 等属性，它们分别用来管理状态、异步修改状态、获取状态等。
+2. `scope`: 这是一个用来**管理状态作用域**的对象。在一个大型的 Vue 应用中，可能会有多个组件共享同一个 store，但是它们只想共享 store 中的一部分状态。scope 对象可以帮助我们在组件之间划分状态的作用域，从而避免状态的冲突。
+3. `state`: 这是一个用来**存储状态的对象**，它包含了 store 对象中的所有状态。在 Vue 中，状态通常是响应式的，这意味着当状态发生变化时，相关的视图会自动更新。
+4. `install`: 这是一个用来安装插件的函数，它接收一个 Vue 实例作为参数。通过调用这个函数，我们可以在 Vue 应用中安装 createPinia 提供的插件，从而使用 createPinia 提供的状态管理功能。
+
+![createPinia 的返回](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202403031646150.png)
+
+```js
+import { effectScope, ref } from 'vue'
+import { piniaSymbol } from './constant'
+// export const piniaSymbol = Symbol(); 以此保持唯一性
+
+export default function createPinia() {
+  const store = new Map()
+  const scope = effectScope(true)
+  const state = scope.run(() => ref({}))
+
+  // 返回一个 pinia 对象
+  return {
+    store,
+    scope,
+    state,
+    install,
+  }
+}
+
+/** 创建注册 install */
+function install(app) {
+  app.provide(piniaSymbol, this) // 并全局提供该 pinia 实例
+  console.log(app)
+}
+```
+
+### 手写 defineStore
+
+首先，需要明确的是我们所创建出来的 defineStore 是需要在 vue 中才能使用的。我们先以 setup 的形式进行举例
+
+```js
+// 依据 key 定义 Store
+export default defineStore('todolist2', () => {})
+```
+
+定义完 store 后, 再到 vue 中使用:
+
+```js
+import useTodoListStore from '../../store/todolist2'
+
+const store = useTodoListStore()
+```
+
+可以看到, 被被定义的 store 是在 vue 组件中才执行的，原因在于 我们在 `createPinia` 中用 `app.provide(piniaSymbol, this)` 所提供的方式是 `provide/inject` 进行数据传递，而该方法只能在 vue 中使用，不能在 js 内获取响应性。
+
+因此, defineStore 的定义可以分为俩步, 第一步解析参数, 并依据参数区分是 options style 还是 setup style；再返回一个包含 inject 注入函数的回调函数, 该回调函数会在组件内注册时, 执行 inject 注入函数:
+
+```js
+export default function defineStore(...args) {
+  const { id, options, setup } = formatArgs(args)
+  const isSetup = isFunction(setup)
+
+  const useStore = () => {
+    const pinia = inject(piniaSymbol) // 获取 createPinia 所创建的 pinia 对象
+
+    // 查看是否已经注册该 store
+    if (!pinia.store.has(id)) {
+      if (isSetup) {
+        createSetupStore(pinia, id, setup)
+      } else {
+        createOptions(pinia, id, options)
+      }
+    }
+
+    return pinia.store.get(id)
+  }
+
+  // 必须返回一个函数, 因为 provide/inject 只能在 Vue 组件中使用
+  return useStore
+}
+```
+
+这里我们返回了一个 `useStore` 的回调函数, 并且会在组件内使用。
+
+在该代码中， 我们还使用了俩个判断方法： isFunction 和 formatArgs 处理参数的函数。
+
+```js
+export function isFunction(value) {
+  return typeof value === 'function'
+}
+
+/** 区分俩种模式 */
+export function formatArgs(args) {
+  let id, options, setup
+
+  if (isString(args[0])) {
+    id = args[0]
+    if (isFunction(args[1])) {
+      setup = args[1]
+    } else {
+      options = args[1]
+    }
+  } else {
+    options = args[0]
+    id = args[0].id
+  }
+
+  return { id, options, setup }
+}
+```
+
+#### setup 模式
+
+setup 模式中, 我们定义了一个 createSetupStore 方法, 并将创建好的 pinia 对象 id 以及 definePinia 中的 setup 函数以参数形式传入了进来。目的是对这个创建 pinia 对象进行改造。
+
+```js
+function createSetupStore(pinia, id, setup) {
+  const setupStore = setup()
+  const store = reactive({})
+
+  let storeScope
+
+  const result = pinia.scope.run(() => {
+    storeScope = effectScope()
+    return storeScope.run(() => compliedSetup(pinia, id, setupStore))
+  })
+
+  return setStore(pinia, store, id, result)
+}
+```
+
+在上面代码中, 我们先执行了 setup 方法, 以此获取需要暴露的 actions 方法, 并且定义了 一个 storeScope 的作用域, 利用定义的 compliedSetup 函数, 将 setup 中的 actions 方法进行处理， 以便下面挂载到 pinia 中(以 id 作为区分 key)。
+
+最后返回了一个 setStore 挂载 store 和处理后的 setup 的方法。
+
+```js
+function compliedSetup(pinia, id, setupStore) {
+  /**
+   * state 是一个 ref 对象
+   */
+  // 若没有, 则初始化为空
+  !pinia.state.value[id] && (pinia.state.value[id] = {})
+
+  for (let key in setupStore) {
+    const el = setupStore[key]
+
+    if ((isRef(el) && !isComputed(el)) || isReactive(el)) {
+      pinia.state.value[id][key] = el
+    }
+  }
+
+  return { ...setupStore }
+}
+```
+
+```js
+function setStore(pinia, store, id, result) {
+  pinia.store.set(id, store)
+  Object.assign(store, result)
+
+  return store
+}
+```
+
+通过 compliedSetup 将 setup 中的 actions 函数挂载到 pinia 的 state 中后,将返回的 setupStore 再挂载到 pinia 的 store 中去。整体的实现较为简单。
+
+### options 模式
+
+options 的模式较 setup 则更加复杂一些, 因为要处理 this 的指向问题。
+
+```js
+function compileOptions(pinia, store, id, options) {
+  const { state, getters, actions } = options
+
+  const storeState = createStoreState(pinia, id, state)
+  const storeGetters = createStoreGetters(store, getters)
+  const storeActions = createStoreActions(store, actions)
+  return {
+    ...storeState,
+    ...storeGetters,
+    ...storeActions,
+  }
+}
+```
+
+分别需要对 state、getters 和 actions 三个 options 属性进行处理。
+
+```js
+function createStoreState(pinia, id, state) {
+  // state : () => {}
+  return (pinia.state.value[id] = state ? state() : {})
+}
+
+function createStoreGetters(store, getters) {
+  /**
+   * getters: {
+   *  count: () => {
+   *    return this.todoList.length
+   *  }
+   * }
+   *
+   * 最终需要结果为 { count: computed(() => count.call(store)) }
+   */
+
+  // keys 遍历出来的是数组 ['count', 'others']
+  return Object.keys(getters || {}).reduce((wrapper, getterName) => {
+    wrapper[getterName] = computed(() => getters[getterName].call(store))
+    return wrapper
+  }, {})
+}
+
+function createStoreActions(store, actions) {
+  /**
+   * action: {
+      addTodo(todo) {
+        this.todoList.unshift(todo);
+      },
+      toggleTodo(id) {...},
+      removeTodo(id) {...},
+    },
+   */
+  const storeActions = {}
+  for (const actionName in actions) {
+    storeActions[actionName] = function () {
+      // apply(context, [...])
+      actions[actionName].apply(store, arguments)
+    }
+  }
+  return storeActions
+}
+```
+
+分别处理后的再合并成一个 options 的 optionsStore 作为 result 返回, 后续的合并则同 setup 模式相同。复杂点在于上述的 this 指向问题的处理。
