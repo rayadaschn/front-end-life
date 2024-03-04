@@ -452,3 +452,306 @@ function createStoreActions(store, actions) {
 ```
 
 分别处理后的再合并成一个 options 的 optionsStore 作为 result 返回, 后续的合并则同 setup 模式相同。复杂点在于上述的 this 指向问题的处理。
+
+## 实现 `$patch` api
+
+在前文中, 我们实现 store 的方式是创建一个单纯的 reactive 响应式对象: `const store = reactive({})`，而如果需要再往上增加 api 则需要对这个创建进行一些改造。
+
+```js
+// 替换 const store = reactive({})
+const store = reactive(createApis(pinia, id, storeScope))
+```
+
+我们创建一个 createApis 的方法，以对 store 挂载一些我们需要的 api。
+
+```js
+function createApis(pinia, id, scope) {
+  return {
+    $patch: createPatch(pinia, id),
+  }
+}
+```
+
+此时，我们返回了一个 带 `$patch` 属性方法的对象，以完成替换，由此实现 `store.$patch` 方法的调用。接下来来实现该方法的创建。
+
+对于 `$patch` 的用法可以参见[官网](https://pinia.vuejs.org/api/interfaces/pinia._StoreWithState.html#-patch)
+
+即可以传入一个函数, 也可以直接修改传入一个对象, 因此也需要对该入参进行判断。
+
+```js
+export function createPatch(pinia, id) {
+  return function $patch(stateOrFn) {
+    if (typeof stateOrFn === 'function') {
+      stateOrFn(pinia.state.value[id])
+    } else {
+      /**
+       * $patch{
+       *  count: 10
+       * }
+       */
+      mergeObject(pinia.state.value[id], stateOrFn)
+    }
+  }
+}
+
+/** 简单合并, 由于可能存在递归, 所以不用 Object.assign 直接合并 */
+export function mergeObject(targetState, newState) {
+  for (const k in newState) {
+    const oldVal = targetState[k]
+    const newVal = newState[k]
+
+    if (isObject(oldVal) && isObject(newVal)) {
+      targetState[k] = mergeObject(oldVal, newVal)
+    } else {
+      targetState[k] = newVal
+    }
+  }
+
+  return targetState
+}
+```
+
+## 实现 `$reset` api
+
+`$reset` 同 `$patch` 不同, 不能直接在 `createApis` 中添加, 原因在于 setup 模式中, 没有该方法。
+
+由于 option 模式下 state 在 option 里面, 所以可以在 setStore 函数里多传入一个 state 参数, 以此作为区分俩种模式的方法:
+
+```js
+function setStore(pinia, store, id, result, state) {
+  pinia.store.set(id, store)
+  store.$id = id // 给 store 增加一个 $id 属性, 为后续方法做铺垫
+
+  // options 模式下多追加了一个参数 state
+  state && (store.$reset = createReset(store, state))
+
+  Object.assign(store, result)
+
+  return store
+}
+```
+
+此外, 在此实现的原因, 也很简单。这里能获取到初始的 state 值，保存利用该值，再结合 `$patch` 便可达到重置的目的了：
+
+```js
+export function createReset(store, stateFn) {
+  return function $patch() {
+    const initialState = stateFn ? stateFn() : {}
+
+    store.$patch((state) => {
+      Object.assign(state, initialState)
+    })
+  }
+}
+```
+
+## 实现 `$subscribe` api
+
+[`$subscribe`](https://pinia.vuejs.org/api/interfaces/pinia._StoreWithState.html#-subscribe) 的作用是监听 state 的状态变化。
+
+该方法的定义: `$subscribe(callback, options?): () => void`, 实现较为简单。
+
+该 api 可在 createAPis 函数中设置:
+
+```js
+/**
+ * store.subscribe(({storeId}, state) => {})
+ */
+function createApis(pinia, id, scope) {
+  return {
+    $patch: createPatch(pinia, id),
+    $subscribe: createSubscribe(pinia, id, scope),
+  }
+}
+```
+
+由于需要监听, 所以引入 Vue3 中的 watch api, 监听该 store 的 state 值是否发生变化, 若发生变化则执行回调函数:
+
+```js
+/**
+ * store.subscribe(({storeId}, state) => {})
+ */
+export function createSubscribe(pinia, id, scope) {
+  return function $subscribe(callback, options = {}) {
+    scope.run(() => {
+      watch(
+        pinia.state.value[id],
+        (state) => {
+          callback({ storeId: id }, state)
+        },
+        options
+      )
+    })
+  }
+}
+```
+
+## 实现 `$onAction` api
+
+[`$onAction`](https://pinia.vuejs.org/api/interfaces/pinia._StoreWithState.html#-onAction) api 的难点实际上在于使用理解。
+
+定义: `$onAction(callback, detached?): () => void`
+
+该回调函数在 action 方法执行阶段触发（常用作同步服务器的钩子函数），实际上有三个阶段: action 方法执行前, action 执行后和 action 方法执行出错。
+
+由于有事件监听机制, 所以需要创建一个简单事件监听触发函数:
+
+```js
+export const subscription = {
+  add(list, cb) {
+    list.push(cb)
+  },
+  trigger(list, ...args) {
+    list.forEach((cb) => cb(...args))
+  },
+}
+```
+
+如上, 同有两个方法, 一个是依赖收集阶段 add 方法, 以及依赖触发发放 trigger。由于依赖都收集于数组中，所以 还需创建三个回调函数的数组。但是三个钩子的依赖数组实际上并不是统一创建的。在初始阶段只需要收集 action 执行的依赖便可, 等到 action 方法注册时, 再以此收集各方法的其它依赖。
+
+```js
+export const actionList = []
+
+export function createOnAction() {
+  return function $onAction(cb) {
+    subscription.add(actionList, cb)
+  }
+}
+```
+
+如上，在调用 `$subscribe` 方法时, 收集回调函数, 而后在注册 action 方法时再进行依赖收集和触发:
+
+```js
+/**
+ * store.subscribe(({storeId}, state) => {})
+ */
+function createApis(pinia, id, scope) {
+  return {
+    $patch: createPatch(pinia, id),
+    $subscribe: createSubscribe(pinia, id, scope),
+    $onAction: createOnAction(),
+  }
+}
+
+function createStoreActions(store, actions) {
+  /**
+   * action: {
+      addTodo(todo) {
+        this.todoList.unshift(todo);
+      },
+      toggleTodo(id) {...},
+      removeTodo(id) {...},
+    },
+   */
+  const storeActions = {}
+  for (const actionName in actions) {
+    // 储存 action, 并修改 this 指向
+    storeActions[actionName] = function () {
+      const afterList = []
+      const errorList = []
+      let res
+
+      // 新增发布订阅: 添加 after 和 onError 的事件监听
+      const after = (cb) => afterList.push(cb)
+      const onError = (cb) => errorList.push(cb)
+      subscription.trigger(actionList, { after, onError })
+
+      try {
+        // apply(context, [...])
+        res = actions[actionName].apply(store, arguments)
+      } catch (error) {
+        subscription.trigger(errorList, error)
+      }
+
+      // after 监听执行的异步判断
+      if (res instanceof Promise) {
+        return res
+          .then((result) => {
+            return subscription.trigger(afterList, result)
+          })
+          .catch((e) => {
+            subscription.trigger(errorList, e)
+            return Promise.reject(e)
+          })
+      } else {
+        subscription.trigger(afterList, res)
+      }
+
+      return res
+    }
+  }
+  return storeActions
+}
+```
+
+## 实现 `$dispose` api
+
+[`$dispose`](https://pinia.vuejs.org/api/interfaces/pinia._StoreWithState.html#-dispose) api 是停止依赖响应和注销方法。
+
+实现也较为简单:
+
+```js
+function createApis(pinia, id, scope) {
+  return {
+    $patch: createPatch(pinia, id),
+    $subscribe: createSubscribe(pinia, id, scope),
+    $onAction: createOnAction(),
+    $dispose: createDispose(pinia, id, scope),
+  }
+}
+```
+
+待注册完后，在执行时停止依赖响应, 并卸载 store:
+
+```js
+/**
+ * 停止收集依赖, 并从注册表中删除
+ * [$dispose](https://pinia.vuejs.org/api/interfaces/pinia._StoreWithState.html#-dispose)
+ */
+export function createDispose(pinia, id, scope) {
+  // 由 pinia 获取 store
+  return function $dispose() {
+    // 清空 action 监控数组
+    actionList.length = 0
+    pinia.store.delete(id) // 清空, map 删除
+    scope.stop()
+  }
+}
+```
+
+## 实现 `#state` 方法
+
+[`$state`](https://pinia.vuejs.org/api/interfaces/pinia._StoreWithState.html#-state) 方法可以直接修改 state。
+
+实现该 api 需要一些技巧，即在修改 state 值时，还必须保持响应性。此外, 若是单独执行, 则是获取 state 值, 修改则需要保持响应性。因此可以用 `Object.defineProperty` 的 get 和 set 方法来实现。
+
+```js
+export function createState(pinia, id) {
+  const store = pinia.store.get(id) // map 查找
+
+  Object.defineProperty(store, '$state', {
+    get: () => pinia.state.value[id],
+    // Object.assign 这样不会丢失响应性
+    set: (newState) => store.$patch((state) => Object.assign(state, newState)),
+  })
+}
+```
+
+由此直接在 setState 中进行 state 方法注册即可:
+
+```js
+function setStore(pinia, store, id, result, state) {
+  pinia.store.set(id, store)
+  store.$id = id // 给 store 增加一个 $id 属性, 为后续方法做铺垫
+
+  // options 模式下多追加了一个参数 state
+  state && (store.$reset = createReset(store, state))
+
+  Object.assign(store, result)
+
+  // 增加 $state 方法
+  createState(pinia, id)
+
+  return store
+}
+```
