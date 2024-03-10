@@ -216,6 +216,8 @@ scope.stop()
 
 ## 实际手写
 
+完整源码可见 [Github](https://github.com/rayadaschn/my-component/tree/main/src/store/pinia)
+
 由使用过程可以看出，基本上需要自定义的基础 api 是 createPinia 和 defineStore 俩个。
 
 ### 手写 createPinia
