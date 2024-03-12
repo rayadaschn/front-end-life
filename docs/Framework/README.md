@@ -14,6 +14,8 @@ category:
 - [Vue3 中的懒加载](Vue/Vue03.md)
 - [Vue3 中的动态路由懒加载实例](Vue/Vue04.md)
 - [Vue 中 History 路由和 Hash 路由的实现基本原理](Vue/Vue05.md)
+- [手写 Pinia](Vue/Pinia01.md)
+- [手写 Vue3](Vue/Vue-mini.md)
 
 ## React 学习之路
 
@@ -24,6 +26,7 @@ category:
 5. [React 之路由管理](React/React05.md)
 6. [React 之 Hooks](React/React06.md)
 7. [React 之 项目实战](React/React07.md)
+8. [React 之手写 Hooks](React/React08.md)
 
 ## Webpack/Vite
 

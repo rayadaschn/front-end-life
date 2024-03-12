@@ -21,6 +21,16 @@ category:
 - [简单手写 lazyMan](JS10)
 - [简单手写 curry 柯里化](JS11)
 - [简单手写 EventBus](JS12)
+- [组件封装 1 组件的二次封装](JS13)
+- [组件封装 2 自定义组件](JS16)
+- [创建脚手架](JS14)
+- [权限管理设计思路](JS15)
+- [任务队列的中断和恢复](JS17)
+- [实现 Promise.allSettled](JS18)
+
+## TS 小知识
+
+- [TS 装饰器](ts01)
 
 ## 从零开始 Node 学习之路
 
@@ -30,6 +40,13 @@ category:
 - [Koa 基础](Node04.md)
 - [MySql 基础](Node05.md)
 - [Nest、Nuxt 和 Next 的关系](Node06.md)
+- [nvm 使用技巧](Node07.md)
+- [俩个树结构快速搭建用户搜索体系](Node08.md)
+
+## Hooks
+
+- [手写一个具备拖拉拽多功能的弹窗](hooks01)
+- [用 canvas 绘制一个矩形并实现其拖动](hooks02)
 
 ## 设计模式
 
@@ -49,3 +66,5 @@ category:
 - [利用 husky 进行 git 提交前检查](other04)
 
 - [新版 stylelint 的配置](other05)
+
+- [页面安全之无限 Debugger](other06)
