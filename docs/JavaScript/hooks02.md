@@ -17,6 +17,45 @@ sticky: false
 - `e.clientX` 是相对于整个文档左上角的坐标。
 - `e.offsetX` 是相对于触发事件的元素左上角的坐标。
 
+设计思路:
+
+1. 绘制获取 Canvas 元素。
+2. 创建存储绘制矩形的数组, 后续依据这个数组来遍历绘制矩阵;
+3. 创建绘制矩阵的类, 包含绘制矩阵的方法, 以及矩形的四角信息;
+4. 监听 Canvas 的鼠标按下事件 onmousedown, 分俩种情况, 一种是点击了已绘制矩形, 另一种是点击了空白处开始绘制矩形;
+5. 创建判断是否是绘制块, 创建依据遍历绘制数组, 绘制 Canvas。
+
+关键代码:
+
+```js
+// 创建 Canvas
+const cvs = document.querySelector('canvas')
+const ctx = cvs.getContext('2d')
+
+// 绘制矩阵
+ctx.beginPath() // 开始绘制新的路径
+ctx.moveTo(10, 10) // 移动到指定点
+ctx.lineTo(100, 10) // 绘制一条线
+// ...
+ctx.stroke() // 绘制路径
+ctx.fillStyle = black
+ctx.lineCap = 'square' // 消除锯齿状
+ctx.fill() // 填充路径
+
+// 监听点击
+
+// 1. 获取 Canvas 元素位置信息
+const bounding = cvs.getBoundingClientRect() // 获取了 cvs 元素相对于视口（viewport）的位置信息
+// 2. 遍历 Array 数组, 判断是否点击了已绘制的矩形
+// 3. 点击未绘制的矩形, 则开始绘制矩形, 依据创建的 矩形类创建新的实例, 并将其推入数组; 同时监听修改该数组的四角信息;
+// 4. 点击已绘制的矩形, 则修改该矩形的四角信息;
+
+// 绘制函数，使用 requestAnimationFrame 实现动画效果
+requestAnimationFrame(draw)
+// 清理原有的视图
+ctx.clearRect(0, 0, cvs.width, cvs.height)
+```
+
 可以有如下代码:
 
 ```html
@@ -93,7 +132,7 @@ sticky: false
 
         // 绘制矩形
         draw() {
-          ctx.beginPath()
+          ctx.beginPath() // 开始绘制新的路径
           ctx.moveTo(this.minX * devicePixelRatio, this.minY * devicePixelRatio)
           ctx.lineTo(this.maxX * devicePixelRatio, this.minY * devicePixelRatio)
           ctx.lineTo(this.maxX * devicePixelRatio, this.maxY * devicePixelRatio)

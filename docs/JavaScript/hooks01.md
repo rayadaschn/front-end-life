@@ -20,6 +20,26 @@ sticky: false
 
 最终实现可以直接点击查看[实现代码](#最终代码)，下面是基本实现的思路。
 
+- e.clientX 是相对于整个文档左上角的坐标。
+- e.offsetX 是相对于触发事件的元素左上角的坐标。
+
+获取弹窗的 boxRef 元素对象, 获取拖动 icon 元素的 dragRef 元素对象, 获取缩放弹窗 icon 的 boxSizeRef 元素对象。
+
+拖动窗口: 计算窗体的绝对定位 left 和 top
+
+```js
+// 窗体初始 left + 点击按钮当前距离浏览器左侧距离 - 初始点击距离浏览器左侧距离
+const left = startBoxOffsetLeft + currentE.clientX - startClientX
+const top = startBoxOffsetTop + currentE.clientY - startClientY
+```
+
+缩放窗口: 计算窗体宽度 boxWidth 和高度 boxHeight
+
+```js
+const boxWidth = startBoxOffsetWidth + currentE.clientX - startClientX
+const boxHeight = startBoxOffsetHeight + currentE.clientY - startClientY
+```
+
 ## 绘制基本弹框
 
 如上图所示，有四个部分：
@@ -35,37 +55,35 @@ sticky: false
 
 ```vue
 <template>
-  <a-layout>
-    <h1>拖拉拽弹框</h1>
+  <h1>拖拉拽弹框</h1>
 
-    <div
-      ref="box"
-      class="box"
-      :class="{ 'unset-size': !state.expanded }"
-      @wheel.capture.stop
-    >
-      <div class="container">
-        <div class="action-bar">
-          <div ref="dragHandle" class="icon" style="cursor: grab">
-            <DragOutlined />
-          </div>
-          <div
-            class="icon"
-            style="cursor: pointer"
-            @click="state.expanded = !state.expanded"
-          >
-            <FullscreenExitOutlined v-if="state.expanded" />
-            <FullscreenOutlined v-else />
-          </div>
+  <div
+    ref="box"
+    class="box"
+    :class="{ 'unset-size': !state.expanded }"
+    @wheel.capture.stop
+  >
+    <div class="container">
+      <div class="action-bar">
+        <div ref="dragHandle" class="icon" style="cursor: grab">
+          <DragOutlined />
         </div>
-        <div v-if="state.expanded" class="info">{{ text }}</div>
+        <div
+          class="icon"
+          style="cursor: pointer"
+          @click="state.expanded = !state.expanded"
+        >
+          <FullscreenExitOutlined v-if="state.expanded" />
+          <FullscreenOutlined v-else />
+        </div>
       </div>
-
-      <div v-if="state.expanded" ref="resizeHandle" class="mouse-sensor">
-        <ArrowsAltOutlined />
-      </div>
+      <div v-if="state.expanded" class="info">{{ text }}</div>
     </div>
-  </a-layout>
+
+    <div v-if="state.expanded" ref="resizeHandle" class="mouse-sensor">
+      <ArrowsAltOutlined />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -179,7 +197,7 @@ Features
 
 > 其它说明:
 >
-> `:class="{ 'unset-size': !state.expanded }"` 加入了 `unset-size` 属性是为了在最小化弹窗时重置弹窗大小。
+> `:class="{ 'unset-size': !state.expanded }"` 加入了 `unset-size` 属性是为了在最小化弹窗时重置弹窗大小。 unset 的含义是: 如果属性值被继承自父元素，则会重置为默认值；如果属性值没有被继承，则会重置为 initial 值。
 >
 > `@wheel.capture.stop` 表示在弹窗上监听鼠标滚轮事件，并阻止事件继续传播。这样做的目的可能是为了防止鼠标滚轮事件冒泡到父元素或其他元素上，以避免对页面滚动等行为的干扰。
 
@@ -731,35 +749,33 @@ export function useResizeAndDrag(
 
 ```vue
 <template>
-  <a-layout>
-    <div
-      ref="el"
-      class="box"
-      :class="{ 'unset-size': !state.expanded }"
-      @wheel.capture.stop
-    >
-      <div class="container">
-        <div class="action-bar">
-          <div ref="dragHandle" class="icon" style="cursor: grab">
-            <DragOutlined />
-          </div>
-          <div
-            class="icon"
-            style="cursor: pointer"
-            @click="state.expanded = !state.expanded"
-          >
-            <FullscreenExitOutlined v-if="state.expanded" />
-            <FullscreenOutlined v-else />
-          </div>
+  <div
+    ref="el"
+    class="box"
+    :class="{ 'unset-size': !state.expanded }"
+    @wheel.capture.stop
+  >
+    <div class="container">
+      <div class="action-bar">
+        <div ref="dragHandle" class="icon" style="cursor: grab">
+          <DragOutlined />
         </div>
-        <div v-if="state.expanded" class="gen-info">{{ text }}</div>
+        <div
+          class="icon"
+          style="cursor: pointer"
+          @click="state.expanded = !state.expanded"
+        >
+          <FullscreenExitOutlined v-if="state.expanded" />
+          <FullscreenOutlined v-else />
+        </div>
       </div>
-
-      <div v-if="state.expanded" ref="resizeHandle" class="mouse-sensor">
-        <ArrowsAltOutlined />
-      </div>
+      <div v-if="state.expanded" class="gen-info">{{ text }}</div>
     </div>
-  </a-layout>
+
+    <div v-if="state.expanded" ref="resizeHandle" class="mouse-sensor">
+      <ArrowsAltOutlined />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
