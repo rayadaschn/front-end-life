@@ -22,3 +22,38 @@ WebGIS（网络地理信息系统）是指基于网络平台，客户端应用�
 OpenLayers 是一个专门为 WebGIS 客户端提供的 JavaScript 类库。用于访问以标准格式发布的地图数据，实现访问空间数据的方法都符合行业标准，支持各种公开的和私有的数据标准和资源。
 
 支持的数据格式有: XML、JSON、GeoJSON、MVT、GML、GPX、KML、WFS 等。
+
+## 核心类
+
+1. Map(ol.Map): 地图容器, 加载各类地图和功能控件;
+2. WebGlMap(ol.WebGlMap): 使用 WebGl 进行渲染的地图容器, 但对矢量数据的支持有限, 且不支持矢量瓦片数据;
+3. View(ol.View): 地图视图, 控制地图缩放等基本交互, 以及地图投影坐标系、地图中心点、分辨率和旋转角等；
+4. Layers(ol.Layers): 图层, 包含多个调用数据的子类, 由子类的实例加载地图数据, 必须结合图层数据源匹配使用;
+5. Source(ol.source.Source): 图层数据源, 与图层子类对应, 由图层数据源的实例来加载各种类型的地图数据;
+6. Format(ol.format.Feature): 数据解析类, 此类由于读/写各种格式的数据, 并创建了多种格式的子类, 即数据解析器。目前支持多种数据格式， 如 GeoJSON、GML 等；
+7. Geometry(ol.geom.Geometry): 地理空间对象的几何实体, 由其子类(如 Point、LineString、 Polygon)的实例构成所看到的矢量地图；
+8. Overlay(ol.Overlay): 叠加层, 即叠加到地图上显示的要素, 关联了一个自定义的 HTML 元素, 由一个单一的地图坐标点确定叠加位置。与控件类似， 但不同的是叠加元素不是一个固定的屏幕位置上，而是通过关联一个地图逻辑坐标点跟随地图移动， 如标注点等；
+9. Control(ol.control.Control): 即通常所说的控件类, 可提供各种各样的地图功能控件, 如地图缩放控件(Zoom)、鼠标位置控件（MousePosition）、鹰眼（OverViewMao）和比例尺（ScaleLine）等；
+10. Interaction（ol.interaction.Interaction）: 地图交互控件类。地图交互一般是通过鼠标与键盘进行的，因此 Interaction 的子类为基于鼠标和键盘操作的地图交互功能控件；
+11. Style（ol.style.Style）: 样式类, 可通过其子类实例来渲染矢量要素的样式,包括填充样式(Fill)、边界样式（Stroke）、图例样式（Image 和 Icon）和文字样式（Text）等；
+12. Projections（ol.pro.Projection）: 地图投影定义类, 包括 EPSG:44326(ol.proj.EPSG4326)和 EPSG:3857(ol.proj.EPSG3857)
+
+    > EPSG 是空间参考系统的标识符，用于描述地理空间数据的坐标系统和投影方法。
+
+    - EPSG:4326 是指 WGS84 地理坐标系统，其投影方式是经纬度坐标系统，地球是一个球体，坐标以经度和纬度表示。这是一种常见的地理坐标系统，被广泛应用于地理信息系统（GIS）和全球定位系统（GPS）等领域。
+    - EPSG:3857 是指 Web Mercator 投影坐标系统，也称为 Spherical Mercator 或 Google Mercator。这种投影方式是将地球视为一个椭球体，并将其投影到一个平面上，用于 Web 地图服务中常见的坐标系统。EPSG:3857 在 Web 开发中广泛使用，例如在 OpenLayers（ol.proj.EPSG3857）等地图库中。
+
+13. Renderer(ol.renderer.Renderer): 渲染器，支持 Canvas 和 webGL 俩种渲染方式，类似于 虚拟 DOM 的渲染。
+
+## 类的事件
+
+1. ol.MapEvent: 地图事件类, 继承与 `ol.events.Event`, 其子类为 ol.MapBrowserEvent, 可查看 ol.Map 中有哪些事件触发了地图事件, 如单击(click)、双击（dbclick）、鼠标拖拽（pointerdrag）、鼠标移动（pointermove）等事件可触发地图浏览器事件（ol.MapBrowserEvent）, 而移动结束(moveend)事件可触发地图事件。
+2. ol.Object.Event: 可提供属性变更事件(Propertychange), 属性变化发生变更时触发此事件。
+
+## 组件
+
+1. ol.Tile: 瓦片基类;
+2. ol.Image: 图像类;
+3. ol.Collection: 集合类;
+4. ol.Geolocation: 地理位置;
+5. ol.Graticule: 网格标线。
