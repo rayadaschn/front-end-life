@@ -27,6 +27,7 @@ category:
 - [权限管理设计思路](JS15)
 - [任务队列的中断和恢复](JS17)
 - [实现 Promise.allSettled](JS18)
+- [使用 Canvas 放大图片](JS19)
 
 ## TS 小知识
 
