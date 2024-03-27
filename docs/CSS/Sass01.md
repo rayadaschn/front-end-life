@@ -6,7 +6,7 @@ category:
   - CSS
 tag:
   - CSS
-sticky: true
+sticky: false
 ---
 
 虽然 Tailwindcss 已经较为流行，但是 Scss 还是在很多项目中使用，而一直都是轻量使用，故该文旨在快速梳理一遍 Scss 的基本用法。
