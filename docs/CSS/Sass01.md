@@ -1,6 +1,6 @@
 ---
 title: Scss 快速入门
-date: 2020-11-26
+date: 2023-11-26
 icon: style
 category:
   - CSS
