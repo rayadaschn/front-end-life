@@ -1,6 +1,6 @@
 ---
-title: Scss 快速入门
-date: 2023-11-26
+title: Scss 快速 复盘
+date: 2024-03-24
 icon: style
 category:
   - CSS
@@ -9,7 +9,7 @@ tag:
 sticky: false
 ---
 
-虽然 Tailwindcss 已经较为流行，但是 Scss 还是在很多项目中使用，而一直都是轻量使用，故该文旨在快速梳理一遍 Scss 的基本用法。
+虽然 Tailwindcss 已经较为流行，但是 Scss 还是在很多项目中使用，而一直都是轻量使用，故该文旨在快速梳理一遍 Scss 的基本用法和一些踩坑点。
 
 ## 基础语法
 
