@@ -155,25 +155,25 @@ nginx 反向代理可以通过设置跨域请求头来解决跨域问题。一�
 
 1. 在 nginx 的配置文件中设置反向代理规则：
 
-```js
-location /api {
-  proxy_pass http://www.example.com; // 目标服务器地址
-  add_header 'access-control-allow-origin' '*'; // 设置跨域请求头
-}
-```
+   ```js
+   location /api {
+     proxy_pass http://www.example.com; // 目标服务器地址
+     add_header 'access-control-allow-origin' '*'; // 设置跨域请求头
+   }
+   ```
 
-在这个例子中，我们设置了一个反向代理规则，将以 /api 开头的请求转发到 `http://www.example.com` 服务器上。同时，我们还设置了 `access-control-allow-origin` 请求头，允许任意域名访问该资源，从而实现跨域请求。
+   在这个例子中，我们设置了一个反向代理规则，将以 /api 开头的请求转发到 `http://www.example.com` 服务器上。同时，我们还设置了 `access-control-allow-origin` 请求头，允许任意域名访问该资源，从而实现跨域请求。
 
 2. 在前端代码中发送请求时，将请求路径设置为反向代理路径即可：
 
-```js
-fetch('/api/data')
-  .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => console.error(error))
-```
+   ```js
+   fetch('/api/data')
+     .then((response) => response.json())
+     .then((data) => console.log(data))
+     .catch((error) => console.error(error))
+   ```
 
-在这个例子中，我们使用 fetch 发送请求时，将请求路径设置为 `/api/data`，nginx 反向代理会将该请求转发到 `http://www.example.com/data`，从而实现跨域请求。
+   们使用 fetch 发送请求时，将请求路径设置为 `/api/data`，nginx 反向代理会将该请求转发到 `http://www.example.com/data`，从而实现跨域请求。
 
 ### JSONP 解决跨域
 
@@ -183,26 +183,26 @@ JSONP 是一种常用的跨域解决方案，它通过动态创建`<script>`标�
 
 1. 前端页面通过 `<script>` 标签动态加载一个跨域的 JS 文件，并传递一个回调函数的名称作为参数，如：
 
-```html
-<script src="http://example.com/data.js?callback=handleData"></script>
-```
+   ```html
+   <script src="http://example.com/data.js?callback=handleData"></script>
+   ```
 
 2. 服务端接收到请求后，将数据封装在回调函数中返回给客户端，如：
 
-```js
-handleData({ name: 'John', age: 30 })
-```
+   ```js
+   handleData({ name: 'John', age: 30 })
+   ```
 
 3. 前端页面定义回调函数，解析返回的数据（实际返回的数据为函数+参数，参数为实际跨域返回的数据），如：
 
-```js
-function handleData(data) {
-  console.log(data.name, data.age)
-}
-```
+   ```js
+   function handleData(data) {
+     console.log(data.name, data.age)
+   }
+   ```
 
-这样，前端页面就可以通过 JSONP 方式获取跨域数据，并在本地解析和使用了。
+   这样，前端页面就可以通过 JSONP 方式获取跨域数据，并在本地解析和使用了。
 
-需要注意的是，JSONP 只支持 GET 请求，并且要求服务端返回的数据必须是可执行的 JavaScript 代码，而且需要约定回调函数的名称。同时，由于 JSONP 会将回调函数作为参数传递到服务端，因此存在一定的安全风险，可能会被恶意利用，因此需要谨慎使用。
+   需要注意的是，JSONP 只支持 GET 请求，并且要求服务端返回的数据必须是可执行的 JavaScript 代码，而且需要约定回调函数的名称。同时，由于 JSONP 会将回调函数作为参数传递到服务端，因此存在一定的安全风险，可能会被恶意利用，因此需要谨慎使用。
 
 可以看出，以上解决跨域的方案，大多都需要服务端进行配合设置。

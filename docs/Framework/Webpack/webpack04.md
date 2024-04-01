@@ -11,8 +11,6 @@ star: false
 sticky: false
 ---
 
-# Webpack 性能优化之文件压缩
-
 ## Terser JS 压缩
 
 在 webpack 的优化(Optimization)选项中，还有俩个选择：

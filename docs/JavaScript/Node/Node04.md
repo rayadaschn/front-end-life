@@ -5,10 +5,6 @@ category:
   - javascript
 tag:
   - node
-
-
-
-
 ---
 
 # Koa 基础
@@ -64,7 +60,6 @@ app.use((ctx, next) => {
 app.use((ctx, next) => {
   console.log('second middleware~')
 })
-
 
 // 启动服务器
 app.listen(6000, () => {
@@ -147,8 +142,8 @@ userRouter.patch('/:id', (ctx, next) => {
 })
 
 // 3.让路由中的中间件生效
-app.use(userRouter.routes())  // 注册路由规则
-app.use(userRouter.allowedMethods())  // 处理错误处理和响应头设置等操作
+app.use(userRouter.routes()) // 注册路由规则
+app.use(userRouter.allowedMethods()) // 处理错误处理和响应头设置等操作
 
 // 启动服务器
 app.listen(6000, () => {
@@ -213,7 +208,6 @@ userRouter.post('/urlencoded', (ctx, next) => {
 app.use(userRouter.routes())
 app.use(userRouter.allowedMethods())
 
-
 // 5.post/form-data
 userRouter.post('/formdata', formParser.any(), (ctx, next) => {
   console.log(ctx.request.body)
@@ -248,9 +242,9 @@ const upload = multer({
       cb(null, './uploads')
     },
     filename(req, file, cb) {
-      cb(null, Date.now() + "_" + file.originalname)
-    }
-  })
+      cb(null, Date.now() + '_' + file.originalname)
+    },
+  }),
 })
 
 // 注册路由对象
@@ -307,7 +301,7 @@ userRouter.get('/', (ctx, next) => {
     data: [
       { id: 111, name: 'iphone', price: 100 },
       { id: 112, name: 'xiaomi', price: 990 },
-    ]
+    ],
   }
 
   // 5.body的值是null, 自动设置http status code为204

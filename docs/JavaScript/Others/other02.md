@@ -22,10 +22,10 @@ tag:
 `console.log`是日常开发中用的较多的调试技巧。我们都知道他能把信息打印到控制台中。考虑下面的例子
 
 ```js
-const a = [{ name: 0 }];
-console.log(a);
-a[0].name++;
-console.log(a);
+const a = [{ name: 0 }]
+console.log(a)
+a[0].name++
+console.log(a)
 ```
 
 在我们的认为中应该先后打印
@@ -49,10 +49,10 @@ console.log(a);
 好吧，上面一大段看的头疼。但大概意思就是说不同的浏览器可能有自己的 console.log 实现机制，受限于 I/O 性能可能打印的时机会与代码执行的时机不匹配。也就是说如果打印的时机如果较为靠后，那么打印时因为引用型的数据发生了修改，所以出现改变前后打印结果都一致的现象。这么一说貌似也能说的通。我们在看看下一个例子：
 
 ```js
-const c = { age: 0 };
-console.log(c);
-c.age++;
-console.log(c);
+const c = { age: 0 }
+console.log(c)
+c.age++
+console.log(c)
 //先后的打印结果为
 //{age: 0}
 //{age: 1}
@@ -61,18 +61,18 @@ console.log(c);
 看到这属实蚌埠住了，为啥这个例子又能符合我们的逻辑认知呢？运行示例代码看下图
 
 ```js
-const a = [{ name: 0 }];
-console.log(a, "初始：0 pre-a需展开");
-a[0].name++;
-console.log(a, "初始：0 after-a需展开");
-const b = { info: { age: 0 } };
-console.log(b, "初始：0 pre-b需展开");
-b.info.age++;
-console.log(b, "初始：0 after-b需展开");
-const c = { age: 0 };
-console.log(c, "初始：0 pre-c不需展开");
-c.age++;
-console.log(c, "初始：0 after-c不需展开");
+const a = [{ name: 0 }]
+console.log(a, '初始：0 pre-a需展开')
+a[0].name++
+console.log(a, '初始：0 after-a需展开')
+const b = { info: { age: 0 } }
+console.log(b, '初始：0 pre-b需展开')
+b.info.age++
+console.log(b, '初始：0 after-b需展开')
+const c = { age: 0 }
+console.log(c, '初始：0 pre-c不需展开')
+c.age++
+console.log(c, '初始：0 after-c不需展开')
 ```
 
 有什么共通之处？从图中可以看出浏览器控制对于对象和数组只能默认展开第一层，更深的对象是用“..."表示的。因此这里就有另一种说法，**_浏览器出于优化的目地，默认不会展开所有对象，只有当手动点击展开时才去”读取对应的值“来进行展示_**。这么一来上面的所有的示例在这个角度也能说的通。

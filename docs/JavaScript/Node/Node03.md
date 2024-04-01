@@ -5,14 +5,11 @@ category:
   - javascript
 tag:
   - node
-
-
-
 ---
 
 # Express 基础
 
-在前面的文章中，介绍了基于 Node 的本地开发和服务器开发的常用功能。但是这些API 操作都过于的繁琐了，因此大神开发了 Express 框架，并在之后又开发了轻量级的 Koa。
+在前面的文章中，介绍了基于 Node 的本地开发和服务器开发的常用功能。但是这些 API 操作都过于的繁琐了，因此大神开发了 Express 框架，并在之后又开发了轻量级的 Koa。
 
 本文介绍 Express 的基础用法，以做入门介绍。
 
@@ -55,27 +52,27 @@ npm install express --no-save
 
 ```js
 // index.js
-const express = require("express");
+const express = require('express')
 
 // 1.创建express的服务器
-const app = express();
+const app = express()
 
 // 客户端访问URL: /login和/home
 // post 请求
-app.post("/login", (req, res) => {
+app.post('/login', (req, res) => {
   // 处理login请求
-  res.end("登录成功, 欢迎回来~");
-});
+  res.end('登录成功, 欢迎回来~')
+})
 
 // get 请求
-app.get("/home", (req, res) => {
-  res.end("首页的轮播图/推荐数据列表~");
-});
+app.get('/home', (req, res) => {
+  res.end('首页的轮播图/推荐数据列表~')
+})
 
 // 2.启动服务器, 并且监听端口
 app.listen(9000, () => {
-  console.log("express服务器启动成功~");
-});
+  console.log('express服务器启动成功~')
+})
 ```
 
 ## 中间件
@@ -85,7 +82,7 @@ app.listen(9000, () => {
 在 Express 中，中间件（middleware）是一个函数，它可以访问和修改请求对象（`req`）和响应对象（`res`），并且可以调用下一个中间件或路由处理程序。定义在 Express 创建的 app 传入的第二参数（回调函数）。
 
 ```js
-app.post('/', (req, res, next) => { } )
+app.post('/', (req, res, next) => {})
 // app.post(匹配路径, 回调函数 => 中间件)
 ```
 
@@ -96,27 +93,27 @@ app.post('/', (req, res, next) => { } )
 下面是一个示例，展示了如何使用中间件来记录请求信息：
 
 ```js
-const express = require('express');
-const app = express();
+const express = require('express')
+const app = express()
 
 // 中间件函数，用于记录请求信息
 function logger(req, res, next) {
-  console.log(`${req.method} ${req.url}`);
-  next();
+  console.log(`${req.method} ${req.url}`)
+  next()
 }
 
 // 将中间件添加到应用程序处理流程中
-app.use(logger);
+app.use(logger)
 
 // 处理 GET 请求
 app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
+  res.send('Hello, World!')
+})
 
 // 启动服务器
 app.listen(3000, () => {
-  console.log('Server listening on port 3000');
-});
+  console.log('Server listening on port 3000')
+})
 ```
 
 在这个例子中，我们定义了一个 `logger` 中间件函数，用于记录 HTTP 请求的方法和 URL。然后，我们使用 `app.use()` 方法将中间件添加到应用程序的处理流程中。这样，在处理任何请求之前，都会先执行 `logger` 中间件函数，然后再执行请求的处理程序。
@@ -135,18 +132,24 @@ const express = require('express')
 const app = express()
 
 // app.get(路径, 中间件1, 中间件2, 中间件3)
-app.get('/home', (req, res, next) => {
-  console.log('match /home get middleware01')
-  next()
-}, (req, res, next) => {
-  console.log('match /home get middleware02')
-  next()
-}, (req, res, next) => {
-  console.log('match /home get middleware03')
-  next()
-}, (req, res, next) => {
-  console.log('match /home get middleware04')
-})
+app.get(
+  '/home',
+  (req, res, next) => {
+    console.log('match /home get middleware01')
+    next()
+  },
+  (req, res, next) => {
+    console.log('match /home get middleware02')
+    next()
+  },
+  (req, res, next) => {
+    console.log('match /home get middleware03')
+    next()
+  },
+  (req, res, next) => {
+    console.log('match /home get middleware04')
+  }
+)
 
 app.listen(9000, () => {
   console.log('express服务器启动成功~')
@@ -165,10 +168,11 @@ const app = express()
 app.post('/login', (req, res, next) => {
   const queryInfo = req.query // 解析 URL 中的 queryString
   const paramsInfo = req.params // 解析 URL 中的 params 参数
-  
+
   let isLogin = false
-  
-  req.on('data', (data) => { // on 方法进行监听
+
+  req.on('data', (data) => {
+    // on 方法进行监听
     const dataString = data.toString()
     const dataInfo = JSON.parse(dataString) // JSON 解析
     if (dataInfo.name === 'userName' && dataInfo.password === '1234567') {
@@ -176,15 +180,15 @@ app.post('/login', (req, res, next) => {
       isLogin = true
     }
   })
-  
+
   req.on('end', () => {
-    if (isLogin) { // 账户密码鉴权是否通过
+    if (isLogin) {
+      // 账户密码鉴权是否通过
       res.end('登录成功')
     } else {
       res.end('登录失败，请检查账户密码是否正确')
     }
   })
-  
 })
 ```
 
@@ -234,19 +238,19 @@ app.listen(9000, () => {
   const fs = require('fs')
   const express = require('express')
   const morgan = require('morgan')
-  
+
   // 创建app对象
   const app = express()
-  
+
   // 应用第三方中间件
   const writeStream = fs.createWriteStream('./logs/access.log')
   app.use(morgan('combined', { stream: writeStream })) // 定义写入流方法
-  
+
   // 编写中间件
   app.post('/login', (req, res, next) => {
     res.end('登录成功, 欢迎回来~')
   })
-  
+
   // 启动服务器
   app.listen(9000, () => {
     console.log('express服务器启动成功~')
@@ -264,39 +268,39 @@ app.listen(9000, () => {
   ```js
   const express = require('express')
   const multer = require('multer')
-  
+
   // 创建app对象
   const app = express()
-  
+
   // 应用一个express编写第三方的中间件
   const upload = multer({
-    dest: './uploads'
+    dest: './uploads',
   })
-  
+
   // 编写中间件
   // 上传单文件: singer方法
-  app.post('/avatar', upload.single('avatar') , (req, res, next) => {
+  app.post('/avatar', upload.single('avatar'), (req, res, next) => {
     console.log(req.file)
     res.end('文件上传成功~')
   })
-  
+
   // 启动服务器
   app.listen(9000, () => {
     console.log('express服务器启动成功~')
   })
   ```
 
-- 多文件上传：还是上述 `multer` 包，改 `upload.single()` 为  `upload.array()`
+- 多文件上传：还是上述 `multer` 包，改 `upload.single()` 为 `upload.array()`
 
   ```js
-  // 上传多文件: 
+  // 上传多文件:
   app.post('/photos', upload.array('photos'), (req, res, next) => {
     console.log(req.files)
     res.end('上传多张照片成功~')
   })
   ```
 
-- 解析 FormData：应用 `multer` 包中，改 `upload.array()` 为  `upload.any()`
+- 解析 FormData：应用 `multer` 包中，改 `upload.array()` 为 `upload.any()`
 
 ## 服务器返回客户端数据
 
@@ -307,7 +311,6 @@ const express = require('express')
 
 // 创建app对象
 const app = express()
-
 
 // 编写中间件
 app.post('/login', (req, res, next) => {
@@ -341,33 +344,33 @@ app.listen(9000, () => {
 
 ```js
 // useRouter.js
-const express = require("express");
+const express = require('express')
 
 // 创建路由
-const useRouter = express.Router();
+const useRouter = express.Router()
 
 // 定义路由对象中的映射接口
-useRouter.get("/", (res, req, next) => {
-  res.json("用户列表数据")
+useRouter.get('/', (res, req, next) => {
+  res.json('用户列表数据')
 })
-useRouter.get("/:id", (req, res, next) => {
-  const id = req.params.id;
-  res.json("某一个用户的数据:" + id);
-});
-useRouter.post("/", (req, res, next) => {
-  res.json("创建用户成功");
-});
-useRouter.delete("/:id", (req, res, next) => {
-  const id = req.params.id;
-  res.json("删除某一个用户的数据:" + id);
-});
-useRouter.patch("/:id", (req, res, next) => {
-  const id = req.params.id;
-  res.json("修改某一个用户的数据:" + id);
-});
+useRouter.get('/:id', (req, res, next) => {
+  const id = req.params.id
+  res.json('某一个用户的数据:' + id)
+})
+useRouter.post('/', (req, res, next) => {
+  res.json('创建用户成功')
+})
+useRouter.delete('/:id', (req, res, next) => {
+  const id = req.params.id
+  res.json('删除某一个用户的数据:' + id)
+})
+useRouter.patch('/:id', (req, res, next) => {
+  const id = req.params.id
+  res.json('修改某一个用户的数据:' + id)
+})
 
 // 3.将路由导出
-module.exports = useRouter;
+module.exports = useRouter
 ```
 
 使用路由：
@@ -380,14 +383,13 @@ const userRouter = require('./router/userRouter')
 // 创建app对象
 const app = express()
 
-
 // 编写中间件
 app.post('/login', (req, res, next) => {
- // xxxxxx
+  // xxxxxx
 })
 
 app.get('/home', (req, res, next) => {
- // xxxxxx
+  // xxxxxx
 })
 
 // 让路由生效

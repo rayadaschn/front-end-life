@@ -11,8 +11,6 @@ star: false
 sticky: false
 ---
 
-# Webpack 性能优化之分包
-
 Webpack 性能优化可分为俩方面：
 
 - 优化一：打包后的结果，上线时的性能优化。(比如分包处理、减小包体积、CDN 服务器等)
@@ -75,7 +73,7 @@ entry: {
     import: './src/main.js',
     dependOn: 'shared'
   },
-  shared: ['loadsh', 'axios']
+  shared: ['loadsh', 'axios'] // 共享包
 },
 ```
 
