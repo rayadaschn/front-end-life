@@ -11,8 +11,6 @@ star: false
 sticky: false
 ---
 
-# Webpack 配置分离
-
 ## 前言
 
 首先，我们来看我们在运行 `npm run build` 或者 `npm run watch` 时的实际代码是什么？在 `package.json` 中：
