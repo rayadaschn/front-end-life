@@ -228,6 +228,38 @@ import(
 - preload chunk 具有中等优先级，并立即下载。prefetch chunk 在浏览器闲置时下载。
 - preload chunk 会在父 chunk 中立即请求，用于当下时刻。prefetch chunk 会用于未来的某个时刻。
 
+## 其它
+
+### 优化代码产出体积
+
+原则是：代码体积小，加载更快；合理分包，不重复加载；程序运行速度更快，内存占用更小。
+
+1. 图片比较小时,可以采用 base64 编码的方式，减少 http 请求次数;
+
+   改 `file-loader` 为 `url-loader` 即可;
+
+   ```js
+   // webpack.config.js
+   module: {
+     rules: [
+       {
+         test: /\.(png|svg|jpg|jpeg|gif)$/i,
+         use: [
+           {
+             loader: 'url-loader', // 原为 'file-loader'
+             options: {
+               limit: 8 * 1024, // 图片小于8kb, 转换为 base64
+             },
+           },
+         ],
+       },
+     ]
+   }
+   ```
+
+2. 图片比较大的时候,可以采用图片压缩的方式，减少图片体积;
+3. 图片比较大的时候,可以采用雪碧图的方式，减少 http 请求次数;
+
 ## OneMoreThing
 
 在我们给打包的文件进行命名的时候，会使用 placeholder ，placeholder 中有几个属性比较相似，它们的区别在于生成哈希的范围不同：

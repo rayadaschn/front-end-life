@@ -63,6 +63,9 @@ export default hopeTheme({
 
   encrypt: {
     global: true,
+    config: {
+      '/OneMoreThing/encrypt/': ['onlyme'],
+    },
   },
 
   plugins: {
