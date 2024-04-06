@@ -1,13 +1,12 @@
 ---
 title: node 基础
 icon: nodeJS
+date: 2023-05-27
 category:
   - javascript
 tag:
   - node
 ---
-
-# Node 基础
 
 首先要理解服务器开发是什么？简单的说就是通过一门语音，操作处理各种文件——增删改查。
 

@@ -1,6 +1,7 @@
 ---
 title: MySql 基础
 icon: nodeJS
+date: 2023-06-01
 category:
   - javascript
 tag:
