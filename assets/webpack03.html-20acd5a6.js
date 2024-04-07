@@ -53,7 +53,7 @@ import{_ as t,Z as o,a0 as l,F as c,a1 as i,X as r,Y as u,$ as d}from"./framewor
       <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">&quot;runtime&quot;</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
 
-    <span class="token comment">// 分包插件: SplitChunksPlugin</span>
+    <span class="token comment">// 分包插件: SplitChunksPlugin 配置了公共组件的提取</span>
     <span class="token literal-property property">splitChunks</span><span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token literal-property property">chunks</span><span class="token operator">:</span> <span class="token string">&quot;all&quot;</span><span class="token punctuation">,</span>
       <span class="token comment">// 当一个包大于指定的大小时, 继续进行拆包</span>
