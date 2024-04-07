@@ -120,7 +120,7 @@ optimization: {
       name: "runtime"
     },
 
-    // 分包插件: SplitChunksPlugin
+    // 分包插件: SplitChunksPlugin 配置了公共组件的提取
     splitChunks: {
       chunks: "all",
       // 当一个包大于指定的大小时, 继续进行拆包

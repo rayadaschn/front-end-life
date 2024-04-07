@@ -251,3 +251,93 @@ $: docker build -t my-nginx-image .
      - 不依赖于 shell 环境，因此更快且更安全
      - 不支持一些 shell 特性，例如通配符扩展（wildcard expansion）、重定向（redirection）和变量替换（variable substitution）
      - 适合简单的命令和操作
+
+## docker compose
+
+以上，一个一个的运行管理 docker 属实有点麻烦。因此实际生产环境中，可能会用到 `docker compose` 。同 `docker-compose`的区别在于 `docker compose` 是用 go 重新编写的，速度上可能有些优化。
+
+`docker compose` 是用一个 yaml 文件(一般文件全称为 `docker-compose.yaml`)来描述容器如何运行，包括容器数量、镜像版本、挂载目录、环境变量等等。下面是一个 nginx 的示例:
+
+```yaml
+nginx:
+  image: nginx
+  container_name: nginx
+  volumes:
+    - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/conf/conf.d:/etc/nginx/conf.d
+    - ./nginx/logs:/var/log/nginx
+    - ./nginx/html/web:/usr/share/nginx/html/web
+  ports:
+    - '80:80'
+```
+
+这里我们定义了一个 Nginx 并且命名为 nginx。并挂载了一些目录。
+
+`nginx.conf` 是通用配置，下面是 `nginx.conf` 的示例，而 `conf.d` 目录下是 nginx 的配置文件。
+
+```config
+user  nginx;
+worker_processes  auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    client_max_body_size 30M;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  365;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+
+```
+
+### 常用命令
+
+```bash
+# 启动, 并后台运行
+$: docker compose up -d <img_name/id>
+
+# 列出当前所有服务
+$: docker compose ps
+
+# 停止
+$: docker compose stop <img_name/id>
+
+# 重启
+$: docker compose restart <img_name/id>
+
+# 停止并移除
+$: docker compose down <img_name/id>
+```
+
+重启服务：方法有多种，如上面所述，我们可以直接用 restart 命令来重启服务。但是这样会中断 Nginx，且修改配置后没有进行验证，因此在生产环境不建议使用。
+
+在生产环境中, 对于 nginx 应该直接进入 docker 中进行校验:
+
+```bash
+# 进入容器进行校验 nginx, 下面第一个 nginx 是容器名, 第二个是 nginx 的指令名
+$: docker exec nginx nginx -t
+
+# 热启动, 修改完配置后的 nginx
+$: docker exec nginx nginx -s reload
+```

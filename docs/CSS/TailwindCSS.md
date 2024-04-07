@@ -1,6 +1,6 @@
 ---
 title: Tailwind 快速入门
-date: 2023-11-26
+date: 2023-06-20
 icon: style
 category:
   - CSS
