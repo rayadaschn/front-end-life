@@ -67,6 +67,13 @@ console.log(queryDivs) // 返回依旧是完整列表
 console.log(getPs) // 返回删除元素后的列表
 ```
 
+> 区分元素、元素节点
+>
+> 像在 document 文档中的 `<div>我是元素</div>` 这样的标签实际上是元素;
+> 而元素节点是由元素构造出来的, 并且才会有 nodeName、nodeType、nodeValue 这些属性。
+> 即： 元素 div -> 构造函数实例化 `new HTMLDivElement()` 将 div DOM 对象存储到了内存中 --> 并由此产生了 div 节点。
+> 此时会有一个现象，当我们操作 `removeChild(div)` 时, 只是删除了节点，但是内存中还是会有这个 DOM 对象。
+
 ## 遍历元素节点树
 
 节点包含元素，元素节点就是 DOM 元素。
@@ -128,3 +135,66 @@ console.log(nextSibling) // 返回下一个兄弟节点
 console.log(previousSibling) // 返回上一个兄弟节点
 console.log(childNodes) // 返回子节点列表
 ```
+
+## 创建节点
+
+创建节点的方法:
+
+- `document.createElement(tagName)`：创建一个元素节点；
+- `document.createTextNode(text)`：创建一个文本节点；
+- `document.createComment(text)`：创建一个注释节点；
+
+```js
+const li = document.getElementsByTagName('li')[0]
+
+// 创建一个元素节点
+const a = document.createElement('a')
+
+// 创建一个文本节点
+const text = document.createTextNode('a 标签')
+
+// 创建一个注释节点
+const comment = document.createComment('注释节点')
+
+// 将元素节点添加到 li 元素中
+li.appendChild(a)
+
+// 将文本节点添加到 li 元素中
+li.appendChild(text)
+
+// 将注释节点添加到 li 元素中
+li.appendChild(comment)
+```
+
+:::tip
+
+踩坑点: JavaScript 实际上是对节点进行管理。
+
+如通常用 `document.body.appendChild(div)` 会在文档末尾添加节点，但是若该节点是文档中原本就有的，此时就不是添加了，而是**剪切节点**。
+
+```js
+const a = document.getElementsByTagName('a')[0]
+const div = document.createElement('div')
+
+div.innerHTML = '<p>第一段新增段落标签</p>'
+
+// 此方法是文档末尾添加 div
+document.body.appendChild(div)
+
+// 此方法是剪切节点，即从文档中剪切出来，然后添加到 div 标签中, 因为 a 标签是原来就有的
+div.appendChild(a)
+```
+
+:::
+
+## 插入节点
+
+```js
+parentDiv.insertBefore(newNode, referenceNode)
+```
+
+- `parentDiv`：要插入的父节点；
+- `newNode`：要插入的节点；
+- `referenceNode`：要插入的参考节点。
+
+即在父级 `parentDiv` 节点下的子节点 `referenceNode` 之前插入新的节点 `newNode`。
