@@ -197,4 +197,211 @@ parentDiv.insertBefore(newNode, referenceNode)
 - `newNode`：要插入的节点；
 - `referenceNode`：要插入的参考节点。
 
-即在父级 `parentDiv` 节点下的子节点 `referenceNode` 之前插入新的节点 `newNode`。
+即在父级 `parentDiv` 节点下的子节点 `referenceNode` 之前插入新的节点 `newN
+
+## 操作元素位置
+
+### 浏览器的怪异模式和标准模式
+
+虽然 ie 已经淘汰了，但是还是可以过一遍。
+
+标准模式和怪异模式的判断方法: [`document.compatMode`](https://developer.mozilla.org/en-US/docs/Web/API/Document/compatMode) 该属性若返回 `CSS1Compat` 则为标准模式，若返回 `BackCompat` 则为怪异模式。实际上就是浏览器在检测是否有 `<!DOCTYPE html>` 标签，若有则使用 W3C 的规范，若无则使用浏览器自己的规范，较老浏览器可能产生怪异模式。
+
+### 可视宽高
+
+**两种模式下的浏览器可视区域尺寸(窗口的宽高)**:
+
+常规: `window.innerWidth/innerHeight`;
+
+IE9/IE8 及以下: `document.documentElement.clientWidth/clientHeight`;
+
+怪异模式: `document.body.clientWidth/clientHeight`。
+
+封装一个获取窗口的宽高方法：
+
+```js
+function getViewSize() {
+  if (window.innerWidth) {
+    return {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    }
+  } else {
+    // 兼容 ie 及 怪异模式
+    if (document.compatMode === 'BackCompat') {
+      // 怪异模式
+      return {
+        width: document.body.clientWidth,
+        height: document.body.clientHeight,
+      }
+    } else {
+      // IE9/IE8 及以下
+      return {
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+      }
+    }
+  }
+}
+```
+
+> 现代浏览器中的 `window.innerWidth/innerHeight` 是视口宽高，还有一个属性是 `window.outerWidth/outerHeight` 会比这个视口宽高大一点，它还包括浏览器的菜单栏、工具栏、滚动条等的大小。
+
+### 查看滚动条距离
+
+常规方法: `window.pageXOffset` 和 `window.pageYOffset`;
+
+IE9/IE8 以下: `document.body.scrollLeft` 和 `document.body.scrollTop`。
+
+> 滚动条的距离是缩放距离, 而不是实际距离！！！值是页面实际滚动的距离。
+>
+> window.pageYOffset === window.scrollY; // 永远相等
+
+封装一个获取滚动条的距离方法：
+
+```js
+function getScrollOffset() {
+  if (window.pageXOffset) {
+    return {
+      x: window.pageXOffset,
+      y: window.pageYOffset,
+    }
+  } else {
+    // 兼容 ie 等怪异浏览器，因为下述方法只可用其一，另一值为 0，所以相加判断
+    return {
+      x: document.body.scrollLeft + document.documentElement.scrollLeft,
+      y: document.body.scrollTop + document.documentElement.scrollTop,
+    }
+  }
+}
+```
+
+### 整个页面的宽高
+
+常规: `document.body.scrollHeight/scrollWidth`;
+
+兼容写法: `document.documentElement.scrollHeight/scrollWidth`。
+
+> 值得注意的是, 这俩种写法可能都同时存在。
+
+这个 scrollWidth 实际上等于 `widow.innerWidth` + `widow.pageXOffset`，及就是整个页面的实际宽度。
+
+封装方法:
+
+```js
+function getScrollSize() {
+  if (document.body.scrollWidth) {
+    return {
+      width: document.body.scrollWidth,
+      height: document.body.scrollHeight,
+    }
+  } else {
+    return {
+      width: document.documentElement.scrollWidth,
+      height: document.documentElement.scrollHeight,
+    }
+  }
+}
+```
+
+### 元素相对位置
+
+获取元素位置的方法:
+
+- `element.offsetLeft`：返回元素相对于其**定位父元素**的水平偏移量；
+- `element.offsetTop`：返回元素相对于其**定位父元素**的垂直偏移量；
+- `element.offsetParent`：返回元素的**定位父元素**；
+- `element.offsetWidth`：返回元素的宽度（包括内边距、滚动条和边框）；
+- `element.offsetHeight`：返回元素的高度（包括内边距、滚动条和边框）；
+- `element.offsetParent`：返回元素的**定位父元素**；
+
+获取元素定位方法:
+
+```js
+function getElementPosition(el) {
+  let parent = el.offsetParent
+  let offsetLeft = el.offsetLeft
+  let offsetTop = el.offsetTop
+
+  // 递归向上遍历
+  while (parent) {
+    offsetLeft += parent.offsetLeft
+    offsetTop += parent.offsetTop
+    parent = parent.offsetParent
+  }
+
+  return {
+    left: offsetLeft,
+    top: offsetTop,
+  }
+}
+```
+
+### 移动元素
+
+基础方法: `window.scroll(x, y)` 和 `window.scrollTo(x, y)` 俩种方法效果一直, 相对于页面原点`(0,0)`移动到指定位置;
+
+还有一个现对于自身位置进行移动: `window.scrollBy(x ,y)`。
+
+判断是否滚动到底部: `window.pageYOffset + window.innerHeight === document.body.scrollHeight`。即可视高度加上滚动条滚动距离为页面高度。
+
+## DOM 间接操作 CSS
+
+先来看一个踩坑点: DOM 是无法直接操作 CSS 样式表的，它操作的是标签 style li 的属性。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .box {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box"></div>
+    <script>
+      const box = document.querySelector('.box')
+      console.log('初始 width:', box.style.width) // 返回初始 width: undefined
+
+      box.style.width = '200px' // 更改标签上 style 属性, 变成内联样式
+      console.log('内联 width:', box.style.width) // 返回内联 width: 200px
+    </script>
+  </body>
+</html>
+```
+
+可以看到，上面的初始 width 返回的是 `undefined`，而更改后的内联样式返回的是 `200px`。
+
+所以 DOM 是无法直接获取操作 CSS 样式表的。
+
+书写 style 的内联样式时，注意事项：
+
+1. 所有属性要用小驼峰格式书写，且值都是字符串;
+2. 若是复合值，则进行拆解，分成一个一个的样式;
+3. 保留字问题，遇到保留字，则在前面加上 css，并用小驼峰格式书写。如 `oBox.style.float = 'left'` 应当写成 `oBox.style.cssFloat = 'left'`。实际上只有 float 需要如此。
+
+### 查看计算 css 值
+
+方法: `window.getComputedStyle(element, [pseudoElt])`;
+
+参数:
+
+- `element`：要获取计算样式的元素;
+- `pseudoElt`：伪元素，可选参数，不传则返回元素计算后的样式。
+
+返回值: 计算后的样式对象。但 ie8 及以下不支持。
+
+```js
+const box = document.querySelector('.box')
+const style = window.getComputedStyle(box)
+
+console.log(style.width) // 返回 100px
+```
