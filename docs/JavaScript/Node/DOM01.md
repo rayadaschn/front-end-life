@@ -1,11 +1,11 @@
 ---
-title: DOM 01
+title: DOM 梳理
 icon: javascript
-date: 2023-02-16
+date: 2024-04-27
 category:
   - javascript
 tag:
-  - javascript
+  - node
 
 sticky: false
 ---
@@ -395,7 +395,7 @@ function getElementPosition(el) {
 参数:
 
 - `element`：要获取计算样式的元素;
-- `pseudoElt`：伪元素，可选参数，不传则返回元素计算后的样式。
+- `pseudoElt`：【只读】伪元素，可选参数，传则获取伪元素的样式，不传则返回元素计算后的样式。
 
 返回值: 计算后的样式对象。但 ie8 及以下不支持。
 
