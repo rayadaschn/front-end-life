@@ -337,6 +337,50 @@ function getElementPosition(el) {
 }
 ```
 
+### 封装获取元素位置
+
+首先鼠标点击的位置是基于页面左上角的，即：
+
+1. clientX/clientY: 鼠标点击位置相对于**页面**左上角的距离(不包括滚动条距离);
+2. pageX/pageY: 鼠标点击位置相对于**页面**左上角的距离，加上滚动条滚动的距离;
+3. screenX/screenY: 鼠标点击位置相对于**屏幕**左上角的距离(浏览器在屏幕上也会移动);
+4. offsetX/offsetY: 鼠标点击位置相对于**元素**左上角的距离;
+5. x/y: 同 clientX/clientY 相同,但火狐浏览器不支持;
+6. layerX/layerY: 同 pageX/pageY 相同,但 IE 浏览器不支持;
+
+封装方法:
+
+```js
+/** 获取滚动条距离 */
+function getScrollOffset() {
+  if (window.pageXOffset) {
+    return {
+      left: window.pageXOffset,
+      top: window.pageYOffset,
+    }
+  } else {
+    return {
+      left: document.body.scrollLeft + document.documentElement.scrollLeft,
+      top: document.body.scrollTop + document.documentElement.scrollTop,
+    }
+  }
+}
+
+function getPagePosition(e) {
+  var sLeft = getScrollOffset().left,
+    sTop = getScrollOffset().top,
+    // 浏览器中页面偏移量, 普通为 8px 像素
+    cLeft =
+      document.documentElement.clientLeft || document.body.clientLeft || 0,
+    cTop = document.documentElement.clientTop || document.body.clientTop || 0
+
+  return {
+    x: e.clientX + sLeft - cLeft,
+    y: e.clientY + sTop - cTop,
+  }
+}
+```
+
 ### 移动元素
 
 基础方法: `window.scroll(x, y)` 和 `window.scrollTo(x, y)` 俩种方法效果一直, 相对于页面原点`(0,0)`移动到指定位置;
@@ -404,4 +448,127 @@ const box = document.querySelector('.box')
 const style = window.getComputedStyle(box)
 
 console.log(style.width) // 返回 100px
+```
+
+## 封装页面拖拽函数
+
+点击元素后，元素开始移动，直到松开鼠标。
+
+简单实现:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>点击移动</title>
+  </head>
+  <body>
+    <div
+      class="box"
+      style="
+        height: 200px;
+        width: 200px;
+        background-color: red;
+        position: absolute;
+        left: 0;
+        top: 0;
+      "
+    ></div>
+
+    <script>
+      const box = document.querySelector('.box')
+
+      box.onmousedown = function (e) {
+        let x = e.pageX - box.offsetLeft
+        let y = e.pageY - box.offsetTop
+
+        document.onmousemove = function (e) {
+          box.style.left = e.pageX - x + 'px'
+          box.style.top = e.pageY - y + 'px'
+        }
+
+        document.onmouseup = function () {
+          document.onmousemove = null
+          document.onmouseup = null
+        }
+      }
+    </script>
+  </body>
+</html>
+```
+
+封装成函数:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>点击移动</title>
+  </head>
+  <body>
+    <div
+      class="box"
+      style="
+        height: 200px;
+        width: 200px;
+        background-color: red;
+        position: absolute;
+        left: 0;
+        top: 0;
+      "
+    ></div>
+
+    <script>
+      const box = document.querySelector('.box')
+
+      // box.onmousedown = function (e) {
+      //   let x = e.pageX - box.offsetLeft;
+      //   let y = e.pageY - box.offsetTop;
+
+      //   document.onmousemove = function (e) {
+      //     box.style.left = e.pageX - x + "px";
+      //     box.style.top = e.pageY - y + "px";
+      //   };
+
+      //   document.onmouseup = function () {
+      //     document.onmousemove = null;
+      //     document.onmouseup = null;
+      //   };
+      // };
+
+      function elemDrag(elem) {
+        let x = 0
+        let y = 0
+
+        elem.addEventListener('mousedown', function (e) {
+          e = e || window.event
+          x = e.pageX - elem.offsetLeft
+          y = e.pageY - elem.offsetTop
+
+          document.addEventListener('mousemove', mouseMove)
+          document.addEventListener('mouseup', mouseUp)
+          e.stopPropagation()
+          e.preventDefault()
+        })
+
+        function mouseMove(e) {
+          e = e || window.event
+          elem.style.left = e.pageX - x + 'px'
+          elem.style.top = e.pageY - y + 'px'
+        }
+
+        function mouseUp() {
+          document.removeEventListener('mousemove', mouseMove)
+          document.removeEventListener('mouseup', mouseUp)
+        }
+      }
+
+      elemDrag(box)
+    </script>
+  </body>
+</html>
 ```
