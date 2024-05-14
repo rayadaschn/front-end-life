@@ -50,18 +50,18 @@ jobs:
           FOLDER: docs/.vuepress/dist/
           CLEAN: true
       # 自动部署到阿里云服务器
-      - name: deploy to aliyun
-        uses: easingthemes/ssh-deploy@v2.1.5
-        env:
-          # 私钥
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          # scp参数
-          ARGS: '-rltgoDzvO --delete'
-          # 源目录，编译后生成的文件目录
-          SOURCE: docs/.vuepress/dist/
-          # 服务器ip
-          REMOTE_HOST: ${{ secrets.SERVER_IP }}
-          # 用户
-          REMOTE_USER: root
-          # 目标地址
-          TARGET: /var/www
+      # - name: deploy to aliyun
+      #   uses: easingthemes/ssh-deploy@v2.1.5
+      #   env:
+      #     # 私钥
+      #     SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+      #     # scp参数
+      #     ARGS: '-rltgoDzvO --delete'
+      #     # 源目录，编译后生成的文件目录
+      #     SOURCE: docs/.vuepress/dist/
+      #     # 服务器ip
+      #     REMOTE_HOST: ${{ secrets.SERVER_IP }}
+      #     # 用户
+      #     REMOTE_USER: root
+      #     # 目标地址
+      #     TARGET: /var/www

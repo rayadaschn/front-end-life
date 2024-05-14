@@ -572,3 +572,15 @@ console.log(style.width) // 返回 100px
   </body>
 </html>
 ```
+
+## textContent 和 innerText 和 innerHTML 的区别
+
+`textContent`、`innerText` 和 `innerHTML` 是用于操作 HTML 元素内容的属性。
+
+1. `textContent`: 这个属性返回指定元素及其所有后代节点的文本内容，而且会保留所有空白和换行符。它不会返回任何 HTML 标签，**只返回纯文本内容**。
+
+2. `innerText`: 与 `textContent` 类似，但是**会考虑** CSS 样式和元素的可见性。如果元素或其祖先元素被设置为 `display: none`，或者元素本身是一个 `<script>` 或 `<style>` 元素，`innerText` 将返回空字符串。与 `textContent` 不同，`innerText` 会忽略隐藏的元素和它们的内容。
+
+3. `innerHTML`: 这个属性返回 HTML 元素的内部 HTML 代码，包括所有子元素、标签和文本内容。通过设置 `innerHTML` 可以动态改变元素的内容，并且可以将 HTML 字符串插入到元素中。
+
+   缺点也很明显，`innerHTML`可能存在安全风险，如果未经过滤的内容被插入到 innerHTML 中，可能导致跨站脚本攻击（XSS）。此外，`innerHTML`操作 HTML 结构可能会导致性能损失(览器需要解析新的 HTML 字符串并将其转换为 DOM 结构，然后重新计算布局和绘制页面。)，特别是在大型文档或频繁操作的情况下。
