@@ -12,6 +12,10 @@ sticky: false
 
 该文为上篇[《手写一个具备拖拉拽多功能的弹窗》](./hooks01)的延续。
 
+最终效果图如下:
+
+![Canvas 绘制及拖动](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/Kapture%202024-05-27%20at%2000.02.01.gif)
+
 首先需要区分 `e.clientX` 和 `e.offsetX` 的区别:
 
 - `e.clientX` 是相对于整个文档左上角的坐标。
@@ -221,6 +225,239 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
 
       // 调用绘制函数
       draw()
+    </script>
+  </body>
+</html>
+```
+
+上述是在绘制连线的基础上进行的，实际上还可以简化代码：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas 画矩形</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .container {
+        width: 1024px;
+        height: 600px;
+        margin: 50px auto 0;
+        box-shadow: 0 0 10px #000;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: crosshair;
+      }
+
+      /* 工具栏 */
+      .tool-bar {
+        width: 1024px;
+        height: 80px;
+        margin: 18px auto;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        /* background-color: #8b8888;  */
+      }
+
+      .tool-bar div,
+      input {
+        width: 78px;
+        height: 78px;
+        border: 1px solid #b3b2b2;
+        margin: 0 2px;
+        cursor: pointer;
+      }
+      .tool-bar .remove {
+        text-align: center;
+        line-height: 78px;
+        font-size: 40;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 画板主体 -->
+    <div class="container">
+      <canvas id="myCanvas" class="canvas" width="1024" height="600" />
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="tool-bar">
+      <!-- 颜色选择器 -->
+      <input class="color" type="color" />
+      <div class="remove">擦除</div>
+    </div>
+
+    <script>
+      var can = document.getElementById('myCanvas')
+      var tools = document.getElementsByClassName('tool-bar')[0]
+      var colorPicker = document.getElementsByClassName('color')[0]
+      var ctx = can.getContext('2d')
+      var cWidth = can.width
+      var cHeight = can.height
+      var lineWidth = 4
+      var x = 0
+      var y = 0
+
+      var curRect = null
+      var isMoveRect = false
+      var moveRect = null
+
+      var init = function () {
+        bindEvent()
+        drawAllRect()
+      }
+
+      var rectLists = []
+      class Rectangle {
+        constructor(startX, startY, color) {
+          this.startX = startX
+          this.startY = startY
+          this.endX = startX
+          this.endY = startY
+          this.color = color
+        }
+
+        // 绘制方法
+        draw() {
+          ctx.beginPath()
+          ctx.fillStyle = this.color
+          ctx.strokeStyle = 'black'
+          ctx.lineWidth = lineWidth || 1
+          ctx.fillRect(
+            this.startX,
+            this.startY,
+            this.endX - this.startX,
+            this.endY - this.startY
+          )
+          ctx.closePath()
+          ctx.stroke()
+        }
+      }
+
+      /** 绑定事件 */
+      function bindEvent() {
+        // 画布事件
+        can.addEventListener(
+          'mousedown',
+          function (e) {
+            mouseDown(e)
+
+            document.addEventListener('mousemove', mouseMove, false)
+            document.addEventListener('mouseup', mouseUp, false)
+          },
+          false
+        )
+
+        // 工具栏事件
+        tools.addEventListener('click', clickTool, false)
+      }
+
+      /** 鼠标点击 */
+      function mouseDown(e) {
+        setCanXY(e)
+        curRect = new Rectangle(x, y, colorPicker.value)
+
+        var rect = getRect(x, y)
+        // 判断是否点击到了已有的矩形
+        if (rect) {
+          isMoveRect = true
+          moveRect = rect
+        } else {
+          rectLists.push(curRect) // 补充当前矩形
+        }
+      }
+
+      /** 移动鼠标 */
+      function mouseMove(e) {
+        // 保存当前鼠标位置
+        var startX = x
+        var startY = y
+        // 更新鼠标位置
+        setCanXY(e)
+
+        // 是否移动矩形
+        if (isMoveRect) {
+          // 移动点击矩形
+          disX = startX - x
+          disY = startY - y
+          moveRect.startX -= disX
+          moveRect.startY -= disY
+          moveRect.endX -= disX
+          moveRect.endY -= disY
+        } else {
+          // 开始绘制矩形
+          curRect.endX = x
+          curRect.endY = y
+        }
+      }
+
+      /** 鼠标抬起 */
+      function mouseUp(e) {
+        isMoveRect = false
+        document.removeEventListener('mousemove', mouseMove, false)
+        document.removeEventListener('mouseup', mouseUp, false)
+      }
+
+      /** 设置落笔位置 */
+      function setCanXY(e) {
+        var e = e || window.event
+
+        var xPos = e.clientX - can.offsetLeft
+        var yPos = e.clientY - can.offsetTop
+        // 边界限制
+        x = xPos < 0 ? 0 : xPos > cWidth ? cWidth : xPos
+        y = yPos < 0 ? 0 : yPos > cHeight ? cHeight : yPos
+      }
+
+      /** 点击工具栏 */
+      function clickTool(e) {
+        var e = e || window.event
+        var tar = e.target || e.srcElement
+
+        // 检查是否点击了擦除工具
+        if (tar.classList.contains('remove')) {
+          rectLists.length = 0 // 清空绘制数组
+          // ctx.clearRect(0, 0, cWidth, cHeight);
+        }
+      }
+
+      /** 尝试获取矩形 */
+      function getRect(x, y) {
+        for (var inx = 0; inx < rectLists.length; inx++) {
+          var rect = rectLists[inx]
+          var rectMinX = Math.min(rect.startX, rect.endX)
+          var rectMaxX = Math.max(rect.startX, rect.endX)
+          var rectMinY = Math.min(rect.startY, rect.endY)
+          var rectMaxY = Math.max(rect.startY, rect.endY)
+
+          if (
+            x >= rectMinX &&
+            x <= rectMaxX &&
+            y >= rectMinY &&
+            y <= rectMaxY
+          ) {
+            return rect
+          }
+        }
+        return null
+      }
+
+      /** 绘制所有矩形 */
+      function drawAllRect() {
+        requestAnimationFrame(drawAllRect)
+        ctx.clearRect(0, 0, cWidth, cHeight)
+        // 在动画帧下, 依次绘制每个矩形
+        for (var i = 0; i < rectLists.length; i++) {
+          rectLists[i].draw()
+        }
+      }
+
+      init()
     </script>
   </body>
 </html>
