@@ -9,7 +9,7 @@ tag:
 sticky: false
 ---
 
-## 快速入门
+## 背景介绍
 
 Cesium 是一个跨平台、跨浏览器的展示三维地球和地图的开源 Javascript 库。Cesium 不需要任何插件支持，但是浏览器必须支持 WebGL 才能运行 Cesium。
 
