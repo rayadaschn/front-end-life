@@ -280,6 +280,27 @@ dataGeo.then((dataSources) => {
 
 ![GeoJSON](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202406021306415.png)
 
+::: tip
+值得注意的是，vite 并不直接支持 GeoJSON 文件，推荐的方式是：导入采用 `import data from '../xxx.geojson?raw'`，使用时进行解析 `JSON.parse(data)`。
+
+在 Vite 中，`?raw` 是一个特殊的查询参数，用于指示 Vite 将文件的内容作为纯文本导入。通过在文件路径后面添加`?raw`，目的就是告诉 Vite 不要解析文件内容，而是将其作为字符串导入。由于是 json 数据，所以直接解析使用即可。
+
+```js
+import rodeData from '@/assets/json/qdRoad_less.geojson?raw'
+
+// 加载 geoJson 数据
+const geoPromise = new Cesium.GeoJsonDataSource.load(JSON.parse(rodeData), {
+  clampToGround: true,
+})
+geoPromise.then((dataSource) => {
+  viewer.dataSources.add(dataSource)
+  viewer.flyTo(dataSource)
+  // 其它处理...
+})
+```
+
+:::
+
 ### KML
 
 KML（Keyhole Markup Language）是一种基于 XML 的地理空间数据格式。用发与 GeoJSON 类似，但 KML 文件通常包含更多的元数据和标签。
