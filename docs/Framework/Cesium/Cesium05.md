@@ -11,9 +11,9 @@ sticky: false
 
 在此前系列中，笔者梳理了 Cesium 的基本使用方法，但是为了更进阶了解 Cesium，我们需要了解 Cesium 的核心机制，其中之一就是 Property 属性机制。
 
-这是 Property 类型整体分类。
+先总览一遍 Property 类型分类。
 
-![Property 类型](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/Property%20%E7%B1%BB%E5%9E%8B.jpg)
+![Property 类型](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/Property%20%E7%B1%BB%E5%9E%8B_fix.jpg)
 
 ## 区分 Entity 和 Property
 
