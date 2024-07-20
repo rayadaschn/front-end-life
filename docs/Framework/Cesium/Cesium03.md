@@ -1,5 +1,5 @@
 ---
-title: Cesium 快速入门
+title: Cesium 实战入门
 icon: sitemap
 date: 2024-06-01
 category:
