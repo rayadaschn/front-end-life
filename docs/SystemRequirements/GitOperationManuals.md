@@ -625,6 +625,48 @@ $: conventional-changelog -i CHANGELOG.md -s -r 0
 $: conventional-changelog -p angular -i CHANGELOG.md -s
 ```
 
+## 技巧
+
+由于电脑存在多个开发环境，因此可以对 terminal 进行快捷键配置，使得在切换环境时，git 的用户名和邮箱自动切换。
+
+```shell
+# 打开编辑配置
+$: vim ~/.bash_profile
+```
+
+```vim
+# set github
+function set_git() {
+    git config user.name "xxxxxx- Your Name -xxxxxx"
+    git config user.email "xxxxxx- Your Email -xxxxxx"
+    git config user.signingkey xxxxxx- Your Key -xxxxxx
+    git config commit.gpgsign true
+    echo -e "~(*≧∀≦)ﾉ　Git account named xxxx set up successfully ♪ "
+}
+
+# other setting
+
+# set Proxy
+function proxy_on() {
+    export http_proxy=http://127.0.0.1:7890
+    export https_proxy=$http_proxy
+    export all_proxy=socks5://127.0.0.1:7890
+    echo -e "~ε=ε=┌( >_<)┘ Terminal proxy is enabled ~"
+}
+
+function proxy_off(){
+    unset http_proxy https_proxy all_proxy
+    echo -e "~ ⊂◉‿◉つ Terminal proxy is turned off ~"
+}
+
+# change host
+function changehost(){
+    echo -e "~ ि०॰०ॢी To start modifying the host file(~/etc/hosts), enter the local password ~"
+    sudo vi /etc/hosts
+    echo -e "~ ( *・ω・)✄╰ひ╯ Hosts update completed ~"
+}
+```
+
 ## 参考文档
 
 - [JDC 前端代码规范 (jdf2e.github.io)](https://jdf2e.github.io/jdc_fe_guide/docs/git/branch)
