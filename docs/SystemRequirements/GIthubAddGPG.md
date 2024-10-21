@@ -169,7 +169,7 @@ uid                      userName <xxxxxxx@github.com>
 sub   cvxxx 2023-xx-xx [E] [expires: 2025-xx-xx]
 ```
 
-需要注意的是，这里的主公钥名称为**[PRIMARYKEYID]**： `C1Fxxxxxxx79D` 。
+需要注意的是，这里的主公钥名称为 **[PRIMARYKEYID]** ： `C1Fxxxxxxx79D` 。
 
 再对上述结果进行说明:
 
