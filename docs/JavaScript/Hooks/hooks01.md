@@ -20,10 +20,10 @@ sticky: false
 
 最终实现可以直接点击查看[实现代码](#最终代码)，下面是基本实现的思路。
 
-- e.clientX 是相对于整个文档左上角的坐标。
-- e.offsetX 是相对于触发事件的元素左上角的坐标。
+- `e.clientX` 是相对于整个文档左上角的坐标。
+- `e.offsetX` 是相对于触发事件的元素左上角的坐标。
 
-获取弹窗的 boxRef 元素对象, 获取拖动 icon 元素的 dragRef 元素对象, 获取缩放弹窗 icon 的 boxSizeRef 元素对象。
+获取弹窗的 `boxRef` 元素对象, 获取拖动 `icon` 元素的 `dragRef` 元素对象, 获取缩放弹窗 `icon` 的 `boxSizeRef` 元素对象。
 
 拖动窗口: 计算窗体的绝对定位 left 和 top
 
@@ -49,7 +49,7 @@ const boxHeight = startBoxOffsetHeight + currentE.clientY - startClientY
 3. 弹窗内容
 4. 右下角弹窗拖拽功能按钮
 
-实现原理：通过 ref 动态控制弹窗的大小和相对于屏幕的位置。
+实现原理：通过 `ref` 动态控制弹窗的大小和相对于屏幕的位置。
 
 因此，可以先绘制出最基本的弹窗样式。这里我们引入的是 AntDesignVue 的图标库。
 
