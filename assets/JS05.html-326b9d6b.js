@@ -54,10 +54,10 @@ console<span class="token punctuation">.</span><span class="token function">log<
 
 <span class="token keyword">let</span> instance1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Son</span><span class="token punctuation">(</span><span class="token string">&#39;张三&#39;</span><span class="token punctuation">)</span>
 instance1<span class="token punctuation">.</span>colors<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">&#39;black&#39;</span><span class="token punctuation">)</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>instance1<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>instance1<span class="token punctuation">)</span> <span class="token comment">// { age:15, colors:[&#39;red&#39;, &#39;blue&#39;, &#39;green&#39;, &#39;black&#39;], name:&quot;张三&quot;}</span>
 
 <span class="token keyword">let</span> instance2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Son</span><span class="token punctuation">(</span><span class="token string">&#39;李四&#39;</span><span class="token punctuation">)</span>
-console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>instance2<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>instance2<span class="token punctuation">)</span> <span class="token comment">// { age:15, colors:[&#39;red&#39;, &#39;blue&#39;, &#39;green&#39;], name:&quot;李四&quot;}</span>
 
 <span class="token comment">// 不足点</span>
 <span class="token keyword">let</span> instance3 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Patent</span><span class="token punctuation">(</span><span class="token string">&#39;parent&#39;</span><span class="token punctuation">)</span>
