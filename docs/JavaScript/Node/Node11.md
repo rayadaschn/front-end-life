@@ -15,6 +15,7 @@ const fs = require('fs')
 const path = require('path')
 
 const cacheFilePath = path.join(__dirname, 'temp/i18n_keys_cache.json')
+const cacheDirPath = path.join(__dirname, '../src/i18n/zh') // 指定中文目录, 主要维护多语言基础版本
 
 // 检查并创建缓存目录（如果不存在）
 const cacheDir = path.dirname(cacheFilePath)
@@ -36,7 +37,31 @@ function loadCache() {
       allKeysSet: new Set(Object.values(cache).flat()), // 用 Set 存储所有 key
     }
   }
-  return { cache: {}, allKeysSet: new Set() }
+  // 初始化缓存文件
+  const cache = initializeCache()
+  saveCache(cache)
+  return { cache, allKeysSet: new Set(Object.values(cache).flat()) }
+}
+
+// 通过加载维护目录中的所有 JSON 文件来初始化缓存
+function initializeCache() {
+  const cache = {}
+  const files = fs
+    .readdirSync(cacheDirPath)
+    .filter((file) => file.endsWith('.json'))
+
+  files.forEach((file) => {
+    const fileName = path.basename(file, '.json')
+    const filePath = path.join(cacheDirPath, file)
+    const content = fs.readFileSync(filePath, 'utf8')
+    const jsonData = JSON.parse(content)
+
+    // 将文件的最后一级键添加到缓存中
+    cache[fileName] = getLastLevelKeys(jsonData)
+  })
+
+  console.info('🚀 ~ Initialized cache from zh directory with files:', files)
+  return cache
 }
 
 // 保存共享缓存
