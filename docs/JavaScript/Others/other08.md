@@ -135,7 +135,14 @@ for branch in "${target_branches[@]}"; do
   progress_bar $current_branch_index $total_branches
   echo " ${ARROW} Switching to $branch..."
 
-  if ! git checkout $branch >/dev/null 2>&1; then
+  if git checkout $branch >/dev/null 2>&1; then
+    echo " ${ARROW} Updating $branch to the latest from remote..."
+    git pull --rebase origin $branch >/dev/null 2>&1 || {
+      echo " ${CROSS_MARK} Failed to update $branch. Skipping merge."
+      echo "$branch:UpdateFailed" >> "$branch_status_file"
+      continue
+    }
+  else
     echo " ${CROSS_MARK} Failed to switch to $branch."
     echo "$branch:CheckoutFailed" >> "$branch_status_file"
     continue
@@ -179,6 +186,9 @@ while IFS=: read -r branch status; do
       ;;
     CheckoutFailed)
       printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK CheckoutFailed"
+      ;;
+    UpdateFailed)
+      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK UpdateFailed"
       ;;
     PushFailed)
       printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK PushFailed"
