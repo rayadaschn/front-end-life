@@ -126,17 +126,17 @@ app<span class="token punctuation">.</span><span class="token function">mount</s
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
-<span class="token comment">/**
+<span class="token doc-comment comment">/**
  * 自定义指令
- * @description 保证插件单一职责，当前插件只用于添加自定义指令
+ * <span class="token keyword">@description</span> 保证插件单一职责，当前插件只用于添加自定义指令
  */</span>
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
   <span class="token function-variable function">install</span><span class="token operator">:</span> <span class="token punctuation">(</span>app<span class="token operator">:</span> App<span class="token punctuation">,</span> options<span class="token operator">?</span><span class="token operator">:</span> Options<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
-    <span class="token comment">/**
+    <span class="token doc-comment comment">/**
      * 文本高亮
-     * @description 用于给指定的 DOM 节点添加背景色，搭配文本内容形成高亮效果
-     * @tips 指令传入的值需要是合法的 CSS 颜色名称或者 Hex 值
-     * @example &lt;div v-highlight=&quot;\`cyan\`&quot; /&gt;
+     * <span class="token keyword">@description</span> 用于给指定的 DOM 节点添加背景色，搭配文本内容形成高亮效果
+     * <span class="token keyword">@tips</span> 指令传入的值需要是合法的 CSS 颜色名称或者 Hex 值
+     * <span class="token keyword">@example</span> &lt;div v-highlight=&quot;\`cyan\`&quot; /&gt;
      */</span>
     app<span class="token punctuation">.</span><span class="token function">directive</span><span class="token punctuation">(</span><span class="token string">&#39;highlight&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>el<span class="token punctuation">,</span> binding<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
       <span class="token comment">// 获取默认颜色</span>
