@@ -10,11 +10,9 @@ tag:
 
 最新需要批量修复 git 分支问题，记录一下。
 
-我的需求是有很多项目分支存在一些共性 bug，需要批量修复这些分支。通过调研最终还是决定手写一个脚本，通过 git 的命令行工具进行批量操作。
+需求是有很多项目分支存在一些共性 bug，需要批量修复这些分支。每个分支都 `cherry-pick` 或者 `merge` 的话又太费时间。因此有了这个脚本实现，顺便也学习一下 bash 的一些语法。
 
-> 不想单独 `cherry-pick` 了
-
-最终效果如下：
+最终效果如下,有合并进度条、状态表格等提示输出：
 
 ```bash
 =========================================
@@ -54,6 +52,8 @@ Merge process completed.
 2. 将 `fix/common-issue` 分支的修复内容批量 `merge` 到待修复的项目分支上。
 
 ## 实现脚本
+
+> 在文末还有指令化脚本，方便直接使用
 
 ```bash
 #!/bin/bash
@@ -424,3 +424,219 @@ rm -f "$branch_status_file"
 2. **错误处理**：利用 `if` 和 `continue` 等语法捕获错误，保证脚本的健壮性。
 3. **临时文件**：通过 `mktemp` 创建临时文件，避免变量冲突。
 4. **状态汇总**：通过文件记录和 `while` 循环实现批量结果分析。
+
+## 指令化脚本
+
+```bash
+# 帮助信息
+print_usage() {
+  echo "Usage: $0 -f <fix_branch> -t <target_branches>"
+  echo "  -f  Specify the fix branch to merge from."
+  echo "  -t  Specify the target branches to merge into (comma-separated)."
+  echo "Example:"
+  echo "  $0 -f fix/common-issue -t feature/branch1,feature/branch2,feature/branch3"
+  exit 1
+}
+
+# 参数初始化
+fix_branch=""
+target_branches=()
+
+# 解析命令行参数
+while getopts "f:t:" opt; do
+  case "$opt" in
+    f)
+      fix_branch="$OPTARG"
+      ;;
+    t)
+      IFS=',' read -r -a target_branches <<< "$OPTARG"
+      ;;
+    *)
+      print_usage
+      ;;
+  esac
+done
+
+# 检查必需参数是否为空
+if [[ -z "$fix_branch" || ${#target_branches[@]} -eq 0 ]]; then
+  print_usage
+fi
+
+# --------------- 核心逻辑 ---------------
+
+# 分支状态记录，替代关联数组
+branch_status_file=$(mktemp)
+
+# 图标和符号定义
+CHECK_MARK="✔"
+CROSS_MARK="✘"
+ARROW="➜"
+SEPARATOR="========================================="
+PROGRESS_BAR_WIDTH=40
+
+# 动态进度条
+progress_bar() {
+  local progress=$1
+  local total=$2
+
+  # 避免除以零
+  if [ "$total" -le 0 ]; then
+    printf "\r[%-${PROGRESS_BAR_WIDTH}s] %3d%%" "$(printf "%0.s " $(seq 1 $PROGRESS_BAR_WIDTH))" 0
+    return
+  fi
+
+  local percentage=$(( progress * 100 / total ))
+  local num_hashes=$(( progress * PROGRESS_BAR_WIDTH / total ))
+  local num_spaces=$(( PROGRESS_BAR_WIDTH - num_hashes ))
+
+  printf "\r[%-${PROGRESS_BAR_WIDTH}s] %3d%%" "$(printf "%0.s#" $(seq 1 $num_hashes))" $percentage
+}
+
+# 打印分隔线
+print_separator() {
+  echo "$SEPARATOR"
+}
+
+# 打印标题
+print_title() {
+  echo "$SEPARATOR"
+  echo "        🌿 Starting the Merge Process"
+  echo "$SEPARATOR"
+}
+
+# 确保修复分支已存在
+if ! git checkout $fix_branch >/dev/null 2>&1; then
+  echo " ${CROSS_MARK} Failed to switch to $fix_branch. Please ensure the branch exists."
+  exit 1
+fi
+
+# 打印开始信息
+print_title
+
+# 总分支数量
+total_branches=${#target_branches[@]}
+
+# 防止 total_branches 为 0
+if [ "$total_branches" -eq 0 ]; then
+  echo " ${CROSS_MARK} No target branches specified. Exiting."
+  exit 1
+fi
+
+current_branch_index=0
+
+# 遍历目标分支，逐一合并修复
+for branch in "${target_branches[@]}"; do
+  current_branch_index=$((current_branch_index + 1))
+
+  # 更新动态进度条
+  progress_bar $current_branch_index $total_branches
+  echo " ${ARROW} Switching to $branch..."
+
+  if git checkout $branch >/dev/null 2>&1; then
+    echo " ${ARROW} Updating $branch to the latest from remote..."
+    git pull --rebase origin $branch >/dev/null 2>&1 || {
+      echo " ${CROSS_MARK} Failed to update $branch. Skipping merge."
+      echo "$branch:UpdateFailed" >> "$branch_status_file"
+      continue
+    }
+  else
+    echo " ${CROSS_MARK} Failed to switch to $branch."
+    echo "$branch:CheckoutFailed" >> "$branch_status_file"
+    continue
+  fi
+
+  progress_bar $current_branch_index $total_branches
+  echo " ${ARROW} Merging $fix_branch into $branch..."
+
+  if git merge $fix_branch --no-ff -m "Merge $fix_branch into $branch" >/dev/null 2>&1; then
+    echo " ${CHECK_MARK} Successfully merged into $branch."
+    echo " ${ARROW} Attempting to push $branch to remote..."
+    if git push origin $branch >/dev/null 2>&1; then
+      echo " ${CHECK_MARK} Successfully pushed $branch to remote."
+      echo "$branch:Merged" >> "$branch_status_file"
+    else
+      echo " ${CROSS_MARK} Failed to push $branch to remote."
+      echo "$branch:PushFailed" >> "$branch_status_file"
+    fi
+  else
+    echo " ${CROSS_MARK} Merge conflict detected in $branch!"
+    echo "$branch:Conflict" >> "$branch_status_file"
+    echo " ${ARROW} Aborting merge and restoring clean working directory..."
+    git merge --abort >/dev/null 2>&1
+  fi
+done
+
+# 打印汇总表格
+print_separator
+echo "Merge Summary:"
+print_separator
+printf "%-25s | %-15s\n" "Branch" "Status"
+print_separator
+
+while IFS=: read -r branch status; do
+  case "$status" in
+    Merged)
+      printf "%-25s | %-15s\n" "$branch" "$CHECK_MARK Merged"
+      ;;
+    Conflict)
+      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK Conflict"
+      ;;
+    CheckoutFailed)
+      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK CheckoutFailed"
+      ;;
+    UpdateFailed)
+      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK UpdateFailed"
+      ;;
+    PushFailed)
+      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK PushFailed"
+      ;;
+    *)
+      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK Unknown"
+      ;;
+  esac
+done < "$branch_status_file"
+
+print_separator
+
+# 清理修复分支
+echo " ${ARROW} Returning to the fix branch..."
+git checkout $fix_branch >/dev/null 2>&1
+
+# 删除临时文件
+rm -f "$branch_status_file"
+
+print_separator
+echo "Merge process completed."
+```
+
+此时可以通过 node 脚本来指令化调用啦~ 不用额外安装依赖：
+
+```js
+const { exec } = require('child_process')
+const path = require('path')
+
+// 构造指令
+const fixBranch = 'fix/common-issue'
+const targetBranches = [
+  'feature/branch1',
+  'feature/branch2',
+  'feature/branch3',
+].join(',')
+
+// 脚本路径-这里的 `mergeGit.sh` 为上述脚本保存名称
+const scriptPath = path.resolve(__dirname, './mergeGit.sh')
+const command = `bash ${scriptPath} -f ${fixBranch} -t ${targetBranches}`
+
+// 执行脚本
+exec(command, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error: ${error.message}`)
+    return
+  }
+  if (stderr) {
+    console.error(`Stderr: ${stderr}`)
+    return
+  }
+  console.info(`Output:\n${stdout}`)
+})
+```
