@@ -430,23 +430,29 @@ rm -f "$branch_status_file"
 ```bash
 # 帮助信息
 print_usage() {
-  echo "Usage: $0 -f <fix_branch> -t <target_branches>"
-  echo "  -f  Specify the fix branch to merge from."
-  echo "  -t  Specify the target branches to merge into (comma-separated)."
-  echo "Example:"
-  echo "  $0 -f fix/common-issue -t feature/branch1,feature/branch2,feature/branch3"
+  echo "Usage: $0 [-f <fix_branch> -t <target_branches>] [-c <commit_hash> -t <target_branches>]"
+  echo "  -f  Specify the fix branch to merge from (merge mode)."
+  echo "  -c  Specify a commit hash to cherry-pick (cherry-pick mode)."
+  echo "  -t  Specify the target branches to operate on (comma-separated)."
+  echo "Examples:"
+  echo "  $0 -f fix/common-issue -t feature/branch1,feature/branch2"
+  echo "  $0 -c abc123 -t feature/branch1,feature/branch2"
   exit 1
 }
 
 # 参数初始化
 fix_branch=""
+commit_hash=""
 target_branches=()
 
 # 解析命令行参数
-while getopts "f:t:" opt; do
+while getopts "f:c:t:" opt; do
   case "$opt" in
     f)
       fix_branch="$OPTARG"
+      ;;
+    c)
+      commit_hash="$OPTARG"
       ;;
     t)
       IFS=',' read -r -a target_branches <<< "$OPTARG"
@@ -457,21 +463,35 @@ while getopts "f:t:" opt; do
   esac
 done
 
-# 检查必需参数是否为空
-if [[ -z "$fix_branch" || ${#target_branches[@]} -eq 0 ]]; then
+# 检查参数互斥性
+if [[ -n "$fix_branch" && -n "$commit_hash" ]]; then
+  echo "Error: -f and -c options cannot be used together."
   print_usage
 fi
 
-# --------------- 核心逻辑 ---------------
+# 检查必要参数
+if [[ -z "$fix_branch" && -z "$commit_hash" ]]; then
+  echo "Error: Either -f or -c must be specified."
+  print_usage
+fi
 
-# 分支状态记录，替代关联数组
+if [[ ${#target_branches[@]} -eq 0 ]]; then
+  echo "Error: No target branches specified."
+  print_usage
+fi
+
+# --------------- 核心代码 ---------------
+
+# 分支状态记录
 branch_status_file=$(mktemp)
+# 记录当前所在的分支
+original_branch=$(git rev-parse --abbrev-ref HEAD)
 
 # 图标和符号定义
 CHECK_MARK="✔"
 CROSS_MARK="✘"
 ARROW="➜"
-SEPARATOR="========================================="
+SEPARATOR="==================================================="
 PROGRESS_BAR_WIDTH=40
 
 # 动态进度条
@@ -487,8 +507,6 @@ progress_bar() {
 
   local percentage=$(( progress * 100 / total ))
   local num_hashes=$(( progress * PROGRESS_BAR_WIDTH / total ))
-  local num_spaces=$(( PROGRESS_BAR_WIDTH - num_hashes ))
-
   printf "\r[%-${PROGRESS_BAR_WIDTH}s] %3d%%" "$(printf "%0.s#" $(seq 1 $num_hashes))" $percentage
 }
 
@@ -500,15 +518,9 @@ print_separator() {
 # 打印标题
 print_title() {
   echo "$SEPARATOR"
-  echo "        🌿 Starting the Merge Process"
+  echo "             🌿 Starting the Process"
   echo "$SEPARATOR"
 }
-
-# 确保修复分支已存在
-if ! git checkout $fix_branch >/dev/null 2>&1; then
-  echo " ${CROSS_MARK} Failed to switch to $fix_branch. Please ensure the branch exists."
-  exit 1
-fi
 
 # 打印开始信息
 print_title
@@ -524,7 +536,7 @@ fi
 
 current_branch_index=0
 
-# 遍历目标分支，逐一合并修复
+# 操作分支
 for branch in "${target_branches[@]}"; do
   current_branch_index=$((current_branch_index + 1))
 
@@ -532,10 +544,10 @@ for branch in "${target_branches[@]}"; do
   progress_bar $current_branch_index $total_branches
   echo " ${ARROW} Switching to $branch..."
 
-  if git checkout $branch >/dev/null 2>&1; then
+  if git checkout "$branch" >/dev/null 2>&1; then
     echo " ${ARROW} Updating $branch to the latest from remote..."
     git pull --rebase origin $branch >/dev/null 2>&1 || {
-      echo " ${CROSS_MARK} Failed to update $branch. Skipping merge."
+      echo " ${CROSS_MARK} Failed to update $branch. Skipping."
       echo "$branch:UpdateFailed" >> "$branch_status_file"
       continue
     }
@@ -545,68 +557,81 @@ for branch in "${target_branches[@]}"; do
     continue
   fi
 
-  progress_bar $current_branch_index $total_branches
-  echo " ${ARROW} Merging $fix_branch into $branch..."
-
-  if git merge $fix_branch --no-ff -m "Merge $fix_branch into $branch" >/dev/null 2>&1; then
-    echo " ${CHECK_MARK} Successfully merged into $branch."
-    echo " ${ARROW} Attempting to push $branch to remote..."
-    if git push origin $branch >/dev/null 2>&1; then
-      echo " ${CHECK_MARK} Successfully pushed $branch to remote."
-      echo "$branch:Merged" >> "$branch_status_file"
+  if [[ -n "$fix_branch" ]]; then
+    echo " ${ARROW} Merging $fix_branch into $branch..."
+    if git merge $fix_branch --no-ff -m "Merge $fix_branch into $branch" >/dev/null 2>&1; then
+      echo " ${CHECK_MARK} Successfully merged into $branch."
     else
-      echo " ${CROSS_MARK} Failed to push $branch to remote."
-      echo "$branch:PushFailed" >> "$branch_status_file"
+      echo " ${CROSS_MARK} Merge conflict detected in $branch!"
+      git merge --abort >/dev/null 2>&1
+      echo "$branch:Conflict" >> "$branch_status_file"
+      continue
     fi
+  elif [[ -n "$commit_hash" ]]; then
+    echo " ${ARROW} Cherry-picking commit $commit_hash into $branch..."
+    if git cherry-pick $commit_hash >/dev/null 2>&1; then
+      echo " ${CHECK_MARK} Successfully cherry-picked into $branch."
+    else
+      echo " ${CROSS_MARK} Cherry-pick failed in $branch. Resolving conflict..."
+      git cherry-pick --abort >/dev/null 2>&1
+      echo "$branch:Conflict" >> "$branch_status_file"
+      continue
+    fi
+  fi
+
+  echo " ${ARROW} Attempting to push $branch to remote..."
+  if git push origin $branch >/dev/null 2>&1; then
+    echo " ${CHECK_MARK} Successfully pushed $branch to remote."
+    echo "$branch:OperationSucceeded" >> "$branch_status_file"
   else
-    echo " ${CROSS_MARK} Merge conflict detected in $branch!"
-    echo "$branch:Conflict" >> "$branch_status_file"
-    echo " ${ARROW} Aborting merge and restoring clean working directory..."
-    git merge --abort >/dev/null 2>&1
+    echo " ${CROSS_MARK} Failed to push $branch to remote."
+    echo "$branch:PushFailed" >> "$branch_status_file"
   fi
 done
 
+# 尝试切回最初的分支
+if ! git checkout "$original_branch" >/dev/null 2>&1; then
+  echo " ${CROSS_MARK} Failed to return to the original branch: $original_branch"
+  echo "   Please manually switch back to your desired branch."
+fi
+
 # 打印汇总表格
 print_separator
-echo "Merge Summary:"
+echo "Process Summary:"
 print_separator
-printf "%-25s | %-15s\n" "Branch" "Status"
+printf "%-35s | %-15s\n" "Branch" "Status"
 print_separator
 
 while IFS=: read -r branch status; do
   case "$status" in
-    Merged)
-      printf "%-25s | %-15s\n" "$branch" "$CHECK_MARK Merged"
+    OperationSucceeded)
+      printf "%-35s | %-15s\n" "$branch" "$CHECK_MARK Succeeded"
       ;;
     Conflict)
-      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK Conflict"
+      printf "%-35s | %-15s\n" "$branch" "$CROSS_MARK Conflict"
       ;;
     CheckoutFailed)
-      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK CheckoutFailed"
+      printf "%-35s | %-15s\n" "$branch" "$CROSS_MARK CheckoutFailed"
       ;;
     UpdateFailed)
-      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK UpdateFailed"
+      printf "%-35s | %-15s\n" "$branch" "$CROSS_MARK UpdateFailed"
       ;;
     PushFailed)
-      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK PushFailed"
+      printf "%-35s | %-15s\n" "$branch" "$CROSS_MARK PushFailed"
       ;;
     *)
-      printf "%-25s | %-15s\n" "$branch" "$CROSS_MARK Unknown"
+      printf "%-35s | %-15s\n" "$branch" "$CROSS_MARK Unknown"
       ;;
   esac
 done < "$branch_status_file"
 
 print_separator
 
-# 清理修复分支
-echo " ${ARROW} Returning to the fix branch..."
-git checkout $fix_branch >/dev/null 2>&1
-
 # 删除临时文件
 rm -f "$branch_status_file"
 
+echo "             💫 Process completed."
 print_separator
-echo "Merge process completed."
 ```
 
 此时可以通过 node 脚本来指令化调用啦~ 不用额外安装依赖：
