@@ -9,8 +9,6 @@ tag:
 sticky: false
 ---
 
-# React 工程化开发
-
 随着代码的增加，在项目中注定无法在一个 HMLT 文件内编写完所有的工作，并且随着需求的增加，也要求我们将页面进行组件化切分，因此 Reac 中有了以下几种分类：
 
 - 根据组件的定义方式，可以分为：函数组件(`Functional Component` )和类组件(`Class Component`)；
@@ -155,6 +153,30 @@ class HelloWorld extends React.Component {
 
 export default HelloWorld
 ```
+
+### 父子组件生命周期渲染过程
+
+同 Vue 一致，react 的父子组件渲染过程是：**挂载和更新是从外到内的顺序，卸载和清理是从内到外的顺序。**
+
+1. **挂载（Mounting）**
+
+   - 先 **父组件挂载**，再 **子组件挂载**。
+   - 挂载过程中按层级顺序从外到内执行。顺序： 父 `constructor` → 父 `render` → 子 `constructor` → 子 `render` → 子 `componentDidMount` → 父 `componentDidMount`
+
+2. **更新（Updating）**
+
+   - **父组件更新时**：先更新父组件，再更新子组件。
+   - **子组件更新时**：只更新子组件。
+   - 更新过程中按层级顺序从外到内处理（先父后子）。顺序： 父 `shouldComponentUpdate` → 父 `render` → 子 `shouldComponentUpdate` → 子 `render` → 子 `componentDidUpdate` → 父 `componentDidUpdate`
+
+3. **卸载（Unmounting）**
+
+   - 先 **子组件卸载**，再 **父组件卸载**。
+   - 卸载过程中按层级顺序从内到外执行。顺序： 子 `componentWillUnmount` → 父 `componentWillUnmount`
+
+4. **函数组件清理**
+   - `useEffect` 的清理函数会先清理子组件，再清理父组件，按执行顺序反向清理。
+   - 顺序：子组件的 `useEffect` 清理 → 子组件卸载 → 父组件的 `useEffect` 清理 → 父组件卸载
 
 ## 组件通信
 
