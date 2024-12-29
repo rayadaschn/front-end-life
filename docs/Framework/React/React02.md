@@ -843,8 +843,8 @@ class App extends React.Component {
 
   handleChange(event) {
     // 监听 input 中键入的事件变化
-    const targetObj = event.target.name
-    this.setState({ [targetObj]: event.target.value })
+    const targetObj = event.target.name // 获取目标 input 的 name 属性，即 <textarea> 的 name="MultilineMessage"
+    this.setState({ [targetObj]: event.target.value }) // 动态更新对应 state，等价于 { MultilineMessage: event.target.value }
   }
 
   handleSubmit(event) {

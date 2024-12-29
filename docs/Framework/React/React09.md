@@ -13,7 +13,9 @@ sticky: false
 
 ## setState 的更新逻辑
 
-setState 的更新逻辑有时是同步的有时是异步的，这取决于调用 setState 的环境。实际上，在 React 控制之内的事件处理过程中，setState 是异步的，而在 React 控制之外的事件处理过程中，setState 是同步的。
+这里主要讨论的是 React18 以前的策略。React18 之后，全部采用异步调用。可见[setstate-的更新逻辑](./React02.md#setstate-设置为异步的原因)
+
+React18 以前，setState 的更新逻辑有时是同步的有时是异步的，这取决于调用 setState 的环境。实际上，在 React 控制之内的事件处理过程中，setState 是异步的，而在 React 控制之外的事件处理过程中，setState 是同步的。
 
 ```js
 onClick() {
