@@ -376,25 +376,25 @@ store.dispatch(addTodoAction)
 
   > 在上述代码中，`applyMiddleware` 是 Redux 提供的一个函数，用于将中间件应用于 Redux store。
 
-- 定义返回一个函数的 `action`，**注意：这里不再是返回一个对象，而是返回一个函数，函数的入参为 `dispatch`，并且该函数会在 `dispatch`之后被执行**。
+- 定义异步 Action Creator，使用 Thunk 中间件的异步 Action Creator：，**注意：这里不再是返回一个对象，而是返回一个函数，函数的入参为 `dispatch`，并且该函数会在 `dispatch`之后被执行**。
 
   ```js
-  // action 函数
-  function fetchTodos() {
-    return function (dispatch) {
-      // dispatch the initial action to indicate that we're starting the request
-      dispatch({ type: 'FETCH_TODOS_REQUEST' })
+  // actions.js
+  export const fetchData = () => {
+    return (dispatch, getState) => {
+      // 触发请求开始的 action
+      dispatch({ type: 'FETCHING_DATA' })
 
-      // make the actual API request
-      return api
-        .fetchTodos()
-        .then((response) => {
-          // dispatch a success action with the received data
-          dispatch({ type: 'FETCH_TODOS_SUCCESS', payload: response.data })
+      // 发起异步请求
+      fetch('https://api.example.com/data')
+        .then((response) => response.json())
+        .then((data) => {
+          // 请求成功，触发成功的 action
+          dispatch({ type: 'FETCHING_DATA_SUCCESS', payload: data })
         })
         .catch((error) => {
-          // dispatch a failure action with the error message
-          dispatch({ type: 'FETCH_TODOS_FAILURE', payload: error.message })
+          // 请求失败，触发失败的 action
+          dispatch({ type: 'FETCHING_DATA_FAILURE', payload: error.message })
         })
     }
   }
@@ -409,6 +409,8 @@ import reducer from './reducer.js'
 
 const store = createStore(reducer, applyMiddleware(thunk))
 ```
+
+根据不同的 Action 类型更新状态：
 
 ```js
 // reducer.js
@@ -438,21 +440,35 @@ export default reducer
 
 `applyMiddleware` 接收一个或多个中间件作为参数，返回一个函数，这个函数接收一个 `createStore` 方法作为参数，返回一个被增强后的 `createStore` 方法。使用这个增强后的 `createStore` 方法创建 Redux store 时，中间件就会被应用。
 
+最后在组件中使用异步 Action
+
+结合 React Redux 的 `useDispatch` 和 `useSelector` 使用：
+
 ```js
-// actions.js
-export const getData = () => {
-  return (dispatch, getState) => {
-    dispatch({ type: 'FETCHING_DATA' })
-    fetch('https://api.example.com/data')
-      .then((response) => response.json())
-      .then((data) => {
-        dispatch({ type: 'FETCHING_DATA_SUCCESS', payload: data })
-      })
-      .catch((error) => {
-        dispatch({ type: 'FETCHING_DATA_FAILURE', payload: error })
-      })
-  }
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchData } from './actions'
+
+const DataComponent = () => {
+  const dispatch = useDispatch()
+  const { isLoading, data, error } = useSelector((state) => state) // Redux 的 state 结构由 reducer 决定, reducer 返回的 state 包含了这几个字段。useSelector 从 Redux Store 中提取的正是这个 state 对象。
+
+  useEffect(() => {
+    dispatch(fetchData()) // 触发异步操作
+  }, [dispatch])
+
+  if (isLoading) return <p>Loading...</p>
+  if (error) return <p>Error: {error}</p>
+
+  return (
+    <div>
+      <h1>Data:</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
+  )
 }
+
+export default DataComponent
 ```
 
 在上面的代码中，`getData` 是一个 action 创建函数，它返回一个函数而不是一个简单的对象。在返回的函数中，我们可以进行异步操作，例如发送请求和处理响应。在请求成功或失败后，我们可以使用 `dispatch` 发送新的 action 来更新状态。在 `reducer` 中，我们可以根据不同的 action 类型来更新状态，例如在请求数据时更新 `isLoading` 状态，在请求成功时更新 `data` 状态，在请求失败时更新 `error` 状态。
