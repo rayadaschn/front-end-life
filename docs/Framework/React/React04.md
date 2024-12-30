@@ -275,14 +275,14 @@ export class App extends PureComponent {
 
 const mapStateToProps = (state) => {
   return {
-    count: state.count,
+    counter: state.counter,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    increment: () => dispatch({ type: 'INCREMENT' }),
-    decrement: () => dispatch({ type: 'DECREMENT' }),
+    increment: (num) => dispatch({ type: 'INCREMENT', num }),
+    decrement: (num) => dispatch({ type: 'DECREMENT', num }),
   }
 }
 
