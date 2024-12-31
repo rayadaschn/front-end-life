@@ -359,6 +359,8 @@ store.dispatch(addTodoAction)
 
 这时候，就需要 Redux Thunk 中间件来解决这个问题。**Redux Thunk 允许 action 创造者（也就是 action creator 函数）返回一个函数，而不是一个普通的 JavaScript 对象。这个函数可以接受两个参数：`dispatch` 和 `getState`。在这个函数内部，你可以执行异步操作，并在操作完成后再次调用 `dispatch` 方法来发送一个新的 action，从而更新应用的状态。**
 
+简单理解就是在 action 中异步调用 dispatch，更改 state 值。
+
 使用方法:
 
 - 安装: `npm install redux-thunk` ；
@@ -442,36 +444,51 @@ export default reducer
 
 最后在组件中使用异步 Action
 
-结合 React Redux 的 `useDispatch` 和 `useSelector` 使用：
-
 ```js
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { fetchData } from './actions'
 
-const DataComponent = () => {
-  const dispatch = useDispatch()
-  const { isLoading, data, error } = useSelector((state) => state) // Redux 的 state 结构由 reducer 决定, reducer 返回的 state 包含了这几个字段。useSelector 从 Redux Store 中提取的正是这个 state 对象。
+class DataComponent extends Component {
+  componentDidMount() {
+    this.props.fetchData() // 调用异步 Action
+  }
 
-  useEffect(() => {
-    dispatch(fetchData()) // 触发异步操作
-  }, [dispatch])
+  render() {
+    const { isLoading, data, error } = this.props
 
-  if (isLoading) return <p>Loading...</p>
-  if (error) return <p>Error: {error}</p>
+    if (isLoading) {
+      return <p>Loading...</p>
+    }
 
-  return (
-    <div>
-      <h1>Data:</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
-  )
+    if (error) {
+      return <p>Error: {error}</p>
+    }
+
+    return (
+      <div>
+        <h1>Data:</h1>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </div>
+    )
+  }
 }
 
-export default DataComponent
-```
+// 将 Redux State 映射为组件的 Props
+const mapStateToProps = (state) => ({
+  isLoading: state.isLoading,
+  data: state.data,
+  error: state.error,
+})
 
-在上面的代码中，`getData` 是一个 action 创建函数，它返回一个函数而不是一个简单的对象。在返回的函数中，我们可以进行异步操作，例如发送请求和处理响应。在请求成功或失败后，我们可以使用 `dispatch` 发送新的 action 来更新状态。在 `reducer` 中，我们可以根据不同的 action 类型来更新状态，例如在请求数据时更新 `isLoading` 状态，在请求成功时更新 `data` 状态，在请求失败时更新 `error` 状态。
+// 将 Action 映射为组件的 Props
+const mapDispatchToProps = {
+  fetchData, // 直接映射异步 Action
+}
+
+// 使用 connect 将 Redux 和组件连接
+export default connect(mapStateToProps, mapDispatchToProps)(DataComponent)
+```
 
 需要注意的是，`redux-thunk` 并不是唯一的 Redux 中间件，还有许多其他的中间件可供选择，例如 `redux-saga` 和 `redux-observable` 等。这些中间件各有特点，可以根据实际需求进行选择。
 
