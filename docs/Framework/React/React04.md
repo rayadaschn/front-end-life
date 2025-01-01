@@ -565,7 +565,7 @@ export default store
 1. 简化了 Redux 中的模板代码，如创建 Reducer 和 action creator 的样板代码。
 2. 内置了常用的 Middleware，如 thunk 和 logger ，无需手动配置。
 3. 提供了`createSlice`方法，可以通过一个简单的配置对象快速创建包含了 Reducer 和 action creator 的 Redux 模块。
-4. 内置了 Immer 库，使得 Reducer 中的状态更新可以通过直接修改对象来完成，而无需手动编写不可变更新的代码。
+4. 内置了 Immer 库，使得 Reducer 中的状态更新可以通过直接修改对象来完成，而无需手动编写不可变更的代码。
 
 安装: `npm install @reduxjs/toolkit react-redux`
 
@@ -576,7 +576,7 @@ export default store
 3. `configureStore()`：用于创建 Redux store，它可以帮助开发者自动配置常见的 Redux 中间件，如 Redux Thunk、Redux Logger 等，从而让开发者可以更方便地创建一个符合最佳实践的 Redux store。
 4. `createEntityAdapter()`：用于创建一个 Entity Adapter 对象，用于处理 Redux store 中的实体数据（Entity Data），可以方便地进行增删改查等操作。
 
-#### createSlice 的使用
+### createSlice 的使用
 
 createSlice 的主要作用是将 reducer 和 action creator 组合在一起，生成一个对象，对象中包含了定义 reducer 所需要的所有内容。下面是一个使用 `createSlice` 创建 reducer 的示例：
 
@@ -650,24 +650,19 @@ const UserList = () => {
 
 当异步请求发出时，Redux Store 中会自动 dispatch 一个 `users/fetchUsers/pending` action，表示请求正在进行中；当请求成功时，会 dispatch 一个 `users/fetchUsers/fulfilled` action，并将请求结果传递给 reducer 处理；当请求失败时，会 dispatch 一个 `users/fetchUsers/rejected` action，并将请求失败的原因传递给 reducer 处理。
 
-在使用 `createAsyncThunk` 时，我们可以通过指定 `payloadCreator` 选项，自定义异步函数返回的数据结构。此外，`createAsyncThunk` 还支持其他一些配置选项，如 `condition`、`dispatchConditionMet`、`getPendingMeta` 等。以下是一个完整的示例:
+在使用 `createAsyncThunk` 时，我们可以通过指定 `payloadCreator` 选项，自定义异步函数返回的数据结构。此外，`createAsyncThunk` 还支持其他一些配置选项，如 `condition`、`dispatchConditionRejection`、`getPendingMeta` 等。以下是一个完整的示例:
 
 ```js
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { fetchUserById } from '../api/userAPI'
 
 export const getUserById = createAsyncThunk(
   'user/fetchByIdStatus',
   async (userId, thunkAPI) => {
-    // 处理异步操作
-    // 1. 可以发送异步的网络请求等, 获取数据
+    // 发送异步网络请求，获取数据
     const response = await fetchUserById(userId)
-
-    // 2. 取出数据, 并且可以在此处直接 dispatch 操作(也可以不做)
-    dispatch(changeUserById(response.data.id))
-
-    // 3. 返回结果, 那么action状态会变成fulfilled状态
-    return response.data // 返回数据
+    // 返回结果，action 状态会变为 fulfilled
+    return response.data
   }
 )
 
@@ -678,12 +673,7 @@ const userSlice = createSlice({
     status: 'idle',
     error: null,
   },
-  reducers: {
-    changeUserById(state, { payload }) {
-      state.user = payload // payload 为此前发送的 id
-    },
-  },
-  // 在 extraReducers 中，我们根据不同的状态来更新 Redux store 中的 state。
+  reducers: {}, // 如果没有额外同步操作，可以省略此部分
   extraReducers: (builder) => {
     builder
       .addCase(getUserById.pending, (state) => {
@@ -691,7 +681,7 @@ const userSlice = createSlice({
       })
       .addCase(getUserById.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.user = action.payload
+        state.user = action.payload // 更新用户数据
       })
       .addCase(getUserById.rejected, (state, action) => {
         state.status = 'failed'
@@ -700,7 +690,6 @@ const userSlice = createSlice({
   },
 })
 
-export const { changeUserById } = userSlice.actions // 此处是从 action 中导出 reducers 操作
 export default userSlice.reducer
 ```
 

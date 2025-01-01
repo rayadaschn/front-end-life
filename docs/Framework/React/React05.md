@@ -100,9 +100,9 @@ window.addEventListener('popstate', function (event) {
 
 而 react-router 则不包含这些 DOM 组件和 API，它只提供了路由相关的核心功能，如 Route、Routes、Link、useNavigate 等，可以在不同平台上使用（如 React Native）。
 
-因此，在开发 Web 应用时，建议使用 react-router-dom 更加便利。但如果需要在其他平台上使用 React Router，或者需要自定义一些路由相关的逻辑，则可以选择使用 react-router。
+简单总结：`react-router-dom` 是针对 Web 应用的路由库，依赖 `react-router` 提供的核心功能，并添加了专门为浏览器环境设计的功能。
 
-因此，我们选择安装 `react-router-dom` : `npm install react-router-dom`。
+下面着重介绍 `react-router-dom`，安装: `npm install react-router-dom`。
 
 ### 基本使用
 
@@ -111,21 +111,31 @@ React-router 提供了一些基础组件：BrowserRouter 和 HashRouter 等。�
 ```jsx
 // History 模式
 import { BrowserRouter } from 'react-router-dom'
-;<React.StrictMode>
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-</React.StrictMode>
+
+function App() {
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>
+  )
+}
 ```
 
 ```jsx
 // Hash 模式
 import { HashRouter } from 'react-router-dom'
-;<React.StrictMode>
-  <HashRouter>
-    <App />
-  </HashRouter>
-</React.StrictMode>
+
+function App() {
+  return (
+    <React.StrictMode>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </React.StrictMode>
+  )
+}
 ```
 
 ### 路由映射配置
@@ -323,8 +333,8 @@ function LoginPage() {
 
 传递参数的方式有俩种:
 
-- 动态路由的方式；
-- search 传递参数。
+- 动态路由传参：在目标组件中使用 `useParams` 钩子获取参数；
+- search 查询参数通过 URL 的 `?key=value` 格式传递，使用 `useSearchParams` 钩子解析查询参数。
 
 动态路由是指路由路径中包含变量的一种路由方式。在动态路由中，变量可以根据实际情况进行替换，从而实现更加灵活和通用的路由匹配。
 
@@ -376,6 +386,20 @@ function ProductDetail() {
 在上述代码中，我们首先使用 `useParams` Hook 获取了当前路径中的动态路由参数 `productId` 的实际值，并将其保存到变量 `productId` 中。然后，在组件渲染时，我们可以使用 `productId` 变量来渲染对应的产品详情信息。
 
 需要注意的是，在使用 `useParams` Hook 时，需要确保该 Hook 被使用在路由组件内部。否则，无法获取到动态路由的参数。同时，如果路径中不存在指定名称的动态路由参数，则 `useParams` Hook 返回的对应值为 `undefined`。
+
+search 查询方式获取参数:
+
+```jsx
+import { useSearchParams } from 'react-router-dom'
+
+function SearchPage() {
+  const [searchParams] = useSearchParams()
+  const keyword = searchParams.get('keyword') // 获取查询参数
+  return <div>Search Keyword: {keyword}</div>
+}
+
+export default SearchPage
+```
 
 ### 统一配置文件
 
@@ -455,6 +479,32 @@ import { routes } from './routes'
 function App() {
   return <div className="counter">{useRoutes(routes)}</div>
 }
+```
+
+当然实际项目中，更可能采用 `createBrowserRouter` 创建路由器实例，结合 `RouterProvider` 用于将路由器绑定到 React 应用中，来管理整个应用的导航逻辑。
+
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+// 定义路由
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <h1>Home Page</h1>,
+  },
+  {
+    path: '/about',
+    element: <h1>About Page</h1>,
+  },
+])
+
+// 渲染路由器
+ReactDOM.render(
+  <RouterProvider router={router} />,
+  document.getElementById('root')
+)
 ```
 
 ### 路由的懒加载
