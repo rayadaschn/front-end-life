@@ -179,6 +179,25 @@ function App() {
 
 如果一个路由使用了相对`路径`，那么完整的路径将由它的所有祖先节点的`路径`和自身指定的相对`路径`拼接而成。[使用绝对`路径`](https://react-guide.github.io/react-router-cn/docs/guides/basics/RouteConfiguration.html#decoupling-the-ui-from-the-url)可以使路由匹配行为忽略嵌套关系。
 
+#### Router5 中的精确匹配
+
+在 Router5 中需要增加 `Switch` 组件，包裹 `Route` 确保路由中只要有一项匹配，则不再继续向下匹配。并且需要 `exact` 属性，确保路径完全匹配。
+
+```jsx
+import { Switch, Route } from 'react-router-dom'
+
+function App() {
+  return (
+    <Switch>
+      {/* / home 则为精确匹配 */}
+      <Route exact path="/" component={Home} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
+    </Switch>
+  )
+}
+```
+
 ### 路由配置和跳转
 
 在 React Router 6 中，可以使用 `Link` 和 `NavLink` 组件来生成链接并进行页面导航。其中，`Link` 组件是基础组件，而 `NavLink` 组件则是对 `Link` 组件进行了扩展，增加了激活状态的样式和高亮效果。
