@@ -33,13 +33,6 @@ const left = startBoxOffsetLeft + currentE.clientX - startClientX
 const top = startBoxOffsetTop + currentE.clientY - startClientY
 ```
 
-缩放窗口: 计算窗体宽度 boxWidth 和高度 boxHeight
-
-```js
-const boxWidth = startBoxOffsetWidth + currentE.clientX - startClientX
-const boxHeight = startBoxOffsetHeight + currentE.clientY - startClientY
-```
-
 ## 绘制基本弹框
 
 如上图所示，有四个部分：
@@ -197,9 +190,9 @@ Features
 
 > 其它说明:
 >
-> `:class="{ 'unset-size': !state.expanded }"` 加入了 `unset-size` 属性是为了在最小化弹窗时重置弹窗大小。 unset 的含义是: 如果属性值被继承自父元素，则会重置为默认值；如果属性值没有被继承，则会重置为 initial 值。
+> `:class="{ 'unset-size': !state.expanded }"` 加入了 `unset-size` 属性用于将属性值重置为默认值或父元素的值。加入这个是为了在最小化弹窗时重置弹窗大小。 unset 的含义是: 如果属性值被继承自父元素，则会重置为默认值；如果属性值没有被继承，则会重置为 initial 值。
 >
-> `@wheel.capture.stop` 表示在弹窗上监听鼠标滚轮事件，并阻止事件继续传播。这样做的目的可能是为了防止鼠标滚轮事件冒泡到父元素或其他元素上，以避免对页面滚动等行为的干扰。
+> `@wheel.capture.stop` 表示在弹窗上监听鼠标滚轮事件，并阻止事件继续传播。这样做的目的是为了防止鼠标滚轮事件冒泡到父元素或其他元素上，以避免对页面滚动等行为的干扰。
 
 ## 手写拖拽弹窗 Hooks
 
