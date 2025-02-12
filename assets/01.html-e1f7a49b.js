@@ -184,4 +184,4 @@ import{_ as n,X as a,Y as s,$ as t}from"./framework-5dd7fabc.js";const p={},e=t,
     <span class="token property">font-size</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span> <span class="token comment">/* 在大屏幕上增大字体大小 */</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li></ol>`,112),i=[c];function u(r,d){return l(),o("div",null,i)}const v=n(p,[["render",u],["__file","01.html.vue"]]);export{v as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>使用 VH 和 VW 单位, VH 和 VW 是视口高度和视口宽度的单位，可以用来实现更灵活的布局。</p></li></ol>`,112),i=[c];function u(r,d){return l(),o("div",null,i)}const v=n(p,[["render",u],["__file","01.html.vue"]]);export{v as default};
