@@ -307,12 +307,7 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
       var isMoveRect = false
       var moveRect = null
 
-      var init = function () {
-        bindEvent()
-        drawAllRect()
-      }
-
-      var rectLists = []
+      var rectLists = [] // 所有矩形列表, 依据这个进行绘制
       class Rectangle {
         constructor(startX, startY, color) {
           this.startX = startX
@@ -322,7 +317,7 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
           this.color = color
         }
 
-        // 绘制方法
+        // 更新矩形
         draw() {
           ctx.beginPath()
           ctx.fillStyle = this.color
@@ -359,7 +354,7 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
 
       /** 鼠标点击 */
       function mouseDown(e) {
-        setCanXY(e)
+        setCanXY(e) // 更新 x、y
         curRect = new Rectangle(x, y, colorPicker.value)
 
         var rect = getRect(x, y)
@@ -378,7 +373,7 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
         var startX = x
         var startY = y
         // 更新鼠标位置
-        setCanXY(e)
+        setCanXY(e) // 更新 x、y
 
         // 是否移动矩形
         if (isMoveRect) {
@@ -426,7 +421,7 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
         }
       }
 
-      /** 尝试获取矩形 */
+      /** 尝试获取矩形, 判断当前 x,y 是否在已绘制矩形内, 以最开始绘制为准 */
       function getRect(x, y) {
         for (var inx = 0; inx < rectLists.length; inx++) {
           var rect = rectLists[inx]
@@ -455,6 +450,12 @@ ctx.clearRect(0, 0, cvs.width, cvs.height)
         for (var i = 0; i < rectLists.length; i++) {
           rectLists[i].draw()
         }
+      }
+
+      // 初始化
+      var init = function () {
+        bindEvent() // 绑定事件
+        drawAllRect() // 绘制所有矩形
       }
 
       init()
