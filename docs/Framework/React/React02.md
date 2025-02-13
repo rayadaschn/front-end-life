@@ -315,6 +315,27 @@ export default HelloWorld
   }
   ```
 
+值得注意的是 props 传递的数据是**单向数据流**，即只能从父组件向子组件传递，不能从子组件向父组件传递。但可以对其进行一些校验。
+
+1. 设置默认值
+
+   ```jsx
+   Sum.defaultProps = {
+     num1: 0,
+     num2: 0,
+   }
+   ```
+
+2. 类型校验, 官方还提供了一个插件「prop-types」
+
+   ```jsx
+   import PropTypes from 'prop-types'
+   Sum.propTypes = {
+     num: PropTypes.number, // 数字类型
+     str: PropTypes.string.isRequired, // 字符串类型, 必传
+   }
+   ```
+
 ## 插槽
 
 插槽有俩种实现方法，第一种是使用 `props` 上的 `children` 实现；另外一种是直接使用 `props`。
@@ -487,6 +508,8 @@ export class TabControl extends Component {
 ```
 
 在上述代码中，最终要显示的插槽内容为 `{itemType(item)}`，也就是说 这块的内容完全有父组件调度，以此达到插槽的目的。
+
+> 此外还可用 React.Children 对象中提供的方法对传过来的 props.children 进行处理，如 `React.Children.map`、`React.Children.forEach`、`React.Children.count`、`React.Children.only`、`React.Children.toArray` 等。
 
 ## React 的更新流程
 
