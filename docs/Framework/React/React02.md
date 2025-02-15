@@ -139,7 +139,10 @@ class HelloWorld extends React.Component {
   }
 
   // 不常用的生命周期补充
-  shouldComponentUpdate() {
+  shouldComponentUpdate(nextProps, nextState) {
+    // nextProps: 存储要修改的最新属性
+    // nextState: 存储要修改的最新状态
+    // this.state: 存储的还是修改前的状态, 此时状态还没发生改变
     return true
   }
 
