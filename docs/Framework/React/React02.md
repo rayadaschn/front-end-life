@@ -555,7 +555,7 @@ const Profile = memo(function (props) {
 export default Profile
 ```
 
-需要注意的是，这里的方法实际上都是调用 **shallowEqual** 进行浅比较，即 **`!shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)`** ，意为对比是否为浅拷贝，如果是浅拷贝指向的对象地址没有发生变化，则不会进行重写渲染。
+需要注意的是，这里的方法实际上都是调用 **shallowEqual** 对新老的属性和状态进行浅比较，即 **`!shallowEqual(oldProps, newProps) || !shallowEqual(oldState, newState)`** ，意为对比是否为浅拷贝，如果是浅拷贝指向的对象地址没有发生变化，则不会进行重写渲染。
 
 这里要强调一个知识点：**React 的数据不可变力量**。
 
@@ -645,6 +645,109 @@ changeCount(index) {
   }
   ```
 
+### setState 进阶用法
+
+```jsx
+this.setState([partialStateObject], callback)
+```
+
+- `partialStateObject`：一个对象，用于更新 `state`，可以传递多个参数，参数之间用逗号隔开。支持部分状态更改；
+- `callback`：在 `setState` 完成并且组件重新渲染后执行；
+
+  - 发生在 `componentDidUpdate` 生命周期之后，「DidUpdate 会在任何状态更改后都触发执行」；而回调函数可以在指定状态更新后处理一些事情；
+  - 特殊情况：即便基于 `shouldComponentUpdate` 返回 false（视图不更新），也会执行回调函数；
+
+此外 setState 还可以传递一个函数，该函数接收两个参数，第一个参数为上一次的 `state`，第二个参数为 `props`，函数返回一个对象，用于更新 `state`：
+
+```jsx
+this.setState((prevState, props) => {
+  return { count: prevState.count + 1 }
+})
+```
+
+这样做的好处是可以实现状态的连续更改, 但 render 只更新一次。如
+
+```jsx
+this.setState((prevState, props) => {
+  return { count: prevState.count + 1 }
+})
+this.setState((prevState, props) => {
+  return { count: prevState.count + 1 }
+})
+this.setState((prevState, props) => {
+  return { count: prevState.count + 1 }
+})
+```
+
+上述代码中，连续更改了三次状态，但 render 只会更新一次。这里是因为函数修改在批处理时会依次执行。
+
+## 事件处理
+
+React 的合成事件都是基于事件委托处理的。
+
+- React 17 及以后版本，都是委托给 `#root` 这个容器进行处理的「**捕获和冒泡**都做了委托」；
+- 在 React 16 及以前版本，委托给 `document` 进行处理，并且只对「**冒泡**都做了委托」；
+- 对于没有实现事件传播机制的事件，才是单独做的事件绑定，如 `onMouseEnter`、`onMouseLeave` 等。
+- 若在组件渲染的时候，发现 JSX 元素属性中有 `onXxx`、`onXxxCapture`，不会给当前元素直接做事件绑定,只是把绑定的方法赋值给元素的相关属性。
+
+  ```jsx
+  // 这些都是事件委托!!!
+  outer.onClick = () => {
+    // 这不是 DOM0 级的事件绑定, outer.onclick 才是
+    console.log('outer 冒泡合成')
+  }
+  outer.onClickCapture = () => {
+    console.log('outer 捕获合成')
+  }
+  ```
+
+而所谓的合成事件绑定，其实并没有给元素本身做事件绑定，而是设置 `onXxx/onXxxCapture` 这样的合成事件属性。
+
+当事件行为触发，根据原生事件传播机制，都会传播到 `#root` 容器上，React 内部 给 `#root` 容器做的事件绑定 「捕获和冒泡」
+
+当 React 内部绑定的方法执行的时候，会依据 `event.path` 中分析的路径，依次把对应阶段的 `onXxx/onXxxCapture` 等合成事件属性执行。
+
+```md
+// 点击 inner 容器触发顺序
+
+// 点击 inner,安装原生的事件传播机制
+window 捕获
+document 捕获
+html 捕获
+body 捕获
+root 捕获 -> 执行其上的 onClickCapture
+
+    window.onClickCapture
+    document.onClickCapture
+    html.onClickCapture
+    body.onClickCapture
+    root.onClickCapture
+    outer.onClickCapture ==> outer 容器捕获「合成」
+    inner.onClickCapture ==> inner 容器捕获「合成」
+
+outer 捕获
+inner 捕获
+
+==== > 冒泡事件
+inner 冒泡
+outer 冒泡
+root 冒泡 -> 执行其上的 onClick
+
+    inner.onClick ==> inner 容器冒泡「合成」
+    outer.onClick ==> outer 容器冒泡「合成」
+
+    root.onClick
+    body.onClick
+    html.onClick
+    document.onClick
+    window.onClick
+
+body 冒泡
+html 冒泡
+document 冒泡
+window 冒泡
+```
+
 ## 操作 DOM 属性
 
 和在 Vue 一样，在 React 中也是通过 `ref` 操作 DOM 原生（通常情况下，不需要也不建议这样做）。
@@ -677,7 +780,7 @@ export class App extends PureComponent {
   }
 
   getNativeDOM() {
-    // 1.方式一: 在React元素上绑定一个ref字符串
+    // 1.方式一: 在React元素上绑定一个ref字符串【不推荐, 在 React.StrictMode 模式下会报错】
     console.log(this.refs.someString)
 
     // 2.方式二: 提前创建好ref对象, createRef(), 将创建出来的对象绑定到元素
@@ -703,7 +806,7 @@ export class App extends PureComponent {
 }
 ```
 
-- 当 ref 属性用于自定义 class 组件时，**ref 对象接收组件的挂载实例作为其 current 属性**；
+- 当 ref 属性用于自定义 class 组件时，**ref 对象接收组件的挂载实例作为其 current 属性**，获取实例后，后续可以依据实例获取子组件中的相关信息。
 
 ```jsx
 // 获取 class 组件
