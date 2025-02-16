@@ -715,7 +715,7 @@ window 捕获
 document 捕获
 html 捕获
 body 捕获
-root 捕获 -> 执行其上的 onClickCapture
+root 捕获 -> 先执行内置的的 onClickCapture, 再执行 root 捕获
 
     window.onClickCapture
     document.onClickCapture
@@ -731,7 +731,7 @@ inner 捕获
 ==== > 冒泡事件
 inner 冒泡
 outer 冒泡
-root 冒泡 -> 执行其上的 onClick
+root 冒泡 -> 先执行其上的 onClick, 再执行 root 冒泡
 
     inner.onClick ==> inner 容器冒泡「合成」
     outer.onClick ==> outer 容器冒泡「合成」
@@ -747,6 +747,36 @@ html 冒泡
 document 冒泡
 window 冒泡
 ```
+
+![React 捕获冒泡原理](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502161025930.png)
+
+![React 捕获冒泡展示](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502161054019.png)
+
+值得注意的是 React17 之前的版本，事件委托是绑定在 `document` 上，事件绑定效果也不一样。React17 之前，合成事件都是在 document 冒泡之前进行。
+
+并且在 React16 中, 为了防止每一次都重新创建出新的事件对象，它设置了一个「事件对象池」。当事件触发，会从事件对象池中获取一个事件对象，然后赋值给 `event`，当事件处理函数执行完毕，会把合成事件对象中的成员信息都清空掉，然后再将 `event` 还回给事件对象池。但这会产生一个问题，如果我们在事件处理函数中，把 `event` 保存起来，那么在事件处理函数执行完毕后，这个 `event` 中的信息已经被清空了，那么保存的信息也就没有意义了。因此在 React 18 中并没有事件池的存在，也不会有这个问题。
+
+```jsx
+// React 16 事件绑定
+outer.onClick = (event) => {
+  console.log('outer 冒泡合成') // event 是新创建的
+  console.log(event) // 事件对象池中获取一个事件对象，然后赋值给 event
+  // 若要将 event 保存起来，需要使用 event.persist()
+  setTimeout(() => {
+    console.log(event) // 事件处理函数执行完毕，会把合成事件对象中的成员信息都清空掉
+  }, 1000)
+}
+```
+
+![React 17 之前合成事件顺序](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502161441325.png)
+
+### 事件的其它注意事项
+
+移动端事件:
+
+- `onTouchStart`：手指触摸屏幕时触发；
+- `onTouchMove`：手指在屏幕上滑动时触发；
+- `onTouchEnd`：手指从屏幕上离开时触发；
 
 ## 操作 DOM 属性
 
