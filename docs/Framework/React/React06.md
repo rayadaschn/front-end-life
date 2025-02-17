@@ -91,6 +91,16 @@ function CounterHook(props) {
 export default memo(CounterHook)
 ```
 
+## 函数组件机制
+
+函数组件的每一次渲染(或者更新)，都是把函数重新执行，产生一个全新的「私有上下文」
+
+- 内部的代码也需要重新执行。
+- 涉及的函数需要重新的构建，这些函数的作用域(函数执行的上级上下文)，是每一次执行函数组件产生的闭包。
+- 每一次执行函数组件，也会把 useState 重新执行，但是只有第一次设置的初始值会生效，其余以后再执行，获取的状态都是最新的状态值「而不是初始值」。返回的修改状态的方法，每一次都是返回一个新的。
+
+![函数组件渲染原理](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502162130452.png)
+
 ## useState
 
 以 `useState` Hook 作为入门，先来看一下这个 Hook 的用法。
@@ -106,6 +116,7 @@ const [state, setState] = useState(initialState)
 - **useState** 会帮助我们定义一个 `state`变量，`useState` 是一种新方法，它与 `class` 里面的 `this.state` 提供的功能完全相同（一般来说，在函数退出后变量就会”消失”，而 `state` 中的变量会被 React 保留）。
 - **useState** 接受唯一一个参数，在第一次组件被调用时使用来作为初始化值。(如果没有传递参数，那么初始化值为`undefined`)
 - **useState** 会返回一个数组。同其它 Hook 类似，这个数组中第一个为状态值，第二个为更新状态的钩子函数。
+- setState 不支持部分状态的更新，更新时需要把状态整体进行修改。
 
 使用 useState Hook 可以帮助我们避免使用 `class` 组件和 `this.setState()` 方法来管理状态，并且让函数组件和类组件的状态管理方式保持一致。
 
