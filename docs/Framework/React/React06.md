@@ -150,6 +150,12 @@ function Counter() {
 
 最后，在组件的返回值中，我们渲染了当前的计数器值和两个按钮，并将更新状态的方法绑定在了对应的按钮上。
 
+### useState 其它
+
+此外，useState 还自带了性能优化，修改值会基于 `Object.is` 作比较，若俩次的 set 值一致，则不会重新渲染。类似于 PureComponent 在 shouldComponentUpdate 中的浅比较。
+
+![useState 潜比较](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502172201896.png)
+
 ## useEffect
 
 除了定义状态，还需要解决函数组件中的生命周期问题，`useEffect` 这个 Effect Hook 便是用来干这个的。
@@ -191,6 +197,7 @@ function Example() {
     console.log('Component mounted!') // 每次渲染周期结束后执行一次,相当于生命周期中的 componentDidMount
     return () => {
       // 此处常用于取消监听, 同上面的添加监听相对应
+      // 这里的变量是上一次的状态值
       console.log('Component unmounted!') // 组件卸载时执行，相当于生命周期中的 componentWillUnmount
     }
   }, [])
@@ -218,6 +225,8 @@ type EffectCallback = () => void | (() => void | undefined)
 
 最后，在组件的返回值中，我们渲染了当前的计数器值和一个按钮，并将更新状态的方法绑定在了对应的按钮上。
 
+![useEffect 执行顺序](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502172301648.png)
+
 ### Effect 性能优化
 
 实际上，上述的代码已经做了性能优化处理。在前文中，我们介绍了 `useEffect` 有俩个参数，第一个是 `EffectCallback` 回调函数，第二个是数组形式的依赖列表。若不加这个依赖列表，则函数组件每次重新加载时，都是执行 `useEffect` 中回调函数（相当于每次重新执行）。若是只需要执行一次，不依赖任何的内容时，则可传入空数组 `[]`。
@@ -225,6 +234,11 @@ type EffectCallback = () => void | (() => void | undefined)
 这里相当于控制生命周期中的 `componentDidUpdate` 了。
 
 另外最后的 `constructor` 生命周期，也完全可以在 `return` 组件之前实现。
+
+> 注意点:
+>
+> 1. useEffect 必须在函数的最外层上下文中调用，不能把其嵌入到条件判断、循环语句中去！！！
+> 2. useEffect 回调函数的返回函数，不能是异步函数！！！即不能返回一个 promise，否则会报错。
 
 ## useContext
 
@@ -350,6 +364,8 @@ function Counter() {
 ## useRef
 
 useRef 返回一个**ref 对象**，返回的 **ref 对象** 在组件的整个生命周期保持不变。**它用于在函数组件中保存和访问可变值。它接受一个初始值，并返回一个对象，其中 `current` 属性包含着*最近一次赋值的值*。**
+
+区别于 `React.createRef()` ，useRef 在每一次组件更新时（组件重新执行），useRef 不会再创建新的 Ref 对象了，获取到的还是第一次创建的 Ref。`React.createRef()` 每次都会创建一个新的 Ref 对象，更耗费性能。
 
 以下是 useRef Hook 的基本语法：
 
@@ -758,7 +774,7 @@ function ParentComponent() {
 
 ## useLayoutEffect
 
-`useLayoutEffect` 非常类似于 `useEffect`，区别是，**`useLayoutEffect`中注册的回调函数会在 React 完成更新 DOM 后、浏览器布局和绘制之前立即执行。** 这意味着在 `useLayoutEffect` 中的代码可以改变 DOM，并且这些 DOM 变更将在用户看到任何更新之前生效。
+`useLayoutEffect` 非常类似于 `useEffect`，区别是，**`useLayoutEffect`中注册的回调函数会在 React 完成更新 DOM 后、浏览器布局和绘制之前立即执行。** 这意味着在 `useLayoutEffect` 中的代码可以改变 DOM，并且这些 DOM 变更将在用户看到任何更新之前生效。因此会早于 useEffect 执行。
 
 使用 `useLayoutEffect` 时需要格外小心，因为它可能会导致应用程序性能问题。如果没有必要在布局计算之前同步更新 DOM，请考虑使用 `useEffect` 来代替。
 
@@ -785,7 +801,20 @@ function MyComponent() {
 
 最后，在返回值中，我们渲染了一个包含文本内容的 `div` 元素，并将 Ref 对象绑定到该元素上。
 
+![useEffect 和 useLayoutEffect 执行顺序区别](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502172323425.png)
+
 需要注意的是，由于 `useLayoutEffect` 中的 DOM 操作会在浏览器布局和绘制之前同步执行，因此应该尽可能避免在 `useLayoutEffect` 中进行昂贵的计算或长时间运行的操作，以确保应用程序的性能和稳定性。
+
+原因在于，视图更新的步骤为：
+
+1. 基于 babel-preset-react-app 将 jsx 编译为 createElement 格式；
+2. 执行 createElement，创建出 virtualDOM；
+3. 基于 root.render 方法把 virtualDOM 变为真实 DOM 对象「DOM-DIFF」；
+4. 浏览器渲染和绘制真实 DOM 对象。
+
+而 useLayoutEffect 是在第三步之后，会先去支持 effect 链表中的方法，造成阻塞，即它是「同步操作」。
+
+useEffect 是在第三步之后，同第四步操作一起执行 effect 链表中的方法，不会阻塞第四步操作，即它是「异步操作」。
 
 ## 自定义 Hook
 
