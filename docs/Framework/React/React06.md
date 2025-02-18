@@ -709,7 +709,7 @@ function MyComponent(props) {
 
 ## useImperativeHandle
 
-`useImperativeHandle` 它允许我们在父组件中通过 Ref 访问子组件的特定方法或属性。这个 Hook 常常与 `forwardRef` 方法一起使用。
+`useImperativeHandle` 它允许我们在父组件中通过 Ref **访问子组件的特定方法或属性**。这个 Hook 常常与 `forwardRef` 方法一起使用。
 
 ```jsx
 useImperativeHandle(ref, createHandle, [deps])
