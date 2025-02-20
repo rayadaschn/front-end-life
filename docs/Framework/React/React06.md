@@ -624,6 +624,28 @@ const App = memo(function () {
 })
 ```
 
+由此也可以得出一个新的规律，当父组件嵌套子组件时，父组件要把一个内部的函数，基于属性传递给子组件，此时传递的这个方法可以用 `useCallback` 处理一下，这样可以避免子组件不必要的重新渲染。
+
+> !!! useCallback 不要滥用!!! 如果 useCallback 的依赖项数组为空，那么这个方法将永远不会再重新定义，这会导致子组件无法接收到最新的方法，从而无法触发更新。闭包陷阱!!! 因此，在使用 useCallback 时，需要确保依赖项数组中包含所有可能影响回调函数的变量，以便在依赖项发生变化时重新定义回调函数。
+
+```jsx
+// 父组件
+const Parent = function () {
+  const [count, setCount] = useState(0)
+  // 这份传递的方法，不需要更新。若不用 useCallback，每次父组件重新渲染，都会重新定义这个方法，导致子组件重新渲染
+  const increment = useCallback(() => {
+    setCount(count + 1)
+  }, [count])
+
+  return <Child increment={increment} />
+}
+```
+
+子组件也需要在内部做一个处理，用于验证父组件传递过来的方法是否需要重新定义，若不需要，则不重新定义。
+
+- Class 组件，可用 `React.PureComponent` 即可在 `shouldComponentUpdate` 中进行判断。
+- Function 组件，可用 `React.memo` 进行包裹。
+
 ## useMemo
 
 `useMemo` 也是为了性能优化而设置的，它用于优化组件渲染性能，避免不必要的计算。
