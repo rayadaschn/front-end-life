@@ -628,6 +628,8 @@ const App = memo(function () {
 
 > !!! useCallback 不要滥用!!! 如果 useCallback 的依赖项数组为空，那么这个方法将永远不会再重新定义，这会导致子组件无法接收到最新的方法，从而无法触发更新。闭包陷阱!!! 因此，在使用 useCallback 时，需要确保依赖项数组中包含所有可能影响回调函数的变量，以便在依赖项发生变化时重新定义回调函数。
 
+![useCallback 闭包陷阱](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202502200856564.png)
+
 ```jsx
 // 父组件
 const Parent = function () {
