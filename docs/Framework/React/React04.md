@@ -166,6 +166,68 @@ Redux 的三大原则是：
    console.log(store.getState())
    ```
 
+### Redux 的部分源码实现
+
+```js
+// 实现 redux 的部分源码
+export const createStore = function createStore(reducer) {
+  let state // 存放公共状态
+  let listeners = [] // 事件池, 存放订阅者
+
+  // 获取公共状态
+  const getState = () => state
+
+  // 向事件池中加入让组件更新的方法
+  const subscriber = function subscribe(listener) {
+    if (typeof listener !== 'function') {
+      throw new Error('listener must be a function')
+    }
+
+    // 事件池去重, 将让组件更新的方法存入事件池
+    if (!listeners.includes(listener)) {
+      listeners.push(listener)
+    }
+
+    // 返回一个从事件池中, 移除该方法的函数
+    return function unsubscribe() {
+      listeners = listeners.filter((l) => l !== listener)
+    }
+  }
+
+  // 派发任务通知 REDUCER 执行
+  const dispatch = function dispatch(action) {
+    // 判断 action 是否为对象
+    if (typeof action !== 'object' && action !== null) {
+      throw new Error('action must be a plain object')
+    }
+
+    // 判断 action 是否有 type 属性
+    if (typeof action.type === 'undefined') {
+      throw new Error('action must have a type property')
+    }
+
+    // 执行 reducer, 传递: 公共状态、行为对象，接收执行返回值，并替换修改公共状态
+    state = reducer(state, action)
+
+    // 当状态更新,  还需要把事件池中的方法依次执行一遍
+    listeners.forEach((listener) => listener())
+
+    // 返回 action
+    return action
+  }
+
+  // 初始化公共状态, redux 内部会派发一个默认行为, 目的是让 reducer 执行一次, 生成初始状态 state, 这里默认是 undefined
+  dispatch({ type: '@@redux/INIT' })
+
+  // 返回创建的 store 对象
+  return {
+    getState,
+    subscribe,
+    dispatch,
+  }
+}
+```
+
 ### 在组件中使用 Redux
 
 这里要用到 React 专用的 Redux 库 [React-Redux](https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html)，内部封装了很多便利 API。
@@ -207,6 +269,40 @@ export class App extends PureComponent {
       </div>
     )
   }
+}
+```
+
+在函数组件中使用:
+
+```jsx
+import React, { useContext } from 'react'
+const Vote = function Vote() {
+  const { store } = useContext(StoreContext)
+  // 获取容器汇总的公共状态
+  const { supNum, oppNum } = store.getState()
+
+  // 组件【第一次】渲染完毕后, 将让组件更新的方法, 放在 Store 的事件池中
+  const [num, setNum] = useState(0)
+  const update = () => {
+    setNum(num + 1)
+  }
+
+  useEffect(() => {
+    // 将组件更新的方法翻入 store 事件池中
+    // ubSubscribe 是一个函数, 用于取消订阅
+    const unSubscribe = store.subscribe(update) // 函数组件重新渲染前, 必须取消之前的订阅, 不然会存在闭包陷阱问题
+    return () => {
+      // 组件卸载时, 取消订阅
+      unSubscribe()
+    }
+  }, [num])
+
+  return (
+    <div>
+      <h2>支持人数: {supNum}</h2>
+      <h2>反对人数: {oppNum}</h2>
+    </div>
+  )
 }
 ```
 

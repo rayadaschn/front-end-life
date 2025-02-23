@@ -489,7 +489,7 @@ export class App extends PureComponent {
 
 如名字意思一样，就是在 JS 中编写 CSS 样式，CSS 由 JavaScript 生成而不是在外部文件中定义。
 
-值得注意的是该功能并不是 React 的一部分，而是**由第三方库提供**，较为流行的 CSS-in-JS 库有：`styled-components`、`emotion`、`glamorous`。
+值得注意的是该功能并不是 React 的一部分，而是**由第三方库提供**，较为流行的 CSS-in-JS 库有：`styled-components`、`React-JSS`、`emotion`、`glamorous`。
 
 以下介绍社区内最为流行的`styled-components`的用法。
 
