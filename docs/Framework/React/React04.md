@@ -228,6 +228,24 @@ export const createStore = function createStore(reducer) {
 }
 ```
 
+```js
+const combineReducers = function combineReducers(reducers) {
+  // reducers 是一个对象, 以键值对存储了: 模块名 & 每个模块的 reducer
+  const reducerKeys = Object.keys(reducers)
+
+  // 返回一个总的 reducer 函数
+  return function combination(state = {}, action) {
+    // 遍历每个模块的 reducer, 依次执行, 生成新的状态
+    const nextState = {}
+    for (let i = 0; i < reducerKeys.length; i++) {
+      const key = reducerKeys[i]
+      const reducer = reducers[key]
+      nextState[key] = reducer(state[key], action)
+    }
+    return nextState
+}
+```
+
 ### 在组件中使用 Redux
 
 这里要用到 React 专用的 Redux 库 [React-Redux](https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html)，内部封装了很多便利 API。
@@ -306,7 +324,7 @@ const Vote = function Vote() {
 }
 ```
 
-可以看出，这样的操作较为复杂，因此 React 提供了一个 `connect` api，它会返回一个高阶组件（Higher Order Component，HOC），用于连接 React 组件与 Redux store。它是 React-Redux 库提供的一个重要 API，通过它我们可以将 Redux store 中的数据和方法传递给组件，从而实现组件的数据状态管理。
+可以看出，这样的操作较为复杂，因此 react-redux 提供了一个 `connect` api，它会返回一个高阶组件（Higher Order Component，HOC），用于连接 React 组件与 Redux store。它是 React-Redux 库提供的一个重要 API，通过它我们可以将 Redux store 中的数据和方法传递给组件，从而实现组件的数据状态管理。
 
 `connect` 的作用可以简单地概括为：将 Redux store 中的数据和方法映射到组件的 props 中。 通过 `connect`，我们可以让组件访问 Redux store 中的数据，并将 store 中的更新操作转换为组件的 props 属性，从而实现组件的重新渲染。
 
@@ -336,6 +354,15 @@ const Vote = function Vote() {
   ```
 
   上述代码中，`mapDispatchToProps` 函数返回了一个对象，该对象的 `increment` 和 `decrement` 属性分别表示了两个分发 action 的函数，它们会被映射到组件的 props 中。
+
+  当然还有简易写法, 直接写入对象，redux-redux 库内部会自动调用 dispatch 方法:
+
+  ```js
+  const mapDispatchToProps = {
+    increment: (num) => ({ type: 'INCREMENT', num }),
+    decrement: (num) => ({ type: 'DECREMENT', num }),
+  }
+  ```
 
 最后，我们可以使用 `connect` 函数将 `mapStateToProps` 和 `mapDispatchToProps` 函数与 React 组件进行连接，从而实现数据和方法的传递。例如：
 
@@ -414,6 +441,12 @@ root.render(
 
 **redux 代码优化**:
 
+redux 工程化处理：把 reducer 按模块进行划分和管理；把所有模块的 reducer 合并为一个。
+
+由于每一次任务派发，都会把所有模块的 reducer，依次都执行一遍，派发的时候传递的行为对象（行为标示）应当统一。要保证各个模块之间，派发的行为标示具备唯一性！！！
+
+最后创建 actionCreators 对象，按模块管理需要派发的行为对象。
+
 1. 将派发的 action 生成过程放到一个`actionCreators`函数中；
 2. 将定义的所有`actionCreators`的函数, 放到一个独立的文件中: `actionCreators.js` ；
 3. `actionCreators`和`reducer`函数中使用字符串常量是一致的, 所以将常量抽取到一个独立`constants`的文件中；
@@ -430,6 +463,14 @@ root.render(
 5. 组件根据新的状态重新渲染。
 
 需要注意的是，这里的状态更新是单向的，即只能通过 `action` 触发 `reducer` 来更新状态，而不能直接修改状态。这种单向数据流的设计是 Redux 的核心思想之一，它能够保证状态变化的可预测性和可维护性。
+
+### 总结
+
+react-redux 是一个用于将 React 和 Redux 集成的库，它提供了一种简单的方式来将 Redux 的状态和操作映射到 React 组件的 props 中。通过使用 `connect` 函数，我们可以将 Redux 的 `state` 和 `dispatch` 方法映射到组件的 props 中，从而使得组件可以访问和修改 Redux 的状态。
+
+react-redux 提供 Provider 组件使得在内部能够自己创建了上下文对象，并且可以把 store 放在上下文中，在组件中使用的时候，无需再获取上下文 store 了。
+
+在组件中，想获取公共状态信息进行绑定等，也无需手动基于上下文对象获取 store，也无需手动调用 `store.getState()` 获取状态信息，直接通过 react-redux 提供的 `connect` 函数，将公共状态信息映射到组件的 props 中，然后就可以直接在组件中通过 `this.props` 获取到公共状态信息了。并且也不需要手动把让组件更新的方法，放在事件池中了，react-redux 内部帮开发者处理过了。
 
 ### Redux 处理异步函数
 
