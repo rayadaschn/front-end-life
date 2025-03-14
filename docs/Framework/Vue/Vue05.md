@@ -40,7 +40,9 @@ sticky: false
    - 浏览器会触发 `hashchange` 事件，Vue Router 监听该事件，并根据新的哈希值进行相应的导航。
 
    ```js
-   addEventListener('hashchange', (event) => {})
+   addEventListener('hashchange', (event) => {
+     const hash = location.hash.substring(1) // 获取到当前 hash 值如: /product
+   })
    ```
 
 2. **示例：**
@@ -51,7 +53,7 @@ sticky: false
 - **History 模式：**
 
   - 更美观的 URL，没有`#`符号。
-  - 需要服务器端配置，以处理直接访问 URL 时的情况。
+  - 需要服务器端配置，以处理直接访问 URL 时的情况，以便在路由地址不存在的情况下实现重定向。
   - 依赖 HTML5 History API，可能在一些老旧的浏览器中不兼容。
 
 - **Hash 模式：**
