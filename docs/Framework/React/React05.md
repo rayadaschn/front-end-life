@@ -200,7 +200,7 @@ function App() {
 
 ### 路由配置和跳转
 
-在 React Router 6 中，可以使用 `Link` 和 `NavLink` 组件来生成链接并进行页面导航。其中，`Link` 组件是基础组件，而 `NavLink` 组件则是对 `Link` 组件进行了扩展，增加了激活状态的样式和高亮效果。
+在 React Router 6 中，可以使用 `Link` 和 `NavLink` 组件来生成链接并进行页面导航。其中，`Link` 组件是基础组件，而 `NavLink` 组件则是对 `Link` 组件进行了**扩展**，增加了激活状态的样式(选中会默认设置 active 样式类, 可以给予 `activeClassName` 自定义样式)和高亮效果, 也可以基于 `exact` 精确匹配。
 
 以下是一个使用 `Link` 和 `NavLink` 组件的示例：
 
@@ -348,12 +348,129 @@ function LoginPage() {
 
 需要注意的是，在使用 `useNavigate` Hook 时，需要确保该 Hook 被使用在 `Router` 组件的范围之内。否则，页面导航将无法正常工作。
 
+### 在组件中获取对象信息
+
+在 react-router-dom V5 中，基于 Route 路由匹配渲染的组件，路由会默认给每个组件传递三个属性：history、location 和 match。
+
+```jsx
+<Route path="/a" component={A}>
+  {/* 这里给 A 组件传递了三个属性: history、location 和 match。 */}
+</Route>
+
+// 而基于 render 方法，则需要 `props/this.props` 获取传递的属性
+<Route path="/a" render={(props) => {
+  // 在 render 中可以获取到传递的属性
+  return <A {...props}/>
+}}>
+</Route>
+```
+
+function api 中则有对应的 hooks 函数，编程式导航。
+
+只要在 `<HashRouter/>、<BrowserRouter/>` 中渲染的组件，在组件内部，基于 useHistory、useLocation、useRouteMatch 这些 Hook 函数，就可以获取 history、location 和 match 对象。
+即便这个组件并不是基于 `<Route></Route>` 渲染的。而 `props` 属性需要基于 `<Route></Route>` 匹配渲染的组件，才可以获取这三个对象信息。
+
+```jsx
+import React from 'react'
+import { useLocation, useHistory, useRouteMatch } from 'react-router-dom'
+
+function A() {
+  const location = useLocation()
+  const history = useHistory()
+  const match = useRouteMatch()
+
+  console.log(location, history, match)
+  return (
+    <div history={history} location={location} match={match}>
+      组件 A
+    </div>
+  )
+}
+```
+
+实践建议：所有组件最好都包裹在 `<HashRouter/>、<HashRouter/>` 中，这样就可以在组件内部获取到 history、location 和 match 对象，而不需要基于 `<Route></Route>` 匹配渲染的组件。
+
+1. 函数组件，并且是基于 `<Route></Route>` 匹配渲染的:
+
+   - 基于 `props` 属性获取 「render 渲染的, 需要自己处理一下」
+   - 基于 `useHistory、useLocation、useRouteMatch` 这些 Hook 函数获取
+
+2. 函数组件，并且不是基于 `<Route></Route>` 匹配渲染的:
+
+   - 基于 Hook 函数获取;
+   - 基于 `withRouter` 代理一下这个组件, 这样就可以基于 `props` 获取了。
+
+3. 类组件，只能基于 props 获取了。但是如果没有被 `<Route></Route>` 匹配渲染，则需要基于 `withRouter` 代理一下这个组件。
+
+```jsx
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+class HomeHead extends React.Component {
+  render() {
+    console.log(this.props) // 被 Hoc 处理后，这里可以获取到 history、location 和 match 对象
+    return (
+      <NavBox>
+        <Link to="/">首页</Link>
+        <Link to="/about">关于</Link>
+      </NavBox>
+    )
+  }
+}
+
+// react-router-dom V5 版本提供的 withRouter 函数，用于将组件包裹在 Router 组件中，从而使其可以获取到路由相关的属性。原理如下
+const Handle = function Handle(Component) {
+  return function Hoc(props) {
+    const history = useHistory()
+    const location = useLocation()
+    const match = useRouteMatch()
+    return (
+      <Component
+        {...props}
+        history={history}
+        location={location}
+        match={match}
+      />
+    )
+  }
+}
+
+// 最终导出高阶组件
+export default Handle(HomeHead)
+// 等价于以下
+// export default withRouter(HomeHead)
+```
+
 ### 路由参数传递
 
 传递参数的方式有俩种:
 
 - 动态路由传参：在目标组件中使用 `useParams` 钩子获取参数；
-- search 查询参数通过 URL 的 `?key=value` 格式传递，使用 `useSearchParams` 钩子解析查询参数。
+- search 查询参数通过 URL 的 `?key=value` 格式传递，使用 `useSearchParams` 钩子解析查询参数。search 存储的就是问号传参信息，要求是 urlencoded 字符串编码格式。如果要传对象，可用 qs 库进行序列化。
+
+```jsx
+const Com = function () {
+  const history = useHistory()
+  return <div>
+    <button onClick={() => {
+      {/* 1. 问号传参 */}
+      {/* history.push('/com?name=123') */}
+      history.push({
+        pathname: '/com',
+        search: '?name=123',
+        {/* 或者 search: qs.stringify({name: '123'}) */}
+        {/* 2. 隐式传参, 不会显示在 url 上, 刷新后也不会保存 */}
+        otherState: {
+          name: '123',
+          obj: '{a: 1, b: 2}'
+        }
+      })
+    }}>按钮</button>
+  </div>
+}
+```
+
+传递的信息会出现在 url 上，数据是显示的，且刷新依旧存在。
 
 动态路由是指路由路径中包含变量的一种路由方式。在动态路由中，变量可以根据实际情况进行替换，从而实现更加灵活和通用的路由匹配。
 
@@ -425,6 +542,19 @@ export default SearchPage
 现在，基本将所有的路由功能介绍完毕。但是还是有些地方需要优化，如如果想将路由的配置像 Vue 一样都放到一个地方进行集中管理，该怎么办？
 
 为了方便管理路由配置，可以将所有的路由规则定义在一个单独的文件中，并在应用程序中进行引入和注册。这样做除了能够集中管理所有的路由规则，还能够使得代码更加清晰、易于维护和扩展。
+
+> 路由配置表: 是一个数组，数组中每一项就是每一个需要配置的路由规则
+>
+> - redirect：true 重定向
+> - from: 来源地址
+> - to: 重定向地址
+> - exact: 是否精准匹配
+> - path: 匹配的路径
+> - component: 渲染的组件
+> - name: 路由名称(命名路由)
+> - meta: {} 路由元信息, 包含当前路由的一些信息，当路由匹配后，可以拿这些信息做一些事情。
+> - children:[] 子路由
+>   ...
 
 以下是一个示例：
 
