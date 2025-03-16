@@ -302,7 +302,9 @@ function Toolbar() {
 
 很多人看到 `useReducer` 的第一反应应该是 `redux` 的某个替代品，其实并不是。`useReducer` 仅仅是 `useState` 的一种替代方案，它用于在函数组件中管理复杂的状态逻辑。它接受一个回调函数和一个初始值，并返回当前状态和更新状态的函数。
 
-简单理解: useReducer 就是收集所有操作某一个数据的「方案」；dispatch 就是派发器，依据传入的不同操作类型，去调用不同的逻辑。
+简单理解: `useReducer` 就是收集所有操作某一个数据的「方案」；`dispatch` 就是派发器，依据传入的不同操作类型，去调用不同的逻辑。
+
+如一个组件逻辑较为复杂，需要管理大量的状态，因为状态的更改全在于 `reducer` 中，那么使用 `useReducer` 会比 `useState` 更为方便,不需要基于 `useState` 逐个创建状态。
 
 以下是 useReducer Hook 的基本语法：
 

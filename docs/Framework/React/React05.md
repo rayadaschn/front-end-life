@@ -140,7 +140,7 @@ function App() {
 
 ### 路由映射配置
 
-定义完路由模式后，可以设置路由的映射关系。React Router 6 中的路由映射配置并不像 React Router 5 中那样使用 `<Route>` 组件，而是通过 `<Routes>` 和 `<Route>` 组件配合使用来实现。以下是一个示例：
+定义完路由模式后，可以设置路由的映射关系。React Router 6 中的路由映射配置并不像 React Router 5 中那样使用 `<Switch/>`和`<Route/>` 组件，而是通过 `<Routes>` 和 `<Route>` 组件配合使用来实现，默认一个匹配成功，就不再匹配下面的了，并且默认每一项都是精确匹配，不再需要 `exact` 属性。以下是一个示例：
 
 ```jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
@@ -163,7 +163,7 @@ function App() {
 
 在上述代码中，我们首先导入了需要使用的组件（包括 `BrowserRouter`、`Routes` 和 `Route`），然后在应用中定义了三个路由规则。其中，`element` 属性指定了对应的组件，`path` 属性指定了路由路径。
 
-需要注意的是，在 React Router 6 中，`exact` 属性已经不再被支持了。相反，精准匹配现在是默认的行为。也就是说，如果路径与路由定义完全匹配，则只有该路由将被匹配到。
+> 需要注意的是，在 React Router 6 中，`exact` 属性已经不再被支持了。相反，精准匹配现在是默认的行为。也就是说，如果路径与路由定义完全匹配，则只有该路由将被匹配到。
 
 路由路径是匹配一个（或一部分）URL 的 [一个字符串模式](https://react-guide.github.io/react-router-cn/docs/guides/basics/docs/Glossary.md#routepattern)。大部分的路由路径都可以直接按照字面量理解，除了以下几个特殊的符号：
 
@@ -232,7 +232,7 @@ function Header() {
 
 在上述代码中，我们使用 `Link` 和 `NavLink` 组件生成了三个链接，并使用 `to` 属性指定了对应的路由路径。`NavLink` 组件还使用了 `activeClassName` 属性来指定激活时的样式类名。
 
-此外，还有一个 `Navigate` 组件用于路由的重定向，**当这个组件出现时，就会执行跳转到对应的 `to` 路径中。** 与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过 _编程方式_ 进行页面导航的。
+此外，还有一个 `Navigate` 组件用于路由的重定向，**当这个组件出现时，就会执行跳转到对应的 `to` 路径中。** 与 `Link` 和 `NavLink` 不同的是，`Navigate` 组件是通过 _编程方式_ 进行页面导航的。`<Navigate to={{...}} ></Navigate>` 中`to` 的值可以是一个对象, `pathname` 是跳转的路径, `search` 是问号传参信息,`state` 是携带的其它状态。
 
 以下是一个使用 `Navigate` 组件的示例：
 
@@ -273,7 +273,9 @@ function LoginPage() {
 
 ### 路由的嵌套
 
-在开发中，路由是存在嵌套关系的，也就是多级路由。这里同 Vue 有点类似，需要用到 `<Outlet>` 占位组件，先看代码：
+在开发中，路由是存在嵌套关系的，也就是多级路由。在 V6 版本中，要求所有路由（二级或者多级路由），不再分散到各个组件中编写，而是统一写在一起！！！
+
+路由占位符，这里同 Vue 有点类似，需要用到 `<Outlet>` 占位组件，先看代码：
 
 ```jsx
 import {
@@ -284,6 +286,7 @@ import {
 } from 'react-router-dom'
 import Home from './Home'
 import Products from './Products'
+import NotFound from './NotFound'
 
 function App() {
   return (
@@ -294,6 +297,8 @@ function App() {
         <Route path="/products/*" element={<Products />}>
           <Route path="/" element={<ProductList />} />
           <Route path="/:productId" element={<ProductDetail />} />
+          {/* 如果以上都不匹配, 则可渲染 404 组件 */}
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </Router>
@@ -591,6 +596,7 @@ export const routes = [
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { routes } from './routes'
 
+// 递归渲染路由
 function App() {
   return (
     <Router>
@@ -612,6 +618,41 @@ function App() {
 在上述代码中，我们首先引入了 `routes` 数组，并在 `<Routes>` 组件中使用一个简单的循环语句来注册所有的路由规则。对于每个路由规则，我们使用 `<Route>` 组件进行注册，并传递对应的 `path` 和 `element` 属性。如果该路由规则存在子路由规则，则同样使用一个简单的循环语句来注册子路由规则。
 
 这样做，就可以实现将路由配置放到一个地方进行集中管理的目的。同时，只需要修改 `routes.js` 文件即可改变整个应用程序的路由规则，具有很好的可维护性和扩展性。
+
+当前上面还可以做一些路由拦截，如在赋值 Element 的时候，可以做权限、登录校验和传递属性等。
+
+```jsx
+import { routes } from './routes'
+import { Routes, Route, useNavigate } form 'react-router-dom'
+
+const Element = function (props) {
+  const { element } = props
+  // 可以在这里进行一些权限校验、登录校验等操作
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [usp] = useSearchParams()
+
+  // 最后吧 Component 渲染出来
+  return <element navigate={navigate} location={location} usp={usp} />
+}
+
+const createRoute = function (routes) {
+  return <>
+    {routes.map((route, index) => (
+      <Route key={index} path={route.path} element={<Element element={route.element} />}>
+        {route.children && createRoute(route.children)}
+      </Route>
+    ))}
+  </>
+}
+
+function App() {
+  return <div className="counter">{createRoute(routes)}</div>
+  </>
+
+}
+
+```
 
 此外，React Router 6 中提供了一个名为 `useRoutes` 的 Hooks，它可以让我们更加灵活地定义路由规则，并将其作为一个组件函数进行导出和使用。我们对上面的 App 组件进行改造：
 
@@ -695,3 +736,44 @@ export default function Home() {
 ```
 
 在上述代码中，我们将 `Home` 组件设置为默认导出，并且将其包裹在一个函数中。
+
+## 总结 V5 和 V6 的区别
+
+React Router 6 是 React Router 5 的一个重大更新，它引入了许多新的特性和改进，同时也废弃了一些旧的 API。以下是一些主要的区别：
+
+1. V6 移除了 `Switch` 组件，改用 `<Routes>` 组件来包裹所有的路由规则。
+2. 移除了 `Redirect` 组件，改用 `<Navigate>` 组件来重定向。遇到 `<Navigate>` 组件时，React Router 就会自动跳转到指定的路径。`<Navigate to={{...}} />` 中`to` 的值可以是路径或者一个对象, `pathname` 是跳转的路径, `search` 是问号传参信息,`state` 是携带的其它状态。
+3. 移除了 `withRouter` 高阶组件，若要实现可自己手写一个，上文已给出。
+4. 在 V6 中，即便当前函数组件是基于`<Route></Route>`匹配渲染的，也不会给予属性(props)获取 `location`、`match`、`history`等，需要通过`useNavigate`、`useLocation`、`useParams`等钩子函数来获取。并且使用这些 Hook 函数时，需要是在 `Router` 的 `HashRouter` 或 `BrowserRouter` 中。
+5. 编程式导航取消了 History 对象，改用 `useNavigate` 钩子函数代替 V5 中的 useHistory。
+
+   ```jsx
+   const navigate = useNavigate()
+   navigate('/about') // 跳转到 /about
+   navigate(-1) // 后退
+   navigate(1) // 前进
+   navigate('/about', { replace: true }) // 替换当前历史记录
+   navigate('/about', { state: { id: 123 } }) // 带参数跳转
+   navigate({ pathname: '/about', search: '?id=123' }) // 带参数跳转
+   ```
+
+6. V6 中，新增了一个 useSearchParams 钩子函数，用于获取 URL 中的查询参数。得到的是一个 URLSearchParams 对象，可以像操作对象一样操作它。
+7. V6 中用 `useMatch(pathname)` 替代了 V5 中的 `useRouteMatch()`。主要作用是手动匹配某个具体路径，看它是否与当前 URL 匹配，并获取匹配到的信息（包含参数）。由于 V6 中的 `useMatch(pathname)` 需要我们自己传地址，且 params 中也没有获取匹配的信息，所以常用用 `useParams()` 来获取匹配的信息，该钩子用的较少。
+
+   ```jsx
+   import { useMatch } from 'react-router-dom'
+
+   function Profile() {
+     const match = useMatch('/profile/:username')
+     if (match) {
+       console.log(match.params) // { username: 'huy' }
+     }
+
+     const params = useParams()
+     console.log(params) // { username: 'huy' }
+
+     return <div>Profile Page</div>
+   }
+
+   // 当前路径为 /profile/huy
+   ```
