@@ -3,11 +3,10 @@ title: React 之 Fiber 算法
 icon: react
 date: 2024-03-16
 category:
-
-- 框架
-  tag:
-- React
-  sticky: false
+  - 框架
+tag:
+  - React
+sticky: false
 ---
 
 Fiber 是 React 16 引入的，是 React 内部为了解决 异步可中断渲染 而设计的 核心架构和算法。
