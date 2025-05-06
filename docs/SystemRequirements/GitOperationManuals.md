@@ -130,7 +130,7 @@ $: git push origin -d newBranch
 - `–no-ff`，关闭`fast-forward`模式，在提交时，**保留分支的`commit`历史，并生成一次合并的提交记录。**
 - `--squash`，将多次分支`commit`历史压缩为一次，合并的时候相当于提交一次额外的 `commit` 进行总结。
 
-![git merge几种模式](https://image-static.segmentfault.com/120/030/1200301748-54c88abc9ed57_fix732)
+![git merge几种模式](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202505062214084.png)
 
 #### 2. 本地与远程端的交互
 
