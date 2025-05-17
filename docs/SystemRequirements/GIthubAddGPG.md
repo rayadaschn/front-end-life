@@ -10,8 +10,6 @@ tag:
 sticky: false
 ---
 
-# GIthub 添加 GPG 签名
-
 出于参与开源项目或是保护自身开源项目的安全考虑，在 GIthub 分支保护中，有一项 GPG 签名的设置。
 
 当然，这不是它诞生的主要目的。我们可以看看提交的 Commit 记录，发现就算是不一个账号，如果在本地的 `git config` 中设置相同的 user 信息，最终提交的用户就是一样的。这个在网上有一个很形象的比喻：你的同事获取到了你的 `git config` ，便可以假装你删库跑路了。哈哈哈哈
@@ -320,6 +318,37 @@ $: gpg --delete-secret-and-public-key your@email.addr
 - 添加子公钥:
 
   GPG 提供了交互式添加子密钥的方法，`gpg --expert --edit-key [用户ID]` 进入交互式密钥编辑，使用 `addkey` 添加子密钥。
+
+## 问题排查
+
+1. 电脑崩溃重启后，提交 git commit -S 时，提示 `gpg failed to sign the data`。
+
+具体报错示例:
+
+```bash
+error: gpg failed to sign the data:
+gpg: Note: database_open 13xxxx901 waiting for lock (held by 2507) ...
+gpg: Note: database_open 13xxxx901 waiting for lock (held by 2507) ...
+gpg: Note: database_open 13xxxx901 waiting for lock (held by 2507) ...
+gpg: Note: database_open 13xxxx901 waiting for lock (held by 2507) ...
+gpg: Note: database_open 13xxxx901 waiting for lock (held by 2507) ...
+gpg: keydb_search failed: Operation timed out
+```
+
+这个错误是由于 Git 使用 GPG（GNU Privacy Guard）签名提交时，GPG 卡在等待数据库锁，最后超时导致失败。
+
+原因是 GPG 正在尝试访问其密钥数据库。但数据库被另一个进程（PID 2507）锁住了，GPG 无法访问。最终操作超时，Git 无法完成提交。
+
+解决办法，查找所有 GPG 相关锁文件, 并将其删除
+
+```bash
+$: ls -l ~/.gnupg/*.lock
+$: rm -f ~/.gnupg/*.lock
+
+# 查找其他 GPG 数据库锁文件
+$: find ~/.gnupg -name "*.lock"
+# 然后删除
+```
 
 ## 参考文档
 
