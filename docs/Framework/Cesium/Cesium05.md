@@ -6,6 +6,7 @@ category:
   - 框架
 tag:
   - gis
+star: true
 sticky: false
 ---
 

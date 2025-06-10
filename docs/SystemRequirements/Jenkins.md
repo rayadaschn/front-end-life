@@ -6,7 +6,7 @@ category:
   - linux
 tag:
   - linux
-star: true
+star: false
 # sticky: true
 sticky: false
 ---

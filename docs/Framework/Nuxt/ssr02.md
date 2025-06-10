@@ -7,11 +7,9 @@ category:
   - 框架
 tag:
   - ssr
-star: true
+star: false
 sticky: false
 ---
-
-# Nuxt 之项目创建
 
 在上一篇文章[《服务端渲染 SSR 概述》](./ssr01) 中，简单介绍了一下关于 Nuxt 的一些基本概念。该文接着记录一下从头创建一个 Nuxt 服务端渲染的项目过程。
 
