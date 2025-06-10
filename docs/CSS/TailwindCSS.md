@@ -13,10 +13,7 @@ sticky: true
 
 章节系列共分为 7 个小节，每小节开头介绍使用规律，再介绍具体使用方法，各自小节独立可依照需求进行查阅。
 
-:::tip
-
-Unocss 兼容 Tailwind，因此仅需学习 Tailwind 的用法即可。
-
+:::tip Unocss 兼容 Tailwind，因此仅需学习 Tailwind 的用法即可。
 :::
 
 1. [Tailwind 安装及配置](./TailwindCSS01)
