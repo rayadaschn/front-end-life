@@ -45,6 +45,44 @@ tag:
 - `title` 窗口标题
 - `arch` 处理器架构 `arm`、`ia32`、`x64`
 
+### fs 模块
+
+`fs` 模块是 Node.js 中用于文件系统操作的模块。它提供了一组方法，用于读取、写入、删除、重命名等操作文件和目录。
+
+基本可以分为三类:回调式、Promises 异步、Sync 同步。
+
+1. 回调式 API
+
+   特点：回调函数为最后一个参数;第一个参数永远是 error 对象，如果没有错误则为 null。
+
+   ```js
+   fs.readFile(path, (err, data) => {})
+   fs.writeFile(path, content, (err) => {})
+   fs.stat(path, (err, stats) => {})
+   ```
+
+2. Promises 异步 API(现代写法)
+
+   特点：只是挂在 fs.promises 下。返回一个 Promise 对象，Promise 对象的状态由异步操作的结果决定。
+
+   ```js
+   fs.promises.readFile(path).then((data) => {})
+   fs.promises.writeFile(path, content).then(() => {})
+   fs.promises.stat(path).then((stats) => {})
+   ```
+
+3. Sync 同步 API(阻塞式,少用)
+
+   格式为: `xxxSync`。特点：会阻塞当前线程，直到操作完成。没有回调函数，直接返回结果。如果发生错误则抛出异常。
+
+   ```js
+   fs.readFileSync(path)
+   fs.writeFileSync(path)
+   fs.statSync(path)
+   fs.mkdirSync(path)
+   fs.rmSync(path)
+   ```
+
 ### 进程方法
 
 - `process.cwd()` 方法: 返回当前目录，不使用任何参数
