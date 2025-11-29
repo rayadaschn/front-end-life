@@ -58,38 +58,38 @@ console.log(add(1, 2)) // 输出 3
 
 1. 语法：`require` 是 CommonJS 规范定义的模块导入方式，而 `import` 是 ES6 模块化规范定义的模块导入方式。两者的语法和使用方法略有不同。
 
-```
-javascript复制代码// CommonJS 导入方式
-const moduleA = require('./moduleA')
+   ```js
+   // CommonJS 导入方式
+   const moduleA = require('./moduleA')
 
-// ES6 模块导入方式
-import moduleA from './moduleA'
-```
+   // ES6 模块导入方式
+   import moduleA from './moduleA'
+   ```
 
 2. 动态导入：使用 `require` 导入的模块是在运行时动态加载的，可以在函数内部或其他条件下进行导入（实质是通过最后的 Webpack 进行打包编译处理）；而使用 `import` 导入的模块是在编译时静态加载的，不能在函数内部或其他条件下进行导入。
 
-```js
-// CommonJS 动态导入方式
-function loadModule(filename) {
-  return require('./' + filename)
-}
+   ```js
+   // CommonJS 动态导入方式
+   function loadModule(filename) {
+     return require('./' + filename)
+   }
 
-// ES6 模块静态导入方式
-const filename = 'moduleA.js'
-import(`./${filename}`).then((module) => {
-  // 执行操作
-})
-```
+   // ES6 模块静态导入方式
+   const filename = 'moduleA.js'
+   import(`./${filename}`).then((module) => {
+     // 执行操作
+   })
+   ```
 
 3. 默认导出：在 CommonJS 规范中，使用 `module.exports` 或 `exports` 对象来导出模块的公共部分；而在 ES6 模块系统中，则默认导出一个模块，可以通过 `export default` 语句来指定默认导出。
 
-```js
-// CommonJS 导出方式
-module.exports = { add } // 或者 exports.add = add
+   ```js
+   // CommonJS 导出方式
+   module.exports = { add } // 或者 exports.add = add
 
-// ES6 模块默认导出
-export default { add }
-```
+   // ES6 模块默认导出
+   export default { add }
+   ```
 
 需要注意的是，虽然 `import` 和 `export` 是 ES6 模块化规范中定义的关键字，但它们在许多现代浏览器和 Node.js 环境中已经得到了支持。但在一些旧的浏览器或 Node.js 版本中，可能需要使用打包工具（如 webpack、Browserify 等）来转换成 CommonJS 规范的代码。
 
@@ -190,15 +190,11 @@ fs.writeFile(file, data[, options], callback)
 其中：
 
 - `file`：要写入的文件名或文件描述符。
-
 - `data`：要写入的数据。
-
 - `options`：一个可选的对象，用于指定写入选项，例如编码、文件模式、标志等。默认值为 `{ encoding: 'utf8', mode: 0o666, flag: 'w' }`。
 
   - `encoding`：字符编码形式，如果不填写`encoding`，返回的结果是`Buffer`（后续会介绍）。
-
   - `flag`：读写模式，以下是几个常用的`flag` 标志：
-
   - `'r'`：以只读模式打开文件。如果文件不存在，则会发生错误。
   - `'r+'`：以读写模式打开文件。如果文件不存在，则会发生错误。
   - `'w'`：以只写模式打开文件。如果文件不存在，则创建文件；如果存在，则清空文件内容。
@@ -297,24 +293,19 @@ fs.writeFile(
 
    在上面的例子中，我们使用 `fs.rmdir` 函数删除了名为 `oldDir` 的文件夹。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
 
-   需要注意的是，在 Node.js 的文件系统模块中，`fs.unlink` 函数用于删除一个文件，而 `fs.rmdir` 函数用于删除一个文件夹。这两个函数默认情况下不会递归删除。
+   需要注意的是，在 Node.js 的文件系统模块中，`fs.unlink` 函数用于删除一个文件，`fs.rmdir` 函数用于删除一个空的文件夹。
 
-   如果要删除一个文件夹及其子文件夹和文件，可以使用第三方库 `rimraf` 或 `del`，它们提供了递归删除文件夹的功能。
+   并且在 Node.js V14 及更高版本中，引入了 `fs.rm` 函数，可以递归删除文件夹及其内容。用于取代二者:
 
-   例如，使用 `rimraf` 库来删除一个文件夹及其所有子文件夹和文件的示例代码如下：
+   - `fs.unlink`（删除文件）
+   - `fs.rmdir`（删除空/非空目录）
 
-   ```js
-   const rimraf = require('rimraf')
-
-   rimraf('myDir', (err) => {
-     if (err) throw err
-     console.log('Folder deleted')
-   })
-   ```
-
-   在上面的例子中，我们使用 `rimraf` 函数删除了名为 `myDir` 的文件夹及其所有子文件夹和文件。如果删除失败，则会抛出错误；否则，将输出 `'Folder deleted'`。
-
-   此外，在执行删除操作时，请务必小心谨慎，确保不会意外删除或修改不想修改的文件或文件夹，特别是在使用递归删除的情况下。
+   | 功能                                                   | 新 API                       |
+   | ------------------------------------------------------ | ---------------------------- |
+   | 删除文件                                               | `fs.rm()`                    |
+   | 删除空目录                                             | `fs.rm()`                    |
+   | 删除非空目录（递归）                                   | `fs.rm({ recursive: true })` |
+   | 强制删除:忽略不存在的路径、不抛错、强制删除文件/目录。 | `fs.rm({ force: true })`     |
 
 4. 重命名文件夹
 

@@ -12,7 +12,7 @@ tag:
 
 首先要理解一个概念，在前面的文章中，谈到文件读取的几种方法。但是这些方法都是直接将文件读取放到内存中进行管理，但是如果我们需要读取一部超长的电影，这个时候服务器的内存可能并没有那么大，所以，导致我们不能够直接读取到完整的一部电影。我们可以片段的读取想要的电影片段（这并不会打断我们看电影的过程）。
 
-那么 Node 是如何实现的呢？通过 Stream 流，是连续字节的一种表现形式和抽象概念，它可以读也可以写。
+那么 Node 是如何实现的呢？通过 Stream 流，是连续字节的一种表现形式和抽象概念，它可以读也可以写。简单理解：Stream 流就是持续按片处理数据的管道机制，适合大文件、网络传输等需要边读边写的场景。
 
 ## 文件读写的 Stream
 
@@ -148,52 +148,75 @@ writeStream.end(() => {
   // 也就是同时做了 'finish' 和 'close' 俩个事件
   console.log('Done')
 })
+
+// 这里要注意写入流其实还有两个事件
+// 'drain' 事件: 当 write 返回 false，表示太快了，系统来不及写，需要停一下。当可写流的内部缓存区清空时触发, 可以继续写入数据。
+// 'finish' 事件: 当可写流完成所有数据写入并关闭文件句柄时触发, 这才是真正的写入完成。
+writeStream.on('drain', () => {
+  console.log('drain')
+  write()
+})
+
+writeStream.on('finish', () => {
+  console.log('finish')
+})
 ```
 
 在上面的例子中，我们使用 `fs.createWriteStream()` 方法创建了一个可写流，并将数据块 `'a\n'`、`'b\n'` 和 `'c\n'` 推送到该可写流中。当所有数据块都被推送完毕后，我们会调用 `writeStream.end()` 方法来结束可写流，并在回调函数中执行相应的操作。
 
-### 拷贝流（Copy Stream）
+### pipe 把读写流串起来
 
-拷贝流（Copy Stream）是一种将数据从一个可读流复制到另一个可写流的机制。
-
-在 Node.js 中，可以使用 `pipeline()` 方法将两个或多个流连接起来，并自动处理错误和关闭流等问题。以下是一个简单的示例，演示如何创建一个可读流、一个可写流和一个拷贝流，并使用它们将数据从文件 `'input.txt'` 复制到文件 `'output.txt'`：
+在 Node.js 中，pipe（管道）是一种把一个可读流的输出自动连接到一个可写流输入的机制。它就像 Linux 命令里的管道符 `|`，让数据像水流一样从一个地方流到另一个地方。
 
 ```js
-const fs = require('fs')
-const { pipeline } = require('stream')
+readableStream.pipe(writableStream)
 
-const readStream = fs.createReadStream('input.txt')
-const writeStream = fs.createWriteStream('output.txt')
+// 等价于
+readableStream.on('data', (chunk) => {
+  writableStream.write(chunk)
+})
 
-pipeline(readStream, writeStream, (err) => {
-  if (err) {
-    console.error('Pipeline failed', err)
-  } else {
-    console.log('Pipeline succeeded')
-  }
+readableStream.on('end', () => {
+  writableStream.end()
 })
 ```
 
-在上面的例子中，我们使用 `fs.createReadStream()` 和 `fs.createWriteStream()` 方法创建了一个可读流和一个可写流。然后，我们使用 `pipeline()` 方法将这两个流连接起来，并定义一个回调函数以处理错误和成功完成的情况。
+`readableStream` 产生的数据会自动送进 `writableStream`，中间不需要你手动 `.on('data')` 再 `.write()`。自动处理背压（backpressure），防止内存爆炸。
 
-`pipeline()` 函数的作用是将一个或多个可读流、一个或多个可写流和任意数量的转换流（Transform Stream）连接在一起，并将它们链接成一个管道。这个管道把数据从一个流传输到另一个流，同时也会自动控制流量，保证内存不会耗尽。
-
-`pipeline()` 函数的语法如下：
+`pipe()` 建立管道，对应还有一个 `unpipe()` 方法用来取消通过 pipe 建立的管道连接。
 
 ```js
-pipeline(source, ...transforms, destination, callback)
+readable.pipe(writable)
+
+// 如果你想停止这个管道（比如你不想再写入目标流），就使用：
+writable.unpipe(readable)
+// 或者完全断开所有管道：
+writable.unpipe()
 ```
 
-其中：
+这个的使用场景有很多: 不再想写入目标流，或者想把数据重定向到另一个流。又或是防止数据泄露或误传输，如一个流仍在 `pipe`，但你不再想让它写入，可以 `unpipe` 来停止传输。下面是两个常见场景：
 
-- `source`：一个可读流，它是管道的起点。
-- `transforms`：一个或多个转换流，每个转换流都可以对数据进行修改或转换。
-- `destination`：一个可写流，它是管道的终点。
-- `callback`：可选的回调函数，在管道完成或出错时被调用。
+1. 例如 HTTP 请求中用户取消上传，你需要停止把文件写到硬盘：
 
-当执行上述代码时，它会自动读取文件 `'input.txt'` 的内容，并将其复制到文件 `'output.txt'` 中。同时，如果出现任何错误或异常情况，它也会自动处理并输出相应的错误信息。
+   ```js
+   req.pipe(fileStream)
 
-需要注意的是，在使用拷贝流时，请特别注意内存泄漏和错误处理等问题。同时，也应该及时释放资源、关闭流等，避免出现资源浪费和程序不稳定等问题。
+   req.on('aborted', () => {
+     req.unpipe(fileStream)
+     fileStream.end()
+   })
+   ```
+
+2. 例如你开始时写入一个文件，后来决定切换到另一个文件：
+
+   ```js
+   readable.pipe(fileA)
+
+   setTimeout(() => {
+     readable.unpipe(fileA)
+     readable.pipe(fileB)
+   }, 2000)
+   ```
 
 ### 双工流（Duplex Stream）
 
