@@ -5,7 +5,7 @@ icon: home
 title: 主页
 heroImage: /Huy.png
 bgImage: https://file.mo7.cc/api/public/bz # 链接地址 自动获取 必应 每日地址
-heroText: '别犹豫 去行动'
+heroText: '勿从他觅 但用此心'
 tagline: Just Do It
 heroFullScreen: true
 
