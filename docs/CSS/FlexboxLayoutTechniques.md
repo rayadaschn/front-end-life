@@ -58,6 +58,8 @@ tag:
      space-around | space-evenly;
    ```
 
+   > `space-between` 两端顶格; `space-around` 两端有空隙。
+
 2. 垂直对齐属性 **align-items** 与 **align-self**
 
    **区别:** **align-self**属性是设置在具体的**某一个 flex 子项**上的，而**align-items**属性是设置**在 flex 容器元素上**的，控制所有 flex 子项的垂直对齐方式。
@@ -112,7 +114,7 @@ flex-basis: <length> | auto; /* 默认值是 auto */
 
 - flex-grow：属性定义项目的放大比例，默认为 0，即如果存在剩余空间，也不放大。
 - flex-shrink：属性定义了项目的缩小比例，默认为 1，即如果空间不足，该项目将缩小。
-- flex-basis：属性定义了在分配多余空间之前，项目占据的主轴空间（main size）。浏览器根据这个属性，计算主轴是否有多余空间。它的默认值为 auto，即项目的本来大小。
+- flex-basis：属性定义了在分配多余空间之前，内容占据的主轴空间（main size）。浏览器根据这个属性，计算主轴是否有多余空间。它的默认值为 auto，即内容的本来大小。
 
 **【注】只有`flex-basis`的属性值支持长度值**
 

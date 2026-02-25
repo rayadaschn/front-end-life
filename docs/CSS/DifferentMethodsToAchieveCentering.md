@@ -40,7 +40,7 @@ tag:
   position: relative;
 }
 .son {
-  posion: absolute;
+  position: absolute;
   top: 50%;
   left: 50%;
   margin-left: -50px;
@@ -61,7 +61,7 @@ tag:
   position: relative;
 }
 .son {
-  posion: absolute;
+  position: absolute;
   top: calc(50% - 50px);
   left: calc(50% - 50px);
 }
@@ -80,7 +80,7 @@ tag:
   position: relative;
 }
 .son {
-  posion: absolute;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -95,7 +95,7 @@ tag:
 
 《CSS 世界》中解释： `left/top/right/bottom` 是具有定位特性元素专用的 CSS 属性，当一个绝对定位元素，其对立定位方向属性同时具有具体定位数值到时候，流体特性就发生了。
 
-当统一方向上只有单一属性时，如只有 `left` 或 `top`，这个时候 元素的宽度或高度其实 0；只有当 `left` 和 `right`同时存在（`top` 和 `bottom` 同时存在），这个时候的宽度不为 0。表现为“格式化宽度”——宽度自适应与 包含该对象的 父级块 的 `padding box`。就是说这个时候的 宽高是等于父级元素的。
+当统一方向上只有单一属性时，如只有 `left` 或 `top`，**这个时候元素的宽度或高度其实 0**；只有当 `left` 和 `right`同时存在（`top` 和 `bottom` 同时存在），这个时候的宽度不为 0。表现为“格式化宽度”——宽度自适应与 包含该对象的 父级块 的 `padding box`。就是说这个时候的**宽高是等于父级元素**的。
 
 不是很好的写法：
 
@@ -104,7 +104,7 @@ tag:
   position: relative;
 }
 .son {
-  posion: absolute;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -126,7 +126,7 @@ tag:
   position: relative;
 }
 .son {
-  posion: absolute;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -137,7 +137,7 @@ tag:
 
 > **Tips： `transform` 中的百分比是基于自身宽高的，同 `top` 等属性不同。**
 
-### 2.2 lineheight 文本居中
+### 2.2 line-height 文本居中
 
 通过将 `parent` 父元素设置为行内元素，则可通过 `text-align` 实现 待居中元素的水平居中。而后，通过 `vertical-align` 将行内元素内容 垂直向上居中，实现整体效果。
 

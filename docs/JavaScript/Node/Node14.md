@@ -11,7 +11,7 @@ tag:
 本文重新梳理一遍 Node.js 中的 Buffer 概念和使用方法。
 
 ::: info 为什么需要 Buffer?
-在 Node.js 中，Buffer 是处理二进制数据的核心对象。JavaScript 本身是基于 Unicode 的字符串处理，但在网络通信、文件操作等场景中，我们经常需要处理原始的二进制数据。Buffer 提供了一种高效的方式来存储和操作这些数据。(Blob 不能直接进行问卷的处理，ArrayBuffer 不能直接操作二进制数据，而 Buffer 则可以直接操作二进制数据)
+在 Node.js 中，Buffer 是处理二进制数据的核心对象。JavaScript 本身是基于 Unicode 的字符串处理，但在网络通信、文件操作等场景中，我们经常需要处理原始的二进制数据。Buffer 提供了一种高效的方式来存储和操作这些数据。(Blob 不能直接进行数据的处理，ArrayBuffer 不能直接操作二进制数据，而 Buffer 则可以直接操作二进制数据)
 :::
 
 ## 关于字节

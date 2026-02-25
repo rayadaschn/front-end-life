@@ -447,7 +447,7 @@ console.log(buf) // <Buffer 00 61 00 00 00>
 创建一个新的 `Buffer` 实例时，Node.js 会为其在内存中分配一段连续的空间，并将其所有字节初始化为零。如果指定了初始值，则会将其写入到这段连续的空间中。例如：
 
 ```js
-码const buf = Buffer.from('hello', 'utf8')
+const buf = Buffer.from('hello', 'utf8')
 ```
 
 在上面的代码中，我们使用 `Buffer.from()` 方法创建了一个包含字符串 `'hello'` 的新的 `Buffer` 实例。当执行该行代码时，Node.js 会为该 `Buffer` 在内存中分配一段连续的空间，并将其所有字节初始化为 `'hello'` 字符串的 UTF-8 编码值。
