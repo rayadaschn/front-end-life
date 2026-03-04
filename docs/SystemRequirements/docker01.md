@@ -11,7 +11,7 @@ tag:
 sticky: false
 ---
 
-**Docker** 是什么?
+> 记录 Docker 常用指令和一些概念。
 
 没看懂的官网简介：“Docker 可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口（类似 iPhone 的 app），更重要的是容器性能开销极低。”
 
@@ -23,7 +23,9 @@ sticky: false
 
 ## 前置知识
 
-**systemctl** 指令，可以查阅《[Systemd 入门教程：命令篇](https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)》。system 是一个 systemd 工具，主要负责控制 systemd 系统和服务管理器。诸如 timedatectl 等以 ctl 结尾的命令，其中 **ctl 的意思是 control，也就是控制**。
+**systemctl** 指令，可以查阮一峰老师的《[Systemd 入门教程：命令篇](https://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)》。
+
+> `system` 是一个 `systemd` 工具，主要负责控制 `systemd` 系统和服务管理器。诸如 `timedatectl` 等以 `ctl` (ctl 的意思是 `control`，也就是控制)结尾的命令。
 
 Docker 中镜像和容器是两个不同的概念。
 

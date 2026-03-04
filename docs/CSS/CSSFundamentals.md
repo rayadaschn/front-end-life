@@ -337,7 +337,20 @@ img {
   div {
     width: 0;
     border: 10px solid;
-    border-color: #f30 transparent transparent;
+    border-color: red transparent transparent;
+  }
+  ```
+
+- 扇形绘制:
+
+  ```css
+  /* 扇形 */
+  div {
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: red;
+    border-radius: 50%;
   }
   ```
 

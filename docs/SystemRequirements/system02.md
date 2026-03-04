@@ -12,8 +12,6 @@ sticky: false
 
 # 为 Mac 配置不同的 Git 账号
 
-[toc]
-
 ## 总结
 
 【注】全文的用户环境为 MacOS，一些文件的目录有所不同。
