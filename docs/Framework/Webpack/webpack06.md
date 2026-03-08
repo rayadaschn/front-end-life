@@ -34,7 +34,7 @@ Webpack 的运行流程可以简单地概括为以下几个步骤：
 - 转载器 (loader)
 - 插件 (plugins)
 
-### entey
+### entry
 
 入口文件可以有一个或多个它是 Webpack 构建开始的文件，通过它 Webpack 可以逐步递归找到整个项目中的所有依赖文件。
 
@@ -158,38 +158,38 @@ module.exports = {
 
 1. 创建一个 JavaScript 文件，并在其中定义一个插件类。这个类需要实现一个 `apply()` 方法，该方法会接收一个 compiler 对象作为参数。
 
-```js
-class MyPlugin {
-  // apply方法，会在new plugin后被webpack自动执行。
-  apply(compiler) {
-    // 在这里实现插件的功能
-  }
-}
-```
+   ```js
+   class MyPlugin {
+     // apply方法，会在new plugin后被webpack自动执行。
+     apply(compiler) {
+       // 在这里实现插件的功能
+     }
+   }
+   ```
 
 2. 在 `apply()` 方法中实现插件的功能。一般来说，插件的功能通常是通过挂载钩子函数（hook）来实现的。Webpack 提供了很多钩子函数，例如 beforeRun、run、emit 等等。我们可以根据具体需求选择一个或多个钩子函数，并注册对应的回调函数来实现插件的功能。
 
-```js
-class MyPlugin {
-  apply(compiler) {
-    compiler.hooks.done.tap('MyPlugin', (stats) => {
-      console.log('Webpack 构建完成！', stats)
-    })
-  }
-}
-```
+   ```js
+   class MyPlugin {
+     apply(compiler) {
+       compiler.hooks.done.tap('MyPlugin', (stats) => {
+         console.log('Webpack 构建完成！', stats)
+       })
+     }
+   }
+   ```
 
 3. 在完成插件的开发后，可以使用 npm 将其打包成一个可发布的模块。可以在 package.json 文件中添加一个 "main" 字段，指定插件的入口文件。
 
 4. 将插件安装到项目中。可以使用 `npm install` 命令将插件安装到项目中，然后在 Webpack 配置文件中引入并实例化该插件。
 
-```js
-const MyPlugin = require('my-webpack-plugin')
+   ```js
+   const MyPlugin = require('my-webpack-plugin')
 
-module.exports = {
-  plugins: [new MyPlugin()],
-}
-```
+   module.exports = {
+     plugins: [new MyPlugin()],
+   }
+   ```
 
 ## 性能优化
 
