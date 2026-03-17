@@ -1125,3 +1125,128 @@ async get(taskId) {
   return this._load(taskId);
 }
 ```
+
+## 后台任务 Background Tasks
+
+有些命令要跑好几分钟: `npm install`、`jest`、`docker build`。agent 会被卡住，无法同时处理多个任务。这样的用户体验很差（不能“边做边想”）。为此需要引入后台任务机制。
+
+```sql
+Main thread (event loop)        Background workers
++------------------------+      +----------------------+
+| agent loop             |      | child_process.exec   |
+| ...                    |      | ...                  |
+| [LLM call] <----------+------| enqueue(result)      |
+|   ^ drain queue        |      +----------------------+
++------------------------+
+
+Timeline:
+Agent --[spawn A]--[spawn B]--[other work]----
+             |          |
+             v          v
+          [A runs]   [B runs]   (parallel async)
+             |          |
+             +-- results injected before next LLM call --+
+```
+
+### 实现步骤
+
+后台任务管理用通知队列进行处理
+
+```js
+const { exec } = require('child_process')
+const { randomUUID } = require('crypto')
+
+class BackgroundManager {
+  constructor() {
+    // 存储所有任务状态: taskId -> { status, command, result? }
+    this.tasks = new Map()
+
+    // 通知队列：用于在主循环中“注入”后台结果
+    this.notificationQueue = []
+  }
+
+  // 启动后台任务（非阻塞）
+  run(command) {
+    // 生成短 task id（方便在对话中引用）
+    const taskId = randomUUID().slice(0, 8)
+
+    // 标记任务开始
+    this.tasks.set(taskId, {
+      status: 'running',
+      command,
+    })
+
+    // 异步执行命令（不会阻塞主线程）
+    exec(command, { timeout: 300000 }, (error, stdout, stderr) => {
+      let output
+
+      // 处理超时
+      if (error && error.killed) {
+        output = 'Error: Timeout (300s)'
+      } else {
+        // 合并 stdout + stderr，并限制最大长度（防止爆内存）
+        output = (stdout + stderr).trim().slice(0, 50000)
+      }
+
+      // 更新任务状态
+      this.tasks.set(taskId, {
+        status: 'done',
+        command,
+        result: output,
+      })
+
+      // 推入通知队列（只保留前 500 字符用于提示）
+      this.notificationQueue.push({
+        taskId,
+        result: output.slice(0, 500),
+      })
+    })
+
+    // 立即返回，不等待执行完成
+    return `Background task ${taskId} started`
+  }
+
+  // 取出所有已完成任务的通知（并清空队列）
+  drainNotifications() {
+    const notifs = [...this.notificationQueue]
+
+    // 清空队列，避免重复注入
+    this.notificationQueue = []
+
+    return notifs
+  }
+}
+```
+
+最后加入到 Agent Loop 中，每轮调用 LLM 前都注入结果。
+
+```js
+async function agentLoop(messages, client, bgManager) {
+  while (true) {
+    const notifs = bgManager.drainNotifications()
+
+    if (notifs.length > 0) {
+      const notifText = notifs
+        .map((n) => `[bg:${n.taskId}] ${n.result}`)
+        .join('\n')
+
+      messages.push({
+        role: 'user',
+        content: `<background-results>\n${notifText}\n</background-results>`,
+      })
+
+      messages.push({
+        role: 'assistant',
+        content: 'Noted background results.',
+      })
+    }
+
+    const response = await client.messages.create({
+      messages,
+      // ...其他参数
+    })
+
+    // 处理 response...
+  }
+}
+```
