@@ -572,3 +572,556 @@ Parent agent                     Subagent
      return text || '(no summary)'
    }
    ```
+
+## Skills
+
+工具过多后，智能体可能会不清楚每个工具的作用。即“需要用到什么知识，就加载什么知识”
+
+而不是把所有知识塞进 `system prompt`，而是通过 `tool_result` 动态注入。
+
+基本原理是采用两层结构，一层是系统提示词，始终存在；另一层是技能提示词，根据需要动态加载。
+
+```sql
+
+System prompt (Layer 1,只放技能名称 + 简短描述（低成本）):
++--------------------------------------+
+| You are a coding agent.              |
+| Skills available:                    |
+|   - git: Git workflow helpers        |
+|   - test: Testing best practices     |
++--------------------------------------+
+
+
+tool_result (Layer 2,当模型调用时加载):
++--------------------------------------+
+| <skill name="git">                   |
+| Full git workflow instructions...    |
+| Step 1: ...                          |
+| </skill>                             |
++--------------------------------------+
+```
+
+skills 目录结构为:
+
+```objectivec
+skills/
+  pdf/
+    SKILL.md
+  code-review/
+    SKILL.md
+```
+
+每个 `SKILL.md`：
+
+```md
+---
+name: code-review
+description: Review code quality
+---
+
+# Code Review Guide
+
+Step 1: ...
+Step 2: ...
+```
+
+### Skills 实现原理
+
+`SkillLoader` 递归扫描 `SKILL.md` 文件, 用目录名作为技能标识。
+
+```js
+import fs from 'fs'
+import path from 'path'
+
+export class SkillLoader {
+  constructor(skillsDir) {
+    this.skills = {}
+    this.loadSkills(skillsDir)
+  }
+
+  loadSkills(dir) {
+    const walk = (currentPath) => {
+      const files = fs.readdirSync(currentPath)
+
+      for (const file of files) {
+        const fullPath = path.join(currentPath, file)
+        const stat = fs.statSync(fullPath)
+
+        if (stat.isDirectory()) {
+          walk(fullPath)
+        } else if (file === 'SKILL.md') {
+          const text = fs.readFileSync(fullPath, 'utf-8')
+          const { meta, body } = this.parseFrontmatter(text)
+
+          const name = meta.name || path.basename(path.dirname(fullPath))
+
+          this.skills[name] = {
+            meta,
+            body,
+          }
+        }
+      }
+    }
+
+    walk(dir)
+  }
+
+  parseFrontmatter(text) {
+    const match = text.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+
+    if (!match) {
+      return { meta: {}, body: text }
+    }
+
+    const yaml = match[1]
+    const body = match[2]
+
+    const meta = {}
+    yaml.split('\n').forEach((line) => {
+      const [key, ...rest] = line.split(':')
+      if (key) {
+        meta[key.trim()] = rest.join(':').trim()
+      }
+    })
+
+    return { meta, body }
+  }
+
+  getDescriptions() {
+    return Object.entries(this.skills)
+      .map(([name, skill]) => {
+        const desc = skill.meta.description || ''
+        return `  - ${name}: ${desc}`
+      })
+      .join('\n')
+  }
+
+  getContent(name) {
+    const skill = this.skills[name]
+
+    if (!skill) {
+      return `Error: Unknown skill '${name}'.`
+    }
+
+    return `<skill name="${name}">{skill.body}</skill>`
+  }
+}
+```
+
+第一层，注入到系统提示词中:
+
+```js
+const skillLoader = new SkillLoader('./skills')
+
+const SYSTEM = `You are a coding agent.
+Skills available:
+${skillLoader.getDescriptions()}`
+```
+
+第二层，其实也是一个 `dispatch map` 工具。 在工具调用时动态加载:
+
+```js
+const TOOL_HANDLERS = {
+  // 其他工具...
+
+  load_skill: ({ name }) => {
+    return skillLoader.getContent(name)
+  },
+}
+```
+
+## 上下文压缩 context compact
+
+由于 LLM 的上下文窗口是有限的，因此需要管理上下文，让 Agent 能长期运行而不崩。
+
+这里采用三层上下文压缩机制，逐层增强：
+
+```yaml
+Every turn:
++------------------+
+| Tool call result |
++------------------+
+        |
+        v
+[Layer 1: micro_compact]        (每轮执行，静默)
+  老的 tool_result → 占位符
+        |
+        v
+[Check: tokens > 50000?]
+   |               |
+   no              yes
+   |               |
+   v               v
+continue    [Layer 2: auto_compact]
+              保存完整对话
+              LLM 生成摘要
+              用 summary 替换上下文
+                    |
+                    v
+            [Layer 3: manual compact]
+              模型主动调用 compact
+
+```
+
+### 第一层轻量压缩
+
+目标是：清理旧的 `tool` 返回结果，节省 `token`，但不丢失关键信息。
+
+```js
+function microCompact(messages, keepRecent = 3) {
+  const toolResults = []
+
+  messages.forEach((msg, i) => {
+    if (msg.role === 'user' && Array.isArray(msg.content)) {
+      msg.content.forEach((part, j) => {
+        if (part?.type === 'tool_result') {
+          toolResults.push({ i, j, part })
+        }
+      })
+    }
+  })
+
+  if (toolResults.length <= keepRecent) return messages
+
+  // 压缩较旧的 tool result
+  const toCompact = toolResults.slice(0, -keepRecent)
+
+  toCompact.forEach(({ part }) => {
+    const content = part.content || ''
+    if (content.length > 100) {
+      const toolName = part.tool_name || 'tool'
+      part.content = `[Previous: used ${toolName}]`
+    }
+  })
+
+  return messages
+}
+```
+
+### 第二层自动压缩
+
+当 token 超过阈值时，自动调用 LLM 生成摘要(summary)，替换上下文。
+
+```js
+import fs from 'fs/promises'
+import path from 'path'
+
+async function autoCompact(messages, client, MODEL, TRANSCRIPT_DIR) {
+  // 1. 保存 transcript
+  const fileName = `transcript_${Date.now()}.jsonl`
+  const filePath = path.join(TRANSCRIPT_DIR, fileName)
+
+  const lines = messages.map((msg) => JSON.stringify(msg)).join('\n')
+  await fs.writeFile(filePath, lines, 'utf-8')
+
+  // 2. 调用 LLM 做摘要
+  const prompt =
+    'Summarize this conversation for continuity:\n\n' +
+    JSON.stringify(messages).slice(0, 80000)
+
+  const response = await client.messages.create({
+    model: MODEL,
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: 2000,
+  })
+
+  const summary = response.content?.[0]?.text || 'Summary unavailable'
+
+  // 3. 替换上下文
+  return [
+    {
+      role: 'user',
+      content: `[Compressed]\n\n${summary}`,
+    },
+    {
+      role: 'assistant',
+      content: 'Understood. Continuing.',
+    },
+  ]
+}
+```
+
+### 第三层手动压缩
+
+主动优化，由模型“主动决定”触发压缩，适用于模型认为需要压缩但又不满足自动压缩条件的情况。
+
+例如，当模型“感觉上下文开始混乱”或者即将执行复杂任务前, 可以主动调用 `manual_compact` 工具来压缩上下文。
+
+```js
+async function manualCompact(messages, client, MODEL, TRANSCRIPT_DIR) {
+  return await autoCompact(messages, client, MODEL, TRANSCRIPT_DIR)
+}
+```
+
+### 三层压缩整合进 Agent 主循环
+
+```js
+async function agentLoop(messages, client, config) {
+  const { MODEL, THRESHOLD = 50000, TRANSCRIPT_DIR } = config
+
+  while (true) {
+    // Layer 1: 每轮压缩
+    microCompact(messages)
+
+    // Layer 2: 自动压缩
+    if (estimateTokens(messages) > THRESHOLD) {
+      const newMessages = await autoCompact(
+        messages,
+        client,
+        MODEL,
+        TRANSCRIPT_DIR
+      )
+      messages.splice(0, messages.length, ...newMessages)
+    }
+
+    // 调用 LLM
+    const response = await client.messages.create({
+      model: MODEL,
+      messages,
+    })
+
+    // TODO: 工具执行逻辑
+    // const toolUsed = ...
+
+    // Layer 3: 手动触发
+    if (response?.needs_compact) {
+      const newMessages = await manualCompact(
+        messages,
+        client,
+        MODEL,
+        TRANSCRIPT_DIR
+      )
+      messages.splice(0, messages.length, ...newMessages)
+    }
+
+    messages.push(response)
+  }
+}
+```
+
+## 任务系统 Task System
+
+此前的 TodoManager 只能管理单一维度的任务状态，无法处理复杂的多维度任务关系。真实的任务可能是:
+
+- B 依赖 A
+- C 和 D 可以并行
+- E 依赖 C + D
+
+解决方案是升级为任务图（Task Graph / DAG）+ 磁盘持久化。
+
+每个任务就是一个 JSON 文件：
+
+```pgsql
+.tasks/
+  task_1.json
+  task_2.json
+```
+
+任务的字段结构可为:
+
+```json
+{
+  "id": 1, // 任务 ID
+  "subject": "task name", // 任务名称
+  "status": "pending", // pending / in_progress / done
+  "blockedBy": [], // 依赖的任务 ID 列表
+  "blocks": [], // 被哪些任务依赖的 ID 列表
+  "owner": "" // 负责这个任务的智能体（如果有多个智能体）
+}
+```
+
+### 重构任务管理
+
+```js
+import { promises as fs } from 'fs'
+import path from 'path'
+
+// 任务管理器：负责任务的创建、读取、存储（基于文件系统）
+export class TaskManager {
+  constructor(tasksDir) {
+    // 任务存储目录（例如 ./.tasks）
+    this.dir = tasksDir
+  }
+
+  // 初始化任务系统（创建目录 + 计算下一个任务 ID）
+  async init() {
+    // recursive: true → 目录不存在时自动创建
+    await fs.mkdir(this.dir, { recursive: true })
+
+    // nextId = 当前最大 id + 1（避免重复）
+    this.nextId = (await this._maxId()) + 1
+  }
+
+  // 扫描目录，找出当前最大的 task id
+  async _maxId() {
+    // 如果目录不存在，返回空数组（避免报错）
+    const files = await fs.readdir(this.dir).catch(() => [])
+
+    const ids = files
+      // 匹配 task_1.json 这种格式
+      .map((f) => f.match(/task_(\d+)\.json/))
+      .filter(Boolean)
+      // 提取数字 id
+      .map((m) => parseInt(m[1], 10))
+
+    // 如果没有任务，返回 0
+    return ids.length ? Math.max(...ids) : 0
+  }
+
+  // 根据 id 生成文件路径
+  _filePath(id) {
+    return path.join(this.dir, `task_${id}.json`)
+  }
+
+  // 保存任务到磁盘（覆盖写）
+  async _save(task) {
+    await fs.writeFile(
+      this._filePath(task.id),
+      JSON.stringify(task, null, 2) // 美化 JSON，方便调试
+    )
+  }
+
+  // 从磁盘读取任务
+  async _load(id) {
+    const content = await fs.readFile(this._filePath(id), 'utf-8')
+    return JSON.parse(content)
+  }
+
+  // 创建新任务
+  async create(subject, description = '') {
+    const task = {
+      id: this.nextId,
+      subject,
+      description,
+
+      // 初始状态：待执行
+      status: 'pending',
+
+      // 依赖当前任务的前置任务（谁挡着我）
+      blockedBy: [],
+
+      // 当前任务完成后会解锁谁（我挡着谁）
+      blocks: [],
+
+      // 预留字段（未来多 agent 用）
+      owner: '',
+    }
+
+    await this._save(task)
+
+    // 自增 id，保证唯一性
+    this.nextId += 1
+
+    return JSON.stringify(task, null, 2)
+  }
+}
+```
+
+当任务完成时，移除其他任务中的依赖，并更新转态：
+
+```js
+// 清理依赖关系：当某个任务完成时调用
+async _clearDependency(completedId) {
+  const files = await fs.readdir(this.dir);
+
+  for (const file of files) {
+    // 只处理任务文件
+    if (!file.startsWith("task_")) continue;
+
+    const fullPath = path.join(this.dir, file);
+    const task = JSON.parse(await fs.readFile(fullPath, "utf-8"));
+
+    // 如果这个任务依赖已完成的任务
+    if (task.blockedBy?.includes(completedId)) {
+      // 从依赖列表中移除 → 表示“解锁”
+      task.blockedBy = task.blockedBy.filter(id => id !== completedId);
+
+      // 保存更新后的任务
+      await this._save(task);
+    }
+  }
+}
+
+
+// 更新任务：状态 + 依赖关系
+async update(taskId, { status, addBlockedBy, addBlocks } = {}) {
+  const task = await this._load(taskId);
+
+  // ===== 状态更新 =====
+  if (status) {
+    task.status = status;
+
+    // 如果任务完成 → 自动解锁后续任务
+    if (status === "completed") {
+      await this._clearDependency(taskId);
+    }
+  }
+
+  // ===== 添加“被谁阻塞” =====
+  if (addBlockedBy) {
+    // 注意：这里没有去重，调用方需要保证合理性
+    task.blockedBy.push(...addBlockedBy);
+  }
+
+  // ===== 添加“阻塞谁” =====
+  if (addBlocks) {
+    task.blocks.push(...addBlocks);
+  }
+
+  await this._save(task);
+
+  return JSON.stringify(task, null, 2);
+}
+```
+
+加入到工具调用中：
+
+```js
+// 初始化全局任务管理器
+const TASKS = new TaskManager("./.tasks");
+await TASKS.init();
+
+// 工具分发：给 agent 调用
+export const TOOL_HANDLERS = {
+  // 创建任务
+  task_create: async ({ subject }) =>
+    TASKS.create(subject),
+
+  // 更新任务（主要用于改状态）
+  task_update: async ({ task_id, status }) =>
+    TASKS.update(task_id, { status }),
+
+  // 获取所有任务（用于构建任务图）
+  task_list: async () =>
+    TASKS.listAll(),
+
+  // 获取单个任务详情
+  task_get: async ({ task_id }) =>
+    TASKS.get(task_id),
+};
+
+
+// 列出所有任务（读取整个任务目录）
+async listAll() {
+  const files = await fs.readdir(this.dir);
+  const tasks = [];
+
+  for (const file of files) {
+    // 只处理 task_*.json 文件
+    if (!file.startsWith("task_")) continue;
+
+    const task = JSON.parse(
+      await fs.readFile(path.join(this.dir, file), "utf-8")
+    );
+
+    tasks.push(task);
+  }
+
+  return tasks;
+}
+
+// 获取单个任务
+async get(taskId) {
+  return this._load(taskId);
+}
+```
