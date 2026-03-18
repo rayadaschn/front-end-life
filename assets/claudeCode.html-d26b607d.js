@@ -965,4 +965,671 @@ Agent <span class="token comment">--[spawn A]--[spawn B]--[other work]----</span
     <span class="token comment">// 处理 response...</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,93),i=[l];function u(r,k){return o(),c("div",null,i)}const v=n(p,[["render",u],["__file","claudeCode.html.vue"]]);export{v as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="agent-团队" tabindex="-1"><a class="header-anchor" href="#agent-团队" aria-hidden="true">#</a> Agent 团队</h2><p>在之前的版本中，子智能体是一次性的（调用完就销毁）。没有身份（state 丢失），没有跨调用记忆。后台任务只能执行命令，不能做 LLM 决策。</p><p>真正的团队协作需要三样东西:</p><ol><li>能跨多轮对话存活的持久智能体</li><li>身份和生命周期管理</li><li>智能体之间的通信通道。</li></ol><div class="language-sql line-numbers-mode" data-ext="sql"><pre class="language-sql"><code>Teammate lifecycle:
+  spawn <span class="token operator">-</span><span class="token operator">&gt;</span> WORKING <span class="token operator">-</span><span class="token operator">&gt;</span> IDLE <span class="token operator">-</span><span class="token operator">&gt;</span> WORKING <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token operator">-</span><span class="token operator">&gt;</span> <span class="token keyword">SHUTDOWN</span>
+
+Communication:
+  <span class="token punctuation">.</span>team<span class="token operator">/</span>
+    config<span class="token punctuation">.</span>json
+    inbox<span class="token operator">/</span>
+      alice<span class="token punctuation">.</span>jsonl
+      bob<span class="token punctuation">.</span>jsonl
+      lead<span class="token punctuation">.</span>jsonl
+
+             send<span class="token punctuation">(</span><span class="token string">&quot;alice&quot;</span><span class="token punctuation">,</span><span class="token string">&quot;bob&quot;</span><span class="token punctuation">)</span>
+   <span class="token operator">+</span><span class="token comment">--------+ --------------------&gt; +--------+</span>
+   <span class="token operator">|</span> alice  <span class="token operator">|</span>                      <span class="token operator">|</span>  bob   <span class="token operator">|</span>
+   <span class="token operator">|</span> <span class="token keyword">loop</span>   <span class="token operator">|</span>   bob<span class="token punctuation">.</span>jsonl <span class="token operator">&lt;&lt;</span> msg   <span class="token operator">|</span>  <span class="token keyword">loop</span>  <span class="token operator">|</span>
+   <span class="token operator">+</span><span class="token comment">--------+                      +--------+</span>
+
+        BUS<span class="token punctuation">.</span>readInbox<span class="token punctuation">(</span><span class="token string">&quot;alice&quot;</span><span class="token punctuation">)</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="实现原理" tabindex="-1"><a class="header-anchor" href="#实现原理" aria-hidden="true">#</a> 实现原理</h3><ol><li><p>使用 Node.js 文件系统维护团队状态。</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">import</span> fs <span class="token keyword">from</span> <span class="token string">&#39;fs/promises&#39;</span>
+<span class="token keyword">import</span> path <span class="token keyword">from</span> <span class="token string">&#39;path&#39;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">TeammateManager</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">teamDir</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 团队根目录（例如 .team/）</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>dir <span class="token operator">=</span> teamDir
+
+    <span class="token comment">// config.json 路径，用于持久化团队成员信息</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>configPath <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>teamDir<span class="token punctuation">,</span> <span class="token string">&#39;config.json&#39;</span><span class="token punctuation">)</span>
+
+    <span class="token comment">// 可用于存储运行中的 agent（比如 future: worker/thread 引用）</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>threads <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">async</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 确保目录存在（recursive: true 表示多级目录自动创建）</span>
+    <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">mkdir</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>dir<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">recursive</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 尝试读取已有配置</span>
+      <span class="token keyword">const</span> raw <span class="token operator">=</span> <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">readFile</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>configPath<span class="token punctuation">,</span> <span class="token string">&#39;utf-8&#39;</span><span class="token punctuation">)</span>
+
+      <span class="token comment">// 解析 JSON -&gt; 内存中的 config</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config <span class="token operator">=</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>raw<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 如果文件不存在或解析失败，初始化默认结构</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token literal-property property">members</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">}</span>
+
+      <span class="token comment">// 写入空配置文件</span>
+      <span class="token keyword">await</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">saveConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">async</span> <span class="token function">saveConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 将当前 config 写回磁盘（带格式化方便调试）</span>
+    <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>configPath<span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">findMember</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 根据 name 查找成员（简单线性查找）</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span>members<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">m</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> m<span class="token punctuation">.</span>name <span class="token operator">===</span> name<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">spawn</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> role<span class="token punctuation">,</span> prompt</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 创建一个新的队友（初始状态为 working）</span>
+    <span class="token keyword">const</span> member <span class="token operator">=</span> <span class="token punctuation">{</span> name<span class="token punctuation">,</span> role<span class="token punctuation">,</span> <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token string">&#39;working&#39;</span> <span class="token punctuation">}</span>
+
+    <span class="token comment">// 加入团队 roster</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span>members<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>member<span class="token punctuation">)</span>
+
+    <span class="token comment">// 异步保存（这里没有 await，属于 fire-and-forget）</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">saveConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token comment">// 启动该队友的 agent loop（非阻塞）</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">startTeammateLoop</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> role<span class="token punctuation">,</span> prompt<span class="token punctuation">)</span>
+
+    <span class="token comment">// 返回提示信息</span>
+    <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">Spawned teammate &#39;</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&#39; (role: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>role<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">\`</span></span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>MessageBus（JSONL 邮箱通信）</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">import</span> fs <span class="token keyword">from</span> <span class="token string">&#39;fs/promises&#39;</span>
+<span class="token keyword">import</span> path <span class="token keyword">from</span> <span class="token string">&#39;path&#39;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">class</span> <span class="token class-name">MessageBus</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">baseDir</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// inbox 目录（每个 agent 一个 jsonl 文件）</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>dir <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>baseDir<span class="token punctuation">,</span> <span class="token string">&#39;inbox&#39;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">async</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 确保 inbox 目录存在</span>
+    <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">mkdir</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>dir<span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">recursive</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">async</span> <span class="token function">send</span><span class="token punctuation">(</span>sender<span class="token punctuation">,</span> to<span class="token punctuation">,</span> content<span class="token punctuation">,</span> type <span class="token operator">=</span> <span class="token string">&#39;message&#39;</span><span class="token punctuation">,</span> extra <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 构造消息对象（统一结构）</span>
+    <span class="token keyword">const</span> msg <span class="token operator">=</span> <span class="token punctuation">{</span>
+      type<span class="token punctuation">,</span> <span class="token comment">// 消息类型（默认 message）</span>
+      <span class="token literal-property property">from</span><span class="token operator">:</span> sender<span class="token punctuation">,</span> <span class="token comment">// 发送者</span>
+      content<span class="token punctuation">,</span> <span class="token comment">// 内容</span>
+      <span class="token literal-property property">timestamp</span><span class="token operator">:</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment">// 时间戳（毫秒）</span>
+      <span class="token operator">...</span>extra<span class="token punctuation">,</span> <span class="token comment">// 可扩展字段（比如 task_id 等）</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 收件人对应的 jsonl 文件</span>
+    <span class="token keyword">const</span> file <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>dir<span class="token punctuation">,</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>to<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.jsonl</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">)</span>
+
+    <span class="token comment">// 以 append 模式写入一行（JSONL = 每行一个 JSON）</span>
+    <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">appendFile</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">&#39;\\n&#39;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">async</span> <span class="token function">readInbox</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> file <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>dir<span class="token punctuation">,</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.jsonl</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">)</span>
+
+    <span class="token keyword">try</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 读取整个 inbox 文件</span>
+      <span class="token keyword">const</span> raw <span class="token operator">=</span> <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">readFile</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> <span class="token string">&#39;utf-8&#39;</span><span class="token punctuation">)</span>
+
+      <span class="token comment">// 如果文件为空，直接返回空数组</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>raw<span class="token punctuation">.</span><span class="token function">trim</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+      <span class="token comment">// 按行解析 JSONL -&gt; JS 对象数组</span>
+      <span class="token keyword">const</span> messages <span class="token operator">=</span> raw
+        <span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">&#39;\\n&#39;</span><span class="token punctuation">)</span> <span class="token comment">// 按行拆分</span>
+        <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>Boolean<span class="token punctuation">)</span> <span class="token comment">// 去掉空行</span>
+        <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">line</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>line<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+      <span class="token comment">// ⭐ 关键设计：读取后立即清空（drain inbox）</span>
+      <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> <span class="token string">&#39;&#39;</span><span class="token punctuation">)</span>
+
+      <span class="token keyword">return</span> messages
+    <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 文件不存在或读取失败 -&gt; 视为没有消息</span>
+      <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>Agent loop 循环，每个 Agent 都能持续运行，每轮检查 inbox，把消息注入上下文并且调用 LLM。</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code> <span class="token keyword">async</span> <span class="token function">startTeammateLoop</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> role<span class="token punctuation">,</span> prompt</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   <span class="token comment">// 对话上下文（类似 ChatGPT messages）</span>
+   <span class="token keyword">const</span> messages <span class="token operator">=</span> <span class="token punctuation">[</span>
+     <span class="token punctuation">{</span> <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&quot;user&quot;</span><span class="token punctuation">,</span> <span class="token literal-property property">content</span><span class="token operator">:</span> prompt <span class="token punctuation">}</span>
+   <span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+   <span class="token comment">// 限制最大轮数，避免无限循环</span>
+   <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">50</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     <span class="token comment">// 读取当前 agent 的 inbox</span>
+     <span class="token keyword">const</span> inbox <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">readInbox</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+     <span class="token keyword">if</span> <span class="token punctuation">(</span>inbox<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token comment">// 将 inbox 注入到上下文（作为用户输入）</span>
+       messages<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+         <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&quot;user&quot;</span><span class="token punctuation">,</span>
+         <span class="token literal-property property">content</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">&lt;inbox&gt;</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>inbox<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/inbox&gt;</span><span class="token template-punctuation string">\`</span></span>
+       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+       <span class="token comment">// 给模型一个确认信号（避免重复处理）</span>
+       messages<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+         <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&quot;assistant&quot;</span><span class="token punctuation">,</span>
+         <span class="token literal-property property">content</span><span class="token operator">:</span> <span class="token string">&quot;Noted inbox messages.&quot;</span>
+       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">}</span>
+
+     <span class="token comment">// 调用 LLM（例如 OpenAI / Claude）</span>
+     <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">callLLM</span><span class="token punctuation">(</span>messages<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+     <span class="token comment">// 如果没有 tool 调用，说明任务结束</span>
+     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>response<span class="token punctuation">.</span>toolCalls<span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+
+     <span class="token comment">// 执行模型请求的工具调用</span>
+     <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> tool <span class="token keyword">of</span> response<span class="token punctuation">.</span>toolCalls<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">executeTool</span><span class="token punctuation">(</span>tool<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+       <span class="token comment">// 将工具执行结果写回上下文</span>
+       messages<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+         <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&quot;tool&quot;</span><span class="token punctuation">,</span>
+         <span class="token literal-property property">content</span><span class="token operator">:</span> result
+       <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span>
+
+   <span class="token comment">// 循环结束后，将状态标记为 idle</span>
+   <span class="token keyword">const</span> member <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">findMember</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>member<span class="token punctuation">)</span> member<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token string">&quot;idle&quot;</span><span class="token punctuation">;</span>
+
+   <span class="token comment">// 持久化状态</span>
+   <span class="token keyword">await</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">saveConfig</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>调用示例:</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// 单点发送消息</span>
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">sendTool</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> from<span class="token punctuation">,</span> to<span class="token punctuation">,</span> content <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 调用 MessageBus 发送</span>
+  <span class="token keyword">await</span> <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>from<span class="token punctuation">,</span> to<span class="token punctuation">,</span> content<span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> <span class="token string">&#39;Message sent.&#39;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 广播消息（发给所有人）</span>
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">broadcastTool</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> from<span class="token punctuation">,</span> content<span class="token punctuation">,</span> members <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> m <span class="token keyword">of</span> members<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 不给自己发</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>m<span class="token punctuation">.</span>name <span class="token operator">!==</span> from<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">await</span> <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>from<span class="token punctuation">,</span> m<span class="token punctuation">.</span>name<span class="token punctuation">,</span> content<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> <span class="token string">&#39;Broadcast complete.&#39;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li></ol><h2 id="团队协议" tabindex="-1"><a class="header-anchor" href="#团队协议" aria-hidden="true">#</a> 团队协议</h2><p>在上面的 Agent 团队中，队友可以相互通信，执行任务，但是缺乏结构化的规范。正确的方式是先提交计划，再审批，最后再执行。</p><div class="language-sql line-numbers-mode" data-ext="sql"><pre class="language-sql"><code><span class="token keyword">Shutdown</span> Protocol            <span class="token keyword">Plan</span> Approval Protocol
+<span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span>           <span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span><span class="token operator">=</span>
+
+Lead             Teammate    Teammate           Lead
+  <span class="token operator">|</span>                 <span class="token operator">|</span>           <span class="token operator">|</span>                 <span class="token operator">|</span>
+  <span class="token operator">|</span><span class="token comment">--shutdown_req--&gt;|           |--plan_req------&gt;|</span>
+  <span class="token operator">|</span> {req_id:<span class="token string">&quot;abc&quot;</span>}  <span class="token operator">|</span>           <span class="token operator">|</span> {req_id:<span class="token string">&quot;xyz&quot;</span>}  <span class="token operator">|</span>
+  <span class="token operator">|</span>                 <span class="token operator">|</span>           <span class="token operator">|</span>                 <span class="token operator">|</span>
+  <span class="token operator">|</span><span class="token operator">&lt;</span><span class="token comment">--shutdown_resp-|           |&lt;--plan_resp-----|</span>
+  <span class="token operator">|</span> {req_id:<span class="token string">&quot;abc&quot;</span><span class="token punctuation">,</span>  <span class="token operator">|</span>           <span class="token operator">|</span> {req_id:<span class="token string">&quot;xyz&quot;</span><span class="token punctuation">,</span>  <span class="token operator">|</span>
+  <span class="token operator">|</span>  approve:<span class="token boolean">true</span>}  <span class="token operator">|</span>           <span class="token operator">|</span>  approve:<span class="token boolean">true</span>}  <span class="token operator">|</span>
+
+Shared FSM:
+  <span class="token punctuation">[</span>pending<span class="token punctuation">]</span> <span class="token comment">--approve--&gt; [approved]</span>
+  <span class="token punctuation">[</span>pending<span class="token punctuation">]</span> <span class="token comment">--reject---&gt; [rejected]</span>
+
+Trackers:
+  shutdown_requests <span class="token operator">=</span> {req_id: {target<span class="token punctuation">,</span> <span class="token keyword">status</span>}}
+  plan_requests     <span class="token operator">=</span> {req_id: {<span class="token keyword">from</span><span class="token punctuation">,</span> <span class="token keyword">plan</span><span class="token punctuation">,</span> <span class="token keyword">status</span>}}
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="协议工作原理" tabindex="-1"><a class="header-anchor" href="#协议工作原理" aria-hidden="true">#</a> 协议工作原理</h3><ol><li><p>领导发起关机请求</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">import</span> <span class="token punctuation">{</span> randomUUID <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&#39;crypto&#39;</span>
+
+<span class="token doc-comment comment">/**
+ * 向某个队友发送“优雅关机”请求
+ */</span>
+<span class="token keyword">function</span> <span class="token function">handleShutdownRequest</span><span class="token punctuation">(</span><span class="token parameter">teammate</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 生成唯一 request_id（取前8位方便阅读）</span>
+  <span class="token keyword">const</span> reqId <span class="token operator">=</span> <span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// 记录请求状态</span>
+  shutdownRequests<span class="token punctuation">[</span>reqId<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">target</span><span class="token operator">:</span> teammate<span class="token punctuation">,</span>
+    <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token string">&#39;pending&#39;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 发送请求消息</span>
+  <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>
+    <span class="token string">&#39;lead&#39;</span><span class="token punctuation">,</span>
+    teammate<span class="token punctuation">,</span>
+    <span class="token string">&#39;Please shut down gracefully.&#39;</span><span class="token punctuation">,</span>
+    <span class="token string">&#39;shutdown_request&#39;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span> <span class="token literal-property property">request_id</span><span class="token operator">:</span> reqId <span class="token punctuation">}</span>
+  <span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">Shutdown request </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>reqId<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> sent (status: pending)</span><span class="token template-punctuation string">\`</span></span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>队友响应关机请求</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token doc-comment comment">/**
+ * 处理 shutdown_response
+ */</span>
+<span class="token keyword">function</span> <span class="token function">handleShutdownResponse</span><span class="token punctuation">(</span><span class="token parameter">sender<span class="token punctuation">,</span> args</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> request_id<span class="token punctuation">,</span> approve<span class="token punctuation">,</span> reason <span class="token punctuation">}</span> <span class="token operator">=</span> args
+
+  <span class="token comment">// 更新状态</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>shutdownRequests<span class="token punctuation">[</span>request_id<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    shutdownRequests<span class="token punctuation">[</span>request_id<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> approve <span class="token operator">?</span> <span class="token string">&#39;approved&#39;</span> <span class="token operator">:</span> <span class="token string">&#39;rejected&#39;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 回复给领导</span>
+  <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>sender<span class="token punctuation">,</span> <span class="token string">&#39;lead&#39;</span><span class="token punctuation">,</span> reason <span class="token operator">||</span> <span class="token string">&#39;&#39;</span><span class="token punctuation">,</span> <span class="token string">&#39;shutdown_response&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    request_id<span class="token punctuation">,</span>
+    approve<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>队友提交计划</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token doc-comment comment">/**
+ * 队友提交一个计划给领导审批
+ */</span>
+<span class="token keyword">function</span> <span class="token function">submitPlan</span><span class="token punctuation">(</span><span class="token parameter">teammate<span class="token punctuation">,</span> plan</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> reqId <span class="token operator">=</span> <span class="token function">randomUUID</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">)</span>
+
+  planRequests<span class="token punctuation">[</span>reqId<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> teammate<span class="token punctuation">,</span>
+    <span class="token literal-property property">plan</span><span class="token operator">:</span> plan<span class="token punctuation">,</span>
+    <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token string">&#39;pending&#39;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>teammate<span class="token punctuation">,</span> <span class="token string">&#39;lead&#39;</span><span class="token punctuation">,</span> <span class="token string">&#39;Requesting plan approval&#39;</span><span class="token punctuation">,</span> <span class="token string">&#39;plan_request&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">request_id</span><span class="token operator">:</span> reqId<span class="token punctuation">,</span>
+    plan<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> reqId
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>领导审批计划</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token doc-comment comment">/**
+ * 领导审批计划
+ */</span>
+<span class="token keyword">function</span> <span class="token function">handlePlanReview</span><span class="token punctuation">(</span>requestId<span class="token punctuation">,</span> approve<span class="token punctuation">,</span> feedback <span class="token operator">=</span> <span class="token string">&#39;&#39;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> req <span class="token operator">=</span> planRequests<span class="token punctuation">[</span>requestId<span class="token punctuation">]</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>req<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token string">&#39;Invalid request_id&#39;</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 更新状态</span>
+  req<span class="token punctuation">.</span>status <span class="token operator">=</span> approve <span class="token operator">?</span> <span class="token string">&#39;approved&#39;</span> <span class="token operator">:</span> <span class="token string">&#39;rejected&#39;</span>
+
+  <span class="token comment">// 发送审批结果</span>
+  <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span><span class="token string">&#39;lead&#39;</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span>from<span class="token punctuation">,</span> feedback<span class="token punctuation">,</span> <span class="token string">&#39;plan_approval_response&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">request_id</span><span class="token operator">:</span> requestId<span class="token punctuation">,</span>
+    approve<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li></ol><h3 id="协议总结" tabindex="-1"><a class="header-anchor" href="#协议总结" aria-hidden="true">#</a> 协议总结</h3><p>整个系统可以抽象为:</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">class</span> <span class="token class-name">RequestFSM</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>requests <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">create</span><span class="token punctuation">(</span><span class="token parameter">id<span class="token punctuation">,</span> data</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>requests<span class="token punctuation">[</span>id<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span>data<span class="token punctuation">,</span>
+      <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token string">&#39;pending&#39;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">approve</span><span class="token punctuation">(</span><span class="token parameter">id</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>requests<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token string">&#39;approved&#39;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">reject</span><span class="token punctuation">(</span><span class="token parameter">id</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>requests<span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token string">&#39;rejected&#39;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="自主-agent-循环" tabindex="-1"><a class="header-anchor" href="#自主-agent-循环" aria-hidden="true">#</a> 自主 Agent 循环</h2><p>在上面的 Agent 中，Agent 必须被明确指派任务，Leader 需要手动分配任务。</p><p>实际上，我们希望 Agent 能够自主认领未完成的任务。</p><div class="language-sql line-numbers-mode" data-ext="sql"><pre class="language-sql"><code>Teammate lifecycle <span class="token keyword">with</span> idle <span class="token keyword">cycle</span>:
+
+<span class="token operator">+</span><span class="token comment">-------+</span>
+<span class="token operator">|</span> spawn <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">---+---+</span>
+    <span class="token operator">|</span>
+    v
+<span class="token operator">+</span><span class="token comment">-------+   tool_use     +-------+</span>
+<span class="token operator">|</span> <span class="token keyword">WORK</span>  <span class="token operator">|</span> <span class="token operator">&lt;</span><span class="token comment">------------- |  LLM  |</span>
+<span class="token operator">+</span><span class="token comment">---+---+                +-------+</span>
+    <span class="token operator">|</span>
+    <span class="token operator">|</span> stop_reason <span class="token operator">!=</span> tool_use <span class="token punctuation">(</span><span class="token operator">or</span> idle tool called<span class="token punctuation">)</span>
+    v
+<span class="token operator">+</span><span class="token comment">--------+</span>
+<span class="token operator">|</span>  IDLE  <span class="token operator">|</span>  poll every <span class="token number">5</span>s <span class="token keyword">for</span> up <span class="token keyword">to</span> <span class="token number">60</span>s
+<span class="token operator">+</span><span class="token comment">---+----+</span>
+    <span class="token operator">|</span>
+    <span class="token operator">+</span><span class="token comment">---&gt; check inbox --&gt; message? ----------&gt; WORK</span>
+    <span class="token operator">|</span>
+    <span class="token operator">+</span><span class="token comment">---&gt; scan .tasks/ --&gt; unclaimed? -------&gt; claim -&gt; WORK</span>
+    <span class="token operator">|</span>
+    <span class="token operator">+</span><span class="token comment">---&gt; 60s timeout ----------------------&gt; SHUTDOWN</span>
+
+<span class="token keyword">Identity</span> re<span class="token operator">-</span>injection <span class="token keyword">after</span> compression:
+  <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>messages<span class="token punctuation">)</span> <span class="token operator">&lt;=</span> <span class="token number">3</span>:
+    messages<span class="token punctuation">.</span><span class="token keyword">insert</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> identity_block<span class="token punctuation">)</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="实现自动循环" tabindex="-1"><a class="header-anchor" href="#实现自动循环" aria-hidden="true">#</a> 实现自动循环</h3><ol><li><p>实现主循环</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">agentLoop</span><span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">{</span> name<span class="token punctuation">,</span> role<span class="token punctuation">,</span> prompt<span class="token punctuation">,</span> client <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> messages <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">{</span> <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&#39;user&#39;</span><span class="token punctuation">,</span> <span class="token literal-property property">content</span><span class="token operator">:</span> prompt <span class="token punctuation">}</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// WORK PHASE</span>
+    <span class="token keyword">let</span> idleRequested <span class="token operator">=</span> <span class="token boolean">false</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">50</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> client<span class="token punctuation">.</span>messages<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        messages<span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+      <span class="token comment">// 如果没有调用 tool，说明这一轮结束</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>response<span class="token punctuation">.</span>stop_reason <span class="token operator">!==</span> <span class="token string">&#39;tool_use&#39;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">break</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token comment">// 执行工具（伪代码）</span>
+      <span class="token keyword">const</span> <span class="token punctuation">{</span> toolName<span class="token punctuation">,</span> toolInput <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">parseToolCall</span><span class="token punctuation">(</span>response<span class="token punctuation">)</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>toolName <span class="token operator">===</span> <span class="token string">&#39;idle&#39;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        idleRequested <span class="token operator">=</span> <span class="token boolean">true</span>
+        <span class="token keyword">break</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">const</span> toolResult <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">executeTool</span><span class="token punctuation">(</span>toolName<span class="token punctuation">,</span> toolInput<span class="token punctuation">)</span>
+
+      messages<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&#39;tool&#39;</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">content</span><span class="token operator">:</span> toolResult<span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// IDLE PHASE</span>
+    <span class="token function">setStatus</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">&#39;idle&#39;</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">const</span> resume <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">idlePoll</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> messages<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>resume<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">setStatus</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">&#39;shutdown&#39;</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token function">setStatus</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">&#39;working&#39;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token parameter">ms</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">setTimeout</span><span class="token punctuation">(</span>resolve<span class="token punctuation">,</span> ms<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">setStatus</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> status</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">[</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">] -&gt; </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>status<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>空闲轮询，每 5 秒检查一次，每次最多等待 60 秒。</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">const</span> <span class="token constant">POLL_INTERVAL</span> <span class="token operator">=</span> <span class="token number">5000</span> <span class="token comment">// 5 秒</span>
+<span class="token keyword">const</span> <span class="token constant">IDLE_TIMEOUT</span> <span class="token operator">=</span> <span class="token number">60000</span> <span class="token comment">// 60 秒</span>
+
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">idlePoll</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> messages</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> maxTries <span class="token operator">=</span> <span class="token constant">IDLE_TIMEOUT</span> <span class="token operator">/</span> <span class="token constant">POLL_INTERVAL</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> maxTries<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">await</span> <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token constant">POLL_INTERVAL</span><span class="token punctuation">)</span>
+
+    <span class="token comment">// 检查收件箱</span>
+    <span class="token keyword">const</span> inbox <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token constant">BUS</span><span class="token punctuation">.</span><span class="token function">readInbox</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>inbox <span class="token operator">&amp;&amp;</span> inbox<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      messages<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&#39;user&#39;</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">content</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">&lt;inbox&gt;</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>inbox<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/inbox&gt;</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">// 扫描任务看板</span>
+    <span class="token keyword">const</span> tasks <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">scanUnclaimedTasks</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tasks<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> task <span class="token operator">=</span> tasks<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+
+      <span class="token keyword">await</span> <span class="token function">claimTask</span><span class="token punctuation">(</span>task<span class="token punctuation">.</span>id<span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+
+      messages<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&#39;user&#39;</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">content</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">&lt;auto-claimed&gt;Task #</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>task<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>task<span class="token punctuation">.</span>subject<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&lt;/auto-claimed&gt;</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+      <span class="token keyword">return</span> <span class="token boolean">true</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 超时 → 关闭</span>
+  <span class="token keyword">return</span> <span class="token boolean">false</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>扫描未认领的任务.</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">import</span> fs <span class="token keyword">from</span> <span class="token string">&#39;fs/promises&#39;</span>
+<span class="token keyword">import</span> path <span class="token keyword">from</span> <span class="token string">&#39;path&#39;</span>
+
+<span class="token keyword">const</span> <span class="token constant">TASKS_DIR</span> <span class="token operator">=</span> <span class="token string">&#39;./tasks&#39;</span>
+
+<span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token function">scanUnclaimedTasks</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> files <span class="token operator">=</span> <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">readdir</span><span class="token punctuation">(</span><span class="token constant">TASKS_DIR</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> tasks <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> file <span class="token keyword">of</span> files<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>file<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">&#39;task_&#39;</span><span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token operator">!</span>file<span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">&#39;.json&#39;</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">continue</span>
+
+    <span class="token keyword">const</span> filePath <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token constant">TASKS_DIR</span><span class="token punctuation">,</span> file<span class="token punctuation">)</span>
+
+    <span class="token keyword">const</span> content <span class="token operator">=</span> <span class="token keyword">await</span> fs<span class="token punctuation">.</span><span class="token function">readFile</span><span class="token punctuation">(</span>filePath<span class="token punctuation">,</span> <span class="token string">&#39;utf-8&#39;</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> task <span class="token operator">=</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+
+    <span class="token comment">// 过滤条件</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>task<span class="token punctuation">.</span>status <span class="token operator">===</span> <span class="token string">&#39;pending&#39;</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>task<span class="token punctuation">.</span>owner <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>task<span class="token punctuation">.</span>blockedBy<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      tasks<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>task<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">return</span> tasks
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>身份重新注入，在上下文压缩后，LLM 可能会忘记自己是谁。</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">injectIdentity</span><span class="token punctuation">(</span><span class="token parameter">messages<span class="token punctuation">,</span> <span class="token punctuation">{</span> name<span class="token punctuation">,</span> role<span class="token punctuation">,</span> teamName <span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>messages<span class="token punctuation">.</span>length <span class="token operator">&lt;=</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    messages<span class="token punctuation">.</span><span class="token function">unshift</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&#39;user&#39;</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">content</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">&lt;identity&gt;
+         You are &#39;</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">&#39;, role: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>role<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">, team: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>teamName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.
+         Continue your work.
+       &lt;/identity&gt;</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+    messages<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">role</span><span class="token operator">:</span> <span class="token string">&#39;assistant&#39;</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">content</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">I am </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">. Continuing.</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li></ol><h2 id="worktree-任务隔离" tabindex="-1"><a class="header-anchor" href="#worktree-任务隔离" aria-hidden="true">#</a> Worktree 任务隔离</h2><p>最后还需要解决一个问题，就是当前多个任务共享同一个目录。并发修改会互相污染（例如同时修改 config.json）。因此无法做到干净回滚。</p><p>这里的思路是为每个任务分配独立的 Git worktree，并建立绑定关系：</p><div class="language-sql line-numbers-mode" data-ext="sql"><pre class="language-sql"><code>Control plane <span class="token punctuation">(</span><span class="token punctuation">.</span>tasks<span class="token operator">/</span><span class="token punctuation">)</span>             Execution plane <span class="token punctuation">(</span><span class="token punctuation">.</span>worktrees<span class="token operator">/</span><span class="token punctuation">)</span>
+<span class="token operator">+</span><span class="token comment">------------------+                +------------------------+</span>
+<span class="token operator">|</span> task_1<span class="token punctuation">.</span>json      <span class="token operator">|</span>                <span class="token operator">|</span> auth<span class="token operator">-</span>refactor<span class="token operator">/</span>         <span class="token operator">|</span>
+<span class="token operator">|</span>   <span class="token keyword">status</span>: in_progress  <span class="token operator">&lt;</span><span class="token comment">------&gt;   branch: wt/auth-refactor</span>
+<span class="token operator">|</span>   worktree: <span class="token string">&quot;auth-refactor&quot;</span>   <span class="token operator">|</span>   task_id: <span class="token number">1</span>             <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">------------------+                +------------------------+</span>
+<span class="token operator">|</span> task_2<span class="token punctuation">.</span>json      <span class="token operator">|</span>                <span class="token operator">|</span> ui<span class="token operator">-</span>login<span class="token operator">/</span>              <span class="token operator">|</span>
+<span class="token operator">|</span>   <span class="token keyword">status</span>: pending    <span class="token operator">&lt;</span><span class="token comment">------&gt;     branch: wt/ui-login</span>
+<span class="token operator">|</span>   worktree: <span class="token string">&quot;ui-login&quot;</span>       <span class="token operator">|</span>   task_id: <span class="token number">2</span>             <span class="token operator">|</span>
+<span class="token operator">+</span><span class="token comment">------------------+                +------------------------+</span>
+                                    <span class="token operator">|</span>
+                          <span class="token keyword">index</span><span class="token punctuation">.</span>json <span class="token punctuation">(</span>worktree registry<span class="token punctuation">)</span>
+                          events<span class="token punctuation">.</span>jsonl <span class="token punctuation">(</span>lifecycle log<span class="token punctuation">)</span>
+
+State machines:
+  Task:     pending <span class="token operator">-</span><span class="token operator">&gt;</span> in_progress <span class="token operator">-</span><span class="token operator">&gt;</span> completed
+  Worktree: absent  <span class="token operator">-</span><span class="token operator">&gt;</span> active      <span class="token operator">-</span><span class="token operator">&gt;</span> removed <span class="token operator">|</span> kept
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="隔离实现原理" tabindex="-1"><a class="header-anchor" href="#隔离实现原理" aria-hidden="true">#</a> 隔离实现原理</h3><ol><li><p>创建任务，初始状态为 pending，尚未绑定 worktree。</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// tasks.js</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;fs&#39;</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;path&#39;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> <span class="token constant">TASK_DIR</span> <span class="token operator">=</span> <span class="token string">&#39;.tasks&#39;</span>
+
+<span class="token keyword">function</span> <span class="token function">createTask</span><span class="token punctuation">(</span><span class="token parameter">title</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> id <span class="token operator">=</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 简单生成唯一 ID</span>
+  <span class="token keyword">const</span> task <span class="token operator">=</span> <span class="token punctuation">{</span>
+    id<span class="token punctuation">,</span>
+    title<span class="token punctuation">,</span>
+    <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token string">&#39;pending&#39;</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">worktree</span><span class="token operator">:</span> <span class="token string">&#39;&#39;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  fs<span class="token punctuation">.</span><span class="token function">writeFileSync</span><span class="token punctuation">(</span>
+    path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token constant">TASK_DIR</span><span class="token punctuation">,</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">task_</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.json</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>task<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> task
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>创建 Worktree 并绑定任务</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// worktrees.js</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> execSync <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;child_process&#39;</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;fs&#39;</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;path&#39;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> <span class="token constant">WT_DIR</span> <span class="token operator">=</span> <span class="token string">&#39;.worktrees&#39;</span>
+<span class="token keyword">const</span> <span class="token constant">INDEX_FILE</span> <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token constant">WT_DIR</span><span class="token punctuation">,</span> <span class="token string">&#39;index.json&#39;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 读取 worktree 索引</span>
+<span class="token keyword">function</span> <span class="token function">loadIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>fs<span class="token punctuation">.</span><span class="token function">existsSync</span><span class="token punctuation">(</span><span class="token constant">INDEX_FILE</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">return</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token constant">INDEX_FILE</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 保存索引</span>
+<span class="token keyword">function</span> <span class="token function">saveIndex</span><span class="token punctuation">(</span><span class="token parameter">index</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  fs<span class="token punctuation">.</span><span class="token function">writeFileSync</span><span class="token punctuation">(</span><span class="token constant">INDEX_FILE</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 创建 worktree</span>
+<span class="token keyword">function</span> <span class="token function">createWorktree</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> taskId</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> branch <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">wt/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>name<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">\`</span></span>
+  <span class="token keyword">const</span> wtPath <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token constant">WT_DIR</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+
+  <span class="token comment">// 创建 git worktree</span>
+  <span class="token function">execSync</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">git worktree add -b </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>branch<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>wtPath<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> HEAD</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">stdio</span><span class="token operator">:</span> <span class="token string">&#39;inherit&#39;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// 更新 index</span>
+  <span class="token keyword">const</span> index <span class="token operator">=</span> <span class="token function">loadIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  index<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    name<span class="token punctuation">,</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> wtPath<span class="token punctuation">,</span>
+    branch<span class="token punctuation">,</span>
+    <span class="token literal-property property">task_id</span><span class="token operator">:</span> taskId<span class="token punctuation">,</span>
+    <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token string">&#39;active&#39;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token function">saveIndex</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span>
+
+  <span class="token comment">// 绑定任务</span>
+  <span class="token function">bindWorktree</span><span class="token punctuation">(</span>taskId<span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>绑定任务与 Worktree，绑定是双向关系的一半（另一半在 <code>index.json</code>）。自动推进任务状态。</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// tasks.js</span>
+
+<span class="token keyword">function</span> <span class="token function">loadTask</span><span class="token punctuation">(</span><span class="token parameter">taskId</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> file <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token constant">TASK_DIR</span><span class="token punctuation">,</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">task_</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>taskId<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.json</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span>file<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">saveTask</span><span class="token punctuation">(</span><span class="token parameter">task</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> file <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token constant">TASK_DIR</span><span class="token punctuation">,</span> <span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">task_</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>task<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.json</span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">)</span>
+  fs<span class="token punctuation">.</span><span class="token function">writeFileSync</span><span class="token punctuation">(</span>file<span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>task<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// 绑定 worktree</span>
+<span class="token keyword">function</span> <span class="token function">bindWorktree</span><span class="token punctuation">(</span><span class="token parameter">taskId<span class="token punctuation">,</span> worktreeName</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> task <span class="token operator">=</span> <span class="token function">loadTask</span><span class="token punctuation">(</span>taskId<span class="token punctuation">)</span>
+
+  task<span class="token punctuation">.</span>worktree <span class="token operator">=</span> worktreeName
+
+  <span class="token comment">// 如果是 pending，则推进状态</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>task<span class="token punctuation">.</span>status <span class="token operator">===</span> <span class="token string">&#39;pending&#39;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    task<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token string">&#39;in_progress&#39;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token function">saveTask</span><span class="token punctuation">(</span>task<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>在 Worktree 中执行命令</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// executor.js</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> exec <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;child_process&#39;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 在指定 worktree 目录执行命令</span>
+<span class="token keyword">function</span> <span class="token function">runInWorktree</span><span class="token punctuation">(</span><span class="token parameter">command<span class="token punctuation">,</span> worktreePath</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">exec</span><span class="token punctuation">(</span>
+      command<span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token literal-property property">cwd</span><span class="token operator">:</span> worktreePath<span class="token punctuation">,</span> <span class="token comment">// 关键：隔离执行目录</span>
+        <span class="token literal-property property">timeout</span><span class="token operator">:</span> <span class="token number">300000</span><span class="token punctuation">,</span> <span class="token comment">// 300 秒</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span><span class="token parameter">error<span class="token punctuation">,</span> stdout<span class="token punctuation">,</span> stderr</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">return</span> <span class="token function">reject</span><span class="token punctuation">(</span>stderr<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">resolve</span><span class="token punctuation">(</span>stdout<span class="token punctuation">)</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>删除 Worktree 完成任务</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// worktrees.js</span>
+
+<span class="token keyword">function</span> <span class="token function">removeWorktree</span><span class="token punctuation">(</span><span class="token parameter">name<span class="token punctuation">,</span> <span class="token punctuation">{</span> completeTask <span class="token operator">=</span> <span class="token boolean">false</span> <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> index <span class="token operator">=</span> <span class="token function">loadIndex</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> wt <span class="token operator">=</span> index<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">w</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> w<span class="token punctuation">.</span>name <span class="token operator">===</span> name<span class="token punctuation">)</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>wt<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">&#39;Worktree not found&#39;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 删除 git worktree</span>
+  <span class="token function">execSync</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">\`</span><span class="token string">git worktree remove </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">\${</span>wt<span class="token punctuation">.</span>path<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">\`</span></span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">stdio</span><span class="token operator">:</span> <span class="token string">&#39;inherit&#39;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// 更新任务状态</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>completeTask <span class="token operator">&amp;&amp;</span> wt<span class="token punctuation">.</span>task_id<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> task <span class="token operator">=</span> <span class="token function">loadTask</span><span class="token punctuation">(</span>wt<span class="token punctuation">.</span>task_id<span class="token punctuation">)</span>
+
+    task<span class="token punctuation">.</span>status <span class="token operator">=</span> <span class="token string">&#39;completed&#39;</span>
+    task<span class="token punctuation">.</span>worktree <span class="token operator">=</span> <span class="token string">&#39;&#39;</span>
+
+    <span class="token function">saveTask</span><span class="token punctuation">(</span>task<span class="token punctuation">)</span>
+
+    <span class="token function">emitEvent</span><span class="token punctuation">(</span><span class="token string">&#39;task.completed&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">taskId</span><span class="token operator">:</span> task<span class="token punctuation">.</span>id <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// 从 index 移除</span>
+  <span class="token keyword">const</span> newIndex <span class="token operator">=</span> index<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">w</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> w<span class="token punctuation">.</span>name <span class="token operator">!==</span> name<span class="token punctuation">)</span>
+  <span class="token function">saveIndex</span><span class="token punctuation">(</span>newIndex<span class="token punctuation">)</span>
+
+  <span class="token function">emitEvent</span><span class="token punctuation">(</span><span class="token string">&#39;worktree.remove.after&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> name <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>若继续开发，则保留目录，适用于后续继续开发：</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">keepWorktree</span><span class="token punctuation">(</span><span class="token parameter">name</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">emitEvent</span><span class="token punctuation">(</span><span class="token string">&#39;worktree.keep&#39;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> name <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li><li><p>事件系统</p><div class="language-javascript line-numbers-mode" data-ext="js"><pre class="language-javascript"><code><span class="token comment">// events.js</span>
+<span class="token keyword">const</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;fs&#39;</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&#39;path&#39;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> <span class="token constant">EVENTS_FILE</span> <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">&#39;.worktrees&#39;</span><span class="token punctuation">,</span> <span class="token string">&#39;events.jsonl&#39;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">function</span> <span class="token function">emitEvent</span><span class="token punctuation">(</span><span class="token parameter">event<span class="token punctuation">,</span> payload <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> record <span class="token operator">=</span> <span class="token punctuation">{</span>
+    event<span class="token punctuation">,</span>
+    <span class="token operator">...</span>payload<span class="token punctuation">,</span>
+    <span class="token literal-property property">ts</span><span class="token operator">:</span> Date<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+
+  fs<span class="token punctuation">.</span><span class="token function">appendFileSync</span><span class="token punctuation">(</span><span class="token constant">EVENTS_FILE</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>record<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">&#39;\\n&#39;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></li></ol>`,120),i=[l];function u(r,k){return o(),c("div",null,i)}const v=n(p,[["render",u],["__file","claudeCode.html.vue"]]);export{v as default};
