@@ -1250,3 +1250,818 @@ async function agentLoop(messages, client, bgManager) {
   }
 }
 ```
+
+## Agent 团队
+
+在之前的版本中，子智能体是一次性的（调用完就销毁）。没有身份（state 丢失），没有跨调用记忆。后台任务只能执行命令，不能做 LLM 决策。
+
+真正的团队协作需要三样东西:
+
+1. 能跨多轮对话存活的持久智能体
+2. 身份和生命周期管理
+3. 智能体之间的通信通道。
+
+```sql
+Teammate lifecycle:
+  spawn -> WORKING -> IDLE -> WORKING -> ... -> SHUTDOWN
+
+Communication:
+  .team/
+    config.json
+    inbox/
+      alice.jsonl
+      bob.jsonl
+      lead.jsonl
+
+             send("alice","bob")
+   +--------+ --------------------> +--------+
+   | alice  |                      |  bob   |
+   | loop   |   bob.jsonl << msg   |  loop  |
+   +--------+                      +--------+
+
+        BUS.readInbox("alice")
+```
+
+### 实现原理
+
+1. 使用 Node.js 文件系统维护团队状态。
+
+   ```js
+   import fs from 'fs/promises'
+   import path from 'path'
+
+   export class TeammateManager {
+     constructor(teamDir) {
+       // 团队根目录（例如 .team/）
+       this.dir = teamDir
+
+       // config.json 路径，用于持久化团队成员信息
+       this.configPath = path.join(teamDir, 'config.json')
+
+       // 可用于存储运行中的 agent（比如 future: worker/thread 引用）
+       this.threads = new Map()
+     }
+
+     async init() {
+       // 确保目录存在（recursive: true 表示多级目录自动创建）
+       await fs.mkdir(this.dir, { recursive: true })
+
+       try {
+         // 尝试读取已有配置
+         const raw = await fs.readFile(this.configPath, 'utf-8')
+
+         // 解析 JSON -> 内存中的 config
+         this.config = JSON.parse(raw)
+       } catch {
+         // 如果文件不存在或解析失败，初始化默认结构
+         this.config = { members: [] }
+
+         // 写入空配置文件
+         await this.saveConfig()
+       }
+     }
+
+     async saveConfig() {
+       // 将当前 config 写回磁盘（带格式化方便调试）
+       await fs.writeFile(this.configPath, JSON.stringify(this.config, null, 2))
+     }
+
+     findMember(name) {
+       // 根据 name 查找成员（简单线性查找）
+       return this.config.members.find((m) => m.name === name)
+     }
+
+     spawn(name, role, prompt) {
+       // 创建一个新的队友（初始状态为 working）
+       const member = { name, role, status: 'working' }
+
+       // 加入团队 roster
+       this.config.members.push(member)
+
+       // 异步保存（这里没有 await，属于 fire-and-forget）
+       this.saveConfig()
+
+       // 启动该队友的 agent loop（非阻塞）
+       this.startTeammateLoop(name, role, prompt)
+
+       // 返回提示信息
+       return `Spawned teammate '${name}' (role: ${role})`
+     }
+   }
+   ```
+
+2. MessageBus（JSONL 邮箱通信）
+
+   ```js
+   import fs from 'fs/promises'
+   import path from 'path'
+
+   export class MessageBus {
+     constructor(baseDir) {
+       // inbox 目录（每个 agent 一个 jsonl 文件）
+       this.dir = path.join(baseDir, 'inbox')
+     }
+
+     async init() {
+       // 确保 inbox 目录存在
+       await fs.mkdir(this.dir, { recursive: true })
+     }
+
+     async send(sender, to, content, type = 'message', extra = {}) {
+       // 构造消息对象（统一结构）
+       const msg = {
+         type, // 消息类型（默认 message）
+         from: sender, // 发送者
+         content, // 内容
+         timestamp: Date.now(), // 时间戳（毫秒）
+         ...extra, // 可扩展字段（比如 task_id 等）
+       }
+
+       // 收件人对应的 jsonl 文件
+       const file = path.join(this.dir, `${to}.jsonl`)
+
+       // 以 append 模式写入一行（JSONL = 每行一个 JSON）
+       await fs.appendFile(file, JSON.stringify(msg) + '\n')
+     }
+
+     async readInbox(name) {
+       const file = path.join(this.dir, `${name}.jsonl`)
+
+       try {
+         // 读取整个 inbox 文件
+         const raw = await fs.readFile(file, 'utf-8')
+
+         // 如果文件为空，直接返回空数组
+         if (!raw.trim()) return []
+
+         // 按行解析 JSONL -> JS 对象数组
+         const messages = raw
+           .split('\n') // 按行拆分
+           .filter(Boolean) // 去掉空行
+           .map((line) => JSON.parse(line))
+
+         // ⭐ 关键设计：读取后立即清空（drain inbox）
+         await fs.writeFile(file, '')
+
+         return messages
+       } catch {
+         // 文件不存在或读取失败 -> 视为没有消息
+         return []
+       }
+     }
+   }
+   ```
+
+3. Agent loop 循环，每个 Agent 都能持续运行，每轮检查 inbox，把消息注入上下文并且调用 LLM。
+
+   ```js
+    async startTeammateLoop(name, role, prompt) {
+      // 对话上下文（类似 ChatGPT messages）
+      const messages = [
+        { role: "user", content: prompt }
+      ];
+
+      // 限制最大轮数，避免无限循环
+      for (let i = 0; i < 50; i++) {
+        // 读取当前 agent 的 inbox
+        const inbox = await BUS.readInbox(name);
+
+        if (inbox.length > 0) {
+          // 将 inbox 注入到上下文（作为用户输入）
+          messages.push({
+            role: "user",
+            content: `<inbox>${JSON.stringify(inbox)}</inbox>`
+          });
+
+          // 给模型一个确认信号（避免重复处理）
+          messages.push({
+            role: "assistant",
+            content: "Noted inbox messages."
+          });
+        }
+
+        // 调用 LLM（例如 OpenAI / Claude）
+        const response = await callLLM(messages);
+
+        // 如果没有 tool 调用，说明任务结束
+        if (!response.toolCalls) break;
+
+        // 执行模型请求的工具调用
+        for (const tool of response.toolCalls) {
+          const result = await executeTool(tool);
+
+          // 将工具执行结果写回上下文
+          messages.push({
+            role: "tool",
+            content: result
+          });
+        }
+      }
+
+      // 循环结束后，将状态标记为 idle
+      const member = this.findMember(name);
+      if (member) member.status = "idle";
+
+      // 持久化状态
+      await this.saveConfig();
+    }
+   ```
+
+   调用示例:
+
+   ```js
+   // 单点发送消息
+   async function sendTool({ from, to, content }) {
+     // 调用 MessageBus 发送
+     await BUS.send(from, to, content)
+
+     return 'Message sent.'
+   }
+
+   // 广播消息（发给所有人）
+   async function broadcastTool({ from, content, members }) {
+     for (const m of members) {
+       // 不给自己发
+       if (m.name !== from) {
+         await BUS.send(from, m.name, content)
+       }
+     }
+
+     return 'Broadcast complete.'
+   }
+   ```
+
+## 团队协议
+
+在上面的 Agent 团队中，队友可以相互通信，执行任务，但是缺乏结构化的规范。正确的方式是先提交计划，再审批，最后再执行。
+
+```sql
+Shutdown Protocol            Plan Approval Protocol
+==================           ======================
+
+Lead             Teammate    Teammate           Lead
+  |                 |           |                 |
+  |--shutdown_req-->|           |--plan_req------>|
+  | {req_id:"abc"}  |           | {req_id:"xyz"}  |
+  |                 |           |                 |
+  |<--shutdown_resp-|           |<--plan_resp-----|
+  | {req_id:"abc",  |           | {req_id:"xyz",  |
+  |  approve:true}  |           |  approve:true}  |
+
+Shared FSM:
+  [pending] --approve--> [approved]
+  [pending] --reject---> [rejected]
+
+Trackers:
+  shutdown_requests = {req_id: {target, status}}
+  plan_requests     = {req_id: {from, plan, status}}
+```
+
+### 协议工作原理
+
+1. 领导发起关机请求
+
+   ```js
+   import { randomUUID } from 'crypto'
+
+   /**
+    * 向某个队友发送“优雅关机”请求
+    */
+   function handleShutdownRequest(teammate) {
+     // 生成唯一 request_id（取前8位方便阅读）
+     const reqId = randomUUID().slice(0, 8)
+
+     // 记录请求状态
+     shutdownRequests[reqId] = {
+       target: teammate,
+       status: 'pending',
+     }
+
+     // 发送请求消息
+     BUS.send(
+       'lead',
+       teammate,
+       'Please shut down gracefully.',
+       'shutdown_request',
+       { request_id: reqId }
+     )
+
+     return `Shutdown request ${reqId} sent (status: pending)`
+   }
+   ```
+
+2. 队友响应关机请求
+
+   ```js
+   /**
+    * 处理 shutdown_response
+    */
+   function handleShutdownResponse(sender, args) {
+     const { request_id, approve, reason } = args
+
+     // 更新状态
+     if (shutdownRequests[request_id]) {
+       shutdownRequests[request_id].status = approve ? 'approved' : 'rejected'
+     }
+
+     // 回复给领导
+     BUS.send(sender, 'lead', reason || '', 'shutdown_response', {
+       request_id,
+       approve,
+     })
+   }
+   ```
+
+3. 队友提交计划
+
+   ```js
+   /**
+    * 队友提交一个计划给领导审批
+    */
+   function submitPlan(teammate, plan) {
+     const reqId = randomUUID().slice(0, 8)
+
+     planRequests[reqId] = {
+       from: teammate,
+       plan: plan,
+       status: 'pending',
+     }
+
+     BUS.send(teammate, 'lead', 'Requesting plan approval', 'plan_request', {
+       request_id: reqId,
+       plan,
+     })
+
+     return reqId
+   }
+   ```
+
+4. 领导审批计划
+
+   ```js
+   /**
+    * 领导审批计划
+    */
+   function handlePlanReview(requestId, approve, feedback = '') {
+     const req = planRequests[requestId]
+
+     if (!req) {
+       console.error('Invalid request_id')
+       return
+     }
+
+     // 更新状态
+     req.status = approve ? 'approved' : 'rejected'
+
+     // 发送审批结果
+     BUS.send('lead', req.from, feedback, 'plan_approval_response', {
+       request_id: requestId,
+       approve,
+     })
+   }
+   ```
+
+### 协议总结
+
+整个系统可以抽象为:
+
+```js
+class RequestFSM {
+  constructor() {
+    this.requests = {}
+  }
+
+  create(id, data) {
+    this.requests[id] = {
+      ...data,
+      status: 'pending',
+    }
+  }
+
+  approve(id) {
+    this.requests[id].status = 'approved'
+  }
+
+  reject(id) {
+    this.requests[id].status = 'rejected'
+  }
+}
+```
+
+## 自主 Agent 循环
+
+在上面的 Agent 中，Agent 必须被明确指派任务，Leader 需要手动分配任务。
+
+实际上，我们希望 Agent 能够自主认领未完成的任务。
+
+```sql
+Teammate lifecycle with idle cycle:
+
++-------+
+| spawn |
++---+---+
+    |
+    v
++-------+   tool_use     +-------+
+| WORK  | <------------- |  LLM  |
++---+---+                +-------+
+    |
+    | stop_reason != tool_use (or idle tool called)
+    v
++--------+
+|  IDLE  |  poll every 5s for up to 60s
++---+----+
+    |
+    +---> check inbox --> message? ----------> WORK
+    |
+    +---> scan .tasks/ --> unclaimed? -------> claim -> WORK
+    |
+    +---> 60s timeout ----------------------> SHUTDOWN
+
+Identity re-injection after compression:
+  if len(messages) <= 3:
+    messages.insert(0, identity_block)
+```
+
+### 实现自动循环
+
+1. 实现主循环
+
+   ```js
+   async function agentLoop({ name, role, prompt, client }) {
+     let messages = [{ role: 'user', content: prompt }]
+
+     while (true) {
+       // WORK PHASE
+       let idleRequested = false
+
+       for (let i = 0; i < 50; i++) {
+         const response = await client.messages.create({
+           messages,
+         })
+
+         // 如果没有调用 tool，说明这一轮结束
+         if (response.stop_reason !== 'tool_use') {
+           break
+         }
+
+         // 执行工具（伪代码）
+         const { toolName, toolInput } = parseToolCall(response)
+
+         if (toolName === 'idle') {
+           idleRequested = true
+           break
+         }
+
+         const toolResult = await executeTool(toolName, toolInput)
+
+         messages.push({
+           role: 'tool',
+           content: toolResult,
+         })
+       }
+
+       // IDLE PHASE
+       setStatus(name, 'idle')
+
+       const resume = await idlePoll(name, messages)
+
+       if (!resume) {
+         setStatus(name, 'shutdown')
+         return
+       }
+
+       setStatus(name, 'working')
+     }
+   }
+
+   function sleep(ms) {
+     return new Promise((resolve) => setTimeout(resolve, ms))
+   }
+
+   function setStatus(name, status) {
+     console.log(`[${name}] -> ${status}`)
+   }
+   ```
+
+2. 空闲轮询，每 5 秒检查一次，每次最多等待 60 秒。
+
+   ```js
+   const POLL_INTERVAL = 5000 // 5 秒
+   const IDLE_TIMEOUT = 60000 // 60 秒
+
+   async function idlePoll(name, messages) {
+     const maxTries = IDLE_TIMEOUT / POLL_INTERVAL
+
+     for (let i = 0; i < maxTries; i++) {
+       await sleep(POLL_INTERVAL)
+
+       // 检查收件箱
+       const inbox = await BUS.readInbox(name)
+
+       if (inbox && inbox.length > 0) {
+         messages.push({
+           role: 'user',
+           content: `<inbox>${JSON.stringify(inbox)}</inbox>`,
+         })
+         return true
+       }
+
+       // 扫描任务看板
+       const tasks = await scanUnclaimedTasks()
+
+       if (tasks.length > 0) {
+         const task = tasks[0]
+
+         await claimTask(task.id, name)
+
+         messages.push({
+           role: 'user',
+           content: `<auto-claimed>Task #${task.id}: ${task.subject}</auto-claimed>`,
+         })
+
+         return true
+       }
+     }
+
+     // 超时 → 关闭
+     return false
+   }
+   ```
+
+3. 扫描未认领的任务.
+
+   ```js
+   import fs from 'fs/promises'
+   import path from 'path'
+
+   const TASKS_DIR = './tasks'
+
+   async function scanUnclaimedTasks() {
+     const files = await fs.readdir(TASKS_DIR)
+
+     const tasks = []
+
+     for (const file of files.sort()) {
+       if (!file.startsWith('task_') || !file.endsWith('.json')) continue
+
+       const filePath = path.join(TASKS_DIR, file)
+
+       const content = await fs.readFile(filePath, 'utf-8')
+       const task = JSON.parse(content)
+
+       // 过滤条件
+       if (task.status === 'pending' && !task.owner && !task.blockedBy) {
+         tasks.push(task)
+       }
+     }
+
+     return tasks
+   }
+   ```
+
+4. 身份重新注入，在上下文压缩后，LLM 可能会忘记自己是谁。
+
+   ```js
+   function injectIdentity(messages, { name, role, teamName }) {
+     if (messages.length <= 3) {
+       messages.unshift({
+         role: 'user',
+         content: `<identity>
+            You are '${name}', role: ${role}, team: ${teamName}.
+            Continue your work.
+          </identity>`,
+       })
+
+       messages.splice(1, 0, {
+         role: 'assistant',
+         content: `I am ${name}. Continuing.`,
+       })
+     }
+   }
+   ```
+
+## Worktree 任务隔离
+
+最后还需要解决一个问题，就是当前多个任务共享同一个目录。并发修改会互相污染（例如同时修改 config.json）。因此无法做到干净回滚。
+
+这里的思路是为每个任务分配独立的 Git worktree，并建立绑定关系：
+
+```sql
+Control plane (.tasks/)             Execution plane (.worktrees/)
++------------------+                +------------------------+
+| task_1.json      |                | auth-refactor/         |
+|   status: in_progress  <------>   branch: wt/auth-refactor
+|   worktree: "auth-refactor"   |   task_id: 1             |
++------------------+                +------------------------+
+| task_2.json      |                | ui-login/              |
+|   status: pending    <------>     branch: wt/ui-login
+|   worktree: "ui-login"       |   task_id: 2             |
++------------------+                +------------------------+
+                                    |
+                          index.json (worktree registry)
+                          events.jsonl (lifecycle log)
+
+State machines:
+  Task:     pending -> in_progress -> completed
+  Worktree: absent  -> active      -> removed | kept
+```
+
+### 隔离实现原理
+
+1. 创建任务，初始状态为 pending，尚未绑定 worktree。
+
+   ```js
+   // tasks.js
+   const fs = require('fs')
+   const path = require('path')
+
+   const TASK_DIR = '.tasks'
+
+   function createTask(title) {
+     const id = Date.now() // 简单生成唯一 ID
+     const task = {
+       id,
+       title,
+       status: 'pending',
+       worktree: '',
+     }
+
+     fs.writeFileSync(
+       path.join(TASK_DIR, `task_${id}.json`),
+       JSON.stringify(task, null, 2)
+     )
+
+     return task
+   }
+   ```
+
+2. 创建 Worktree 并绑定任务
+
+   ```js
+   // worktrees.js
+   const { execSync } = require('child_process')
+   const fs = require('fs')
+   const path = require('path')
+
+   const WT_DIR = '.worktrees'
+   const INDEX_FILE = path.join(WT_DIR, 'index.json')
+
+   // 读取 worktree 索引
+   function loadIndex() {
+     if (!fs.existsSync(INDEX_FILE)) return []
+     return JSON.parse(fs.readFileSync(INDEX_FILE))
+   }
+
+   // 保存索引
+   function saveIndex(index) {
+     fs.writeFileSync(INDEX_FILE, JSON.stringify(index, null, 2))
+   }
+
+   // 创建 worktree
+   function createWorktree(name, taskId) {
+     const branch = `wt/${name}`
+     const wtPath = path.join(WT_DIR, name)
+
+     // 创建 git worktree
+     execSync(`git worktree add -b ${branch} ${wtPath} HEAD`, {
+       stdio: 'inherit',
+     })
+
+     // 更新 index
+     const index = loadIndex()
+     index.push({
+       name,
+       path: wtPath,
+       branch,
+       task_id: taskId,
+       status: 'active',
+     })
+     saveIndex(index)
+
+     // 绑定任务
+     bindWorktree(taskId, name)
+   }
+   ```
+
+3. 绑定任务与 Worktree，绑定是双向关系的一半（另一半在 `index.json`）。自动推进任务状态。
+
+   ```js
+   // tasks.js
+
+   function loadTask(taskId) {
+     const file = path.join(TASK_DIR, `task_${taskId}.json`)
+     return JSON.parse(fs.readFileSync(file))
+   }
+
+   function saveTask(task) {
+     const file = path.join(TASK_DIR, `task_${task.id}.json`)
+     fs.writeFileSync(file, JSON.stringify(task, null, 2))
+   }
+
+   // 绑定 worktree
+   function bindWorktree(taskId, worktreeName) {
+     const task = loadTask(taskId)
+
+     task.worktree = worktreeName
+
+     // 如果是 pending，则推进状态
+     if (task.status === 'pending') {
+       task.status = 'in_progress'
+     }
+
+     saveTask(task)
+   }
+   ```
+
+4. 在 Worktree 中执行命令
+
+   ```js
+   // executor.js
+   const { exec } = require('child_process')
+
+   // 在指定 worktree 目录执行命令
+   function runInWorktree(command, worktreePath) {
+     return new Promise((resolve, reject) => {
+       exec(
+         command,
+         {
+           cwd: worktreePath, // 关键：隔离执行目录
+           timeout: 300000, // 300 秒
+         },
+         (error, stdout, stderr) => {
+           if (error) {
+             return reject(stderr)
+           }
+           resolve(stdout)
+         }
+       )
+     })
+   }
+   ```
+
+5. 删除 Worktree 完成任务
+
+   ```js
+   // worktrees.js
+
+   function removeWorktree(name, { completeTask = false } = {}) {
+     const index = loadIndex()
+     const wt = index.find((w) => w.name === name)
+
+     if (!wt) {
+       throw new Error('Worktree not found')
+     }
+
+     // 删除 git worktree
+     execSync(`git worktree remove ${wt.path}`, {
+       stdio: 'inherit',
+     })
+
+     // 更新任务状态
+     if (completeTask && wt.task_id) {
+       const task = loadTask(wt.task_id)
+
+       task.status = 'completed'
+       task.worktree = ''
+
+       saveTask(task)
+
+       emitEvent('task.completed', { taskId: task.id })
+     }
+
+     // 从 index 移除
+     const newIndex = index.filter((w) => w.name !== name)
+     saveIndex(newIndex)
+
+     emitEvent('worktree.remove.after', { name })
+   }
+   ```
+
+6. 若继续开发，则保留目录，适用于后续继续开发：
+
+   ```js
+   function keepWorktree(name) {
+     emitEvent('worktree.keep', { name })
+   }
+   ```
+
+7. 事件系统
+
+   ```js
+   // events.js
+   const fs = require('fs')
+   const path = require('path')
+
+   const EVENTS_FILE = path.join('.worktrees', 'events.jsonl')
+
+   function emitEvent(event, payload = {}) {
+     const record = {
+       event,
+       ...payload,
+       ts: Date.now(),
+     }
+
+     fs.appendFileSync(EVENTS_FILE, JSON.stringify(record) + '\n')
+   }
+   ```
