@@ -11,6 +11,12 @@ star: false
 sticky: false
 ---
 
+在 electron 中，整个应用由三个进程构成：
+
+1. `main.js` 进程：负责创建窗口，管理窗口生命周期，监听系统事件等
+2. `renderer.js` 进程：负责渲染页面，处理用户交互等
+3. `preload.js` 进程：负责在渲染进程和主进程之间建立安全桥，传递消息
+
 ## 集成 Node.js
 
 企业级桌面应用的资源都是本地化的，离线也能使用，所以需要把 html、js、css 这些资源都打包进去，接下来我们就在 `src/renderer` 目录下创建 `index.html` 和 `index.js` 两个文件：
@@ -189,11 +195,11 @@ contextBridge.exposeInMainWorld('Date', {
 
 则程序启动后会报错，挂载失败：
 
-![挂载失败](https://cdn.nlark.com/yuque/0/2023/png/756774/1675613328653-7a3ed6a1-7d7e-4dc8-ac53-22d4012ca26e.png)
+![挂载失败](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202603192206024.png)
 
 如果挂载成功了，这个对象是只读且不可配置的，在 Electron 的源码中可以找到 exposeInMainWorld 的具体实现，在文件 `shell/renderer/api/electron_api_context_bridge.cc `当中：
 
-![挂载成功](https://cdn.nlark.com/yuque/0/2023/png/756774/1675994939890-b7214a4c-6243-475e-8379-7b32cc5cb8fc.png)
+![挂载成功](https://cdn.jsdelivr.net/gh/rayadaschn/blogImage@master/img/202603192207757.png)
 
 #### 总结
 
@@ -205,28 +211,57 @@ contextBridge.exposeInMainWorld('Date', {
 
 进程间通信（Inter-Process Communication，简称 IPC）是用于在至少两个进程或线程之间传输数据或信号。每个进程都有自己独立的系统资源，彼此隔离。为了实现不同进程之间的资源访问和协调工作，需要使用进程间通信。
 
-在 Electron 中，无论是渲染进程给主进程发消息，还是主进程给渲染进程发消息，都是通过 IPC 机制实现的。此通信过程中随消息发送的 Json 对象会被序列化和反序列化，因此 Json 对象中包含的方法和原型链上的数据不会被传送。
+在 Electron 中，无论是渲染进程给主进程发消息，还是主进程给渲染进程发消息，都是通过 IPC 机制实现的。此通信过程中随消息发送的 **JSON 对象会被序列化和反序列化**，因此 JSON 对象中包含的方法和原型链上的数据不会被传送。
 
 1. 渲染进程向主进程发消息
 
    ```js
    // 渲染进程发送消息
-   const { ipcRenderer } = require('electron')
+   import { ipcRenderer } from 'electron'
    ipcRenderer.send('message', 'Hello from renderer process')
    ```
 
    ```js
    // 主进程接收消息
-   const { ipcMain } = require('electron')
+   import { ipcMain } from 'electron'
    ipcMain.on('message', (event, arg) => {
      // event 包含了 sender 属性，表示发送消息的渲染进程的 webContents 对象实例
      console.log(arg) // Prints: 'Hello from renderer process'
+     // 这里可以回复消息给渲染进程，也可以不回复
+     event.reply('message', 'Hello from main process')
    })
    ```
 
-   注意点，若主进程中设置了多处监听同一管道代码，则渲染进程发送消息时，会触发所有监听该管道的代码；其次，上面的消息传递是异步的，若需要同步传递，则可以使用 `ipcRenderer.sendSync` 和 `ipcMain.onSync`。
+   注意点，若主进程中设置了多处监听同一管道代码，则渲染进程发送消息时，会触发**所有**监听该管道的代码；其次，上面的消息传递是异步的，若需要同步传递，则可以使用 `ipcRenderer.sendSync` 和 `ipcMain.onSync`。不推荐使用同步的方式，因为它会阻塞渲染进程，导致页面无响应。
+
+   若是想要用异步的方式传递消息，可用 `ipcRenderer.invoke` 和 `ipcMain.handle`，它们会返回一个 Promise 对象：
+
+   ```js
+   // 渲染进程发送消息
+   import { ipcRenderer } from 'electron'
+
+   async function invokeMessageToMain() {
+     const replyMessage = await ipcRenderer.invoke('my_channel', 'my_data')
+     console.log('replyMessage', replyMessage)
+   }
+   ```
+
+   ```js
+   // 主进程接收消息
+   import { ipcMain } from 'electron'
+
+   ipcMain.handle('my_channel', async (event, message) => {
+     console.log(`receive message from render: ${message}`)
+     // 这里可以回复消息给渲染进程，也可以不回复
+     return 'replay'
+   })
+   ```
 
 2. 主进程向渲染进程发消息
+
+   主进程向渲染进程发送消息一种方式是当渲染进程通过 `ipcRenderer.send、ipcRenderer.sendSync、ipcRenderer.invoke` 向主进程发送消息时，主进程通过 `event.replay`、`event.returnValue`、`return ...` 的方式进行发送。这种方式是被动的，需要等待渲染进程先建立消息推送机制，主进程才能进行回复。
+
+   其实除了上面说的几种被动接收消息的模式进行推送外，还可以通过 **`webContents`** 模块进行消息通信。
 
    ```js
    // 主进程发送消息
@@ -247,16 +282,16 @@ contextBridge.exposeInMainWorld('Date', {
 
    ```js
    // 渲染进程A发送消息
-   const { ipcRenderer } = require('electron')
+   import { ipcRenderer } from 'electron'
    ipcRenderer.send('message', 'Hello from renderer process A')
    ```
 
    ```js
    // 主进程接收消息
-   const { ipcMain } = require('electron')
+   import { ipcMain } from 'electron'
    ipcMain.on('message', (event, arg) => {
      console.log(arg) // Prints: 'Hello from renderer process A'
-     winB.webContent.send('message', 'Hello from main process')
+     winB.webContents.send('message', 'Hello from main process')
    })
    ```
 
@@ -285,6 +320,78 @@ contextBridge.exposeInMainWorld('Date', {
    const { ipcRenderer } = require('electron')
    ipcRenderer.on('message', (event, arg) => {
      console.log(arg) // Prints: 'Hello from renderer process A'
+   })
+   ```
+
+   还有一种方式是通过 MessagePort 进行通信，MessagePort 是 HTML5 中引入的一种新的通信机制，可以在不同的浏览上下文之间进行通信，例如在不同的窗口、iframe、Web Worker 之间进行通信。Electron 中的渲染进程也可以使用 MessagePort 来进行通信。
+
+   ```js
+   // 主进程创建窗口
+   import { BrowserWindow, app, MessageChannelMain } from 'electron'
+
+   app.whenReady().then(async () => {
+     // 创建窗口
+     const mainWindow = new BrowserWindow({
+       show: false,
+       webPreferences: {
+         contextIsolation: false,
+         preload: 'preloadMain.js',
+       },
+     })
+
+     const secondaryWindow = new BrowserWindow({
+       show: false,
+       webPreferences: {
+         contextIsolation: false,
+         preload: 'preloadSecondary.js',
+       },
+     })
+
+     // 建立通道
+     const { port1, port2 } = new MessageChannelMain()
+
+     // webContents准备就绪后，使用postMessage向每个webContents发送一个端口。
+     mainWindow.once('ready-to-show', () => {
+       // 用 "port" 作为标识，不传普通数据，把 port1 这个通信通道“转移”给渲染进程
+       mainWindow.webContents.postMessage('port', null, [port1])
+     })
+
+     secondaryWindow.once('ready-to-show', () => {
+       secondaryWindow.webContents.postMessage('port', null, [port2])
+     })
+   })
+   ```
+
+   实例化  `MessageChannel`  类之后，就产生了两个  `port`： `port1 和 port2`。接下来只要让 `渲染进程1` 拿到 `port1`、`渲染进程2` 拿到 `port2`，那么现在这两个进程就可以通过  `port.onmessage`  和  `port.postMessage`  来收发彼此间的消息了。如下：
+
+   ```js
+   // mainWindow 原理
+   port1.onmessage = (event) => {
+     console.log('received result:', event.data)
+   }
+   port1.postMessage('我是渲染进程一发送的消息')
+
+   // secondaryWindow
+   port2.onmessage = (event) => {
+     console.log('received result:', event.data)
+   }
+   port2.postMessage('我是渲染进程二发送的消息')
+   ```
+
+   实际使用
+
+   ```js
+   // preloadMain.js
+   // preloadSecondary.js
+   const { ipcRenderer } = require('electron')
+
+   ipcRenderer.on('port', (e) => {
+     // 接收到端口，使其全局可用。
+     window.electronMessagePort = e.ports[0]
+
+     window.electronMessagePort.onmessage = (messageEvent) => {
+       // 处理消息
+     }
    })
    ```
 
