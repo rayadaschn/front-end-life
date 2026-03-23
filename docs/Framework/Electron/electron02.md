@@ -1,7 +1,7 @@
 ---
 title: Electron 实现跨窗口免登功能
 icon: electron
-date: 2024-03-22
+date: 2026-03-22
 category:
   - 框架
 tag:
