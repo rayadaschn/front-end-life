@@ -59,7 +59,7 @@ VITE_CESIUM_BASE_URL <span class="token operator">=</span> https://www.unpkg.com
 
 <span class="token comment">// vite 插件</span>
 plugins<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>
-  <span class="token doc-comment comment">/** viteStaticCopy: https://github.com/sapphi-red/vite-plugin-static-copy */</span>
+  <span class="token comment">/** viteStaticCopy: https://github.com/sapphi-red/vite-plugin-static-copy */</span>
   <span class="token function">viteStaticCopy</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
     targets<span class="token operator">:</span> <span class="token punctuation">[</span>
       <span class="token comment">// 主库文件，开发时选用非压缩版的 IIFE 格式主库文件</span>
@@ -144,7 +144,7 @@ plugins<span class="token punctuation">.</span><span class="token function">push
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span>
     plugins<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>
-      <span class="token doc-comment comment">/** viteStaticCopy: https://github.com/sapphi-red/vite-plugin-static-copy */</span>
+      <span class="token comment">/** viteStaticCopy: https://github.com/sapphi-red/vite-plugin-static-copy */</span>
       <span class="token function">viteStaticCopy</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
         targets<span class="token operator">:</span> <span class="token punctuation">[</span>
           <span class="token comment">// 主库文件，开发时选用非压缩版的 IIFE 格式主库文件</span>
