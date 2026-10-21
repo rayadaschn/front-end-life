@@ -14,19 +14,23 @@ on:
   schedule:
     - cron: '30 5,11 * * *'
 
+permissions:
+  contents: write
+
 jobs:
   deploy-gh-pages:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           # repo-token: ${{ secrets.DEPLOY_TOKEN }}
           # submodules: true
 
-      - name: set Node.js
-        uses: actions/setup-node@v3
+      - name: Set Node.js
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -34,21 +38,20 @@ jobs:
       - name: npm install
         run: npm ci
 
-      - name: build docs
+      - name: Build docs
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-        run: |-
+        run: |
           npm run docs:build
-          > docs/.vuepress/dist/.nojekyll
+          touch docs/.vuepress/dist/.nojekyll
 
-      - name: deploy docs
+      - name: Deploy docs
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          #  文档部署到的分支名称
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
-          BRANCH: master
-          FOLDER: docs/.vuepress/dist/
-          CLEAN: true
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          branch: master
+          folder: docs/.vuepress/dist/
+          clean: true
       # 自动部署到阿里云服务器
       # - name: deploy to aliyun
       #   uses: easingthemes/ssh-deploy@v2.1.5
